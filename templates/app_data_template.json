@@ -4,12 +4,11 @@
         "account":"dev",
         "application":{
             "cloudProviders":"aws",
-            "name": {{ appinfo.name },
-            "email": {{ appinfo.email }},
+            "name": "{{ appinfo.name }}",
+            "email": "{{ appinfo.email }}",
             "repoType": "github",
-            "repoProjectKey": {{ appinfo.project }},
-            "repoSlug": {{ appinfo.repo }},
-            "description": {{ appinfo.description }},
+            "repoProjectKey": "{{ appinfo.project }}",
+            "repoSlug": "{{ appinfo.repo }}",
             "platformHealthOnlyShowOverride": False
           },
       "user":"Jenkins"
@@ -19,12 +18,11 @@
         "account":"stage",
         "application":{
             "cloudProviders":"aws",
-            "name": {{ appinfo.name },
-            "email": {{ appinfo.email }},
+            "name": "{{ appinfo.name }}",
+            "email": "{{ appinfo.email }}",
             "repoType": "github",
-            "repoProjectKey": {{ appinfo.project }},
-            "repoSlug": {{ appinfo.repo }},
-            "description": {{ appinfo.description }},
+            "repoProjectKey": "{{ appinfo.project }}",
+            "repoSlug": "{{ appinfo.repo }}",
             "platformHealthOnlyShowOverride": False
               },
         "user":"Jenkins"
@@ -33,12 +31,11 @@
         "account":"prod",
         "application":{
             "cloudProviders":"aws",
-            "name": {{ appinfo.name },
-            "email": {{ appinfo.email }},
+            "name": "{{ appinfo.name }}",
+            "email": "{{ appinfo.email }}",
             "repoType": "github",
-            "repoProjectKey": {{ appinfo.project }},
-            "repoSlug": {{ appinfo.repo }},
-            "description": {{ appinfo.description }},
+            "repoProjectKey": "{{ appinfo.project }}",
+            "repoSlug": "{{ appinfo.repo }}",
             "platformHealthOnlyShowOverride": False
               },
         "user":"Jenkins"
@@ -46,7 +43,7 @@
 
 }
       ],
-"application": {{ appinfo.name }},
-"description": "Create Application"
+"application": "{{ appinfo.name }}",
+"description": "{{ appinfo.description }}"
 }
 
