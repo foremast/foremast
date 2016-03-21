@@ -14,7 +14,6 @@ import requests
 
 class SpinnakerApp:
     def __init__(self, appinfo=None):
-        logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
         self.gate_url = "http://spinnaker.build.example.com:8084"
         self.header = {'content-type': 'application/json'}
         self.appinfo = appinfo
@@ -63,7 +62,8 @@ class SpinnakerApp:
 if __name__ == "__main__":
     #Setup parser
     parser = argparse.ArgumentParser()
-    parser.add_argument("--name", help="The application name to create")
+    parser.add_argument("--name", help="The application name to create",
+                        required=True)
     parser.add_argument("--email", help="Email address to associate with application",
                         default="PS-DevOpsTooling@example.com")
     parser.add_argument("--project", help="The project to associaste with application",
@@ -75,6 +75,12 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--debug", action="store_true",
                         help="Turns on full debugging", default=True)
     args = parser.parse_args()
+
+    #Sets logging level
+    if args.debug:
+        logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+    else:
+        logging.basicConfig(format='%(asctime)s %(message)s', level=logging.ERROR)
 
     #Dictionary containing application info. This is passed to the class for processing
     appinfo = { "name": args.name, 
