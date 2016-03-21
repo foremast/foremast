@@ -1,6 +1,3 @@
-from jinja2 import Template
-
-template = Template( ''' 
   { "job":
     [{
         "type":"createApplication",
@@ -51,4 +48,5 @@ template = Template( '''
       ],
 "application": {{ appinfo.name }},
 "description": "Create Application"
-}''')
+}
+
