@@ -1,16 +1,19 @@
-import logging
-import sys
 import json
+import logging
+import os
+import sys
 
-from jinja2 import Environment, PackageLoader
+from jinja2 import Environment, FileSystemLoader
 import requests
 
 class SpinnakerApp:
-    def __init__(self):
+    def __init__(self, appinfo=None):
         logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
         self.gate_url = "http://spinnaker.build.example.com:8084"
-        self.app_dict = app_dict
         self.header = {'content-type': 'application/json'}
+        self.appinfo = appinfo
+        if appinfo:
+            self.appname = appinfo['name']
 
     def get_apps(self):
         url = self.gate_url + "/applications"
@@ -21,39 +24,34 @@ class SpinnakerApp:
             logging.error(r.text)
             sys.exit(1)
 
-    def app_exists(self, appname=None):
+    def app_exists(self):
         self.get_apps()
         for app in self.apps:
-            if app['name'].lower() == appname.lower():
-                logging.info('{} app already exists'.format(appname))
+            if app['name'].lower() == self.appname.lower():
+                logging.info('{} app already exists'.format(self.appname))
                 return True
-        logging.info('{} does not exist...creating'.format(appname))
+        logging.info('{} does not exist...creating'.format(self.appname))
         return False
-
-    def setup_data(self,appname=None):
-        for idx, item in enumerate(self.app_dict['job']):
-            self.app_dict['job'][idx]['application']['name'] == appname
-
-        self.app_dict['application'] == appname
-        self.app_dict['description'] == 'Create application: {}'.format(appname)
             
-    def setup_json(self):
+    def setup_appdata(self):
+        curdir = os.path.dirname(os.path.realpath(__file__))
+        templatedir = "{}/../../templates".format(curdir)
+        jinjaenv = Environment(loader=FileSystemLoader(templatedir))
+        template = jinjaenv.get_template("app_data_template.json")
+        print(template.render(appinfo=appinfo))
 
-
-    def create_app(self, appname=None):
-        url = "{}/applications/{}/tasks".format(self.gate_url, appname)
-        self.setup_data(appname=appname)
-        data = json.dumps(self.app_dict)
-        print(data)
-        #r = requests.post(url, data=data, headers=self.header)
-        #print(r.text)
-        return
+    def create_app(self):
+        if not (self.app_exists()):
+            url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
+            self.setup_appdata()
+            #data = json.dumps(self.app_dict)
+            #r = requests.post(url, data=data, headers=self.header)
+            #print(r.text)
+            return
 
 if __name__ == "__main__":
     appinfo = { "name": "DougTest", "email": "dcampbell@example.com",
-                "project": "DougTest", "repo': '
-    spinnakerapps = SpinnakerApp()
-    exists = spinnakerapps.app_exists(appname='test1234')
-    if not exists:
-        spinnakerapps.create_app(appname="DougTest")
+            "project": "DougTest", "repo": "DougRepo", "Description": "this is a test"}
+    spinnakerapps = SpinnakerApp(appinfo=appinfo)
+    spinnakerapps.create_app()
 
