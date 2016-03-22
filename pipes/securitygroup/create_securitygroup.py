@@ -11,10 +11,16 @@ import requests
 
 
 class SpinnakerSecurityGroup:
-    """Manipulate Spinnaker Security Groups."""
+    """Manipulate Spinnaker Security Groups.
 
-    def __init__(self):
+    Args:
+        app_name: Str of application name add Security Group to.
+    """
+
+    def __init__(self, app_name=''):
         self.log = logging.getLogger(__name__)
+
+        self.app_name = self.app_exists(app_name=app_name)
 
         self.here = os.path.dirname(os.path.realpath(__file__))
 
@@ -62,11 +68,15 @@ class SpinnakerSecurityGroup:
             logging.error(r.text)
             sys.exit(1)
 
-    def app_exists(self):
-        """Checks to see if application already exists."""
+    def app_exists(self, app_name=''):
+        """Checks to see if application already exists.
+
+        Args:
+            app_name: Str of application name to check.
+        """
         self.get_apps()
         for app in self.apps:
-            if app['name'].lower() == self.appname.lower():
+            if app['name'].lower() == app_name.lower():
                 logging.info('{} app already exists'.format(self.appname))
                 return True
         logging.info('{} does not exist...creating'.format(self.appname))
@@ -76,8 +86,6 @@ class SpinnakerSecurityGroup:
         """Sends a POST to spinnaker to create a new application."""
         #setup class variables for processing
         self.appinfo = appinfo
-        if appinfo:
-            self.appname = appinfo['name']
 
         if not (self.app_exists()):
             url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
@@ -122,7 +130,7 @@ def main():
                'environment': args.environment,
                'subnet': args.subnet, }
 
-    spinnakerapps = SpinnakerSecurityGroup()
+    spinnakerapps = SpinnakerSecurityGroup(app_name=args.name)
     sg_json = spinnakerapps.get_template(
         template_name='securitygroup_template.json',
         template_dict=appinfo)
