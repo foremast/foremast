@@ -14,6 +14,8 @@ class SpinnakerSecurityGroup:
     """Manipulate Spinnaker Security Groups."""
 
     def __init__(self):
+        self.log = logging.getLogger(__name__)
+
         self.here = os.path.dirname(os.path.realpath(__file__))
 
         self.config = self.get_configs()
@@ -94,6 +96,8 @@ class SpinnakerSecurityGroup:
 
 def main():
     """Run newer stuffs."""
+    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--name",
                         help="The application name to create",
@@ -112,8 +116,6 @@ def main():
                         required=True)
 
     args = parser.parse_args()
-
-    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     #Dictionary containing application info. This is passed to the class for processing
     appinfo = {'name': args.name,
