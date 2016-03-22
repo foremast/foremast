@@ -76,8 +76,6 @@ if __name__ == "__main__":
                         default="None")
     parser.add_argument("--repo", help="The repo to associaste with application",
                         default="None")
-    parser.add_argument("--description", help="The application description",
-                        default="None")
     args = parser.parse_args()
 
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
@@ -86,8 +84,7 @@ if __name__ == "__main__":
     appinfo = { "name": args.name, 
                 "email": args.email,
                 "project": args.project, 
-                "repo": args.repo, 
-                "description": args.description } 
+                "repo": args.repo }
 
     spinnakerapps = SpinnakerApp()
     spinnakerapps.create_app(appinfo=appinfo)

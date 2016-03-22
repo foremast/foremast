@@ -43,6 +43,6 @@
           }
       ],
 "application": "{{ appinfo.name }}",
-"description": "{{ appinfo.description }}"
+"description": "Created application {{ appinfo.name }}"
 }
 
