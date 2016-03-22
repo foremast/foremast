@@ -4,7 +4,6 @@ import json
 import logging
 import sys
 import os
-#from jinja2 import Template
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -14,10 +13,7 @@ class SpinnakerELB:
         self.curdir = os.path.dirname(os.path.realpath(__file__))
         self.templatedir = "{}/../../templates".format(self.curdir)
         jinjaenv = Environment(loader=FileSystemLoader(self.templatedir))
-        self.elb_template = jinjaenv.get_template("elb_template.json")
-   
-#        with open(self.templatedir + '/elb_data_template.json', 'r') as self.elb_json_file:
-#            self.elb_json = self.elb_json_file.read()
+        self.elb_template = jinjaenv.get_template("elb_data_template.json")
         self.gate_url = "http://spinnaker.build.example.com:8084"
         self.header = {'Content-Type': 'application/json', 'Accept': '*/*'}
 
@@ -35,12 +31,14 @@ class SpinnakerELB:
     def create_elb(self, json_data, app):
         url = self.gate_url + '/applications/%s/tasks' %app
         response = requests.post(url, data=json.dumps(json_data), headers=self.header)
-        print(response.text)
+        if response.ok:
+            logging.info('%s ELB Created' % app)
+            logging.info(response.text)
+        else:
+            logging.error('Error creating %s ELB:' %app)
+            logging.error(response.text)
 
-
-#python create_elb.py --app testapp --stack teststack --elb_type internal --env prod,stage --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps,sg_offices --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name test_elb --elb_subnet internal --health_timeout=10 --health_interval=2 --healthy_threshold=4 --unhealthy_threshold=6
-
-#python create_elb.py --app testapp --stack teststack --elb_type internal --env stage --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name dougtestapp-teststack --elb_subnet internal --health_timeout=10 --health_interval 2 --healthy_threshold 4 --unhealthy_threshold 6
+#python create_elb.py --app testapp --stack teststack --elb_type internal --env dev --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name dougtestapp-teststack --elb_subnet internal --health_timeout=10 --health_interval 2 --healthy_threshold 4 --unhealthy_threshold 6
 if __name__ == '__main__':
     elb = SpinnakerELB()
     parser = argparse.ArgumentParser(description='Example with non-optional arguments')
@@ -84,11 +82,11 @@ if __name__ == '__main__':
                                             elb_name=args.elb_name,
                                             subnet_type=args.elb_subnet,
                                             elb_subnet=args.elb_subnet,
-                                            hc_string='HTTP:80/health')
+                                            hc_string=args.int_listener_protocol+':'+str(args.int_listener_port)+args.health_path)
 
     rendered_json = json.loads(template)
-    print(json.dumps(rendered_json))
-    elb.create_elb(json.dumps(rendered_json), args.app)
+    logging.info(rendered_json)
+    elb.create_elb(rendered_json, args.app)
 
 
 
