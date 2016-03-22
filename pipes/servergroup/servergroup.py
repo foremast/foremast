@@ -5,6 +5,7 @@
 import argparse
 import configparser
 import logging
+import json
 import os
 import sys
 
@@ -19,15 +20,16 @@ class ServerGroup:
         configpath = "{}/../../configs/spinnaker.conf".format(self.here)
         config.read(configpath)
         self.gate_url = config['spinnaker']['gate_url'] 
+        self.header = {'content-type': 'application/json'}
 
     def setup_sgdata(self):
         templatedir = "{}/../../templates".format(self.here)
         jinjaenv = Environment(loader=FileSystemLoader(templatedir))
-        template = jinjaenv.get_template("app_data_template.json")
+        template = jinjaenv.get_template("servergroup_template.json")
         rendered_json = json.loads(template.render(sginfo=self.sginfo))
         return rendered_json
 
-    def upsert_servergroup(sginfo=None):
+    def upsert_servergroup(self, sginfo=None):
         #setup class variables for processing
         self.sginfo = sginfo
 
@@ -39,14 +41,9 @@ class ServerGroup:
             logging.error("Failed to create server group: {}".format(r.text))
             sys.exit(1)
 
-        logging.info("Successfully created {} server group".format(self.appname))
+        logging.info("Successfully created {} server group".format(self.sginfo['appname']))
         return
-
-
-def keypair_name(account=None):
-    keypair = "{}-access".format(account)
-    return ke
-
+#python servergroup.py --appname dougtestapp --account dev --aminame a_forrest_core_v0.0.102_b102_ami-xxxx-02-26-04-44_010fc03119
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--appname", help="The application name for the server group",
@@ -60,7 +57,7 @@ if __name__ == "__main__":
     parser.add_argument("--desired_capacity", help="The desired amount of instances in a server group",
                         type=int, default=1)
     parser.add_argument("--iamrole", help="The iamrole to associate with the server group",
-                        default='app_default_role')
+                        default='app_default_profile')
     parser.add_argument("--keypair", help="The keypair for accessing instances in the server group")
     parser.add_argument("--securitygroups", help="The security groups instances in the server group")
     parser.add_argument("--aminame", help="The ami for instances in the server group",
@@ -72,11 +69,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
     if not args.keypair:
         args.keypair = "{}-access".format(args.account)
         
-    securitygroups = [ 'sg_apps' ]
-    elbs = [ 'test' ]
+    securitygroups = '"sg_apps"'
+    elbs = '"test"'
     
     sginfo = {
             "appname": args.appname,
@@ -90,8 +88,8 @@ if __name__ == "__main__":
             "aminame": args.aminame,
             "elbs": elbs,
             "instancetype": args.instancetype,
-            "b64_userdata": args.b64_userdata,
+            "b64_userdata": args.b64_userdata
             }
 
-    sq = ServerGroup()
-    sq.upsert_servergroup(sginfo=sginfo)
+    sg = ServerGroup()
+    sg.upsert_servergroup(sginfo=sginfo)
