@@ -152,9 +152,6 @@ def main():
     parser.add_argument("--environment",
                         help="The application name to create",
                         required=True)
-    parser.add_argument("--subnet",
-                        help="The application name to create",
-                        required=True)
     args = parser.parse_args()
 
     if args.debug:
@@ -166,8 +163,7 @@ def main():
     appinfo = {'name': args.name,
                'vpc': args.vpc,
                'region': args.region,
-               'environment': args.environment,
-               'subnet': args.subnet, }
+               'environment': args.environment,}
 
     spinnakerapps = SpinnakerSecurityGroup(app_info=appinfo)
     sg_json = spinnakerapps.get_template(

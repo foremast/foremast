@@ -17,7 +17,7 @@
                     "type": "tcp"
                 }
             ],
-            "subnet": "{{ subnet }}",
+            "subnet": "none",
             "type": "upsertSecurityGroup",
             "user": "[anonymous]",
             "vpcId": "{{ vpc }}"
