@@ -1,83 +1,44 @@
 import requests
 import argparse
 import json
+import logging
+import sys
+import os
 from jinja2 import Template
 
-elb_json = '''
-{
-   "job":[
-      {
-         "stack":"{{ app_stack }}",
-         "isInternal":{{ isInternal }},
-         "credentials":"{{ env }}",
-        "region":"us-east-1",
-         "vpcId":"{{ vpc_id }}",
-         "healthCheckProtocol":"{{ health_protocol }}",
-         "healthCheckPort":{{ health_port }},
-         "healthCheckPath":"{{ health_path }}",
-         "healthTimeout":{{ health_timeout}},
-         "healthInterval":{{ health_interval }},
-         "healthyThreshold":{{ healthy_threshold }},
-         "unhealthyThreshold":{{ unhealthy_threshold }},
-         "regionZones":[
-            "us-east-1b",
-            "us-east-1c",
-            "us-east-1d",
-            "us-east-1e"
-         ],
-         "securityGroups":[
-            "{{ security_groups }}"
-         ],
-         "listeners":[
-            {
-               "internalProtocol":"{{ int_listener_protcol }}",
-               "internalPort":{{ int_listener_port }},
-               "externalProtocol":"{{ ext_listener_protocol}}",
-               "externalPort":{{ext_listener_port}}
-            }
-         ],
-         "name":"{{ elb_name }}",
-         "usePreferredZones":true,
-         "subnetType":"{{ subnet_type}}",
-         "healthCheck":"{{ hc_string }}",
-         "type":"upsertLoadBalancer",
-         "availabilityZones":{
-            "us-east-1":[
-               "us-east-1b",
-               "us-east-1c",
-               "us-east-1d",
-               "us-east-1e"
-            ]
-         },
-         "user":"[anonymous]"
-      }
-   ],
-   "application":"{{ app_name }}",
-   "description":"Create Load Balancer: {{ app_name }}-{{ app_stack }}"
-}
 
-'''
-class CreateELB:
-    '''
-    In: application, stack, internal/external, environments, healthcheck protocol, healthcheck path, healthcheck port,
-    health timeout, health Interval, healthy threshold, unhealthyThreshold, securityGroups, InternalListenrPort, internalLitenerProtocol,
-    externalListenerPrtocol, externalListenerProtocol, elbName,
-    '''
+class SpinnakerELB:
+
     def __init__(self):
-        return 'place holder'
+        self.curdir = os.path.dirname(os.path.realpath(__file__))
+        self.templatedir = "{}/../../templates".format(self.curdir)
+        with open(self.templatedir + '/elb_data_template.json', 'r') as self.elb_json_file:
+            self.elb_json = self.elb_json_file.read()
+        self.gate_url = "http://spinnaker.build.example.com:8084"
+        self.header = {'Content-Type': 'application/json', 'Accept': '*/*'}
 
     def get_vpc_id(self, account):
-        return 'palce holder'
+        url = self.gate_url + "/vpcs"
+        response = requests.get(url)
+        if response.ok:
+            for vpc in response.json():
+                if vpc['name'] == 'vpc' and vpc['account'] == account:
+                    return vpc['id']
+        else:
+            logging.error(response.text)
+            sys.exit(1)
 
-
-
-
+    def create_elb(self, json_data, app):
+        url = self.gate_url + '/applications/%s/tasks' %app
+        response = requests.post(url, data=json.dumps(json_data), headers=self.header)
+        print response.text
 
 
 #python create_elb.py --app testapp --stack teststack --elb_type internal --env prod,stage --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps,sg_offices --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name test_elb --elb_subnet internal --health_timeout=10 --health_interval=2 --healthy_threshold=4 --unhealthy_threshold=6
 
-
+#python create_elb.py --app dougtestapp --stack teststack --elb_type internal --env stage --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name dougtestapp-teststack --elb_subnet internal --health_timeout=10 --health_interval 2 --healthy_threshold 4 --unhealthy_threshold 6
 if __name__ == '__main__':
+    elb = SpinnakerELB()
     parser = argparse.ArgumentParser(description='Example with non-optional arguments')
 
     parser.add_argument('--app', action="store", help="application name", required=True)
@@ -98,29 +59,33 @@ if __name__ == '__main__':
     parser.add_argument('--ext_listener_protocol', action="store", help="external listener protocol", required=True, default="HTTP")
     parser.add_argument('--elb_name', action="store", help="elb name", required=True)
     parser.add_argument('--elb_subnet', action="store", help="elb subnet", required=True, default="internal")
-
     args = parser.parse_args()
-    print args.app, args.elb_name
-    template = Template(elb_json)
-    print template.render(app_stack=args.stack,
-                          app_name=args.app,
-                          isInternal='True',
-                          vpc_id='vpc-xxxx',
-                          health_protocol=args.health_protocol,
-                          health_port=args.health_port,
-                          health_path=args.health_path,
-                          health_timeout=args.health_timeout,
-                          health_interval=args.health_interval,
-                          unhealthy_threshold=args.unhealthy_threshold,
-                          healthy_threshold=args.healthy_threshold,
-                          security_groups=args.security_groups,
-                          int_listener_protcol=args.int_listener_protocol,
-                          ext_listener_protcol=args.ext_listener_protocol,
-                          int_listener_port=args.int_listener_port,
-                          ext_listener_port=args.ext_listener_port,
-                          elb_name=args.elb_name,
-                          elb_subnet=args.elb_subnet,
-                          hc_string='blah:700/health')
+    template = Template(elb.elb_json).render(app_stack=args.stack,
+                                            app_name=args.app,
+                                            env=args.env,
+                                            isInternal='true' if args.elb_type == 'internal' else 'false',
+                                            vpc_id=elb.get_vpc_id(args.env),
+                                            health_protocol=args.health_protocol,
+                                            health_port=args.health_port,
+                                            health_path=args.health_path,
+                                            health_timeout=args.health_timeout,
+                                            health_interval=args.health_interval,
+                                            unhealthy_threshold=args.unhealthy_threshold,
+                                            healthy_threshold=args.healthy_threshold,
+                                            security_groups=args.security_groups[0],
+                                            int_listener_protocol=args.int_listener_protocol,
+                                            ext_listener_protocol=args.ext_listener_protocol,
+                                            int_listener_port=args.int_listener_port,
+                                            ext_listener_port=args.ext_listener_port,
+                                            elb_name=args.elb_name,
+                                            subnet_type=args.elb_subnet,
+                                            elb_subnet=args.elb_subnet,
+                                            hc_string='HTTP:80/health')
+    print template
+    t = '''{"job":[{"stack":"teststack","detail":"detail","isInternal":true,"credentials":"stage","region":"us-east-1","vpcId":"vpc-xxxx","healthCheckProtocol":"HTTP","healthCheckPort":7001,"healthCheckPath":"/healthcheck","healthTimeout":5,"healthInterval":10,"healthyThreshold":10,"unhealthyThreshold":2,"regionZones":["us-east-1b","us-east-1c","us-east-1d","us-east-1e"],"securityGroups":["sg_apps"],"listeners":[{"internalProtocol":"HTTP","internalPort":7001,"externalProtocol":"HTTP","externalPort":80}],"name":"orchidtest-teststack-detail","usePreferredZones":true,"subnetType":"internal","healthCheck":"HTTP:7001/healthcheck","type":"upsertLoadBalancer","availabilityZones":{"us-east-1":["us-east-1b","us-east-1c","us-east-1d","us-east-1e"]},"user":"[anonymous]"}],"application":"orchidtest","description":"Create Load Balancer: orchidtest-teststack-detail"}'''
+    print t
+    elb.create_elb(t, args.app)
+
 
 
 
