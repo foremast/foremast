@@ -1,0 +1,50 @@
+{
+    "job": [
+        {
+        "application":"orchidtest",
+        "credentials":"stage",
+        "strategy":"",
+        "capacity": {
+            "min":1,
+            "max":1,
+            "desired":1 
+            },
+        "targetHealthyDeployPercentage":100,
+        "cooldown":10,
+        "healthCheckType":"ELB",
+        "healthCheckGracePeriod":600,
+        "instanceMonitoring":false,
+        "ebsOptimized":false,
+        "iamRole":"BaseIAMRole",
+        "terminationPolicies": [ "Default" ],
+        "availabilityZones": {
+            "us-east-1": [ 
+                "us-east-1b",
+                "us-east-1c",
+                "us-east-1d",
+                "us-east-1e" ] 
+                },
+        "keyPair":"stage-keypair",
+        "suspendedProcesses":[],
+        "securityGroups": [ "sg-xxxx" ],
+        "tags": { 
+            "app_group":"devops"
+            },
+        "subnetType":"internal",
+        "virtualizationType":"hvm",
+        "stack":"stack",
+        "freeFormDetails":"detail",
+        "amiName":"a_forrest_edge_spinnaker_v0.0.63_b63_ami-xxxx-02-23-19-09_1241fa18e1",
+        "reason":"some comments here <b> HTML is ok </b>",
+        "loadBalancers": [ "orchidtest-teststack-detail" ],
+        "instanceType":"t2.nano",
+        "base64UserData":"userdata-comes-here",
+        "type":"createServerGroup",
+        "cloudProvider":"aws",
+        "account":"stage",
+        "user":"[anonymous]"
+        }
+        ],
+    "application":"orchidtest",
+    "description":"Create New Server Group in cluster orchidtest-stack-detail"
+}
