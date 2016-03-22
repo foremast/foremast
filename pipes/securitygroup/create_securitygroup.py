@@ -86,26 +86,44 @@ class SpinnakerSecurityGroup:
             logging.info("Successfully created {} application".format(self.appname))
             return
 
-if __name__ == "__main__":
-    #Setup parser
+
+def main():
+    """Run newer stuffs."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--name", help="The application name to create",
+    parser.add_argument("--name",
+                        help="The application name to create",
                         required=True)
-    parser.add_argument("--email", help="Email address to associate with application",
-                        default="PS-DevOpsTooling@example.com")
-    parser.add_argument("--project", help="The project to associaste with application",
-                        default="None")
-    parser.add_argument("--repo", help="The repo to associaste with application",
-                        default="None")
+    parser.add_argument("--region",
+                        help="The application name to create",
+                        required=True)
+    parser.add_argument("--vpc",
+                        help="The application name to create",
+                        required=True)
+    parser.add_argument("--environment",
+                        help="The application name to create",
+                        required=True)
+    parser.add_argument("--subnet",
+                        help="The application name to create",
+                        required=True)
+
     args = parser.parse_args()
 
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     #Dictionary containing application info. This is passed to the class for processing
-    appinfo = { "name": args.name,
-                "email": args.email,
-                "project": args.project,
-                "repo": args.repo }
+    appinfo = {'name': args.name,
+               'vpc': args.vpc,
+               'region': args.region,
+               'environment': args.environment,
+               'subnet': args.subnet, }
 
     spinnakerapps = SpinnakerSecurityGroup()
-    spinnakerapps.create_security_group(appinfo=appinfo)
+    sg_json = spinnakerapps.get_template(
+        template_name='securitygroup_template.json',
+        template_dict=appinfo)
+    print('SG JSON:\n', sg_json)
+    # spinnakerapps.create_security_group(appinfo=appinfo)
+
+
+if __name__ == "__main__":
+    main()
