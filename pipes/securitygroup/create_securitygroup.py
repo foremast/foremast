@@ -107,6 +107,8 @@ class SpinnakerSecurityGroup:
 def main():
     """Run newer stuffs."""
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+    log = logging.getLogger(__name__)
+    log.setLevel(logging.DEBUG)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--name",
@@ -124,8 +126,9 @@ def main():
     parser.add_argument("--subnet",
                         help="The application name to create",
                         required=True)
-
     args = parser.parse_args()
+
+    log.debug('Parsed arguments: %s', args)
 
     #Dictionary containing application info. This is passed to the class for processing
     appinfo = {'name': args.name,
