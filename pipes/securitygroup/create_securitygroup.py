@@ -18,6 +18,10 @@ class SpinnakerApplicationListError(Exception):
     pass
 
 
+class SpinnakerSecurityGroupCreationFailed(Exception):
+    pass
+
+
 class SpinnakerSecurityGroup:
     """Manipulate Spinnaker Security Groups.
 
@@ -29,6 +33,7 @@ class SpinnakerSecurityGroup:
         self.log = logging.getLogger(__name__)
 
         self.app_name = self.app_exists(app_name=app_info['name'])
+        self.app_info = app_info
 
         self.here = os.path.dirname(os.path.realpath(__file__))
 
@@ -99,26 +104,29 @@ class SpinnakerSecurityGroup:
         logging.info('Application %s does not exist ... exiting', app_name))
         raise SpinnakerAppNotFound('Application "{0}" not found.'.format(app_name))
 
-    def create_security_group(self, appinfo=None):
-        """Sends a POST to spinnaker to create a new application."""
-        #setup class variables for processing
-        self.appinfo = appinfo
+    def create_security_group(self):
+        """Sends a POST to spinnaker to create a new security group."""
 
-        if not (self.app_exists()):
-            url = "{}/applications/{}/tasks".format(self.gate_url,
-                                                    self.app_name)
-            jsondata = self.setup_appdata()
-            r = requests.post(url,
-                              data=json.dumps(jsondata),
-                              headers=self.header)
+        app_name = self.app_name
 
-            if r.status_code != 200:
-                logging.error("Failed to create app: {}".format(r.text))
-                sys.exit(1)
+        url = "{0}/applications/{1}/tasks".format(self.gate_url,
+                                                self.app_name)
 
-            logging.info("Successfully created {} application".format(
-                self.app_name))
-            return
+        secgroup_json = self.get_template(
+            template_name='securitygroup_template.json',
+            template_dict=self.app_info,
+        )
+
+        r = requests.post(url,
+                          data=json.dumps(secgroup_json),
+                          headers=self.header)
+
+        if not r.ok:
+            logging.error('Failed to create app: %s', r.text))
+            raise SpinnakerSecurityGroupCreationFailed(r.text)
+
+        logging.info('Successfully created %s security group', self.app_name)
+        return
 
 
 def main():
