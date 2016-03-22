@@ -62,7 +62,6 @@ class SpinnakerSecurityGroup:
             logging.error(r.text)
             sys.exit(1)
 
-
     def app_exists(self):
         """Checks to see if application already exists."""
         self.get_apps()
@@ -72,7 +71,6 @@ class SpinnakerSecurityGroup:
                 return True
         logging.info('{} does not exist...creating'.format(self.appname))
         return False
-
 
     def create_security_group(self, appinfo=None):
         """Sends a POST to spinnaker to create a new application."""
