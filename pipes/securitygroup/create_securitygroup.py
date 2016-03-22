@@ -32,14 +32,11 @@ class SpinnakerSecurityGroup:
     def __init__(self, app_info):
         self.log = logging.getLogger(__name__)
 
+        self.gate_url = self.config['spinnaker']['gate_url']
         self.app_name = self.app_exists(app_name=app_info['name'])
         self.app_info = app_info
-
         self.here = os.path.dirname(os.path.realpath(__file__))
-
         self.config = self.get_configs()
-
-        self.gate_url = self.config['spinnaker']['gate_url']
 
         self.header = {'content-type': 'application/json'}
 
@@ -52,6 +49,8 @@ class SpinnakerSecurityGroup:
         config = configparser.ConfigParser()
         configpath = "{}/../../configs/spinnaker.conf".format(self.here)
         config.read(configpath)
+
+        self.log.debug('Configuration sections found: %s', config.sections())
         return config
 
     def get_template(self, template_name='', template_dict=None):
@@ -98,11 +97,12 @@ class SpinnakerSecurityGroup:
         app_name = app_name.lower()
         for app in apps:
             if app['name'].lower() == app_name:
-                logging.info('Application %s found!', app_name))
+                logging.info('Application %s found!', app_name)
                 return app_name
 
-        logging.info('Application %s does not exist ... exiting', app_name))
-        raise SpinnakerAppNotFound('Application "{0}" not found.'.format(app_name))
+        logging.info('Application %s does not exist ... exiting', app_name)
+        raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
+            app_name))
 
     def create_security_group(self):
         """Sends a POST to spinnaker to create a new security group."""
@@ -131,11 +131,14 @@ class SpinnakerSecurityGroup:
 
 def main():
     """Run newer stuffs."""
-    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s %(message)s')
     log = logging.getLogger(__name__)
-    log.setLevel(logging.DEBUG)
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('-d',
+                        '--debug',
+                        action='store_true',
+                        help='DEBUG output')
     parser.add_argument("--name",
                         help="The application name to create",
                         required=True)
@@ -152,6 +155,9 @@ def main():
                         help="The application name to create",
                         required=True)
     args = parser.parse_args()
+
+    if args.debug:
+        log.setLevel(logging.DEBUG)
 
     log.debug('Parsed arguments: %s', args)
 
