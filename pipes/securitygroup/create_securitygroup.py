@@ -25,10 +25,10 @@ class SpinnakerSecurityGroup:
         app_name: Str of application name add Security Group to.
     """
 
-    def __init__(self, app_name=''):
+    def __init__(self, app_info):
         self.log = logging.getLogger(__name__)
 
-        self.app_name = self.app_exists(app_name=app_name)
+        self.app_name = self.app_exists(app_name=app_info['name'])
 
         self.here = os.path.dirname(os.path.realpath(__file__))
 
@@ -154,7 +154,7 @@ def main():
                'environment': args.environment,
                'subnet': args.subnet, }
 
-    spinnakerapps = SpinnakerSecurityGroup(app_name=args.name)
+    spinnakerapps = SpinnakerSecurityGroup(app_info=appinfo)
     sg_json = spinnakerapps.get_template(
         template_name='securitygroup_template.json',
         template_dict=appinfo)
