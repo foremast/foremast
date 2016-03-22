@@ -47,8 +47,8 @@ class SpinnakerSecurityGroup:
         rendered_json = json.loads(template.render(**template_dict))
         return rendered_json
 
-    '''Gets all applications from spinnaker'''
     def get_apps(self):
+        """Gets all applications from spinnaker."""
         url = self.gate_url + "/applications"
         r = requests.get(url)
         if r.status_code == 200:
@@ -57,8 +57,9 @@ class SpinnakerSecurityGroup:
             logging.error(r.text)
             sys.exit(1)
 
-    '''Checks to see if application already exists'''
+
     def app_exists(self):
+        """Checks to see if application already exists."""
         self.get_apps()
         for app in self.apps:
             if app['name'].lower() == self.appname.lower():
@@ -67,8 +68,9 @@ class SpinnakerSecurityGroup:
         logging.info('{} does not exist...creating'.format(self.appname))
         return False
 
-    '''Sends a POST to spinnaker to create a new application'''
+
     def create_security_group(self, appinfo=None):
+        """Sends a POST to spinnaker to create a new application."""
         #setup class variables for processing
         self.appinfo = appinfo
         if appinfo:
