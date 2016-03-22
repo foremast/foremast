@@ -127,7 +127,7 @@ class SpinnakerSecurityGroup:
             raise SpinnakerSecurityGroupCreationFailed(r.text)
 
         logging.info('Successfully created %s security group', self.app_name)
-        return
+        return True
 
 
 def main():
