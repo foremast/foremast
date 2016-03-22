@@ -30,6 +30,22 @@ class SpinnakerSecurityGroup:
         config.read(configpath)
         return config
 
+    def get_template(self, template_name, **kwargs):
+        """Get Jinja2 Template _template_name_.
+
+        Args:
+            template_name: Str of template name to retrieve.
+            kwargs: Keyword arguments to use for template rendering.
+
+        Returns:
+            Dict of rendered JSON to send to Spinnaker.
+        """
+        templatedir = "{}/../../templates".format(self.here)
+        jinja_env = Environment(loader=FileSystemLoader(templatedir))
+        template = jinja_env.get_template(template_name)
+        rendered_json = json.loads(template.render(**kwargs))
+        return rendered_json
+
     '''Gets all applications from spinnaker'''
     def get_apps(self):
         url = self.gate_url + "/applications"
@@ -49,14 +65,6 @@ class SpinnakerSecurityGroup:
                 return True
         logging.info('{} does not exist...creating'.format(self.appname))
         return False
-
-    '''Uses jinja2 to setup POST data for application creation'''
-    def setup_appdata(self):
-        templatedir = "{}/../../templates".format(self.here)
-        jinjaenv = Environment(loader=FileSystemLoader(templatedir))
-        template = jinjaenv.get_template("app_data_template.json")
-        rendered_json = json.loads(template.render(appinfo=self.appinfo))
-        return rendered_json
 
     '''Sends a POST to spinnaker to create a new application'''
     def create_security_group(self, appinfo=None):
