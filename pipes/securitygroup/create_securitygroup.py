@@ -4,7 +4,6 @@ import configparser
 import json
 import logging
 import os
-import sys
 
 from jinja2 import Environment, FileSystemLoader
 import requests
@@ -107,9 +106,6 @@ class SpinnakerSecurityGroup:
 
     def create_security_group(self):
         """Sends a POST to spinnaker to create a new security group."""
-
-        app_name = self.app_name
-
         url = "{0}/applications/{1}/tasks".format(self.gate_url,
                                                 self.app_name)
 
