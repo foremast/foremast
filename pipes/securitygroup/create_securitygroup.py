@@ -11,12 +11,24 @@ import requests
 
 class SpinnakerSecurityGroup:
     def __init__(self):
-        config = configparser.ConfigParser()
         self.here = os.path.dirname(os.path.realpath(__file__))
+
+        self.config = self.get_configs()
+
+        self.gate_url = self.config['spinnaker']['gate_url']
+
+        self.header = {'content-type': 'application/json'}
+
+    def get_configs(self):
+        """Get main configuration.
+
+        Returns:
+            configparser.ConfigParser object with configuration loaded.
+        """
+        config = configparser.ConfigParser()
         configpath = "{}/../../configs/spinnaker.conf".format(self.here)
         config.read(configpath)
-        self.gate_url = config['spinnaker']['gate_url']
-        self.header = {'content-type': 'application/json'}
+        return config
 
     '''Gets all applications from spinnaker'''
     def get_apps(self):
