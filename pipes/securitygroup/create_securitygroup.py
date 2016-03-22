@@ -68,7 +68,7 @@ class SpinnakerSecurityGroup:
 
     def get_apps(self):
         """Gets all applications from spinnaker."""
-        url = self.gate_url + "/applications"
+        url = '{0}/applications'.format(self.gate_url)
         r = requests.get(url)
         if r.ok:
             return r.json()
