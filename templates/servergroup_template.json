@@ -1,21 +1,21 @@
 {
     "job": [
         {
-        "application":"orchidtest",
-        "credentials":"stage",
-        "strategy":"",
+        "application": "{{ sginfo.appname }}",
+        "credentials": "{{ sginfo.account }}",
+        "strategy": "",
         "capacity": {
-            "min":1,
-            "max":1,
-            "desired":1 
+            "min": {{ sginfo.min_capacity }},
+            "max": {{ sginfo.max_capacity }},
+            "desired": {{ sginfo.desired_capacity }}
             },
         "targetHealthyDeployPercentage":100,
-        "cooldown":10,
-        "healthCheckType":"ELB",
-        "healthCheckGracePeriod":600,
-        "instanceMonitoring":false,
-        "ebsOptimized":false,
-        "iamRole":"BaseIAMRole",
+        "cooldown": 10,
+        "healthCheckType": "ELB",
+        "healthCheckGracePeriod": 600,
+        "instanceMonitoring": false,
+        "ebsOptimized": false,
+        "iamRole": "{{ sginfo.iamrole }}",
         "terminationPolicies": [ "Default" ],
         "availabilityZones": {
             "us-east-1": [ 
@@ -24,27 +24,25 @@
                 "us-east-1d",
                 "us-east-1e" ] 
                 },
-        "keyPair":"stage-keypair",
-        "suspendedProcesses":[],
-        "securityGroups": [ "sg-xxxx" ],
-        "tags": { 
-            "app_group":"devops"
-            },
-        "subnetType":"internal",
-        "virtualizationType":"hvm",
-        "stack":"stack",
-        "freeFormDetails":"detail",
-        "amiName":"a_forrest_edge_spinnaker_v0.0.63_b63_ami-xxxx-02-23-19-09_1241fa18e1",
-        "reason":"some comments here <b> HTML is ok </b>",
-        "loadBalancers": [ "orchidtest-teststack-detail" ],
-        "instanceType":"t2.nano",
-        "base64UserData":"userdata-comes-here",
-        "type":"createServerGroup",
-        "cloudProvider":"aws",
-        "account":"stage",
-        "user":"[anonymous]"
+        "keyPair": "{{ sginfo.keypair }}",
+        "suspendedProcesses": [],
+        "securityGroups": {{ sginfo.securitygroups }},
+        "tags": {{ sginfo.tags }},
+        "subnetType": "internal",
+        "virtualizationType": "hvm",
+        "stack": "stack",
+        "freeFormDetails": "detail",
+        "amiName": "{{ sginfo.aminame }}",
+        "reason": "{{ sginfo.sgreason }}",
+        "loadBalancers": {{ sginfo.elbs }},
+        "instanceType": "{{ sginfo.instancetype }}",
+        "base64UserData": "{{ sginfo.b64_userdata }}",
+        "type": "createServerGroup",
+        "cloudProvider": "aws",
+        "account": "{{ sginfo.account }}",
+        "user": "Jenkins"
         }
         ],
-    "application":"orchidtest",
-    "description":"Create New Server Group in cluster orchidtest-stack-detail"
+    "application": "{{ sginfo.appname }}",
+    "description":"Create New Server Group in cluster {{ sginfo.appname }}"
 }
