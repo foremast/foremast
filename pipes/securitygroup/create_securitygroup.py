@@ -19,9 +19,17 @@ class SpinnakerApplicationListError(Exception):
 
 
 class SpinnakerSecurityGroup:
-    """Manipulate Spinnaker Security Groups."""
+    """Manipulate Spinnaker Security Groups.
 
-    def __init__(self):
+    Args:
+        app_name: Str of application name add Security Group to.
+    """
+
+    def __init__(self, app_name=''):
+        self.log = logging.getLogger(__name__)
+
+        self.app_name = self.app_exists(app_name=app_name)
+
         self.here = os.path.dirname(os.path.realpath(__file__))
 
         self.config = self.get_configs()
@@ -72,7 +80,7 @@ class SpinnakerSecurityGroup:
         """Checks to see if application already exists.
 
         Args:
-            app_name: Str of application name
+            app_name: Str of application name to check.
 
         Returns:
             Str of application name
@@ -91,29 +99,34 @@ class SpinnakerSecurityGroup:
         logging.info('Application %s does not exist ... exiting', app_name))
         raise SpinnakerAppNotFound('Application "{0}" not found.'.format(app_name))
 
-
     def create_security_group(self, appinfo=None):
         """Sends a POST to spinnaker to create a new application."""
         #setup class variables for processing
         self.appinfo = appinfo
-        if appinfo:
-            self.appname = appinfo['name']
 
         if not (self.app_exists()):
-            url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
+            url = "{}/applications/{}/tasks".format(self.gate_url,
+                                                    self.app_name)
             jsondata = self.setup_appdata()
-            r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
+            r = requests.post(url,
+                              data=json.dumps(jsondata),
+                              headers=self.header)
 
             if r.status_code != 200:
                 logging.error("Failed to create app: {}".format(r.text))
                 sys.exit(1)
 
-            logging.info("Successfully created {} application".format(self.appname))
+            logging.info("Successfully created {} application".format(
+                self.app_name))
             return
 
 
 def main():
     """Run newer stuffs."""
+    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+    log = logging.getLogger(__name__)
+    log.setLevel(logging.DEBUG)
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--name",
                         help="The application name to create",
@@ -130,10 +143,9 @@ def main():
     parser.add_argument("--subnet",
                         help="The application name to create",
                         required=True)
-
     args = parser.parse_args()
 
-    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+    log.debug('Parsed arguments: %s', args)
 
     #Dictionary containing application info. This is passed to the class for processing
     appinfo = {'name': args.name,
@@ -142,7 +154,7 @@ def main():
                'environment': args.environment,
                'subnet': args.subnet, }
 
-    spinnakerapps = SpinnakerSecurityGroup()
+    spinnakerapps = SpinnakerSecurityGroup(app_name=args.name)
     sg_json = spinnakerapps.get_template(
         template_name='securitygroup_template.json',
         template_dict=appinfo)
