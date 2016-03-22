@@ -68,6 +68,7 @@ class SpinnakerSecurityGroup:
         template = jinja_env.get_template(template_name)
 
         rendered_json = json.loads(template.render(**template_dict))
+        self.log.debug('Rendered template: %s', rendered_json)
         return rendered_json
 
     def get_apps(self):
