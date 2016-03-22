@@ -9,7 +9,10 @@ import sys
 from jinja2 import Environment, FileSystemLoader
 import requests
 
+
 class SpinnakerSecurityGroup:
+    """Manipulate Spinnaker Security Groups."""
+
     def __init__(self):
         self.here = os.path.dirname(os.path.realpath(__file__))
 
