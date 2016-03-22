@@ -12,7 +12,7 @@
             "securityGroupIngress": [
                 {
                     "endPort": 8080,
-                    "name": "app_all",
+                    "name": "sg_apps",
                     "startPort": 8080,
                     "type": "tcp"
                 }
