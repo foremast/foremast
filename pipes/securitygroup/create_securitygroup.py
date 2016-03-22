@@ -28,11 +28,10 @@ class SpinnakerSecurityGroup:
     def __init__(self, app_name=''):
         self.log = logging.getLogger(__name__)
 
-        self.app_name = self.app_exists(app_name=app_name)
-
         self.here = os.path.dirname(os.path.realpath(__file__))
-
         self.config = self.get_configs()
+
+        self.app_name = self.app_exists(app_name=app_name)
 
         self.gate_url = self.config['spinnaker']['gate_url']
 
