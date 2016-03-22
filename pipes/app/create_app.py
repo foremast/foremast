@@ -62,7 +62,7 @@ class SpinnakerApp:
             jsondata = self.setup_appdata()
             r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
             
-            if r.status_code != 200:
+            if not r.ok:
                 logging.error("Failed to create app: {}".format(r.text))
                 sys.exit(1)
 
