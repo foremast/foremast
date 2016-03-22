@@ -1,0 +1,48 @@
+  { "job":
+    [{
+        "type":"createApplication",
+        "account":"dev",
+        "application":{
+            "cloudProviders":"aws",
+            "name": "{{ appinfo.name }}",
+            "email": "{{ appinfo.email }}",
+            "repoType": "github",
+            "repoProjectKey": "{{ appinfo.project }}",
+            "repoSlug": "{{ appinfo.repo }}",
+            "platformHealthOnlyShowOverride": false
+          },
+      "user":"Jenkins"
+      },
+      {
+        "type":"createApplication",
+        "account":"stage",
+        "application":{
+            "cloudProviders":"aws",
+            "name": "{{ appinfo.name }}",
+            "email": "{{ appinfo.email }}",
+            "repoType": "github",
+            "repoProjectKey": "{{ appinfo.project }}",
+            "repoSlug": "{{ appinfo.repo }}",
+            "platformHealthOnlyShowOverride": false
+              },
+        "user":"Jenkins"
+       },
+       {
+        "type":"createApplication",
+        "account":"prod",
+        "application":{
+            "cloudProviders":"aws",
+            "name": "{{ appinfo.name }}",
+            "email": "{{ appinfo.email }}",
+            "repoType": "github",
+            "repoProjectKey": "{{ appinfo.project }}",
+            "repoSlug": "{{ appinfo.repo }}",
+            "platformHealthOnlyShowOverride": false
+              },
+        "user":"Jenkins"
+          }
+      ],
+"application": "{{ appinfo.name }}",
+"description": "Created application {{ appinfo.name }}"
+}
+

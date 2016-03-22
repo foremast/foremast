@@ -3,18 +3,23 @@
 #A script for creating an application in spinnaker.
 #Simply looks to see if the application already exists, if not, creates
 
+import argparse
+import configparser
 import json
 import logging
 import os
 import sys
-import argparse
 
 from jinja2 import Environment, FileSystemLoader
 import requests
 
 class SpinnakerApp:
     def __init__(self):
-        self.gate_url = "http://spinnaker.build.example.com:8084"
+        config = configparser.ConfigParser()
+        self.here = os.path.dirname(os.path.realpath(__file__))
+        configpath = "{}/../../configs/spinnaker.conf".format(self.here)
+        config.read(configpath)
+        self.gate_url = config['spinnaker']['gate_url']
         self.header = {'content-type': 'application/json'}
 
     '''Gets all applications from spinnaker'''
@@ -39,8 +44,7 @@ class SpinnakerApp:
             
     '''Uses jinja2 to setup POST data for application creation'''
     def setup_appdata(self):
-        curdir = os.path.dirname(os.path.realpath(__file__))
-        templatedir = "{}/../../templates".format(curdir)
+        templatedir = "{}/../../templates".format(self.here)
         jinjaenv = Environment(loader=FileSystemLoader(templatedir))
         template = jinjaenv.get_template("app_data_template.json")
         rendered_json = json.loads(template.render(appinfo=self.appinfo))
@@ -58,7 +62,7 @@ class SpinnakerApp:
             jsondata = self.setup_appdata()
             r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
             
-            if r.status_code != 200:
+            if not r.ok:
                 logging.error("Failed to create app: {}".format(r.text))
                 sys.exit(1)
 
@@ -76,8 +80,6 @@ if __name__ == "__main__":
                         default="None")
     parser.add_argument("--repo", help="The repo to associaste with application",
                         default="None")
-    parser.add_argument("--description", help="The application description",
-                        default="None")
     args = parser.parse_args()
 
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
@@ -86,8 +88,7 @@ if __name__ == "__main__":
     appinfo = { "name": args.name, 
                 "email": args.email,
                 "project": args.project, 
-                "repo": args.repo, 
-                "description": args.description } 
+                "repo": args.repo }
 
     spinnakerapps = SpinnakerApp()
     spinnakerapps.create_app(appinfo=appinfo)
