@@ -27,7 +27,7 @@
         "keyPair": "{{ sginfo.keypair }}",
         "suspendedProcesses": [],
         "securityGroups": {{ sginfo.securitygroups }},
-        "tags": {{ sginfo.tags }},
+        "tags": {},
         "subnetType": "internal",
         "virtualizationType": "hvm",
         "stack": "stack",
