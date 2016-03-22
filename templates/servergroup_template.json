@@ -1,0 +1,48 @@
+{
+    "job": [
+        {
+        "application": "{{ sginfo.appname }}",
+        "credentials": "{{ sginfo.account }}",
+        "strategy": "",
+        "capacity": {
+            "min": {{ sginfo.min_capacity }},
+            "max": {{ sginfo.max_capacity }},
+            "desired": {{ sginfo.desired_capacity }}
+            },
+        "targetHealthyDeployPercentage":100,
+        "cooldown": 10,
+        "healthCheckType": "ELB",
+        "healthCheckGracePeriod": 600,
+        "instanceMonitoring": false,
+        "ebsOptimized": false,
+        "iamRole": "{{ sginfo.iamrole }}",
+        "terminationPolicies": [ "Default" ],
+        "availabilityZones": {
+            "us-east-1": [ 
+                "us-east-1b",
+                "us-east-1c",
+                "us-east-1d",
+                "us-east-1e" ] 
+                },
+        "keyPair": "{{ sginfo.keypair }}",
+        "suspendedProcesses": [],
+        "securityGroups": {{ sginfo.securitygroups }},
+        "tags": {},
+        "subnetType": "internal",
+        "virtualizationType": "hvm",
+        "stack": "{{ sginfo.appname }}",
+        "freeFormDetails": "detail",
+        "amiName": "{{ sginfo.aminame }}",
+        "reason": "",
+        "loadBalancers": {{ sginfo.elbs }},
+        "instanceType": "{{ sginfo.instancetype }}",
+        "base64UserData": "{{ sginfo.b64_userdata }}",
+        "type": "createServerGroup",
+        "cloudProvider": "aws",
+        "account": "{{ sginfo.account }}",
+        "user": "Jenkins"
+        }
+        ],
+    "application": "{{ sginfo.appname }}",
+    "description":"Create New Server Group in cluster {{ sginfo.appname }}"
+}
