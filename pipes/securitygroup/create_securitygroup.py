@@ -47,6 +47,8 @@ class SpinnakerSecurityGroup:
         config = configparser.ConfigParser()
         configpath = "{}/../../configs/spinnaker.conf".format(self.here)
         config.read(configpath)
+
+        self.log.debug('Configurations found: %s', config)
         return config
 
     def get_template(self, template_name='', template_dict=None):
@@ -124,11 +126,14 @@ class SpinnakerSecurityGroup:
 
 def main():
     """Run newer stuffs."""
-    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s %(message)s')
     log = logging.getLogger(__name__)
-    log.setLevel(logging.DEBUG)
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('-d',
+                        '--debug',
+                        action='store_true',
+                        help='DEBUG output')
     parser.add_argument("--name",
                         help="The application name to create",
                         required=True)
@@ -145,6 +150,9 @@ def main():
                         help="The application name to create",
                         required=True)
     args = parser.parse_args()
+
+    if args.debug:
+        log.setLevel(logging.DEBUG)
 
     log.debug('Parsed arguments: %s', args)
 
