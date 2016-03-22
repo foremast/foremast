@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-
-#A script for creating an application in spinnaker.
-#Simply looks to see if the application already exists, if not, creates
-
+"""Create Security Groups for Spinnaker Pipelines."""
 import argparse
 import configparser
 import json
@@ -41,7 +37,7 @@ class SpinnakerSecurityGroup:
                 return True
         logging.info('{} does not exist...creating'.format(self.appname))
         return False
-            
+
     '''Uses jinja2 to setup POST data for application creation'''
     def setup_appdata(self):
         templatedir = "{}/../../templates".format(self.here)
@@ -61,7 +57,7 @@ class SpinnakerSecurityGroup:
             url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
             jsondata = self.setup_appdata()
             r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
-            
+
             if r.status_code != 200:
                 logging.error("Failed to create app: {}".format(r.text))
                 sys.exit(1)
@@ -85,11 +81,10 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     #Dictionary containing application info. This is passed to the class for processing
-    appinfo = { "name": args.name, 
+    appinfo = { "name": args.name,
                 "email": args.email,
-                "project": args.project, 
+                "project": args.project,
                 "repo": args.repo }
 
     spinnakerapps = SpinnakerSecurityGroup()
     spinnakerapps.create_security_group(appinfo=appinfo)
-
