@@ -10,6 +10,14 @@ from jinja2 import Environment, FileSystemLoader
 import requests
 
 
+class SpinnakerAppNotFound(Exception):
+    pass
+
+
+class SpinnakerApplicationListError(Exception):
+    pass
+
+
 class SpinnakerSecurityGroup:
     """Manipulate Spinnaker Security Groups."""
 
@@ -54,22 +62,34 @@ class SpinnakerSecurityGroup:
         """Gets all applications from spinnaker."""
         url = self.gate_url + "/applications"
         r = requests.get(url)
-        if r.status_code == 200:
-            self.apps = r.json()
+        if r.ok:
+            return r.json()
         else:
             logging.error(r.text)
-            sys.exit(1)
+            raise SpinnakerApplicationListError(r.text)
 
+    def app_exists(self, app_name):
+        """Checks to see if application already exists.
 
-    def app_exists(self):
-        """Checks to see if application already exists."""
-        self.get_apps()
-        for app in self.apps:
-            if app['name'].lower() == self.appname.lower():
-                logging.info('{} app already exists'.format(self.appname))
-                return True
-        logging.info('{} does not exist...creating'.format(self.appname))
-        return False
+        Args:
+            app_name: Str of application name
+
+        Returns:
+            Str of application name
+
+        Raises:
+            SpinnakerAppNotFound
+        """
+
+        apps = self.get_apps()
+        app_name = app_name.lower()
+        for app in apps:
+            if app['name'].lower() == app_name:
+                logging.info('Application %s found!', app_name))
+                return app_name
+
+        logging.info('Application %s does not exist ... exiting', app_name))
+        raise SpinnakerAppNotFound('Application "{0}" not found.'.format(app_name))
 
 
     def create_security_group(self, appinfo=None):
