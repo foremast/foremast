@@ -93,11 +93,12 @@ class SpinnakerSecurityGroup:
         app_name = app_name.lower()
         for app in apps:
             if app['name'].lower() == app_name:
-                logging.info('Application %s found!', app_name))
+                logging.info('Application %s found!', app_name)
                 return app_name
 
-        logging.info('Application %s does not exist ... exiting', app_name))
-        raise SpinnakerAppNotFound('Application "{0}" not found.'.format(app_name))
+        logging.info('Application %s does not exist ... exiting', app_name)
+        raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
+            app_name))
 
     def create_security_group(self, appinfo=None):
         """Sends a POST to spinnaker to create a new application."""
