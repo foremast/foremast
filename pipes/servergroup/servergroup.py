@@ -20,6 +20,27 @@ class ServerGroup:
         config.read(configpath)
         self.gate_url = config['spinnaker']['gate_url'] 
 
+    def setup_sgdata(self):
+        templatedir = "{}/../../templates".format(self.here)
+        jinjaenv = Environment(loader=FileSystemLoader(templatedir))
+        template = jinjaenv.get_template("app_data_template.json")
+        rendered_json = json.loads(template.render(sginfo=self.sginfo))
+        return rendered_json
+
+    def upsert_servergroup(sginfo=None):
+        #setup class variables for processing
+        self.sginfo = sginfo
+
+        url = "{}/applications/{}/tasks".format(self.gate_url, self.sginfo['appname'])
+        jsondata = self.setup_sgdata()
+        response = requests.post(url, data=json.dumps(jsondata), headers=self.header)
+        
+        if not response.ok:
+            logging.error("Failed to create server group: {}".format(r.text))
+            sys.exit(1)
+
+        logging.info("Successfully created {} server group".format(self.appname))
+        return
 
 
 def keypair_name(account=None):
@@ -53,7 +74,24 @@ if __name__ == "__main__":
 
     if not args.keypair:
         args.keypair = "{}-access".format(args.account)
+        
+    securitygroups = [ 'sg_apps' ]
+    elbs = [ 'test' ]
     
     sginfo = {
+            "appname": args.appname,
+            "account": args.account,
+            "min_capacity": args.min_capacity,
+            "max_capacity": args.max_capacity,
+            "desired_capacity": args.desired_capacity,
+            "iamrole": args.iamrole,
+            "keypair": args.keypair,
+            "securitygroups": securitygroups,
+            "aminame": args.aminame,
+            "elbs": elbs,
+            "instancetype": args.instancetype,
+            "b64_userdata": args.b64_userdata,
             }
 
+    sq = ServerGroup()
+    sq.upsert_servergroup(sginfo=sginfo)
