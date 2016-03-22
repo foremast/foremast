@@ -13,12 +13,9 @@ from jinja2 import Environment, FileSystemLoader
 import requests
 
 class SpinnakerApp:
-    def __init__(self, appinfo=None):
+    def __init__(self):
         self.gate_url = "http://spinnaker.build.example.com:8084"
         self.header = {'content-type': 'application/json'}
-        self.appinfo = appinfo
-        if appinfo:
-            self.appname = appinfo['name']
 
     '''Gets all applications from spinnaker'''
     def get_apps(self):
@@ -40,23 +37,32 @@ class SpinnakerApp:
         logging.info('{} does not exist...creating'.format(self.appname))
         return False
             
-    '''Uses jinja2 to setup POST data for appliucation creation'''
+    '''Uses jinja2 to setup POST data for application creation'''
     def setup_appdata(self):
         curdir = os.path.dirname(os.path.realpath(__file__))
         templatedir = "{}/../../templates".format(curdir)
         jinjaenv = Environment(loader=FileSystemLoader(templatedir))
         template = jinjaenv.get_template("app_data_template.json")
-        print(template.render(appinfo=appinfo))
-
+        rendered_json = json.loads(template.render(appinfo=self.appinfo))
+        return rendered_json
 
     '''Sends a POST to spinnaker to create a new application'''
-    def create_app(self):
+    def create_app(self, appinfo=None):
+        #setup class variables for processing
+        self.appinfo = appinfo
+        if appinfo:
+            self.appname = appinfo['name']
+
         if not (self.app_exists()):
             url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
-            self.setup_appdata()
-            #data = json.dumps(self.app_dict)
-            #r = requests.post(url, data=data, headers=self.header)
-            #print(r.text)
+            jsondata = self.setup_appdata()
+            r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
+            
+            if r.status_code != 200:
+                logging.error("Failed to create app: {}".format(r.text))
+                sys.exit(1)
+
+            logging.info("Successfully created {} application".format(self.appname))
             return
 
 if __name__ == "__main__":
@@ -72,15 +78,9 @@ if __name__ == "__main__":
                         default="None")
     parser.add_argument("--description", help="The application description",
                         default="None")
-    parser.add_argument("-d", "--debug", action="store_true",
-                        help="Turns on full debugging", default=True)
     args = parser.parse_args()
 
-    #Sets logging level
-    if args.debug:
-        logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
-    else:
-        logging.basicConfig(format='%(asctime)s %(message)s', level=logging.ERROR)
+    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     #Dictionary containing application info. This is passed to the class for processing
     appinfo = { "name": args.name, 
@@ -89,6 +89,6 @@ if __name__ == "__main__":
                 "repo": args.repo, 
                 "description": args.description } 
 
-    spinnakerapps = SpinnakerApp(appinfo=appinfo)
-    spinnakerapps.create_app()
+    spinnakerapps = SpinnakerApp()
+    spinnakerapps.create_app(appinfo=appinfo)
 
