@@ -47,7 +47,7 @@ class SpinnakerSecurityGroup:
         configpath = "{}/../../configs/spinnaker.conf".format(self.here)
         config.read(configpath)
 
-        self.log.debug('Configurations found: %s', config)
+        self.log.debug('Configuration sections found: %s', config.sections())
         return config
 
     def get_template(self, template_name='', template_dict=None):
