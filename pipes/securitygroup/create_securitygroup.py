@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-
-#A script for creating an application in spinnaker.
-#Simply looks to see if the application already exists, if not, creates
-
+"""Create Security Groups for Spinnaker Pipelines."""
 import argparse
 import configparser
 import json
@@ -15,12 +11,40 @@ import requests
 
 class SpinnakerSecurityGroup:
     def __init__(self):
-        config = configparser.ConfigParser()
         self.here = os.path.dirname(os.path.realpath(__file__))
+
+        self.config = self.get_configs()
+
+        self.gate_url = self.config['spinnaker']['gate_url']
+
+        self.header = {'content-type': 'application/json'}
+
+    def get_configs(self):
+        """Get main configuration.
+
+        Returns:
+            configparser.ConfigParser object with configuration loaded.
+        """
+        config = configparser.ConfigParser()
         configpath = "{}/../../configs/spinnaker.conf".format(self.here)
         config.read(configpath)
-        self.gate_url = config['spinnaker']['gate_url']
-        self.header = {'content-type': 'application/json'}
+        return config
+
+    def get_template(self, template_name, **kwargs):
+        """Get Jinja2 Template _template_name_.
+
+        Args:
+            template_name: Str of template name to retrieve.
+            kwargs: Keyword arguments to use for template rendering.
+
+        Returns:
+            Dict of rendered JSON to send to Spinnaker.
+        """
+        templatedir = "{}/../../templates".format(self.here)
+        jinja_env = Environment(loader=FileSystemLoader(templatedir))
+        template = jinja_env.get_template(template_name)
+        rendered_json = json.loads(template.render(**kwargs))
+        return rendered_json
 
     '''Gets all applications from spinnaker'''
     def get_apps(self):
@@ -41,14 +65,6 @@ class SpinnakerSecurityGroup:
                 return True
         logging.info('{} does not exist...creating'.format(self.appname))
         return False
-            
-    '''Uses jinja2 to setup POST data for application creation'''
-    def setup_appdata(self):
-        templatedir = "{}/../../templates".format(self.here)
-        jinjaenv = Environment(loader=FileSystemLoader(templatedir))
-        template = jinjaenv.get_template("app_data_template.json")
-        rendered_json = json.loads(template.render(appinfo=self.appinfo))
-        return rendered_json
 
     '''Sends a POST to spinnaker to create a new application'''
     def create_security_group(self, appinfo=None):
@@ -61,7 +77,7 @@ class SpinnakerSecurityGroup:
             url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
             jsondata = self.setup_appdata()
             r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
-            
+
             if r.status_code != 200:
                 logging.error("Failed to create app: {}".format(r.text))
                 sys.exit(1)
@@ -85,11 +101,10 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     #Dictionary containing application info. This is passed to the class for processing
-    appinfo = { "name": args.name, 
+    appinfo = { "name": args.name,
                 "email": args.email,
-                "project": args.project, 
+                "project": args.project,
                 "repo": args.repo }
 
     spinnakerapps = SpinnakerSecurityGroup()
     spinnakerapps.create_security_group(appinfo=appinfo)
-
