@@ -5,6 +5,7 @@ import json
 import logging
 import os
 
+from tryagain import retries
 from jinja2 import Environment, FileSystemLoader
 import requests
 
@@ -104,6 +105,41 @@ class SpinnakerSecurityGroup:
         raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
             app_name))
 
+    @retries(max_attempts=10, wait=10.0, exceptions=Exception)
+    def check_task(self, taskid):
+
+        try:
+            taskurl = taskid.get('ref', '0000')
+        except AttributeError:
+            taskurl = taskid
+
+        taskid = taskurl.split('/tasks/')[-1]
+
+        self.log.info('Checking taskid %s' % taskid)
+
+        url = '{0}/applications/{1}/{2}'.format(
+            self.gate_url,
+            self.app_name,
+            taskid,
+        )
+
+        r = requests.get(url, headers=self.header)
+
+        self.log.debug(r.json())
+        if not r.ok:
+            raise Exception
+        else:
+            json = r.json()
+
+            STATUSES = ('SUCCEEDED', 'TERMINAL')
+
+            if json['status'] in STATUSES:
+                return json['status']
+            else:
+                self.log.info(json['status'])
+                raise Exception
+
+
     def create_security_group(self):
         """Sends a POST to spinnaker to create a new security group."""
         url = "{0}/applications/{1}/tasks".format(self.gate_url,
@@ -118,7 +154,8 @@ class SpinnakerSecurityGroup:
                           data=json.dumps(secgroup_json),
                           headers=self.header)
 
-        if not r.ok:
+        status = self.check_task(r.json())
+        if status is not 'SUCCEEDED':
             logging.error('Failed to create app: %s', r.text)
             raise SpinnakerSecurityGroupCreationFailed(r.text)
 
