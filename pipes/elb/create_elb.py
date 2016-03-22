@@ -36,7 +36,7 @@ class SpinnakerELB:
 
 #python create_elb.py --app testapp --stack teststack --elb_type internal --env prod,stage --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps,sg_offices --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name test_elb --elb_subnet internal --health_timeout=10 --health_interval=2 --healthy_threshold=4 --unhealthy_threshold=6
 
-#python create_elb.py --app dougtestapp --stack teststack --elb_type internal --env stage --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name dougtestapp-teststack --elb_subnet internal --health_timeout=10 --health_interval 2 --healthy_threshold 4 --unhealthy_threshold 6
+#python create_elb.py --app testapp --stack teststack --elb_type internal --env stage --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name dougtestapp-teststack --elb_subnet internal --health_timeout=10 --health_interval 2 --healthy_threshold 4 --unhealthy_threshold 6
 if __name__ == '__main__':
     elb = SpinnakerELB()
     parser = argparse.ArgumentParser(description='Example with non-optional arguments')
@@ -81,10 +81,8 @@ if __name__ == '__main__':
                                             subnet_type=args.elb_subnet,
                                             elb_subnet=args.elb_subnet,
                                             hc_string='HTTP:80/health')
-    print template
-    t = '''{"job":[{"stack":"teststack","detail":"detail","isInternal":true,"credentials":"stage","region":"us-east-1","vpcId":"vpc-xxxx","healthCheckProtocol":"HTTP","healthCheckPort":7001,"healthCheckPath":"/healthcheck","healthTimeout":5,"healthInterval":10,"healthyThreshold":10,"unhealthyThreshold":2,"regionZones":["us-east-1b","us-east-1c","us-east-1d","us-east-1e"],"securityGroups":["sg_apps"],"listeners":[{"internalProtocol":"HTTP","internalPort":7001,"externalProtocol":"HTTP","externalPort":80}],"name":"orchidtest-teststack-detail","usePreferredZones":true,"subnetType":"internal","healthCheck":"HTTP:7001/healthcheck","type":"upsertLoadBalancer","availabilityZones":{"us-east-1":["us-east-1b","us-east-1c","us-east-1d","us-east-1e"]},"user":"[anonymous]"}],"application":"orchidtest","description":"Create Load Balancer: orchidtest-teststack-detail"}'''
-    print t
-    elb.create_elb(t, args.app)
+    blah = json.loads(template)
+    elb.create_elb(json.dumps(blah), args.app)
 
 
 
