@@ -32,11 +32,11 @@ class SpinnakerSecurityGroup:
     def __init__(self, app_info):
         self.log = logging.getLogger(__name__)
 
+        self.here = os.path.dirname(os.path.realpath(__file__))
+        self.config = self.get_configs()
         self.gate_url = self.config['spinnaker']['gate_url']
         self.app_name = self.app_exists(app_name=app_info['name'])
         self.app_info = app_info
-        self.here = os.path.dirname(os.path.realpath(__file__))
-        self.config = self.get_configs()
 
         self.header = {'content-type': 'application/json'}
 
