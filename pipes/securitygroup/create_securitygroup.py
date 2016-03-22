@@ -88,15 +88,19 @@ class SpinnakerSecurityGroup:
         self.appinfo = appinfo
 
         if not (self.app_exists()):
-            url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
+            url = "{}/applications/{}/tasks".format(self.gate_url,
+                                                    self.app_name)
             jsondata = self.setup_appdata()
-            r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
+            r = requests.post(url,
+                              data=json.dumps(jsondata),
+                              headers=self.header)
 
             if r.status_code != 200:
                 logging.error("Failed to create app: {}".format(r.text))
                 sys.exit(1)
 
-            logging.info("Successfully created {} application".format(self.appname))
+            logging.info("Successfully created {} application".format(
+                self.app_name))
             return
 
 
