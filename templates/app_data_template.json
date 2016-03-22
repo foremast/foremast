@@ -9,7 +9,7 @@
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
             "repoSlug": "{{ appinfo.repo }}",
-            "platformHealthOnlyShowOverride": False
+            "platformHealthOnlyShowOverride": false
           },
       "user":"Jenkins"
       },
@@ -23,9 +23,10 @@
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
             "repoSlug": "{{ appinfo.repo }}",
-            "platformHealthOnlyShowOverride": False
+            "platformHealthOnlyShowOverride": false
               },
         "user":"Jenkins"
+       },
        {
         "type":"createApplication",
         "account":"prod",
@@ -36,12 +37,10 @@
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
             "repoSlug": "{{ appinfo.repo }}",
-            "platformHealthOnlyShowOverride": False
+            "platformHealthOnlyShowOverride": false
               },
         "user":"Jenkins"
           }
-
-}
       ],
 "application": "{{ appinfo.name }}",
 "description": "{{ appinfo.description }}"
