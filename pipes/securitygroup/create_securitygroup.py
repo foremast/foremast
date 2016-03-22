@@ -122,7 +122,7 @@ class SpinnakerSecurityGroup:
                           headers=self.header)
 
         if not r.ok:
-            logging.error('Failed to create app: %s', r.text))
+            logging.error('Failed to create app: %s', r.text)
             raise SpinnakerSecurityGroupCreationFailed(r.text)
 
         logging.info('Successfully created %s security group', self.app_name)
