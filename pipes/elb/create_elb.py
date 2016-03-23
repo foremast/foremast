@@ -11,6 +11,7 @@ from jinja2 import Environment, FileSystemLoader
 class SpinnakerELB:
 
     def __init__(self):
+        log = logging.lo
         self.curdir = os.path.dirname(os.path.realpath(__file__))
         self.templatedir = "{}/../../templates".format(self.curdir)
         jinjaenv = Environment(loader=FileSystemLoader(self.templatedir))
@@ -52,8 +53,6 @@ class SpinnakerELB:
         taskid = taskurl.split('/tasks/')[-1]
 
         logging.info('Checking taskid %s' % taskid)
-        print('Checking taskid %s' % taskid)
-
 
         url = '{0}/applications/{1}/tasks/{2}'.format(
             self.gate_url,
@@ -101,6 +100,8 @@ if __name__ == '__main__':
     parser.add_argument('--elb_name', action="store", help="elb name", required=True)
     parser.add_argument('--elb_subnet', action="store", help="elb subnet", required=True, default="internal")
     args = parser.parse_args()
+    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+
     template = elb.elb_template.render(app_stack=args.stack,
                                             app_name=args.app,
                                             env=args.env,
@@ -124,7 +125,6 @@ if __name__ == '__main__':
                                             hc_string=args.int_listener_protocol+':'+str(args.int_listener_port)+args.health_path)
 
     rendered_json = json.loads(template)
-    print(rendered_json)
     logging.info(rendered_json)
     taskid = elb.create_elb(rendered_json, args.app)
     if elb.check_task(taskid, args.app) == "SUCCEEDED":
