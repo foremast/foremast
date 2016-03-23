@@ -120,7 +120,7 @@ if __name__ == "__main__":
                         nargs='*', default=[ "sg_offices", "sg_apps" ])
     parser.add_argument("--elbs", help="The ELBs to associate with the server group",
             nargs='*', default=[])
-    parser.add_argument("--aminame", help="The ami for instances in the server group",
+    parser.add_argument("--ami_id", help="The ami for instances in the server group",
                         required=True)
     parser.add_argument("--instancetype", help="The instance type to use",
                         default='t2.medium')
@@ -150,7 +150,7 @@ if __name__ == "__main__":
             "subnet_type": args.subnet_type,
             "keypair": args.keypair,
             "securitygroups": args.securitygroups,
-            "aminame": args.aminame,
+            "aminame": args.ami_id,
             "elbs": [args.appname],
             "instancetype": args.instancetype,
             "b64_userdata": args.b64_userdata
