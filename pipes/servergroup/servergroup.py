@@ -101,6 +101,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--appname", help="The application name for the server group",
                         required=True)
+    parser.add_argument("--stackname", help="The stack name for the server group",
+                        default="")
     parser.add_argument("--account", help="The account to create the server group in",
                         required=True)
     parser.add_argument("--min_capacity", help="The minimum amount of instances in a server group",
@@ -129,6 +131,7 @@ if __name__ == "__main__":
 
     if not args.keypair:
         args.keypair = "{}_access".format(args.account)
+
     
     if len(args.elbs) == 0:
         healthchecktype = 'EC2'
@@ -137,6 +140,7 @@ if __name__ == "__main__":
          
     sginfo = {
             "appname": args.appname,
+            "stackname": args.stackname,
             "account": args.account,
             "min_capacity": args.min_capacity,
             "max_capacity": args.max_capacity,
