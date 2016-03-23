@@ -11,7 +11,7 @@
             "repoSlug": "{{ appinfo.repo }}",
             "platformHealthOnlyShowOverride": false
           },
-      "user":"Jenkins"
+      "user":"Pipes-Script"
       },
       {
         "type":"createApplication",
@@ -25,7 +25,7 @@
             "repoSlug": "{{ appinfo.repo }}",
             "platformHealthOnlyShowOverride": false
               },
-        "user":"Jenkins"
+        "user":"Pipes-Script"
        },
        {
         "type":"createApplication",
@@ -39,7 +39,7 @@
             "repoSlug": "{{ appinfo.repo }}",
             "platformHealthOnlyShowOverride": false
               },
-        "user":"Jenkins"
+        "user":"Pipes-Script"
           }
       ],
 "application": "{{ appinfo.name }}",
