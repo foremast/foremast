@@ -131,12 +131,14 @@ class SpinnakerSecurityGroup:
         else:
             json = r.json()
 
+            status = json['status']
+
+            self.log.info('Current task status: %s', status)
             STATUSES = ('SUCCEEDED', 'TERMINAL')
 
-            if json['status'] in STATUSES:
-                return json['status']
+            if status in STATUSES:
+                return status
             else:
-                self.log.info(json['status'])
                 raise Exception
 
 
