@@ -157,7 +157,7 @@ class SpinnakerSecurityGroup:
                           headers=self.header)
 
         status = self.check_task(r.json())
-        if status is not 'SUCCEEDED':
+        if status not in ('SUCCEEDED'):
             logging.error('Failed to create app: %s', r.text)
             raise SpinnakerSecurityGroupCreationFailed(r.text)
 
