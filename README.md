@@ -10,6 +10,7 @@ deployments.
 1. Create/modify ELB
 1. Create/modify server group/ASG
 1. Create/modify Security Groups
+1. Create/skip S3 Archaius application.properties file
 1. Create/modify application pipeline
 
 These are designed to be loosely coupled applications and we will continue to
