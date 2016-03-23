@@ -201,11 +201,7 @@ def main():
                'environment': args.environment,}
 
     spinnakerapps = SpinnakerSecurityGroup(app_info=appinfo)
-    sg_json = spinnakerapps.get_template(
-        template_name='securitygroup_template.json',
-        template_dict=appinfo)
-    print('SG JSON:\n', sg_json)
-    # spinnakerapps.create_security_group(appinfo=appinfo)
+    spinnakerapps.create_security_group()
 
 
 if __name__ == "__main__":
