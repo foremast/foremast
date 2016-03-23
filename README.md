@@ -19,6 +19,8 @@ update this README as the project grows.
 
 ## Technology Used
 
+See [requirements](requirements.txt) for package listing.
+
 1. Python3
 1. Jinja2 templating
 1. Python Requests
