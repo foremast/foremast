@@ -21,5 +21,5 @@ update this README as the project grows.
 1. Python3
 1. Jinja2 templating
 1. Python Requests
-1. Argparse for arguements
+1. Argparse for arguments
 1. Boto3 (direct AWS access to parts not exposed by Spinnaker, e.g. S3)
