@@ -179,13 +179,13 @@ def main():
                         help="The application name to create",
                         required=True)
     parser.add_argument("--region",
-                        help="The application name to create",
+                        help="The region to create the security group",
                         required=True)
     parser.add_argument("--vpc",
-                        help="The application name to create",
+                        help="The vpc to create the security group",
                         required=True)
     parser.add_argument("--environment",
-                        help="The application name to create",
+                        help="The environment to create the security group",
                         required=True)
     args = parser.parse_args()
 
