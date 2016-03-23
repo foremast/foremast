@@ -34,9 +34,11 @@ class SpinnakerELB:
         if response.ok:
             logging.info('%s ELB Created' % app)
             logging.info(response.text)
+            print(response.text)
         else:
             logging.error('Error creating %s ELB:' %app)
             logging.error(response.text)
+            print(response.text)
 
 #python create_elb.py --app testapp --stack teststack --elb_type internal --env dev --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name dougtestapp-teststack --elb_subnet internal --health_timeout=10 --health_interval 2 --healthy_threshold 4 --unhealthy_threshold 6
 if __name__ == '__main__':
@@ -85,8 +87,10 @@ if __name__ == '__main__':
                                             hc_string=args.int_listener_protocol+':'+str(args.int_listener_port)+args.health_path)
 
     rendered_json = json.loads(template)
+    print(rendered_json)
     logging.info(rendered_json)
-    elb.create_elb(rendered_json, args.app)
+    print(elb.create_elb(rendered_json, args.app))
+
 
 
 
