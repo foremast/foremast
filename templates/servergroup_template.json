@@ -12,7 +12,7 @@
         "targetHealthyDeployPercentage":100,
         "cooldown": 10,
         "healthCheckType": "ELB",
-        "healthCheckGracePeriod": 600,
+        "healthCheckGracePeriod": 180,
         "instanceMonitoring": false,
         "ebsOptimized": false,
         "iamRole": "{{ sginfo.iamrole }}",
@@ -26,7 +26,7 @@
                 },
         "keyPair": "{{ sginfo.keypair }}",
         "suspendedProcesses": [],
-        "securityGroups": [ {{ sginfo.securitygroups }} ],
+        "securityGroups": {{ sginfo.securitygroups }},
         "tags": {},
         "subnetType": "internal",
         "virtualizationType": "hvm",
@@ -34,13 +34,13 @@
         "freeFormDetails": "detail",
         "amiName": "{{ sginfo.aminame }}",
         "reason": "",
-        "loadBalancers": [ {{ sginfo.elbs }} ],
+        "loadBalancers": {{ sginfo.elbs }},
         "instanceType": "{{ sginfo.instancetype }}",
         "base64UserData": "{{ sginfo.b64_userdata }}",
         "type": "createServerGroup",
         "cloudProvider": "aws",
         "account": "{{ sginfo.account }}",
-        "user": "Jenkins"
+        "user": "Pipes-Script"
         }
         ],
     "application": "{{ sginfo.appname }}",
