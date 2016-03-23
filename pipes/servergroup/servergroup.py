@@ -26,7 +26,7 @@ class ServerGroup:
         templatedir = "{}/../../templates".format(self.here)
         jinjaenv = Environment(loader=FileSystemLoader(templatedir))
         template = jinjaenv.get_template("servergroup_template.json")
-        rendered_json = json.loads(template.render(sginfo=self.sginfo))
+        rendered_json = json.loads(template.render(sginfo=self.sginfo).replace("'", '"'))
         return rendered_json
 
     def upsert_servergroup(self, sginfo=None):
@@ -38,10 +38,11 @@ class ServerGroup:
         response = requests.post(url, data=json.dumps(jsondata), headers=self.header)
         
         if not response.ok:
-            logging.error("Failed to create server group: {}".format(r.text))
+            logging.error("Failed to start creation of server group: {}".format(r.text))
             sys.exit(1)
 
-        logging.info("Successfully created {} server group".format(self.sginfo['appname']))
+        logging.info("Successfully started creation of {} server group".format(self.sginfo['appname']))
+        logging.info(response.text)
         return
 #python servergroup.py --appname dougtestapp --account dev --aminame a_forrest_core_v0.0.102_b102_ami-xxxx-02-26-04-44_010fc03119
 if __name__ == "__main__":
@@ -59,7 +60,8 @@ if __name__ == "__main__":
     parser.add_argument("--iamrole", help="The iamrole to associate with the server group",
                         default='app_default_profile')
     parser.add_argument("--keypair", help="The keypair for accessing instances in the server group")
-    parser.add_argument("--securitygroups", help="The security groups instances in the server group")
+    parser.add_argument("--securitygroups", help="The security groups instances in the server group",
+                        nargs='*', default=[ "sg_offices", "sg_apps" ])
     parser.add_argument("--aminame", help="The ami for instances in the server group",
                         required=True)
     parser.add_argument("--instancetype", help="The instance type to use",
@@ -71,11 +73,8 @@ if __name__ == "__main__":
 
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
     if not args.keypair:
-        args.keypair = "{}-access".format(args.account)
-        
-    securitygroups = '"sg_apps"'
-    elbs = '"test"'
-    
+        args.keypair = "{}_access".format(args.account)
+         
     sginfo = {
             "appname": args.appname,
             "account": args.account,
@@ -84,9 +83,9 @@ if __name__ == "__main__":
             "desired_capacity": args.desired_capacity,
             "iamrole": args.iamrole,
             "keypair": args.keypair,
-            "securitygroups": securitygroups,
+            "securitygroups": args.securitygroups,
             "aminame": args.aminame,
-            "elbs": elbs,
+            "elbs": [args.appname],
             "instancetype": args.instancetype,
             "b64_userdata": args.b64_userdata
             }
