@@ -117,7 +117,7 @@ class SpinnakerSecurityGroup:
 
         self.log.info('Checking taskid %s' % taskid)
 
-        url = '{0}/applications/{1}/{2}'.format(
+        url = '{0}/applications/{1}/tasks/{2}'.format(
             self.gate_url,
             self.app_name,
             taskid,
