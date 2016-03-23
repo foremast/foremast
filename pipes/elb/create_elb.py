@@ -4,6 +4,7 @@ import json
 import logging
 import sys
 import os
+from tryagain import retries
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -34,11 +35,45 @@ class SpinnakerELB:
         if response.ok:
             logging.info('%s ELB Created' % app)
             logging.info(response.text)
-            print(response.text)
+            return response.json()
         else:
             logging.error('Error creating %s ELB:' %app)
             logging.error(response.text)
-            print(response.text)
+            return response.json()
+
+    @retries(max_attempts=5, wait=5.0, exceptions=Exception)
+    def check_task(self, taskid, app_name):
+
+        try:
+            taskurl = taskid.get('ref', '0000')
+        except AttributeError:
+            taskurl = taskid
+
+        taskid = taskurl.split('/tasks/')[-1]
+
+        logging.info('Checking taskid %s' % taskid)
+
+        url = '{0}/applications/{1}/tasks/{2}'.format(
+            self.gate_url,
+            app_name,
+            taskid
+        )
+
+        r = requests.get(url, headers=self.header)
+
+        logging.debug(r.json())
+        if not r.ok:
+            raise Exception
+        else:
+            json = r.json()
+            status = json['status']
+            logging.info('Current task status: %s', status)
+            STATUSES = ('SUCCEEDED', 'TERMINAL')
+
+            if status in STATUSES:
+                return status
+            else:
+                raise Exception
 
 #python create_elb.py --app testapp --stack teststack --elb_type internal --env dev --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name dougtestapp-teststack --elb_subnet internal --health_timeout=10 --health_interval 2 --healthy_threshold 4 --unhealthy_threshold 6
 if __name__ == '__main__':
@@ -64,6 +99,8 @@ if __name__ == '__main__':
     parser.add_argument('--elb_name', action="store", help="elb name", required=True)
     parser.add_argument('--elb_subnet', action="store", help="elb subnet", required=True, default="internal")
     args = parser.parse_args()
+    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+
     template = elb.elb_template.render(app_stack=args.stack,
                                             app_name=args.app,
                                             env=args.env,
@@ -87,9 +124,15 @@ if __name__ == '__main__':
                                             hc_string=args.int_listener_protocol+':'+str(args.int_listener_port)+args.health_path)
 
     rendered_json = json.loads(template)
-    print(rendered_json)
     logging.info(rendered_json)
-    print(elb.create_elb(rendered_json, args.app))
+    taskid = elb.create_elb(rendered_json, args.app)
+    if elb.check_task(taskid, args.app) == "SUCCEEDED":
+        logging.info("ELB upserted successfully.")
+        sys.exit(0)
+    else:
+        logging.error("Error upserting ELB, exiting ...")
+        sys.exit(1)
+
 
 
 
