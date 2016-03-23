@@ -84,7 +84,9 @@ class SpinnakerServerGroup:
         url = "{}/applications/{}/tasks".format(self.gate_url,
                                                 self.sginfo['appname'])
         jsondata = self.get_template()
+        self.log.info(jsondata)
         r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
+        self.log.info(r.json())
 
         status = self.check_task(r.json())
         if status not in ('SUCCEEDED'):
