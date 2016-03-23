@@ -85,7 +85,7 @@ class SpinnakerDns:
         if r.ok:
             return r.json()
         else:
-            logging.error(r.text)
+            self.log.error(r.text)
             raise SpinnakerApplicationListError(r.text)
 
     def app_exists(self, app_name):
@@ -105,10 +105,10 @@ class SpinnakerDns:
         app_name = app_name.lower()
         for app in apps:
             if app['name'].lower() == app_name:
-                logging.info('Application %s found!', app_name)
+                self.log.info('Application %s found!', app_name)
                 return app_name
 
-        logging.info('Application %s does not exist ... exiting', app_name)
+        self.log.info('Application %s does not exist ... exiting', app_name)
         raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
             app_name))
 
@@ -123,7 +123,6 @@ class SpinnakerDns:
             Auto-generated DNS name for the Elastic Load Balancer.
         """
 
-        log = logging.getLogger(__name__)
 
         app = self.app_name
         dns_zone = '{environment}.{domain}'.format(**self.app_info)
@@ -134,27 +133,26 @@ class SpinnakerDns:
         elb_dns_name = 'something.crazy.from.amazon'
 
         print('||'.join([app_fqdn, elb_dns_name, dns_zone]))
-        #sys.exit()
 
         # get correct hosted zone
         zones = self.r53client.list_hosted_zones_by_name(
             DNSName=dns_zone)
-        # log.debug('zones:\n%s', pformat(zones))
+        # self.log.debug('zones:\n%s', pformat(zones))
 
         zone_ids = []
         if len(zones['HostedZones']) > 1:
             for zone in zones['HostedZones']:
-                log.debug('zone:\n%s', pformat(zone))
+                self.log.debug('zone:\n%s', pformat(zone))
 
                 # We will always add a private record. The elb subnet must be
                 # specified as 'external' to get added publicly.
                 if zone['Config']['PrivateZone'] or \
                                 self.app_info['config']['elb']['subnet_purpose'] in (
                                 'external'):
-                    log.info('Adding DNS record to %s zone', zone['Id'])
+                    self.log.info('Adding DNS record to %s zone', zone['Id'])
                     zone_ids.append(zone['Id'])
 
-        log.info('Updating Application URL: %s', app_fqdn)
+        self.log.info('Updating Application URL: %s', app_fqdn)
 
         # list the records in the zones
         for zone_id in zone_ids:
@@ -163,7 +161,7 @@ class SpinnakerDns:
                                                        StartRecordType='CNAME')
             name_list = [record['Name'] for record in
                          records['ResourceRecordSets']]
-            log.log(15, 'Zone %s CNAME record names=%s', zone_id, name_list)
+            self.log.log(15, 'Zone %s CNAME record names=%s', zone_id, name_list)
 
         # This is what will be added to DNS
         changes = {
@@ -179,15 +177,15 @@ class SpinnakerDns:
             }, ],
         }
 
-        log.log(15, 'changes:\n%s', pformat(changes))
+        self.log.log(15, 'changes:\n%s', pformat(changes))
 
         for zone_id in zone_ids:
 
-            log.debug('zone_id: %s', zone_id)
+            self.log.debug('zone_id: %s', zone_id)
             """
             response = self.r53client.change_resource_record_sets(HostedZoneId=zone_id,
                                                           ChangeBatch=changes, )
-            log.log(15, 'response:\n%s', pformat(response))
+            self.log.log(15, 'response:\n%s', pformat(response))
             """
         return app_fqdn
 
