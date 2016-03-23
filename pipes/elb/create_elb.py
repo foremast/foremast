@@ -11,6 +11,7 @@ from jinja2 import Environment, FileSystemLoader
 class SpinnakerELB:
 
     def __init__(self):
+        ''
         self.curdir = os.path.dirname(os.path.realpath(__file__))
         self.templatedir = "{}/../../templates".format(self.curdir)
         jinjaenv = Environment(loader=FileSystemLoader(self.templatedir))
@@ -19,6 +20,14 @@ class SpinnakerELB:
         self.header = {'Content-Type': 'application/json', 'Accept': '*/*'}
 
     def get_vpc_id(self, account):
+        """Get vpc id.
+
+        Args:
+            account: AWS account name.
+
+        Returns:
+            vpc_id.
+        """
         url = self.gate_url + "/vpcs"
         response = requests.get(url)
         if response.ok:
@@ -30,6 +39,15 @@ class SpinnakerELB:
             sys.exit(1)
 
     def create_elb(self, json_data, app):
+        """Create/Update ELB.
+
+        Args:
+            json_data: elb json payload.
+            app: application name related to this ELB.
+
+        Returns:
+            task id to track the elb creation status.
+        """
         url = self.gate_url + '/applications/%s/tasks' %app
         response = requests.post(url, data=json.dumps(json_data), headers=self.header)
         if response.ok:
@@ -43,6 +61,14 @@ class SpinnakerELB:
 
     @retries(max_attempts=5, wait=5.0, exceptions=Exception)
     def check_task(self, taskid, app_name):
+        """Check ELB creation status.
+        Args:
+            taskid: the task id returned from create_elb.
+            app_name: application name related to this task.
+
+        Returns:
+            polls for task status.
+        """
 
         try:
             taskurl = taskid.get('ref', '0000')
