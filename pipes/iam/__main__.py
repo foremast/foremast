@@ -3,6 +3,7 @@ import argparse
 import logging
 
 from .create_iam import create_iam_resources
+from .utils import get_details
 
 LOG = logging.getLogger(__name__)
 
@@ -23,21 +24,17 @@ def main():
                         choices=('dev', 'stage', 'prod'),
                         default='dev',
                         help='Deploy environment')
-    parser.add_argument('-g',
-                        '--group',
-                        default='extra',
-                        help='Application Group name, e.g. forrest')
     parser.add_argument('-a',
                         '--app',
-                        default='unnecessary',
-                        help='Application name, e.g. forrestcore')
+                        default='testapp',
+                        help='Spinnaker Application name')
     args = parser.parse_args()
 
     LOG.setLevel(args.debug)
     logging.getLogger(__package__).setLevel(args.debug)
     vars(args).pop('debug')
 
-    assert create_iam_resources(env=args.env, group=args.group, app=args.app)
+    assert create_iam_resources(env=args.env, app=args.app)
 
 
 if __name__ == '__main__':

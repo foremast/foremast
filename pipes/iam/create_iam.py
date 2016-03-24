@@ -4,18 +4,17 @@ import logging
 import boto3
 from boto3.exceptions import botocore
 
-from .consts import ROLE_POLICY
+from .utils import get_details, get_template
 
 LOG = logging.getLogger(__name__)
 
 
-def create_iam_resources(env='dev', group='forrest', app='unicorn'):
+def create_iam_resources(env='dev', app=''):
     """Create the IAM Resources for the application.
 
     Args:
         env (str): Deployment environment, i.e. dev, stage, prod.
-        group (str): Application Group name.
-        app (str): Application name.
+        app (str): Spinnaker Application name.
 
     Returns:
         True upon successful completion.
@@ -23,37 +22,36 @@ def create_iam_resources(env='dev', group='forrest', app='unicorn'):
     session = boto3.session.Session(profile_name=env)
     client = session.client('iam')
 
-    user = '{group}_{app}'.format(group=group, app=app)
-    role = '{user}_role'.format(user=user)
-    profile = '{user}_profile'.format(user=user)
+    details = get_details(env=env, app=app)
 
-    resource_action(client,
-                    action='create_role',
-                    log_format='Role: %(RoleName)s',
-                    RoleName=role,
-                    AssumeRolePolicyDocument=ROLE_POLICY)
+    resource_action(
+        client,
+        action='create_role',
+        log_format='Role: %(RoleName)s',
+        RoleName=details.role,
+        AssumeRolePolicyDocument=get_template('iam_role_policy.json'))
     resource_action(client,
                     action='create_instance_profile',
                     log_format='Instance Profile: %(InstanceProfileName)s',
-                    InstanceProfileName=profile)
+                    InstanceProfileName=details.profile)
     attach_profile_to_role(client,
-                           role_name=role,
-                           profile_name=profile)
+                           role_name=details.role,
+                           profile_name=details.profile)
 
     resource_action(client,
                     action='create_user',
                     log_format='User: %(UserName)s',
-                    UserName=user)
+                    UserName=details.user)
     resource_action(client,
                     action='create_group',
                     log_format='Group: %(GroupName)s',
-                    GroupName=group)
+                    GroupName=details.group)
     resource_action(client,
                     action='add_user_to_group',
                     log_format='User to Group: %(UserName)s -> %(GroupName)s',
                     log_failure=True,
-                    GroupName=group,
-                    UserName=user)
+                    GroupName=details.group,
+                    UserName=details.user)
 
     return True
 
