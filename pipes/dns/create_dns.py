@@ -24,6 +24,10 @@ class SpinnakerDnsCreationFailed(Exception):
     pass
 
 
+class SpinnakerElbNotFound(Exception):
+    pass
+
+
 class SpinnakerDns:
     """Manipulate Spinnaker Dns.
 
@@ -126,9 +130,13 @@ class SpinnakerDns:
         if r.ok:
             response = r.json()
             for account in response:
-                if account['account'] == self.app_info['environment']:
+                if account['account'] == self.app_info['environment'] and \
+                        account['region'] == self.app_info['region']:
                     elb_dns = account['dnsname']
 
+        if not elb_dns:
+            raise SpinnakerElbNotFound('Elb for %s in region %s not found' % 
+                   (self.app_name, self.app_info['region'])) 
         return elb_dns
 
     def app_exists(self, app_name):
