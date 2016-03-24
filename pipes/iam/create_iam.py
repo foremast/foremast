@@ -16,6 +16,9 @@ def create_iam_resources(env='dev', group='forrest', app='unicorn'):
         env (str): Deployment environment, i.e. dev, stage, prod.
         group (str): Application Group name.
         app (str): Application name.
+
+    Returns:
+        True upon successful completion.
     """
     session = boto3.session.Session(profile_name=env)
     client = session.client('iam')
@@ -51,6 +54,8 @@ def create_iam_resources(env='dev', group='forrest', app='unicorn'):
                     log_failure=True,
                     GroupName=group,
                     UserName=user_name)
+
+    return True
 
 
 def attach_profile_to_role(client,
