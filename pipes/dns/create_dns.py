@@ -222,9 +222,6 @@ def main():
     parser.add_argument("--region",
                         help="The region to create the security group",
                         required=True)
-    parser.add_argument("--vpc",
-                        help="The vpc to create the security group",
-                        required=True)
     parser.add_argument("--environment",
                         help="The environment to create the security group",
                         required=True)
@@ -238,7 +235,6 @@ def main():
     # Dictionary containing application info. This is passed to the class for processing
     appinfo = {
         'name': args.name,
-        'vpc': args.vpc,
         'region': args.region,
         'environment': args.environment,
     }
