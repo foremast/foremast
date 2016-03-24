@@ -167,8 +167,6 @@ class SpinnakerDns:
 
         dns_zone = '{environment}.{domain}'.format(**self.app_info)
 
-        app_fqdn = '{name}.stack.{environment}.{domain}'.format(**self.app_info)
-
         app_details = self.get_app_detail()
 
         # get correct hosted zone
@@ -187,7 +185,7 @@ class SpinnakerDns:
                     self.log.info('Adding DNS record to %s zone', zone['Id'])
                     zone_ids.append(zone['Id'])
 
-        self.log.info('Updating Application URL: %s', app_fqdn)
+        self.log.info('Updating Application URL: %s', app_details['dns_elb'])
 
         # This is what will be added to DNS
         dns_json = self.get_template(
@@ -205,7 +203,7 @@ class SpinnakerDns:
                                                           ChangeBatch=dns_json, )
             self.log.log(15, 'response:\n%s', pformat(response))
             """
-        return app_fqdn
+        return app_details['dns_elb']
 
 
 def main():
