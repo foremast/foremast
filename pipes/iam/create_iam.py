@@ -1,4 +1,4 @@
-"""IAM Profile and Role creation."""
+"""Create IAM Instance Profiles, Roles, Users, and Groups."""
 import logging
 
 import boto3
@@ -10,7 +10,13 @@ LOG = logging.getLogger(__name__)
 
 
 def create_iam_resources(env='dev', group='forrest', app='unicorn'):
-    """Create the IAM Profile for the application."""
+    """Create the IAM Resources for the application.
+
+    Args:
+        env (str): Deployment environment, i.e. dev, stage, prod.
+        group (str): Application Group name.
+        app (str): Application name.
+    """
     session = boto3.session.Session(profile_name=env)
     client = session.client('iam')
 

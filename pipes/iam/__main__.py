@@ -1,4 +1,4 @@
-"""Create IAM Profiles, Roles, Users, and Groups."""
+"""Create IAM Instance Profiles, Roles, Users, and Groups."""
 import argparse
 import logging
 
@@ -8,7 +8,7 @@ LOG = logging.getLogger(__name__)
 
 
 def main():
-    """CLI interface for creating IAM Profiles, Roles, Users, and Groups."""
+    """Command to create IAM Instance Profiles, Roles, Users, and Groups."""
     logging.basicConfig()
 
     parser = argparse.ArgumentParser(description=main.__doc__)
