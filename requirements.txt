@@ -1,4 +1,5 @@
 boto3
+gogo-utils
 jinja2
 requests
 tryagain
