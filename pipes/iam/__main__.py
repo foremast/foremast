@@ -37,7 +37,7 @@ def main():
     logging.getLogger(__package__).setLevel(args.debug)
     vars(args).pop('debug')
 
-    create_iam_resources(env=args.env, group=args.group, app=args.app)
+    assert create_iam_resources(env=args.env, group=args.group, app=args.app)
 
 
 if __name__ == '__main__':
