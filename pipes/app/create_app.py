@@ -59,17 +59,16 @@ class SpinnakerApp:
         if appinfo:
             self.appname = appinfo['app']
 
-        if not (self.app_exists()):
-            url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
-            jsondata = self.setup_appdata()
-            r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
+        url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
+        jsondata = self.setup_appdata()
+        r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
+        
+        if not r.ok:
+            logging.error("Failed to create app: {}".format(r.text))
+            sys.exit(1)
 
-            if not r.ok:
-                logging.error("Failed to create app: {}".format(r.text))
-                sys.exit(1)
-
-            logging.info("Successfully created {} application".format(self.appname))
-            return
+        logging.info("Successfully created {} application".format(self.appname))
+        return
 
 if __name__ == "__main__":
     # Setup parser
