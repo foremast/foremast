@@ -23,27 +23,27 @@ def create_iam_resources(env='dev', group='forrest', app='unicorn'):
     session = boto3.session.Session(profile_name=env)
     client = session.client('iam')
 
-    user_name = '{group}_{app}'.format(group=group, app=app)
-    role_name = '{user}_role'.format(user=user_name)
-    profile_name = '{user}_profile'.format(user=user_name)
+    user = '{group}_{app}'.format(group=group, app=app)
+    role = '{user}_role'.format(user=user)
+    profile = '{user}_profile'.format(user=user)
 
     resource_action(client,
                     action='create_role',
                     log_format='Role: %(RoleName)s',
-                    RoleName=role_name,
+                    RoleName=role,
                     AssumeRolePolicyDocument=ROLE_POLICY)
     resource_action(client,
                     action='create_instance_profile',
                     log_format='Instance Profile: %(InstanceProfileName)s',
-                    InstanceProfileName=profile_name)
+                    InstanceProfileName=profile)
     attach_profile_to_role(client,
-                           role_name=role_name,
-                           profile_name=profile_name)
+                           role_name=role,
+                           profile_name=profile)
 
     resource_action(client,
                     action='create_user',
                     log_format='User: %(UserName)s',
-                    UserName=user_name)
+                    UserName=user)
     resource_action(client,
                     action='create_group',
                     log_format='Group: %(GroupName)s',
@@ -53,7 +53,7 @@ def create_iam_resources(env='dev', group='forrest', app='unicorn'):
                     log_format='User to Group: %(UserName)s -> %(GroupName)s',
                     log_failure=True,
                     GroupName=group,
-                    UserName=user_name)
+                    UserName=user)
 
     return True
 
