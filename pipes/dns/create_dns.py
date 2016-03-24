@@ -10,6 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 import requests
 import boto3.session
 
+
 class SpinnakerAppNotFound(Exception):
     pass
 
@@ -46,7 +47,6 @@ class SpinnakerDns:
         env = boto3.session.Session(
             profile_name=self.app_info['environment'])
         self.r53client = env.client('route53')
-
 
     def get_configs(self):
         """Get main configuration.
@@ -113,7 +113,6 @@ class SpinnakerDns:
         raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
             app_name))
 
-
     def create_elb_dns(self):
         """ Creates dns entries in route53
 
@@ -124,8 +123,6 @@ class SpinnakerDns:
             Auto-generated DNS name for the Elastic Load Balancer.
         """
 
-
-        app = self.app_name
         dns_zone = '{environment}.{domain}'.format(**self.app_info)
 
         app_fqdn = '{name}.stack.{environment}.{domain}'.format(**self.app_info)
@@ -174,6 +171,7 @@ class SpinnakerDns:
             """
         return app_fqdn
 
+
 def main():
     """Run newer stuffs."""
     logging.basicConfig(format='%(asctime)s %(message)s')
@@ -203,11 +201,13 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    #Dictionary containing application info. This is passed to the class for processing
-    appinfo = {'name': args.name,
-               'vpc': args.vpc,
-               'region': args.region,
-               'environment': args.environment,}
+    # Dictionary containing application info. This is passed to the class for processing
+    appinfo = {
+        'name': args.name,
+        'vpc': args.vpc,
+        'region': args.region,
+        'environment': args.environment,
+    }
 
     # TODO: Get actual items from application.json
     appinfo.update({'config': {'elb': {'subnet_purpose': 'internal'}}})
