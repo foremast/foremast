@@ -1,0 +1,18 @@
+{
+    "Comment": "automatic change",
+    "Changes": [
+        {
+            "Action": "UPSERT",
+            "ResourceRecordSet": {
+                "Name": "{{ name }}",
+                "Type": "CNAME",
+                "TTL": 300,
+                "ResourceRecords": [
+                    {
+                        "Value": "{{ aws_elb_name }}"
+                    }
+                ]
+            }
+        }
+    ]
+}

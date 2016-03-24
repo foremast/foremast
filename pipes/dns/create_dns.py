@@ -5,7 +5,9 @@ from pprint import pformat
 import argparse
 import os
 import configparser
+import json
 
+from jinja2 import Environment, FileSystemLoader
 import requests
 import boto3.session
 
@@ -130,7 +132,7 @@ class SpinnakerDns:
         app_fqdn = '{name}.stack.{environment}.{domain}'.format(**self.app_info)
 
         # TODO: Get elb details and validate.
-        elb_dns_name = 'something.crazy.from.amazon'
+        aws_elb_name = 'something.crazy.from.amazon'
 
         print('||'.join([app_fqdn, elb_dns_name, dns_zone]))
 
@@ -142,8 +144,6 @@ class SpinnakerDns:
         zone_ids = []
         if len(zones['HostedZones']) > 1:
             for zone in zones['HostedZones']:
-                self.log.debug('zone:\n%s', pformat(zone))
-
                 # We will always add a private record. The elb subnet must be
                 # specified as 'external' to get added publicly.
                 if zone['Config']['PrivateZone'] or \
@@ -154,37 +154,23 @@ class SpinnakerDns:
 
         self.log.info('Updating Application URL: %s', app_fqdn)
 
-        # list the records in the zones
-        for zone_id in zone_ids:
-            records = self.r53client.list_resource_record_sets(HostedZoneId=zone_id,
-                                                       StartRecordName=app_fqdn,
-                                                       StartRecordType='CNAME')
-            name_list = [record['Name'] for record in
-                         records['ResourceRecordSets']]
-            self.log.log(15, 'Zone %s CNAME record names=%s', zone_id, name_list)
-
         # This is what will be added to DNS
-        changes = {
-            'Comment': 'automatic change',
-            'Changes': [{
-                'Action': 'UPSERT',
-                'ResourceRecordSet': {
-                    'Name': app_fqdn,
-                    'Type': 'CNAME',
-                    'TTL': 300,
-                    'ResourceRecords': [{'Value': elb_dns_name}, ]
-                },
-            }, ],
-        }
+        dns_data = self.app_info
+        dns_data.update({'aws_elb_name': aws_elb_name})
 
-        self.log.log(15, 'changes:\n%s', pformat(changes))
+        dns_json = self.get_template(
+            template_name='dns_upsert_template.json',
+            template_dict=dns_data,
+        )
+
+        self.log.log(15, 'changes:\n%s', pformat(dns_json))
 
         for zone_id in zone_ids:
 
             self.log.debug('zone_id: %s', zone_id)
             """
             response = self.r53client.change_resource_record_sets(HostedZoneId=zone_id,
-                                                          ChangeBatch=changes, )
+                                                          ChangeBatch=dns_json, )
             self.log.log(15, 'response:\n%s', pformat(response))
             """
         return app_fqdn
