@@ -1,5 +1,6 @@
 boto3
 gogo-utils
 jinja2
+murl
 requests
 tryagain
