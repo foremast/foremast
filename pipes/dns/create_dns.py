@@ -193,16 +193,16 @@ class SpinnakerDns:
             template_dict=app_details,
         )
 
-        self.log.log(15, 'changes:\n%s', pformat(dns_json))
+        self.log.debug('Dns json to send: %s', pformat(dns_json))
 
         for zone_id in zone_ids:
 
             self.log.debug('zone_id: %s', zone_id)
-            """
-            response = self.r53client.change_resource_record_sets(HostedZoneId=zone_id,
-                                                          ChangeBatch=dns_json, )
-            self.log.log(15, 'response:\n%s', pformat(response))
-            """
+            response = self.r53client.change_resource_record_sets(
+                HostedZoneId=zone_id,
+                ChangeBatch=dns_json,
+            )
+            self.log.debug('Dns upsert response: %s', pformat(response))
         return app_details['dns_elb']
 
 
