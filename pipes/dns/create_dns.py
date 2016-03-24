@@ -6,6 +6,7 @@ import os
 import configparser
 import json
 
+import gogoutils
 from jinja2 import Environment, FileSystemLoader
 import requests
 import boto3.session
@@ -89,6 +90,47 @@ class SpinnakerDns:
             self.log.error(r.text)
             raise SpinnakerApplicationListError(r.text)
 
+    def get_app_detail(self):
+        """Retrieve app details"""
+
+        url = '{0}/applications/{1}'.format(self.gate_url, self.app_name)
+        r = requests.get(url)
+
+        details = {}
+        if r.ok:
+            details.update(r.json())
+            git_url = details['attributes'].get('repoProjectKey')
+            group, project = gogoutils.Parser(git_url).parse_url()
+            generator = gogoutils.Generator(
+                    project=group,
+                    repo=project,
+                    env=self.app_info['environment']
+            )
+
+            details.update({'dns_elb': generator.dns()['elb']})
+            details.update({'dns_elb_aws': self.get_app_aws_elb()})
+        else:
+            raise SpinnakerAppNotFound('Application %s not found', self.app_name)
+
+        self.log.debug('Application details: %s', details)
+
+        return details
+
+    def get_app_aws_elb(self):
+        """Get an application's AWS elb dns name"""
+        url = '{0}/applications/{1}/loadBalancers'.format(self.gate_url, self.app_name)
+        r = requests.get(url)
+
+        elb_dns = None
+
+        if r.ok:
+            response = r.json()
+            for account in response:
+                if account['account'] == self.app_info['environment']:
+                    elb_dns = account['dnsname']
+
+        return elb_dns
+
     def app_exists(self, app_name):
         """Checks to see if application already exists.
 
@@ -127,10 +169,7 @@ class SpinnakerDns:
 
         app_fqdn = '{name}.stack.{environment}.{domain}'.format(**self.app_info)
 
-        # TODO: Get elb details and validate.
-        aws_elb_name = 'something.crazy.from.amazon'
-
-        print('||'.join([app_fqdn, elb_dns_name, dns_zone]))
+        app_details = self.get_app_detail()
 
         # get correct hosted zone
         zones = self.r53client.list_hosted_zones_by_name(
@@ -151,12 +190,9 @@ class SpinnakerDns:
         self.log.info('Updating Application URL: %s', app_fqdn)
 
         # This is what will be added to DNS
-        dns_data = self.app_info
-        dns_data.update({'aws_elb_name': aws_elb_name})
-
         dns_json = self.get_template(
             template_name='dns_upsert_template.json',
-            template_dict=dns_data,
+            template_dict=app_details,
         )
 
         self.log.log(15, 'changes:\n%s', pformat(dns_json))
