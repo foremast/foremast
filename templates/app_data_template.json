@@ -9,7 +9,7 @@
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
             "repoSlug": "{{ appinfo.repo }}",
-            "platformHealthOnlyShowOverride": false
+            "platformHealthOnlyShowOverride": true
           },
       "user":"Pipes-Script"
       },
@@ -23,7 +23,7 @@
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
             "repoSlug": "{{ appinfo.repo }}",
-            "platformHealthOnlyShowOverride": false
+            "platformHealthOnlyShowOverride": true
               },
         "user":"Pipes-Script"
        },
@@ -37,7 +37,7 @@
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
             "repoSlug": "{{ appinfo.repo }}",
-            "platformHealthOnlyShowOverride": false
+            "platformHealthOnlyShowOverride": true
               },
         "user":"Pipes-Script"
           }
