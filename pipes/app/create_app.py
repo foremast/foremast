@@ -76,9 +76,9 @@ if __name__ == "__main__":
                         required=True)
     parser.add_argument("--email", help="Email address to associate with application",
                         default="PS-DevOpsTooling@example.com")
-    parser.add_argument("--project", help="The project to associaste with application",
+    parser.add_argument("--project", help="The project to associate with application",
                         default="None")
-    parser.add_argument("--repo", help="The repo to associaste with application",
+    parser.add_argument("--repo", help="The repo to associate with application",
                         default="None")
     args = parser.parse_args()
 
