@@ -3,4 +3,3 @@ gogo-utils
 jinja2
 requests
 tryagain
-gogo-utils
