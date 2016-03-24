@@ -1,6 +1,5 @@
 """DNS functions for deployment."""
 import logging
-import sys
 from pprint import pformat
 import argparse
 import os
