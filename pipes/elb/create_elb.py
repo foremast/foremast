@@ -107,12 +107,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Example with non-optional arguments')
 
     parser.add_argument('--app', action="store", help="application name", required=True)
-    parser.add_argument('--stack', action="store", help="application stack", required=True)
     parser.add_argument('--elb_type', action="store", help="elb type: internal/external", required=True)
     parser.add_argument('--env', action="store", help="environment: dev, stage, prod", required=True)
     parser.add_argument('--health_protocol', action="store", help="health check protocol: http/tcp", required=True)
     parser.add_argument('--health_port', action="store", help="health check port", required=True)
-    parser.add_argument('--health_path', action="store", help="health check path stack", required=False, default="/health")
+    parser.add_argument('--health_path', action="store", help="health check path", required=False, default="/health")
     parser.add_argument('--health_timeout', action="store", help="health check timeout in seconds", required=True, default=10)
     parser.add_argument('--health_interval', action="store", help="health check interval in seconds", required=True, default=20)
     parser.add_argument('--healthy_threshold', action="store", help="healthy threshold", required=True, default=2)
@@ -127,8 +126,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
-    template = elb.elb_template.render(app_stack=args.stack,
-                                            app_name=args.app,
+    template = elb.elb_template.render(app_name=args.app,
                                             env=args.env,
                                             isInternal='true' if args.elb_type == 'internal' else 'false',
                                             vpc_id=elb.get_vpc_id(args.env),
