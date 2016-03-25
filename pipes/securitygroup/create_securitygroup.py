@@ -35,7 +35,7 @@ class SpinnakerSecurityGroup:
         self.here = os.path.dirname(os.path.realpath(__file__))
         self.config = self.get_configs()
         self.gate_url = self.config['spinnaker']['gate_url']
-        self.app_name = self.app_exists(app_name=app_info['name'])
+        self.app_name = self.app_exists(app_name=app_info['app'])
         self.app_info = app_info
 
         self.header = {'content-type': 'application/json'}
@@ -141,7 +141,6 @@ class SpinnakerSecurityGroup:
             else:
                 raise Exception
 
-
     def create_security_group(self):
         """Sends a POST to spinnaker to create a new security group."""
         url = "{0}/applications/{1}/tasks".format(self.gate_url,
@@ -175,7 +174,7 @@ def main():
                         '--debug',
                         action='store_true',
                         help='DEBUG output')
-    parser.add_argument("--name",
+    parser.add_argument("--app",
                         help="The application name to create",
                         required=True)
     parser.add_argument("--region",
@@ -184,7 +183,7 @@ def main():
     parser.add_argument("--vpc",
                         help="The vpc to create the security group",
                         required=True)
-    parser.add_argument("--environment",
+    parser.add_argument("--env",
                         help="The environment to create the security group",
                         required=True)
     args = parser.parse_args()
@@ -194,11 +193,13 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    #Dictionary containing application info. This is passed to the class for processing
-    appinfo = {'name': args.name,
-               'vpc': args.vpc,
-               'region': args.region,
-               'environment': args.environment,}
+    # Dictionary containing application info. This is passed to the class for processing
+    appinfo = {
+        'app': args.app,
+        'vpc': args.vpc,
+        'region': args.region,
+        'env': args.env,
+    }
 
     spinnakerapps = SpinnakerSecurityGroup(app_info=appinfo)
     spinnakerapps.create_security_group()
