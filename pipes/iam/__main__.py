@@ -3,7 +3,6 @@ import argparse
 import logging
 
 from .create_iam import create_iam_resources
-from .utils import get_details
 
 LOG = logging.getLogger(__name__)
 
