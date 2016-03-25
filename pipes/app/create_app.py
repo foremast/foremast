@@ -23,8 +23,8 @@ class SpinnakerApp:
         self.gate_url = config['spinnaker']['gate_url']
         self.header = {'content-type': 'application/json'}
 
-    '''Gets all applications from spinnaker'''
     def get_apps(self):
+        '''Gets all applications from spinnaker'''
         url = self.gate_url + "/applications"
         r = requests.get(url)
         if r.status_code == 200:
@@ -33,8 +33,8 @@ class SpinnakerApp:
             logging.error(r.text)
             sys.exit(1)
 
-    '''Checks to see if application already exists'''
     def app_exists(self):
+        '''Checks to see if application already exists'''
         self.get_apps()
         for app in self.apps:
             if app['name'].lower() == self.appname.lower():
@@ -43,8 +43,8 @@ class SpinnakerApp:
         logging.info('{} does not exist...creating'.format(self.appname))
         return False
 
-    '''Uses jinja2 to setup POST data for application creation'''
     def setup_appdata(self):
+        '''Uses jinja2 to setup POST data for application creation'''
         templatedir = "{}/../../templates".format(self.here)
         jinjaenv = Environment(loader=FileSystemLoader(templatedir))
         template = jinjaenv.get_template("app_data_template.json")
@@ -52,8 +52,8 @@ class SpinnakerApp:
         print(rendered_json)
         return rendered_json
 
-    '''Sends a POST to spinnaker to create a new application'''
     def create_app(self, appinfo=None):
+        '''Sends a POST to spinnaker to create a new application'''
         # setup class variables for processing
         self.appinfo = appinfo
         if appinfo:
