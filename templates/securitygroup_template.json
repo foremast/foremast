@@ -1,12 +1,12 @@
 {
-    "application": "{{ name }}",
-    "description": "Create Security Group: {{ name }}",
+    "application": "{{ app }}",
+    "description": "Create Security Group: {{ app }}",
     "job": [
         {
-            "credentials": "{{ environment }}",
-            "description": "Security group for {{ name }}",
+            "credentials": "{{ env }}",
+            "description": "Security group for {{ app }}",
             "detail": "",
-            "name": "{{ name }}",
+            "name": "{{ app }}",
             "regions": [
                 "{{ region }}"
             ],
