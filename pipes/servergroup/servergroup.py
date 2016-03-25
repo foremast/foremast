@@ -73,12 +73,12 @@ class SpinnakerServerGroup:
                 raise Exception
 
     def upsert_servergroup(self, sginfo=None):
-        """Updates the server group 
-        
+        """Updates the server group
+
         Args:
             sginfo: dictionary for template rendering
         """
-        #setup class variables for processing
+        # setup class variables for processing
         self.sginfo = sginfo
 
         url = "{}/applications/{}/tasks".format(self.gate_url,
@@ -97,7 +97,7 @@ class SpinnakerServerGroup:
             self.sginfo['app']))
         return
 
-#python servergroup.py --app dougtestapp --env dev --aminame a_forrest_core_v0.0.102_b102_ami-xxxx-02-26-04-44_010fc03119
+# python servergroup.py --app dougtestapp --env dev --ami_id a_forrest_core_v0.0.102_b102_ami-xxxx-02-26-04-44_010fc03119
 if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
     log = logging.getLogger(__name__)
