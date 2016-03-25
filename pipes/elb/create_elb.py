@@ -48,14 +48,14 @@ class SpinnakerELB:
         Returns:
             task id to track the elb creation status.
         """
-        url = self.gate_url + '/applications/%s/tasks' %app
+        url = self.gate_url + '/applications/%s/tasks' % app
         response = requests.post(url, data=json.dumps(json_data), headers=self.header)
         if response.ok:
             logging.info('%s ELB Created' % app)
             logging.info(response.text)
             return response.json()
         else:
-            logging.error('Error creating %s ELB:' %app)
+            logging.error('Error creating %s ELB:' % app)
             logging.error(response.text)
             return response.json()
 
@@ -101,7 +101,7 @@ class SpinnakerELB:
             else:
                 raise Exception
 
-#python create_elb.py --app testapp --stack teststack --elb_type internal --env dev --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name dougtestapp-teststack --elb_subnet internal --health_timeout=10 --health_interval 2 --healthy_threshold 4 --unhealthy_threshold 6
+# python create_elb.py --app testapp --stack teststack --elb_type internal --env dev --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name dougtestapp-teststack --elb_subnet internal --health_timeout=10 --health_interval 2 --healthy_threshold 4 --unhealthy_threshold 6
 if __name__ == '__main__':
     elb = SpinnakerELB()
     parser = argparse.ArgumentParser(description='Example with non-optional arguments')
@@ -156,10 +156,3 @@ if __name__ == '__main__':
     else:
         logging.error("Error upserting ELB, exiting ...")
         sys.exit(1)
-
-
-
-
-
-
-
