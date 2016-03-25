@@ -41,7 +41,7 @@ class SpinnakerDns:
         self.here = os.path.dirname(os.path.realpath(__file__))
         self.config = self.get_configs()
         self.gate_url = self.config['spinnaker']['gate_url']
-        self.app_name = self.app_exists(app_name=app_info['name'])
+        self.app_name = self.app_exists(app_name=app_info['app'])
 
         # Add domain
         app_info.update({'domain': 'example.com'})
@@ -50,7 +50,7 @@ class SpinnakerDns:
         self.header = {'content-type': 'application/json'}
 
         env = boto3.session.Session(
-            profile_name=self.app_info['environment'])
+            profile_name=self.app_info['env'])
         self.r53client = env.client('route53')
 
     def get_configs(self):
@@ -108,7 +108,7 @@ class SpinnakerDns:
             generator = gogoutils.Generator(
                     project=group,
                     repo=project,
-                    env=self.app_info['environment']
+                    env=self.app_info['env']
             )
 
             details.update({'dns_elb': generator.dns()['elb']})
@@ -130,13 +130,13 @@ class SpinnakerDns:
         if r.ok:
             response = r.json()
             for account in response:
-                if account['account'] == self.app_info['environment'] and \
+                if account['account'] == self.app_info['env'] and \
                         account['region'] == self.app_info['region']:
                     elb_dns = account['dnsname']
 
         if not elb_dns:
-            raise SpinnakerElbNotFound('Elb for %s in region %s not found' % 
-                   (self.app_name, self.app_info['region'])) 
+            raise SpinnakerElbNotFound('Elb for %s in region %s not found' %
+                   (self.app_name, self.app_info['region']))
         return elb_dns
 
     def app_exists(self, app_name):
@@ -173,7 +173,7 @@ class SpinnakerDns:
             Auto-generated DNS name for the Elastic Load Balancer.
         """
 
-        dns_zone = '{environment}.{domain}'.format(**self.app_info)
+        dns_zone = '{env}.{domain}'.format(**self.app_info)
 
         app_details = self.get_app_detail()
 
@@ -224,13 +224,13 @@ def main():
                         '--debug',
                         action='store_true',
                         help='DEBUG output')
-    parser.add_argument("--name",
+    parser.add_argument("--app",
                         help="The application name to create",
                         required=True)
     parser.add_argument("--region",
                         help="The region to create the security group",
                         required=True)
-    parser.add_argument("--environment",
+    parser.add_argument("--env",
                         help="The environment to create the security group",
                         required=True)
     args = parser.parse_args()
@@ -242,9 +242,9 @@ def main():
 
     # Dictionary containing application info. This is passed to the class for processing
     appinfo = {
-        'name': args.name,
+        'app': args.app,
         'region': args.region,
-        'environment': args.environment,
+        'env': args.env,
     }
 
     # TODO: Get actual items from application.json
