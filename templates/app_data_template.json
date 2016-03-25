@@ -4,7 +4,7 @@
         "account":"dev",
         "application":{
             "cloudProviders":"aws",
-            "name": "{{ appinfo.name }}",
+            "name": "{{ appinfo.app }}",
             "email": "{{ appinfo.email }}",
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
@@ -18,7 +18,7 @@
         "account":"stage",
         "application":{
             "cloudProviders":"aws",
-            "name": "{{ appinfo.name }}",
+            "name": "{{ appinfo.app }}",
             "email": "{{ appinfo.email }}",
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
@@ -32,7 +32,7 @@
         "account":"prod",
         "application":{
             "cloudProviders":"aws",
-            "name": "{{ appinfo.name }}",
+            "name": "{{ appinfo.app }}",
             "email": "{{ appinfo.email }}",
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
@@ -42,7 +42,7 @@
         "user":"Pipes-Script"
           }
       ],
-"application": "{{ appinfo.name }}",
-"description": "Created application {{ appinfo.name }}"
+"application": "{{ appinfo.app }}",
+"description": "Created application {{ appinfo.app }}"
 }
 

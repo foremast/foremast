@@ -48,6 +48,7 @@ class SpinnakerApp:
         jinjaenv = Environment(loader=FileSystemLoader(templatedir))
         template = jinjaenv.get_template("app_data_template.json")
         rendered_json = json.loads(template.render(appinfo=self.appinfo))
+        print(rendered_json)
         return rendered_json
 
     '''Sends a POST to spinnaker to create a new application'''
@@ -55,7 +56,7 @@ class SpinnakerApp:
         #setup class variables for processing
         self.appinfo = appinfo
         if appinfo:
-            self.appname = appinfo['name']
+            self.appname = appinfo['app']
 
         if not (self.app_exists()):
             url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
@@ -72,7 +73,7 @@ class SpinnakerApp:
 if __name__ == "__main__":
     #Setup parser
     parser = argparse.ArgumentParser()
-    parser.add_argument("--name", help="The application name to create",
+    parser.add_argument("--app", help="The application name to create",
                         required=True)
     parser.add_argument("--email", help="Email address to associate with application",
                         default="PS-DevOpsTooling@example.com")
@@ -85,7 +86,7 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     #Dictionary containing application info. This is passed to the class for processing
-    appinfo = { "name": args.name, 
+    appinfo = { "app": args.app,
                 "email": args.email,
                 "project": args.project, 
                 "repo": args.repo }
