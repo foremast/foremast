@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-#A script for creating an application in spinnaker.
-#Simply looks to see if the application already exists, if not, creates
+# A script for creating an application in spinnaker.
+# Simply looks to see if the application already exists, if not, creates
 
 import argparse
 import configparser
@@ -12,6 +12,7 @@ import sys
 
 from jinja2 import Environment, FileSystemLoader
 import requests
+
 
 class SpinnakerApp:
     def __init__(self):
@@ -41,7 +42,7 @@ class SpinnakerApp:
                 return True
         logging.info('{} does not exist...creating'.format(self.appname))
         return False
-            
+
     '''Uses jinja2 to setup POST data for application creation'''
     def setup_appdata(self):
         templatedir = "{}/../../templates".format(self.here)
@@ -53,7 +54,7 @@ class SpinnakerApp:
 
     '''Sends a POST to spinnaker to create a new application'''
     def create_app(self, appinfo=None):
-        #setup class variables for processing
+        # setup class variables for processing
         self.appinfo = appinfo
         if appinfo:
             self.appname = appinfo['app']
@@ -62,7 +63,7 @@ class SpinnakerApp:
             url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
             jsondata = self.setup_appdata()
             r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
-            
+
             if not r.ok:
                 logging.error("Failed to create app: {}".format(r.text))
                 sys.exit(1)
@@ -71,7 +72,7 @@ class SpinnakerApp:
             return
 
 if __name__ == "__main__":
-    #Setup parser
+    # Setup parser
     parser = argparse.ArgumentParser()
     parser.add_argument("--app", help="The application name to create",
                         required=True)
@@ -85,12 +86,13 @@ if __name__ == "__main__":
 
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
-    #Dictionary containing application info. This is passed to the class for processing
-    appinfo = { "app": args.app,
-                "email": args.email,
-                "project": args.project, 
-                "repo": args.repo }
+    # Dictionary containing application info. This is passed to the class for processing
+    appinfo = {
+        "app": args.app,
+        "email": args.email,
+        "project": args.project,
+        "repo": args.repo
+    }
 
     spinnakerapps = SpinnakerApp()
     spinnakerapps.create_app(appinfo=appinfo)
-
