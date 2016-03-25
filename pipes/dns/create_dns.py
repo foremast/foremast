@@ -188,7 +188,7 @@ class SpinnakerDns:
                 # We will always add a private record. The elb subnet must be
                 # specified as 'external' to get added publicly.
                 if zone['Config']['PrivateZone'] or \
-                                self.app_info['config']['elb']['subnet_purpose'] in (
+                                self.app_info['elb_subnet'] in (
                                 'external'):
                     self.log.info('Adding DNS record to %s zone', zone['Id'])
                     zone_ids.append(zone['Id'])
@@ -233,6 +233,9 @@ def main():
     parser.add_argument("--env",
                         help="The environment to create the security group",
                         required=True)
+    parser.add_argument("--elb_subnet",
+                        help="The environment to create the security group",
+                        required=True)
     args = parser.parse_args()
 
     if args.debug:
@@ -245,10 +248,8 @@ def main():
         'app': args.app,
         'region': args.region,
         'env': args.env,
+        'elb_subnet': args.elb_subnet
     }
-
-    # TODO: Get actual items from application.json
-    appinfo.update({'config': {'elb': {'subnet_purpose': 'internal'}}})
 
     spinnakerapps = SpinnakerDns(app_info=appinfo)
     spinnakerapps.create_elb_dns()
