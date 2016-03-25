@@ -1,8 +1,8 @@
 {
     "job": [
         {
-        "application": "{{ sginfo.appname }}",
-        "credentials": "{{ sginfo.account }}",
+        "application": "{{ sginfo.app }}",
+        "credentials": "{{ sginfo.env }}",
         "strategy": "",
         "capacity": {
             "min": {{ sginfo.min_capacity }},
@@ -30,7 +30,7 @@
         "tags": {},
         "subnetType": "{{ sginfo.subnet_type }}",
         "virtualizationType": "hvm",
-        "stack": "{{ sginfo.stackname }}",
+        "stack": "{{ sginfo.stack }}",
         "amiName": "{{ sginfo.aminame }}",
         "reason": "Triggered via pipes scripts",
         "loadBalancers": {{ sginfo.elbs }},
@@ -38,10 +38,10 @@
         "base64UserData": "{{ sginfo.b64_userdata }}",
         "type": "createServerGroup",
         "cloudProvider": "aws",
-        "account": "{{ sginfo.account }}",
+        "account": "{{ sginfo.env }}",
         "user": "Pipes-Script"
         }
         ],
-    "application": "{{ sginfo.appname }}",
-    "description":"Create New Server Group in cluster {{ sginfo.appname }}"
+    "application": "{{ sginfo.app }}",
+    "description":"Create New Server Group in cluster {{ sginfo.app }}"
 }

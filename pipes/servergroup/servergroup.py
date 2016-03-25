@@ -51,7 +51,7 @@ class SpinnakerServerGroup:
         self.log.info('Checking taskid %s' % taskid)
 
         url = '{0}/applications/{1}/tasks/{2}'.format(self.gate_url,
-                                                      self.sginfo['appname'],
+                                                      self.sginfo['app'],
                                                       taskid, )
 
         r = requests.get(url, headers=self.header)
@@ -82,7 +82,7 @@ class SpinnakerServerGroup:
         self.sginfo = sginfo
 
         url = "{}/applications/{}/tasks".format(self.gate_url,
-                                                self.sginfo['appname'])
+                                                self.sginfo['app'])
         jsondata = self.get_template()
         self.log.info(jsondata)
         r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
@@ -94,23 +94,23 @@ class SpinnakerServerGroup:
             sys.exit(1)
 
         self.log.info("Successfully created {} server group".format(
-            self.sginfo['appname']))
+            self.sginfo['app']))
         return
 
-#python servergroup.py --appname dougtestapp --account dev --aminame a_forrest_core_v0.0.102_b102_ami-xxxx-02-26-04-44_010fc03119
+#python servergroup.py --app dougtestapp --env dev --aminame a_forrest_core_v0.0.102_b102_ami-xxxx-02-26-04-44_010fc03119
 if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
     log = logging.getLogger(__name__)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--appname",
+    parser.add_argument("--app",
                         help="The application name for the server group",
                         required=True)
-    parser.add_argument("--stackname",
+    parser.add_argument("--stack",
                         help="The stack name for the server group",
                         default="")
-    parser.add_argument("--account",
-                        help="The account to create the server group in",
+    parser.add_argument("--env",
+                        help="The env to create the server group in",
                         required=True)
     parser.add_argument("--min_capacity",
                         help="The minimum amount of instances in a server group",
@@ -153,7 +153,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if not args.keypair:
-        args.keypair = "{}_access".format(args.account)
+        args.keypair = "{}_access".format(args.env)
 
     if len(args.elbs) == 0:
         healthchecktype = 'EC2'
@@ -161,9 +161,9 @@ if __name__ == "__main__":
         healthchecktype = 'ELB'
 
     sginfo = {
-        "appname": args.appname,
-        "stackname": args.stackname,
-        "account": args.account,
+        "app": args.app,
+        "stack": args.stack,
+        "env": args.env,
         "min_capacity": args.min_capacity,
         "max_capacity": args.max_capacity,
         "desired_capacity": args.desired_capacity,
@@ -173,7 +173,7 @@ if __name__ == "__main__":
         "keypair": args.keypair,
         "securitygroups": args.securitygroups,
         "aminame": args.ami_id,
-        "elbs": [args.appname],
+        "elbs": [args.app],
         "instancetype": args.instancetype,
         "b64_userdata": args.b64_userdata
     }
