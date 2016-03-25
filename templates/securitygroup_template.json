@@ -5,6 +5,7 @@
         {
             "credentials": "{{ environment }}",
             "description": "Security group for {{ name }}",
+            "detail": "",
             "name": "{{ name }}",
             "regions": [
                 "{{ region }}"
