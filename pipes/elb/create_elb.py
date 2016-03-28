@@ -16,7 +16,7 @@ class SpinnakerELB:
         self.templatedir = "{}/../../templates".format(self.curdir)
         jinjaenv = Environment(loader=FileSystemLoader(self.templatedir))
         self.elb_template = jinjaenv.get_template("elb_data_template.json")
-        self.gate_url = "http://spinnaker.build.example.com:8084"
+        self.gate_url = "http://gate-api.build.example.com:8084"
         self.header = {'Content-Type': 'application/json', 'Accept': '*/*'}
 
     def get_vpc_id(self, account):
