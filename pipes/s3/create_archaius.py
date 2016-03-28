@@ -6,7 +6,7 @@ import boto3
 LOG = logging.getLogger(__name__)
 
 
-def init_properties(env='dev', group='extra', app='unnecessary'):
+def init_properties(env='dev', project='extra', app='unnecessary'):
     """Make sure _application.properties_ file exists in S3.
 
     For Applications with Archaius support, there needs to be a file where the
@@ -14,8 +14,8 @@ def init_properties(env='dev', group='extra', app='unnecessary'):
 
     Args:
         env (str): Deployment environment, i.e. dev, stage, prod.
-        group_name (str): GitLab Group Namespace name.
-        app_name (str): GitLab Project name.
+        project (str): GitLab Group Namespace name.
+        app (str): GitLab Project name.
 
     Returns:
         True when application.properties was found.
@@ -25,8 +25,8 @@ def init_properties(env='dev', group='extra', app='unnecessary'):
     s3client = aws_env.resource('s3')
 
     archaius_bucket = 'archaius-{env}'.format(env=env)
-    archaius_file = ('{group}/{app}/application.properties').format(
-        group=group,
+    archaius_file = ('{project}/{app}/application.properties').format(
+        project=project,
         app=app)
 
     try:

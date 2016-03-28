@@ -22,8 +22,8 @@ def main():
                         choices=('build', 'dev', 'stage', 'prod'),
                         default='dev',
                         help='Deploy environment')
-    parser.add_argument('-g',
-                        '--group',
+    parser.add_argument('-p',
+                        '--project',
                         default='extra',
                         help='Application Group name, e.g. forrest')
     parser.add_argument('-a',
@@ -38,7 +38,7 @@ def main():
 
     LOG.debug('Args: %s', vars(args))
 
-    init_properties(env=args.env, group=args.group, app=args.app)
+    init_properties(env=args.env, project=args.project, app=args.app)
 
 
 if __name__ == '__main__':
