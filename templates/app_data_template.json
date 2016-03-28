@@ -39,7 +39,7 @@
             "repoSlug": "{{ appinfo.repo }}",
             "platformHealthOnlyShowOverride": true
               },
-        "user":"Pipes-Script"
+        "user":"pipes-app"
           }
       ],
 "application": "{{ appinfo.app }}",
