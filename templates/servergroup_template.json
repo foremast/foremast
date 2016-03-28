@@ -39,7 +39,7 @@
         "type": "createServerGroup",
         "cloudProvider": "aws",
         "account": "{{ sginfo.env }}",
-        "user": "Pipes-Script"
+        "user": "pipes-servergroup"
         }
         ],
     "application": "{{ sginfo.app }}",

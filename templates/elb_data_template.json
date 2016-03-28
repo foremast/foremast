@@ -44,7 +44,7 @@
                "us-east-1e"
             ]
          },
-         "user":"[anonymous]"
+         "user":"pipes-elb"
       }
    ],
    "application":"{{ app_name }}",

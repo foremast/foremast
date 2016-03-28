@@ -20,7 +20,7 @@
             ],
             "subnet": "none",
             "type": "upsertSecurityGroup",
-            "user": "[anonymous]",
+            "user": "pipes-securitygroup",
             "vpcId": "{{ vpc }}"
         }
     ]
