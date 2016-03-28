@@ -145,7 +145,7 @@ if __name__ == '__main__':
                                             elb_name=args.elb_name,
                                             subnet_type=args.elb_subnet,
                                             elb_subnet=args.elb_subnet,
-                                            hc_string=args.int_listener_protocol+':'+str(args.int_listener_port)+args.health_path)
+                                            hc_string=args.int_listener_protocol+':'+str(args.int_listener_port)+args.health_path if args.health_protocol == 'HTTP' else args.int_listener_protocol+':'+str(args.int_listener_port))
 
     rendered_json = json.loads(template)
     logging.info(rendered_json)
