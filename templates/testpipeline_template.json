@@ -1,6 +1,6 @@
 {
   "name": "TestPipeline",
-  "application": "{{ app }}"
+  "application": "{{ app }}",
   "stages": [
     {
       "requisiteStageRefIds": [],
