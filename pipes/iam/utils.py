@@ -25,8 +25,8 @@ def get_details(app='groupproject', env='dev'):
 
     app_details = requests.get(api.url).json()
 
-    group, project = gogoutils.Parser(app_details['attributes'][
-        'repoProjectKey']).parse_url()
+    group = app_details['attributes'].get('repoProjectKey')
+    project = app_details['attributes'].get('repoSlug')
     generated = gogoutils.Generator(group, project, env=env)
 
     app_details = collections.namedtuple('AppDetails',
