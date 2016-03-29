@@ -146,7 +146,7 @@ class SpinnakerPipeline:
         url = "{0}/pipelines".format(self.gate_url)
 
         pipeline_json = self.get_template(
-            template_name='testpipeline_template.json',
+            template_name='pipeline_template.json',
             template_dict=self.app_info,
         )
 
