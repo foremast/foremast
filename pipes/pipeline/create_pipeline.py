@@ -146,7 +146,7 @@ class SpinnakerPipeline:
         url = "{0}/pipelines".format(self.gate_url)
 
         pipeline_json = self.get_template(
-            template_name='testpipeline_template.json',
+            template_name='pipeline_template.json',
             template_dict=self.app_info,
         )
 
@@ -154,10 +154,9 @@ class SpinnakerPipeline:
                           data=json.dumps(pipeline_json),
                           headers=self.header)
 
-        status = self.check_task(r.json())
-        if status not in ('SUCCEEDED'):
+        if not r.ok:
             logging.error('Failed to create pipeline: %s', r.text)
-            raise SpinnakerPipelineCreationFailed(r.text)
+            raise SpinnakerPipelineCreationFailed(r.json())
 
         logging.info('Successfully created %s pipeline', self.app_name)
         return True

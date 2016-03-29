@@ -103,8 +103,8 @@ class SpinnakerDns:
         details = {}
         if r.ok:
             details.update(r.json())
-            git_url = details['attributes'].get('repoProjectKey')
-            group, project = gogoutils.Parser(git_url).parse_url()
+            group = details['attributes'].get('repoProjectKey')
+            project = details['attributes'].get('repoSlug')
             generator = gogoutils.Generator(
                     project=group,
                     repo=project,
