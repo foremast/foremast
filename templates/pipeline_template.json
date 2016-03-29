@@ -9,7 +9,7 @@
       "name": "Bake",
       "cloudProviderType": "aws",
       "extendedAttributes": {
-        "app_group": "devops",
+        "app_group": "${ trigger.properties.GROUP_NAME }",
         "app_name": "${ trigger.properties.APP_NAME }"
       },
       "regions": [
@@ -54,12 +54,12 @@
       "name": "Deploy Dev",
       "clusters": [
         {
-          "application": "testapp",
+          "application": "${ trigger.properties.APP_NAME }",
           "strategy": "highlander",
           "capacity": {
-            "min": 1,
-            "max": 1,
-            "desired": 1
+            "min": {{ sginfo.min_capacity }},
+            "max": {{ sginfo.max_capacity }},
+            "desired": {{ sginfo.desired_capacity }}
           },
           "targetHealthyDeployPercentage": 100,
           "cooldown": 10,
@@ -67,7 +67,7 @@
           "healthCheckGracePeriod": "60",
           "instanceMonitoring": false,
           "ebsOptimized": false,
-          "iamRole": "hvc_role",
+          "iamRole": "{{ sginfo.iamrole }}",
           "terminationPolicies": [
             "Default"
           ],
