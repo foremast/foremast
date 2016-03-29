@@ -1,4 +1,6 @@
 {
+  "name": "TestPipeline",
+  "application": "{{ app }}",
   "stages": [
     {
       "requisiteStageRefIds": [
@@ -57,9 +59,9 @@
           "application": "${ trigger.properties.APP_NAME }",
           "strategy": "highlander",
           "capacity": {
-            "min": {{ sginfo.min_capacity }},
-            "max": {{ sginfo.max_capacity }},
-            "desired": {{ sginfo.desired_capacity }}
+            "min": 1,
+            "max": 3,
+            "desired": 1
           },
           "targetHealthyDeployPercentage": 100,
           "cooldown": 10,
@@ -67,7 +69,7 @@
           "healthCheckGracePeriod": "60",
           "instanceMonitoring": false,
           "ebsOptimized": false,
-          "iamRole": "{{ sginfo.iamrole }}",
+          "iamRole": "app_default_profile",
           "terminationPolicies": [
             "Default"
           ],
