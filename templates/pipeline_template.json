@@ -242,17 +242,6 @@
       "failPipeline": true,
       "instructions": "Do you want to proceed and promote the deployment to ${ trigger.properties.DEPLOY_ENV } ?",
       "comments": "Comment<br>goes<br>here<br><b>application: ${ trigger.properties.APP_NAME }</b>"
-    },
-    {
-      "requisiteStageRefIds": [
-        "1"
-      ],
-      "refId": "10",
-      "type": "jenkins",
-      "name": "Tag",
-      "failPipeline": true,
-      "master": "JenkinsCI",
-      "job": ""
     }
   ],
   "triggers": [
