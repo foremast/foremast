@@ -59,7 +59,7 @@ class SpinnakerELB:
             logging.error(response.text)
             return response.json()
 
-    @retries(max_attempts=5, wait=5.0, exceptions=Exception)
+    @retries(max_attempts=10, wait=10, exceptions=Exception)
     def check_task(self, taskid, app_name):
         """Check ELB creation status.
         Args:
