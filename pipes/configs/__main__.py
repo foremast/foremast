@@ -47,10 +47,11 @@ def main():
             raise SystemExit('Must provide private token file as well.')
         configs = process_git_configs(git_short=args.git_short,
                                       token_file=args.token_file)
-        append_variables(app_configs=configs, out_file=args.output)
     else:
-        process_runway_configs(runway_dir=args.runway_dir,
-                               out_file=args.output)
+        configs = process_runway_configs(runway_dir=args.runway_dir,
+                                         out_file=args.output)
+
+    append_variables(app_configs=configs, out_file=args.output)
 
 
 if __name__ == '__main__':
