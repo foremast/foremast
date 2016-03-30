@@ -30,9 +30,9 @@ def main():
     source_group = parser.add_mutually_exclusive_group(required=True)
     source_group.add_argument(
         '-g',
-        '--git-short',
-        metavar='GROUP/PROJECT',
-        help='Short Git reference to find files in GitLab, e.g. forrest/core')
+        '--git-repo',
+        metavar='git@github.com:group/project.git',
+        help='Git URI to retrieve application.json files')
     source_group.add_argument(
         '-r',
         '--runway-dir',
@@ -42,14 +42,13 @@ def main():
     LOG.setLevel(args.debug)
     logging.getLogger(__package__).setLevel(args.debug)
 
-    if args.git_short:
+    if args.git_repo:
         if not args.token_file:
             raise SystemExit('Must provide private token file as well.')
-        configs = process_git_configs(git_short=args.git_short,
+        configs = process_git_configs(git_repo=args.git_repo,
                                       token_file=args.token_file)
     else:
         configs = process_runway_configs(runway_dir=args.runway_dir)
-
 
     append_variables(app_configs=configs, out_file=args.output)
 

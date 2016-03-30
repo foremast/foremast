@@ -7,6 +7,7 @@ from base64 import b64decode
 
 import gitlab
 
+import gogoutils
 from .utils import get_configs
 
 ENVS = ('dev', 'stage', 'prod')
@@ -49,12 +50,11 @@ def append_variables(app_configs=None, out_file=''):
     return True
 
 
-def process_git_configs(git_short='', token_file=''):
+def process_git_configs(git_repo='', token_file=''):
     """Retrieve _application.json_ files from GitLab.
 
     Args:
-        git_short (str): Short Git representation of repository, e.g.
-            forrest/core.
+        git_repo (str): Git URI, e.g. git@github.com:group/project.git.
         token_file (str): Name of file with GitLab private token.
 
     Returns:
@@ -69,7 +69,9 @@ def process_git_configs(git_short='', token_file=''):
     configs = get_configs(file_name='gitlab.conf')
     server = gitlab.Gitlab(configs['gitlab']['url'], token=token)
 
-    project_id = server.getproject(git_short)['id']
+    group, project = gogoutils.Parser(git_repo).parse_url()
+    generated = gogoutils.Generator(group, project)
+    project_id = server.getproject(generated.gitlab()['main'])['id']
 
     app_configs = collections.defaultdict(dict)
     for env in ENVS:
