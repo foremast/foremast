@@ -27,6 +27,8 @@ def append_variables(app_configs=None, out_file=''):
         True upon successful completion.
     """
     with open(out_file, 'at') as jenkins_vars:
+        LOG.info('Appending variables to %s.', out_file)
+
         for env, configs in app_configs.items():
             for resource, app_properties in sorted(configs.items()):
                 try:
