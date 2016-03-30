@@ -2,5 +2,6 @@ boto3
 gogo-utils
 jinja2
 murl
+pyapi-gitlab
 requests
 tryagain
