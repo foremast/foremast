@@ -37,9 +37,15 @@ def append_variables(app_configs=None, out_file=''):
                             env=env,
                             resource=resource,
                             app_property=app_property).upper()
-                        line = '{variable}={value}'.format(
-                            variable=variable,
-                            value=json.dumps(value))
+
+                        raw_value = json.dumps(value)
+                        if isinstance(value, dict):
+                            safe_value = "'{0}'".format(raw_value)
+                        else:
+                            safe_value = raw_value
+
+                        line = "{variable}={value}".format(variable=variable,
+                                                           value=safe_value)
 
                         LOG.debug('INI line: %s', line)
 
