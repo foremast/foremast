@@ -48,8 +48,8 @@ def main():
         configs = process_git_configs(git_short=args.git_short,
                                       token_file=args.token_file)
     else:
-        configs = process_runway_configs(runway_dir=args.runway_dir,
-                                         out_file=args.output)
+        configs = process_runway_configs(runway_dir=args.runway_dir)
+
 
     append_variables(app_configs=configs, out_file=args.output)
 
