@@ -3,9 +3,7 @@
   "application": "{{ app }}",
   "stages": [
     {
-      "requisiteStageRefIds": [
-        "4"
-      ],
+      "requisiteStageRefIds": [],
       "refId": "1",
       "type": "bake",
       "name": "Bake",
@@ -35,7 +33,7 @@
             "stage.failed"
           ],
           "type": "slack",
-          "address": "spinnaker"
+          "address": "#spinnaker"
         }
       ],
       "restrictExecutionDuringTimeWindow": false,
@@ -75,8 +73,7 @@
           ],
           "availabilityZones": {
             "us-east-1": [
-              "us-east-1b",
-              "us-east-1c",
+              "us-east-1a",
               "us-east-1d",
               "us-east-1e"
             ]
@@ -84,8 +81,8 @@
           "keyPair": "dev_access",
           "suspendedProcesses": [],
           "securityGroups": [
-            "sg-xxxx",
-            "sg-xxxx"
+            "sg_apps",
+            "sg_offices"
           ],
           "tags": {
             "app_group": "${ trigger.properties.GROUP_NAME }"
@@ -131,30 +128,10 @@
       ]
     },
     {
-      "requisiteStageRefIds": [],
-      "refId": "4",
-      "type": "jenkins",
-      "name": "Prep",
-      "failPipeline": true,
-      "master": "JenkinsCI",
-      "job": "pipes-elb",
-      "parameters": {
-        "APP": "${ trigger.properties.APP_NAME }",
-        "HEALTH_INTERVAL": "20",
-        "ELB_TYPE": "internal",
-        "ELB_NAME": "testapp",
-        "HEALTH_PROTOCOL": "TCP"
-      },
-      "propertyFile": "",
-      "comments": "blah",
-      "overrideTimeout": true,
-      "stageTimeoutMs": 7500000
-    },
-    {
       "requisiteStageRefIds": [
         "2"
       ],
-      "refId": "5",
+      "refId": "3",
       "type": "jenkins",
       "name": "QE Dev",
       "failPipeline": true,
@@ -165,17 +142,14 @@
       }
     },
     {
-      "requisiteStageRefIds": [
-        "5",
-        "7"
-      ],
-      "refId": "6",
+      "requisiteStageRefIds": ["5"],
+      "refId": "4",
       "type": "deploy",
       "name": "Deploy Stage",
       "clusters": [
         {
-          "application": "testapp",
-          "strategy": "redblack",
+          "application": "${ trigger.properties.APP_NAME }",
+          "strategy": "highlander",
           "stack": "teststack",
           "freeFormDetails": "",
           "cooldown": 10,
@@ -196,7 +170,7 @@
           "targetHealthyDeployPercentage": 100,
           "availabilityZones": {
             "us-east-1": [
-              "us-east-1b",
+              "us-east-1a",
               "us-east-1d",
               "us-east-1e"
             ]
@@ -211,25 +185,24 @@
           "subnetType": "infra",
           "instanceType": "t2.micro",
           "iamRole": "app_default_profile",
-          "keyPair": "build_access",
+          "keyPair": "stage_access",
           "associatePublicIpAddress": false,
           "instanceMonitoring": true,
           "ebsOptimized": false,
           "securityGroups": [
-            "sg-xxxx"
+            "sg_apps",
+            "sg_offices"
           ],
           "virtualizationType": null,
           "provider": "aws",
           "cloudProvider": "aws",
-          "account": "build"
+          "account": "stage"
         }
       ]
     },
     {
-      "requisiteStageRefIds": [
-        "5"
-      ],
-      "refId": "7",
+      "requisiteStageRefIds": ["3"],
+      "refId": "5",
       "type": "manualJudgment",
       "name": "Checkpoint",
       "notifications": [],
@@ -266,7 +239,7 @@
         "pipeline.failed"
       ],
       "type": "slack",
-      "address": "spinnaker"
+      "address": "#spinnaker"
     }
   ]
 }
