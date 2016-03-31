@@ -2,6 +2,8 @@
 import argparse
 import logging
 
+import gogoutils
+
 from .outputs import write_variables
 from .prepare_configs import process_git_configs, process_runway_configs
 
@@ -42,17 +44,21 @@ def main():
     LOG.setLevel(args.debug)
     logging.getLogger(__package__).setLevel(args.debug)
 
+    generated = gogoutils.Generator(
+        *gogoutils.Parser(args.git_short).parse_url())
+    git_short = generated.gitlab()['main']
+
     if args.runway_dir:
         configs = process_runway_configs(runway_dir=args.runway_dir)
     else:
         if not args.token_file:
             raise SystemExit('Must provide private token file as well.')
-        configs = process_git_configs(git_short=args.git_short,
+        configs = process_git_configs(git_short=git_short,
                                       token_file=args.token_file)
 
     write_variables(app_configs=configs,
                     out_file=args.output,
-                    git_short=args.git_short)
+                    git_short=git_short)
 
 
 if __name__ == '__main__':
