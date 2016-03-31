@@ -121,7 +121,7 @@ if __name__ == '__main__':
     parser.add_argument('--int_listener_protocol', action="store", help="internal listener protocol", required=True, default="HTTP")
     parser.add_argument('--ext_listener_port', action="store", help="internal listener port", required=True, default=80)
     parser.add_argument('--ext_listener_protocol', action="store", help="external listener protocol", required=True, default="HTTP")
-    parser.add_argument('--elb_name', action="store", help="elb name", required=True)
+    # parser.add_argument('--elb_name', action="store", help="elb name", required=True)
     parser.add_argument('--elb_subnet', action="store", help="elb subnet", required=True, default="internal")
     args = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
@@ -142,7 +142,7 @@ if __name__ == '__main__':
                                             ext_listener_protocol=args.ext_listener_protocol,
                                             int_listener_port=args.int_listener_port,
                                             ext_listener_port=args.ext_listener_port,
-                                            elb_name=args.elb_name,
+                                            # elb_name=args.elb_name,
                                             subnet_type=args.elb_subnet,
                                             elb_subnet=args.elb_subnet,
                                             hc_string=args.int_listener_protocol+':'+str(args.int_listener_port)+args.health_path if args.health_protocol == 'HTTP' else args.health_protocol+':'+str(args.int_listener_port))
