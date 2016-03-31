@@ -7,60 +7,10 @@ from base64 import b64decode
 
 import gitlab
 
-from .utils import get_configs, get_template
+from .utils import get_configs
 
 ENVS = ('dev', 'stage', 'prod')
 LOG = logging.getLogger(__name__)
-
-
-def append_variables(app_configs=None, out_file=''):
-    """Append _application.json_ configurations to _out_file_ and .exports.
-
-    Variables are written in INI style, e.g. UPPER_CASE=value. The .exports file
-    contains 'export' prepended to each line for easy sourcing.
-
-    Args:
-        app_configs (dict): Environment configurations from _application.json_
-            files, e.g. {'dev': {'elb': {'subnet_purpose': 'internal'}}}.
-        out_file (str): Name of INI file to append to.
-
-    Returns:
-        True upon successful completion.
-    """
-    config_lines = []
-    for env, configs in app_configs.items():
-        for resource, app_properties in sorted(configs.items()):
-            try:
-                for app_property, value in sorted(app_properties.items()):
-                    variable = '{env}_{resource}_{app_property}'.format(
-                        env=env,
-                        resource=resource,
-                        app_property=app_property).upper()
-
-                    raw_value = json.dumps(value)
-                    if isinstance(value, dict):
-                        safe_value = "'{0}'".format(raw_value)
-                    else:
-                        safe_value = raw_value
-
-                    line = "{variable}={value}".format(variable=variable,
-                                                       value=safe_value)
-
-                    LOG.debug('INI line: %s', line)
-                    config_lines.append(line)
-            except AttributeError:
-                continue
-
-    with open(out_file, 'at') as jenkins_vars:
-        LOG.info('Appending variables to %s.', out_file)
-        jenkins_vars.write('\n'.join(config_lines))
-
-    with open(out_file + '.exports', 'wt') as export_vars:
-        LOG.info('Writing sourceable variables to %s.', export_vars.name)
-        export_vars.write('\n'.join('export {0}'.format(line)
-                                    for line in config_lines))
-
-    return True
 
 
 def process_git_configs(git_short='', token_file=''):
@@ -126,16 +76,3 @@ def process_runway_configs(runway_dir=''):
 
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
-
-
-def write_json_output(app_configs=None, out_file=''):
-    """Write JSON configuration to the _out_file_."""
-    json_configs = {}
-    for env, configs in app_configs.items():
-        rendered_configs = json.loads(get_template('configs.json.j2', env=env))
-        json_configs[env] = dict(collections.ChainMap(configs,
-                                                      rendered_configs))
-
-    LOG.debug('Total JSON dict:\n%s', json_configs)
-    with open(out_file + '.json', 'wt') as json_handle:
-        json.dump(json_configs, json_handle)
