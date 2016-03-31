@@ -41,6 +41,11 @@ class SpinnakerPipeline:
 
         self.header = {'content-type': 'application/json'}
 
+    def get_settings(self):
+        with open('test-data.json') as data_file:
+            data = json.load(data_file)
+        return data
+
     def get_configs(self):
         """Get main configuration.
 
@@ -75,6 +80,10 @@ class SpinnakerPipeline:
     def create_pipeline(self):
         """Sends a POST to spinnaker to create a new security group."""
         url = "{0}/pipelines".format(self.gate_url)
+
+        self.app_info["dev"] = self.get_settings()["dev"]
+        self.app_info["stage"] = self.get_settings()["stage"]
+
 
         pipeline_json = self.get_template(
             template_name='pipeline_template.json',
