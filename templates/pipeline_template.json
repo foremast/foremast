@@ -57,8 +57,8 @@
           "application": "${ trigger.properties.APP_NAME }",
           "strategy": "highlander",
           "capacity": {
-            "min": 1,
-            "max": 3,
+            "min": "{{ dev.asg.min_inst }}",
+            "max": "{{ dev.asg.max_inst }}",
             "desired": 1
           },
           "targetHealthyDeployPercentage": 100,
@@ -67,7 +67,7 @@
           "healthCheckGracePeriod": "60",
           "instanceMonitoring": false,
           "ebsOptimized": false,
-          "iamRole": "app_default_profile",
+          "iamRole": "{{ dev.app.instance_profile }}",
           "terminationPolicies": [
             "Default"
           ],
@@ -90,7 +90,7 @@
           "subnetType": "internal",
           "virtualizationType": null,
           "loadBalancers": [],
-          "instanceType": "t2.small",
+          "instanceType": "{{ dev.app.instance_type }}",
           "useSourceCapacity": false,
           "associatePublicIpAddress": null,
           "provider": "aws",
@@ -183,8 +183,8 @@
             "Amazon"
           ],
           "subnetType": "infra",
-          "instanceType": "t2.micro",
-          "iamRole": "app_default_profile",
+          "instanceType": "{{ stage.app.instance_type }}",
+          "iamRole": "{{ stage.app.instance_profile }}",
           "keyPair": "stage_access",
           "associatePublicIpAddress": false,
           "instanceMonitoring": true,
