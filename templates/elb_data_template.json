@@ -31,7 +31,7 @@
                "externalPort":{{ ext_listener_port }}
             }
          ],
-         "name":"{{ elb_name }}",
+         "name":"{{ app_name }}",
          "usePreferredZones":true,
          "subnetType":"{{ subnet_type }}",
          "healthCheck":"{{ hc_string }}",
