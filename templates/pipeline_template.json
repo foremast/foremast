@@ -142,65 +142,6 @@
       }
     },
     {
-      "requisiteStageRefIds": ["5"],
-      "refId": "4",
-      "type": "deploy",
-      "name": "Deploy Stage",
-      "clusters": [
-        {
-          "application": "${ trigger.properties.APP_NAME }",
-          "strategy": "highlander",
-          "stack": "teststack",
-          "freeFormDetails": "",
-          "cooldown": 10,
-          "healthCheckGracePeriod": 20,
-          "healthCheckType": "ELB",
-          "terminationPolicies": [
-            "Default"
-          ],
-          "loadBalancers": [
-            "{{ app }}"
-          ],
-          "useSourceCapacity": false,
-          "capacity": {
-            "min": {{ stage.asg.min_inst }},
-            "max": {{ dev.asg.max_inst }},
-            "desired": 1
-          },
-          "targetHealthyDeployPercentage": 100,
-          "availabilityZones": {
-            "us-east-1": [
-              "us-east-1a",
-              "us-east-1d",
-              "us-east-1e"
-            ]
-          },
-          "suspendedProcesses": [],
-          "tags": {
-            "app_group": "${ trigger.properties.GROUP_NAME }"
-          },
-          "interestingHealthProviderNames": [
-            "Amazon"
-          ],
-          "subnetType": "infra",
-          "instanceType": "{{ stage.app.instance_type }}",
-          "iamRole": "{{ stage.app.instance_profile }}",
-          "keyPair": "stage_access",
-          "associatePublicIpAddress": false,
-          "instanceMonitoring": true,
-          "ebsOptimized": false,
-          "securityGroups": [
-            "sg_apps",
-            "sg_offices"
-          ],
-          "virtualizationType": null,
-          "provider": "aws",
-          "cloudProvider": "aws",
-          "account": "stage"
-        }
-      ]
-    },
-    {
       "requisiteStageRefIds": ["3"],
       "refId": "5",
       "type": "manualJudgment",
