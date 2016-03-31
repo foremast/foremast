@@ -82,7 +82,7 @@ class SpinnakerPipeline:
         url = "{0}/pipelines".format(self.gate_url)
 
         self.app_info["dev"] = self.get_settings()["dev"]
-        self.app_info["stage"] = self.get_settings()["stage"]
+#        self.app_info["stage"] = self.get_settings()["stage"]
 
         pipeline_json = self.get_template(
             template_name='pipeline_template.json',
