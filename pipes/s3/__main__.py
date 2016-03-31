@@ -1,6 +1,7 @@
 """Add application.properties to Application's S3 Bucket directory."""
-import logging
 import argparse
+import logging
+
 from .create_archaius import init_properties
 
 LOG = logging.getLogger(__name__)
@@ -22,10 +23,6 @@ def main():
                         choices=('build', 'dev', 'stage', 'prod'),
                         default='dev',
                         help='Deploy environment')
-    parser.add_argument('-p',
-                        '--project',
-                        default='extra',
-                        help='Application Group name, e.g. forrest')
     parser.add_argument('-a',
                         '--app',
                         default='unnecessary',
@@ -38,7 +35,7 @@ def main():
 
     LOG.debug('Args: %s', vars(args))
 
-    init_properties(env=args.env, project=args.project, app=args.app)
+    init_properties(env=args.env, app=args.app)
 
 
 if __name__ == '__main__':
