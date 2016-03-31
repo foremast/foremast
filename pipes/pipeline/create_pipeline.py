@@ -42,7 +42,7 @@ class SpinnakerPipeline:
         self.header = {'content-type': 'application/json'}
 
     def get_settings(self):
-        with open('test-data.json') as data_file:
+        with open('raw.properties.json') as data_file:
             data = json.load(data_file)
         return data
 
