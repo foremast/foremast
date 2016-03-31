@@ -70,6 +70,7 @@ def write_variables(app_configs=None, out_file='', git_short=''):
                                     for line in config_lines))
 
     with open(out_file + '.json', 'wt') as json_handle:
+        LOG.info('Writing JSON to %s.', json_handle.name)
         LOG.debug('Total JSON dict:\n%s', json_configs)
         json.dump(json_configs, json_handle)
 
