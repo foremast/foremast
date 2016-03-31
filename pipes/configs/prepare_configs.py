@@ -42,8 +42,12 @@ def process_git_configs(git_short='', token_file=''):
             'runway/application-master-{env}.json'.format(env=env),
             'master')
         LOG.debug('GitLab file response:\n%s', file_blob)
-        file_contents = b64decode(file_blob['content'])
-        app_configs[env] = json.loads(file_contents.decode())
+
+        try:
+            file_contents = b64decode(file_blob['content'])
+            app_configs[env] = json.loads(file_contents.decode())
+        except TypeError:
+            continue
 
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
