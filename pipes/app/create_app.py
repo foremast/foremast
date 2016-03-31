@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import sys
+import gogoutils
 
 from jinja2 import Environment, FileSystemLoader
 import requests
@@ -62,7 +63,7 @@ class SpinnakerApp:
         url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
         jsondata = self.setup_appdata()
         r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
-        
+
         if not r.ok:
             logging.error("Failed to create app: {}".format(r.text))
             sys.exit(1)
@@ -81,16 +82,25 @@ if __name__ == "__main__":
                         default="None")
     parser.add_argument("--repo", help="The repo to associate with application",
                         default="None")
+    parser.add_argument("--git", help="Git URI", default=None)
     args = parser.parse_args()
 
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+
+    if args.git:
+        generated = gogoutils.Generator(*gogoutils.Parser(args.git).parse_url())
+        project = generated.project
+        repo = generated.repo
+    else:
+        project = args.project
+        repo = args.repo
 
     # Dictionary containing application info. This is passed to the class for processing
     appinfo = {
         "app": args.app,
         "email": args.email,
-        "project": args.project,
-        "repo": args.repo
+        "project": project,
+        "repo": repo
     }
 
     spinnakerapps = SpinnakerApp()
