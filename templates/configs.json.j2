@@ -1,0 +1,43 @@
+{
+    "elb": {
+        "lb_port": 80,
+        "target": "TCP:8080",
+        "i_port": 8080,
+        "subnet_purpose": "internal"
+    },
+    "asg": {
+        "hc_type": "ELB",
+        "max_inst": 3,
+        "subnet_purpose": "internal",
+        "min_inst": 1
+    },
+    "qe": {
+        "test_type": "none",
+        "test_job": "{{ app }}_QE"
+    },
+    "security_group": {
+        "egress": "0.0.0.0/0",
+        "ingress": {
+            "app_b": [
+                8080,
+                8143
+            ],
+            "app_a": [
+                8080,
+                8443,
+                8173
+            ]
+        },
+        "description": "Auto-Gen SG for {{ app }}",
+        "default_sg": "sg_apps"
+    },
+    "app": {
+        "eureka_enabled": false,
+        "instance_profile": "app_default_profile",
+        "instance_type": "t2.micro",
+        "app_ssh_key": "{{ env }}_access",
+        "aws_region": "us-east-1",
+        "email": null,
+        "app_description": null
+    }
+}
