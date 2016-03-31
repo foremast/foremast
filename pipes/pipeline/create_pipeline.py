@@ -5,9 +5,10 @@ import json
 import logging
 import os
 
-from tryagain import retries
-from jinja2 import Environment, FileSystemLoader
 import requests
+
+from jinja2 import Environment, FileSystemLoader
+from tryagain import retries
 
 
 class SpinnakerAppNotFound(Exception):
@@ -70,6 +71,26 @@ class SpinnakerPipeline:
         rendered_json = json.loads(template.render(**template_dict))
         self.log.debug('Rendered template: %s', rendered_json)
         return rendered_json
+
+    def create_pipeline(self):
+        """Sends a POST to spinnaker to create a new security group."""
+        url = "{0}/pipelines".format(self.gate_url)
+
+        pipeline_json = self.get_template(
+            template_name='pipeline_template.json',
+            template_dict=self.app_info,
+        )
+
+        r = requests.post(url,
+                          data=json.dumps(pipeline_json),
+                          headers=self.header)
+
+        if not r.ok:
+            logging.error('Failed to create pipeline: %s', r.text)
+            raise SpinnakerPipelineCreationFailed(r.json())
+
+        logging.info('Successfully created %s pipeline', self.app_name)
+        return True
 
     def get_apps(self):
         """Gets all applications from spinnaker."""
@@ -141,25 +162,6 @@ class SpinnakerPipeline:
             else:
                 raise Exception
 
-    def create_pipeline(self):
-        """Sends a POST to spinnaker to create a new security group."""
-        url = "{0}/pipelines".format(self.gate_url)
-
-        pipeline_json = self.get_template(
-            template_name='pipeline_template.json',
-            template_dict=self.app_info,
-        )
-
-        r = requests.post(url,
-                          data=json.dumps(pipeline_json),
-                          headers=self.header)
-
-        if not r.ok:
-            logging.error('Failed to create pipeline: %s', r.text)
-            raise SpinnakerPipelineCreationFailed(r.json())
-
-        logging.info('Successfully created %s pipeline', self.app_name)
-        return True
 
 
 def main():
