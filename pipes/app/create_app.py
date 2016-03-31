@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
-    if args.git:
+    if args.git and args.git != 'None':
         generated = gogoutils.Generator(*gogoutils.Parser(args.git).parse_url())
         project = generated.project
         repo = generated.repo
