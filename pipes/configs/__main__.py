@@ -3,7 +3,7 @@ import argparse
 import logging
 
 from .prepare_configs import (append_variables, process_git_configs,
-                              process_runway_configs)
+                              process_runway_configs, write_json_output)
 
 LOG = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ def main():
     else:
         configs = process_runway_configs(runway_dir=args.runway_dir)
 
-
+    write_json_output(app_configs=configs, out_file=args.output)
     append_variables(app_configs=configs, out_file=args.output)
 
 
