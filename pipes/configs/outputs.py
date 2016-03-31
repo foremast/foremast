@@ -3,12 +3,14 @@ import collections
 import json
 import logging
 
+import gogoutils
+
 from .utils import get_template
 
 LOG = logging.getLogger(__name__)
 
 
-def write_variables(app_configs=None, out_file=''):
+def write_variables(app_configs=None, out_file='', git_short=''):
     """Append _application.json_ configurations to _out_file_ and .exports.
 
     Variables are written in INI style, e.g. UPPER_CASE=value. The .exports file
@@ -18,12 +20,24 @@ def write_variables(app_configs=None, out_file=''):
         app_configs (dict): Environment configurations from _application.json_
             files, e.g. {'dev': {'elb': {'subnet_purpose': 'internal'}}}.
         out_file (str): Name of INI file to append to.
+        git_short (str): Short name of Git repository, e.g. forrest/core.
 
     Returns:
         True upon successful completion.
     """
-    config_lines = []
+    generated = gogoutils.Generator(*gogoutils.Parser(git_short).parse_url())
+
+    json_configs = {}
     for env, configs in app_configs.items():
+        rendered_configs = json.loads(get_template('configs.json.j2',
+                                                   env=env,
+                                                   app=generated.app))
+        LOG.debug('Rendered config template:\n%s', rendered_configs)
+        json_configs[env] = dict(collections.ChainMap(configs,
+                                                      rendered_configs))
+
+    config_lines = []
+    for env, configs in json_configs.items():
         for resource, app_properties in sorted(configs.items()):
             try:
                 for app_property, value in sorted(app_properties.items()):
@@ -55,19 +69,8 @@ def write_variables(app_configs=None, out_file=''):
         export_vars.write('\n'.join('export {0}'.format(line)
                                     for line in config_lines))
 
-    write_json_output(app_configs=app_configs, out_file=out_file)
+    with open(out_file + '.json', 'wt') as json_handle:
+        LOG.debug('Total JSON dict:\n%s', json_configs)
+        json.dump(json_configs, json_handle)
 
     return True
-
-
-def write_json_output(app_configs=None, out_file=''):
-    """Write JSON configuration to the _out_file_."""
-    json_configs = {}
-    for env, configs in app_configs.items():
-        rendered_configs = json.loads(get_template('configs.json.j2', env=env))
-        json_configs[env] = dict(collections.ChainMap(configs,
-                                                      rendered_configs))
-
-    LOG.debug('Total JSON dict:\n%s', json_configs)
-    with open(out_file + '.json', 'wt') as json_handle:
-        json.dump(json_configs, json_handle)
