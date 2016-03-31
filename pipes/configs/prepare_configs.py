@@ -43,11 +43,12 @@ def process_git_configs(git_short='', token_file=''):
             'master')
         LOG.debug('GitLab file response:\n%s', file_blob)
 
-        try:
+        if not file_blob:
+            LOG.debug('Application configuration not available for %s.', env)
+            continue
+        else:
             file_contents = b64decode(file_blob['content'])
             app_configs[env] = json.loads(file_contents.decode())
-        except TypeError:
-            continue
 
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
