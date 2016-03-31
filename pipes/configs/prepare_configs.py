@@ -41,6 +41,7 @@ def process_git_configs(git_short='', token_file=''):
             project_id,
             'runway/application-master-{env}.json'.format(env=env),
             'master')
+        LOG.debug('GitLab file response:\n%s', file_blob)
         file_contents = b64decode(file_blob['content'])
         app_configs[env] = json.loads(file_contents.decode())
 
