@@ -7,7 +7,7 @@ from base64 import b64decode
 
 import gitlab
 
-from .utils import get_configs
+from .utils import get_configs, get_template
 
 ENVS = ('dev', 'stage', 'prod')
 LOG = logging.getLogger(__name__)
@@ -118,3 +118,16 @@ def process_runway_configs(runway_dir=''):
 
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
+
+
+def write_json_output(app_configs=None, out_file=''):
+    """Write JSON configuration to the _out_file_."""
+    json_configs = {}
+    for env, configs in app_configs.items():
+        rendered_configs = json.loads(get_template('configs.json.j2', env=env))
+        json_configs[env] = dict(collections.ChainMap(configs,
+                                                      rendered_configs))
+
+    LOG.debug('Total JSON dict:\n%s', json_configs)
+    with open(out_file + '.json', 'wt') as json_handle:
+        json.dump(json_configs, json_handle)
