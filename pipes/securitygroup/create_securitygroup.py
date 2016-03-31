@@ -14,6 +14,10 @@ class SpinnakerAppNotFound(Exception):
     pass
 
 
+class SpinnakerVPCNotFound(Exception):
+    pass
+
+
 class SpinnakerApplicationListError(Exception):
     pass
 
@@ -70,6 +74,25 @@ class SpinnakerSecurityGroup:
         rendered_json = json.loads(template.render(**template_dict))
         self.log.debug('Rendered template: %s', rendered_json)
         return rendered_json
+
+    def get_vpc_id(self, account):
+        """Get vpc id.
+
+        Args:
+            account: AWS account name.
+
+        Returns:
+            vpc_id.
+        """
+        url = '{0}/vpcs'.format(self.gate_url)
+        response = requests.get(url)
+        if response.ok:
+            for vpc in response.json():
+                if vpc['name'] == 'vpc' and vpc['account'] == account:
+                    return vpc['id']
+        else:
+            logging.error(response.text)
+            raise SpinnakerVPCNotFound(response.text)
 
     def get_apps(self):
         """Gets all applications from spinnaker."""
@@ -146,9 +169,12 @@ class SpinnakerSecurityGroup:
         url = "{0}/applications/{1}/tasks".format(self.gate_url,
                                                 self.app_name)
 
+        app_data = {'vpc': self.get_vpc_id(self.app_info['env'])}
+        app_data.update(self.app_info)
+
         secgroup_json = self.get_template(
             template_name='securitygroup_template.json',
-            template_dict=self.app_info,
+            template_dict=app_data,
         )
 
         r = requests.post(url,
@@ -180,9 +206,6 @@ def main():
     parser.add_argument("--region",
                         help="The region to create the security group",
                         required=True)
-    parser.add_argument("--vpc",
-                        help="The vpc to create the security group",
-                        required=True)
     parser.add_argument("--env",
                         help="The environment to create the security group",
                         required=True)
@@ -196,7 +219,6 @@ def main():
     # Dictionary containing application info. This is passed to the class for processing
     appinfo = {
         'app': args.app,
-        'vpc': args.vpc,
         'region': args.region,
         'env': args.env,
     }
