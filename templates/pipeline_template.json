@@ -57,9 +57,9 @@
           "application": "${ trigger.properties.APP_NAME }",
           "strategy": "highlander",
           "capacity": {
-            "min": "{{ dev.asg.min_inst }}",
-            "max": "{{ dev.asg.max_inst }}",
-            "desired": 1
+            "min": {{ dev.asg.min_inst }},
+            "max": {{ dev.asg.max_inst }},
+            "desired": 2
           },
           "targetHealthyDeployPercentage": 100,
           "cooldown": 10,
@@ -163,8 +163,8 @@
           ],
           "useSourceCapacity": false,
           "capacity": {
-            "min": 1,
-            "max": 1,
+            "min": {{ stage.asg.min_inst }},
+            "max": {{ dev.asg.max_inst }},
             "desired": 1
           },
           "targetHealthyDeployPercentage": 100,
