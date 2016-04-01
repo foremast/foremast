@@ -54,7 +54,7 @@
       "name": "Deploy Dev",
       "clusters": [
         {
-          "application": "${ trigger.properties.APP_NAME }",
+          "application": "{{ app }}",
           "strategy": "highlander",
           "capacity": {
             "min": {{ dev.asg.min_inst }},
