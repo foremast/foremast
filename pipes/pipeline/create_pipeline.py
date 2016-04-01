@@ -194,6 +194,30 @@ def main():
     parser.add_argument("--env",
                         help="The environment to create the security group",
                         required=True)
+    parser.add_argument("--triggerjob",
+                        help="The job to monitor for pipeline triggering",
+                        required=True)
+    args = parser.parse_args()
+
+    if args.debug:
+        log.setLevel(logging.DEBUG)
+
+    log.debug('Parsed arguments: %s', args)
+
+    # Dictionary containing application info. This is passed to the class for processing
+    appinfo = {
+        'app': args.app,
+        'vpc': args.vpc,
+        'region': args.region,
+        'env': args.env,
+        'triggerjob': args.triggerjob
+    }
+
+    spinnakerapps = SpinnakerPipeline(app_info=appinfo)
+    spinnakerapps.create_pipeline()
+
+
+if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.debug:

@@ -1,5 +1,5 @@
 {
-  "name": "TestPipeline",
+  "name": "{{ app }}-Pipeline",
   "application": "{{ app }}",
   "stages": [
     {
@@ -165,7 +165,7 @@
       "enabled": true,
       "type": "jenkins",
       "master": "JenkinsCI",
-      "job": "a_forrest_edge_spinnaker",
+      "job": "{{ triggerjob }}",
       "propertyFile": "jenkins_vars"
     }
   ],
