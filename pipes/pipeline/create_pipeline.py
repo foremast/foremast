@@ -217,24 +217,24 @@ def main():
     spinnakerapps.create_pipeline()
 
 
-if __name__ == "__main__":
-    args = parser.parse_args()
-
-    if args.debug:
-        log.setLevel(logging.DEBUG)
-
-    log.debug('Parsed arguments: %s', args)
-
-    # Dictionary containing application info. This is passed to the class for processing
-    appinfo = {
-        'app': args.app,
-        'vpc': args.vpc,
-        'region': args.region,
-        'env': args.env,
-    }
-
-    spinnakerapps = SpinnakerPipeline(app_info=appinfo)
-    spinnakerapps.create_pipeline()
+#if __name__ == "__main__":
+#    args = parser.parse_args()
+#
+#    if args.debug:
+#        log.setLevel(logging.DEBUG)
+#
+#    log.debug('Parsed arguments: %s', args)
+#
+#    # Dictionary containing application info. This is passed to the class for processing
+#    appinfo = {
+#        'app': args.app,
+#        'vpc': args.vpc,
+#        'region': args.region,
+#        'env': args.env,
+#    }
+#
+#    spinnakerapps = SpinnakerPipeline(app_info=appinfo)
+#    spinnakerapps.create_pipeline()
 
 
 if __name__ == "__main__":
