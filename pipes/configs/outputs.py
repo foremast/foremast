@@ -50,10 +50,11 @@ def convert_ini(config_dict):
 
 
 def write_variables(app_configs=None, out_file='', git_short=''):
-    """Append _application.json_ configurations to _out_file_ and .exports.
+    """Append _application.json_ configs to _out_file_, .exports, and .json.
 
     Variables are written in INI style, e.g. UPPER_CASE=value. The .exports file
-    contains 'export' prepended to each line for easy sourcing.
+    contains 'export' prepended to each line for easy sourcing. The .json file
+    is a minified representation of the combined configurations.
 
     Args:
         app_configs (dict): Environment configurations from _application.json_
