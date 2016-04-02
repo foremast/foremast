@@ -2,12 +2,50 @@
 import collections
 import json
 import logging
+from pprint import pformat
 
 import gogoutils
 
 from .utils import get_template
 
 LOG = logging.getLogger(__name__)
+
+
+def convert_ini(config_dict):
+    """Convert _config_dict_ into a list of INI formatted strings.
+
+    Args:
+        config_dict (dict): Configuration dictionary to be flattened.
+
+    Returns:
+        (list) Lines to be written to a file in the format of KEY1_KEY2=value.
+    """
+    config_lines = []
+
+    for env, configs in sorted(config_dict.items()):
+        for resource, app_properties in sorted(configs.items()):
+            try:
+                for app_property, value in sorted(app_properties.items()):
+                    variable = '{env}_{resource}_{app_property}'.format(
+                        env=env,
+                        resource=resource,
+                        app_property=app_property).upper()
+
+                    raw_value = json.dumps(value)
+                    if isinstance(value, dict):
+                        safe_value = "'{0}'".format(raw_value)
+                    else:
+                        safe_value = raw_value
+
+                    line = "{variable}={value}".format(variable=variable,
+                                                       value=safe_value)
+
+                    LOG.debug('INI line: %s', line)
+                    config_lines.append(line)
+            except AttributeError:
+                continue
+
+    return config_lines
 
 
 def write_variables(app_configs=None, out_file='', git_short=''):
@@ -32,33 +70,12 @@ def write_variables(app_configs=None, out_file='', git_short=''):
         rendered_configs = json.loads(get_template('configs.json.j2',
                                                    env=env,
                                                    app=generated.app))
-        LOG.debug('Rendered config template:\n%s', rendered_configs)
         json_configs[env] = dict(collections.ChainMap(configs,
                                                       rendered_configs))
 
-    config_lines = []
-    for env, configs in json_configs.items():
-        for resource, app_properties in sorted(configs.items()):
-            try:
-                for app_property, value in sorted(app_properties.items()):
-                    variable = '{env}_{resource}_{app_property}'.format(
-                        env=env,
-                        resource=resource,
-                        app_property=app_property).upper()
+    LOG.debug('Compiled configs:\n%s', pformat(json_configs))
 
-                    raw_value = json.dumps(value)
-                    if isinstance(value, dict):
-                        safe_value = "'{0}'".format(raw_value)
-                    else:
-                        safe_value = raw_value
-
-                    line = "{variable}={value}".format(variable=variable,
-                                                       value=safe_value)
-
-                    LOG.debug('INI line: %s', line)
-                    config_lines.append(line)
-            except AttributeError:
-                continue
+    config_lines = convert_ini(json_configs)
 
     with open(out_file, 'at') as jenkins_vars:
         LOG.info('Appending variables to %s.', out_file)
