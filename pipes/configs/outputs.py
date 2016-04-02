@@ -1,12 +1,11 @@
 """Write output files for configurations."""
-import collections
 import json
 import logging
 from pprint import pformat
 
 import gogoutils
 
-from .utils import get_template
+from .utils import DeepChainMap, get_template
 
 LOG = logging.getLogger(__name__)
 
@@ -31,11 +30,10 @@ def convert_ini(config_dict):
                         resource=resource,
                         app_property=app_property).upper()
 
-                    raw_value = json.dumps(value)
-                    if isinstance(value, dict):
-                        safe_value = "'{0}'".format(raw_value)
+                    if isinstance(value, (dict, DeepChainMap)):
+                        safe_value = "'{0}'".format(json.dumps(dict(value)))
                     else:
-                        safe_value = raw_value
+                        safe_value = json.dumps(value)
 
                     line = "{variable}={value}".format(variable=variable,
                                                        value=safe_value)
@@ -72,8 +70,7 @@ def write_variables(app_configs=None, out_file='', git_short=''):
         rendered_configs = json.loads(get_template('configs.json.j2',
                                                    env=env,
                                                    app=generated.app))
-        json_configs[env] = dict(collections.ChainMap(configs,
-                                                      rendered_configs))
+        json_configs[env] = dict(DeepChainMap(configs, rendered_configs))
 
     LOG.debug('Compiled configs:\n%s', pformat(json_configs))
 
