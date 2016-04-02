@@ -43,6 +43,7 @@ def convert_ini(config_dict):
                     LOG.debug('INI line: %s', line)
                     config_lines.append(line)
             except AttributeError:
+                LOG.debug('Skip: %s=%s', resource, app_properties)
                 continue
 
     return config_lines
