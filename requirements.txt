@@ -5,3 +5,4 @@ murl
 pyapi-gitlab
 requests
 tryagain
+jira
