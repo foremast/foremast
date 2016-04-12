@@ -1,0 +1,188 @@
+{
+  "name": "{{ app }}-Pipeline",
+  "application": "{{ app }}",
+  "stages": [
+    {
+      "requisiteStageRefIds": [],
+      "refId": "1",
+      "type": "bake",
+      "name": "Bake",
+      "cloudProviderType": "aws",
+      "extendedAttributes": {
+        "app_group": "${ trigger.properties.GROUP_NAME }",
+        "app_name": "${ trigger.properties.APP_NAME }"
+      },
+      "regions": [
+        "us-east-1"
+      ],
+      "user": "[anonymous]",
+      "vmType": "hvm",
+      "storeType": "ebs",
+      "baseOs": "fedora",
+      "baseLabel": "release",
+      "showAdvancedOptions": true,
+      "overrideTimeout": true,
+      "stageTimeoutMs": 600000,
+      "sendNotifications": true,
+      "notifications": [
+        {
+          "level": "stage",
+          "when": [
+            "stage.starting",
+            "stage.complete",
+            "stage.failed"
+          ],
+          "type": "slack",
+          "address": "#spinnaker"
+        }
+      ],
+      "restrictExecutionDuringTimeWindow": false,
+      "restrictedExecutionWindow": {
+        "whitelist": []
+      },
+      "enhancedNetworking": true,
+      "comments": "<b>hello</b>",
+      "package": "${ trigger.properties.ARTIFACT_RPM }",
+      "baseAmi": "ami-xxxx"
+    },
+    {
+      "requisiteStageRefIds": [
+        "1"
+      ],
+      "refId": "2",
+      "type": "deploy",
+      "name": "Deploy Dev",
+      "clusters": [
+        {
+          "application": "{{ app }}",
+          "strategy": "highlander",
+          "capacity": {
+            "min": {{ dev.asg.min_inst }},
+            "max": {{ dev.asg.max_inst }},
+            "desired": 2
+          },
+          "targetHealthyDeployPercentage": 100,
+          "cooldown": 10,
+          "healthCheckType": "ELB",
+          "healthCheckGracePeriod": "60",
+          "instanceMonitoring": false,
+          "ebsOptimized": false,
+          "iamRole": "{{ dev.app.instance_profile }}",
+          "terminationPolicies": [
+            "Default"
+          ],
+          "availabilityZones": {
+            "us-east-1": [
+              "us-east-1a",
+              "us-east-1d",
+              "us-east-1e"
+            ]
+          },
+          "keyPair": "dev_access",
+          "suspendedProcesses": [],
+          "securityGroups": [
+            "sg_apps",
+            "sg_offices"
+          ],
+          "tags": {
+            "app_group": "${ trigger.properties.GROUP_NAME }"
+          },
+          "subnetType": "internal",
+          "virtualizationType": null,
+          "loadBalancers": [],
+          "instanceType": "{{ dev.app.instance_type }}",
+          "useSourceCapacity": false,
+          "associatePublicIpAddress": null,
+          "provider": "aws",
+          "cloudProvider": "aws",
+          "account": "dev",
+          "interestingHealthProviderNames": [
+            "Amazon"
+          ]
+        }
+      ],
+      "comments": "<b>Comment comes here !</b>",
+      "restrictExecutionDuringTimeWindow": false,
+      "restrictedExecutionWindow": {
+        "whitelist": [
+          {
+            "startHour": 3,
+            "startMin": 0,
+            "endHour": 11,
+            "endMin": 0
+          }
+        ]
+      },
+      "sendNotifications": true,
+      "notifications": [
+        {
+          "level": "stage",
+          "when": [
+            "stage.starting",
+            "stage.complete",
+            "stage.failed"
+          ],
+          "type": "email",
+          "address": "devops@example.com"
+        }
+      ]
+    },
+    {
+      "requisiteStageRefIds": [
+        "2"
+      ],
+      "refId": "3",
+      "type": "jenkins",
+      "name": "QE Dev",
+      "failPipeline": true,
+      "master": "JenkinsCI",
+      "job": "promote-qe-stage",
+      "parameters": {
+        "test_job": "profileservice_QE"
+      }
+    },
+    {
+      "requisiteStageRefIds": ["3"],
+      "refId": "5",
+      "type": "manualJudgment",
+      "name": "Checkpoint",
+      "notifications": [],
+      "judgmentInputs": [
+        {
+          "value": "Input 1"
+        },
+        {
+          "value": "Input 2"
+        }
+      ],
+      "failPipeline": true,
+      "instructions": "Do you want to proceed and promote the deployment to ${ trigger.properties.DEPLOY_ENV } ?",
+      "comments": "Comment<br>goes<br>here<br><b>application: ${ trigger.properties.APP_NAME }</b>"
+    }
+  ],
+  "triggers": [
+    {
+      "enabled": true,
+      "type": "pipeline",
+      "application": "pcitest",
+      "status": [
+        "successful"
+      ],
+      "pipeline": "{{ pipeline_id }}"
+    }
+  ],
+  "limitConcurrent": true,
+  "parallel": true,
+  "notifications": [
+    {
+      "level": "pipeline",
+      "when": [
+        "pipeline.starting",
+        "pipeline.complete",
+        "pipeline.failed"
+      ],
+      "type": "slack",
+      "address": "#spinnaker"
+    }
+  ]
+}
