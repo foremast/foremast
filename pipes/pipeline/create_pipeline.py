@@ -36,14 +36,16 @@ class SpinnakerPipeline:
     def __init__(self, app_info):
         self.log = logging.getLogger(__name__)
 
+        self.header = {'content-type': 'application/json'}
         self.here = os.path.dirname(os.path.realpath(__file__))
+
         self.config = self.get_configs()
         self.gate_url = self.config['spinnaker']['gate_url']
-        self.app_name = self.app_exists(app_name=app_info['app'])
-        self.app_info = app_info
-        self.settings = self.get_settings()
 
-        self.header = {'content-type': 'application/json'}
+        self.app_info = app_info
+        self.app_name = self.app_exists()
+
+        self.settings = self.get_settings()
 
     def get_settings(self):
         """Get the specified Application configurations."""
@@ -125,40 +127,27 @@ class SpinnakerPipeline:
 
         return True
 
-    def get_apps(self):
-        """Gets all applications from spinnaker."""
-        url = '{0}/applications'.format(self.gate_url)
-        apps_response = requests.get(url)
-
-        if apps_response.ok:
-            return apps_response.json()
-        else:
-            logging.error(apps_response.text)
-            raise SpinnakerApplicationListError(apps_response.text)
-
-    def app_exists(self, app_name):
+    def app_exists(self):
         """Checks to see if application already exists.
-
-        Args:
-            app_name: Str of application name to check.
 
         Returns:
             Str of application name
 
         Raises:
-            SpinnakerAppNotFound
+            SpinnakerAppNotFound: Could not find Spinnaker Application.
         """
+        app_name = self.app_info['app']
 
-        apps = self.get_apps()
-        app_name = app_name.lower()
-        for app in apps:
-            if app['name'].lower() == app_name:
-                logging.info('Application %s found!', app_name)
-                return app_name
+        url = murl.Url(self.gate_url)
+        url.path = 'applications/{app}'.format(app=app_name)
+        app_response = requests.get(url.url, headers=self.header)
 
-        logging.info('Application %s does not exist ... exiting', app_name)
-        raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
-            app_name))
+        if app_response.ok:
+            return app_name
+        else:
+            logging.info('Application %s does not exist ... exiting', app_name)
+            raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
+                app_name))
 
     def get_pipe_id(self, name=''):
         """Get the ID for Pipeline _name_.
