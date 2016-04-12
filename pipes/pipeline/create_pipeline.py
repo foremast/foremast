@@ -112,13 +112,14 @@ class SpinnakerPipeline:
 
             self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
-            r = requests.post(url,
-                              data=json.dumps(pipeline_json),
-                              headers=self.header)
+            pipeline_response = requests.post(url,
+                                              data=json.dumps(pipeline_json),
+                                              headers=self.header)
 
-            if not r.ok:
-                logging.error('Failed to create pipeline: %s', r.text)
-                raise SpinnakerPipelineCreationFailed(r.json())
+            if not pipeline_response.ok:
+                logging.error('Failed to create pipeline: %s',
+                              pipeline_response.text)
+                raise SpinnakerPipelineCreationFailed(pipeline_response.json())
 
             logging.info('Successfully created %s pipeline', self.app_name)
 
@@ -127,12 +128,13 @@ class SpinnakerPipeline:
     def get_apps(self):
         """Gets all applications from spinnaker."""
         url = '{0}/applications'.format(self.gate_url)
-        r = requests.get(url)
-        if r.ok:
-            return r.json()
+        apps_response = requests.get(url)
+
+        if apps_response.ok:
+            return apps_response.json()
         else:
-            logging.error(r.text)
-            raise SpinnakerApplicationListError(r.text)
+            logging.error(apps_response.text)
+            raise SpinnakerApplicationListError(apps_response.text)
 
     def app_exists(self, app_name):
         """Checks to see if application already exists.
@@ -212,20 +214,20 @@ class SpinnakerPipeline:
                                                       self.app_name,
                                                       taskid, )
 
-        r = requests.get(url, headers=self.header)
+        task_response = requests.get(url, headers=self.header)
 
-        self.log.debug(r.json())
-        if not r.ok:
+        self.log.debug(task_response.json())
+        if not task_response.ok:
             raise Exception
         else:
-            json = r.json()
+            task_json = task_response.json()
 
-            status = json['status']
+            status = task_json['status']
 
             self.log.info('Current task status: %s', status)
-            STATUSES = ('SUCCEEDED', 'TERMINAL')
+            statuses = ('SUCCEEDED', 'TERMINAL')
 
-            if status in STATUSES:
+            if status in statuses:
                 return status
             else:
                 raise Exception
