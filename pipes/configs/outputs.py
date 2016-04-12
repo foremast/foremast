@@ -37,13 +37,13 @@ def convert_ini(config_dict):
 
                     line = "{variable}={value}".format(variable=variable,
                                                        value=safe_value)
-
-                    LOG.debug('INI line: %s', line)
-                    config_lines.append(line)
             except AttributeError:
-                LOG.debug('Skip: %s=%s', resource, app_properties)
-                continue
+                resource = resource.upper()
+                app_properties = "'{}'".format(json.dumps(app_properties))
+                line = '{0}={1}'.format(resource, app_properties)
 
+            LOG.debug('INI line: %s', line)
+            config_lines.append(line)
     return config_lines
 
 
@@ -67,11 +67,13 @@ def write_variables(app_configs=None, out_file='', git_short=''):
 
     json_configs = {}
     for env, configs in app_configs.items():
-        rendered_configs = json.loads(get_template('configs.json.j2',
-                                                   env=env,
-                                                   app=generated.app))
-        json_configs[env] = dict(DeepChainMap(configs, rendered_configs))
+        if env is not 'pipeline':
+            rendered_configs = json.loads(get_template('configs.json.j2',
+                                                       env=env,
+                                                       app=generated.app))
+            json_configs[env] = dict(DeepChainMap(configs, rendered_configs))
 
+    json_configs['pipeline'] = app_configs['pipeline']
     LOG.debug('Compiled configs:\n%s', pformat(json_configs))
 
     config_lines = convert_ini(json_configs)
