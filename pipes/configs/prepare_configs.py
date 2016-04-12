@@ -50,6 +50,22 @@ def process_git_configs(git_short='', token_file=''):
             file_contents = b64decode(file_blob['content'])
             app_configs[env] = json.loads(file_contents.decode())
 
+    LOG.info('Processing pipeline.json from GitLab.')
+    pipeline_blob = server.getfile(
+        project_id,
+        'runway/pipeline.json',
+        'master',
+        )
+
+    if not pipeline_blob:
+        LOG.info('Pipeline configuration not available, using defualts.')
+        app_configs['pipeline'] = {'env': ['stage', 'prod']}
+    else:
+        LOG.info('Pipeline configuration found.')
+        pipeline_contents = b64decode(pipeline_blob['content'])
+        LOG.info(pipeline_contents.decode())
+        app_configs['pipeline'] = json.loads(pipeline_contents.decode())
+
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
 
@@ -79,6 +95,16 @@ def process_runway_configs(runway_dir=''):
                 app_configs[env] = json.load(json_file)
         except FileNotFoundError:
             continue
+
+    LOG.info('Processing pipeline.json from local directory')
+    try:
+        pipeline_file = os.path.join(runway_dir, 'pipeline.json')
+        LOG.debug('Reading pipeline.json from %s' % pipeline_file)
+        with open(pipeline_file) as pipeline:
+            app_configs['pipeline'] = json.load(pipeline)
+    except FileNotFoundError:
+        LOG.warn('Unable to process pipeline.json. Using defaults.')
+        app_configs['pipeline'] = {'env': ['stage', 'prod']}
 
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
