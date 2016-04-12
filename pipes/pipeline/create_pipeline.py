@@ -47,7 +47,8 @@ class SpinnakerPipeline:
 
         self.settings = self.get_settings()
 
-    def get_settings(self):
+    @staticmethod
+    def get_settings():
         """Get the specified Application configurations."""
         with open('../raw.properties.json') as data_file:
             data = json.load(data_file)
