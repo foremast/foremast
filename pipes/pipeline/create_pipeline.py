@@ -5,8 +5,8 @@ import json
 import logging
 import os
 
+import murl
 import requests
-
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
@@ -155,6 +155,33 @@ class SpinnakerPipeline:
         logging.info('Application %s does not exist ... exiting', app_name)
         raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
             app_name))
+
+    def get_pipe_id(self, name=''):
+        """Get the ID for Pipeline _name_.
+
+        Args:
+            name (str): Name of Pipeline to get ID for.
+
+        Returns:
+            str: ID of specified Pipeline.
+            None: Pipeline or Spinnake Appliation not found.
+        """
+        return_id = None
+
+        url = murl.Url(self.gate_url)
+        url.path = 'applications/{app}/pipelineConfigs'.format(**self.app_info)
+        response = requests.get(url.url)
+
+        if response.ok:
+            pipe_configs = response.json()
+
+            for pipeline in pipe_configs:
+                self.log.info('ID of %(name)s: %(id)s', pipeline)
+
+                if pipeline['name'] == name:
+                    return_id = pipeline['id']
+
+        return return_id
 
     @retries(max_attempts=10, wait=10.0, exceptions=Exception)
     def check_task(self, taskid):
