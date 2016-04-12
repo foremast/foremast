@@ -90,9 +90,22 @@ class SpinnakerPipeline:
 
             self.log.debug('App info:\n%s', self.app_info)
 
+            previous_env = env
+            if previous_env:
+                # use pipeline template
+                template_name = 'pipeline_pipelinetrigger_template.json.j2'
+                self.app_info[env].update({'pipeline_id': 'xxxxxxxxx'})
+            else:
+                # use template that uses jenkins
+                template_name = 'pipeline_template.json'
+
+            # temporary hack
+            data = self.app_info[env]
+            data['app']['appname'] = self.app_info[env]['app']
+
             pipeline_json = self.get_template(
-                template_name='pipeline_template.json',
-                template_dict=self.app_info[env],
+                template_name=template_name,
+                template_dict=data,
             )
 
             self.log.debug('Pipeline JSON:\n%s', pipeline_json)
@@ -106,8 +119,6 @@ class SpinnakerPipeline:
                 raise SpinnakerPipelineCreationFailed(r.json())
 
             logging.info('Successfully created %s pipeline', self.app_name)
-
-            previous_env = env
 
         return True
 
@@ -180,7 +191,6 @@ class SpinnakerPipeline:
                 return status
             else:
                 raise Exception
-
 
 
 def main():
