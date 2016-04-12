@@ -103,10 +103,8 @@ class SpinnakerPipeline:
             data = self.app_info[env]
             data['app']['appname'] = self.app_info[env]['app']
 
-            pipeline_json = self.get_template(
-                template_name=template_name,
-                template_dict=data,
-            )
+            pipeline_json = self.get_template(template_name=template_name,
+                                              template_dict=data, )
 
             self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
@@ -195,11 +193,9 @@ class SpinnakerPipeline:
 
         self.log.info('Checking taskid %s' % taskid)
 
-        url = '{0}/applications/{1}/tasks/{2}'.format(
-            self.gate_url,
-            self.app_name,
-            taskid,
-        )
+        url = '{0}/applications/{1}/tasks/{2}'.format(self.gate_url,
+                                                      self.app_name,
+                                                      taskid, )
 
         r = requests.get(url, headers=self.header)
 
