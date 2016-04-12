@@ -12,14 +12,17 @@ from tryagain import retries
 
 
 class SpinnakerAppNotFound(Exception):
+    """Missing Spinnaker Application."""
     pass
 
 
 class SpinnakerApplicationListError(Exception):
+    """Issue with getting list of all Spinnaker Applications."""
     pass
 
 
 class SpinnakerPipelineCreationFailed(Exception):
+    """Could not create Spinnaker Pipeline."""
     pass
 
 
@@ -43,6 +46,7 @@ class SpinnakerPipeline:
         self.header = {'content-type': 'application/json'}
 
     def get_settings(self):
+        """Get the specified Application configurations."""
         with open('../raw.properties.json') as data_file:
             data = json.load(data_file)
         return data
@@ -184,7 +188,17 @@ class SpinnakerPipeline:
 
     @retries(max_attempts=10, wait=10.0, exceptions=Exception)
     def check_task(self, taskid):
+        """Check for the completion of _taskid_.
 
+        Args:
+            taskid (str): ID of Task to poll.
+
+        Raises:
+            Exception: Task has not completed yet.
+
+        Returns:
+            str: Task status of SUCCEEDED or TERMINAL.
+        """
         try:
             taskurl = taskid.get('ref', '0000')
         except AttributeError:
