@@ -178,6 +178,7 @@ class SpinnakerPipeline:
 
                 if pipeline['name'] == name:
                     return_id = pipeline['id']
+                    break
 
         return return_id
 
