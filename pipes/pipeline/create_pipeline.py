@@ -208,7 +208,7 @@ class SpinnakerPipeline:
 
         taskid = taskurl.split('/tasks/')[-1]
 
-        self.log.info('Checking taskid %s' % taskid)
+        self.log.info('Checking taskid %s', taskid)
 
         url = '{0}/applications/{1}/tasks/{2}'.format(self.gate_url,
                                                       self.app_name,
