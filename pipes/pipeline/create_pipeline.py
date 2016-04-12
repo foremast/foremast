@@ -38,6 +38,7 @@ class SpinnakerPipeline:
         self.gate_url = self.config['spinnaker']['gate_url']
         self.app_name = self.app_exists(app_name=app_info['app'])
         self.app_info = app_info
+        self.settings = self.get_settings()
 
         self.header = {'content-type': 'application/json'}
 
@@ -81,23 +82,33 @@ class SpinnakerPipeline:
         """Sends a POST to spinnaker to create a new security group."""
         url = "{0}/pipelines".format(self.gate_url)
 
-        self.app_info["dev"] = self.get_settings()["dev"]
-#        self.app_info["stage"] = self.get_settings()["stage"]
+        previous_env = None
+        self.log.debug('Envs: %s', self.settings['pipeline']['env'])
+        for env in self.settings['pipeline']['env']:
+            # Assume order of environments is correct
+            self.app_info[env] = self.settings[env]
 
-        pipeline_json = self.get_template(
-            template_name='pipeline_template.json',
-            template_dict=self.app_info,
-        )
+            self.log.debug('App info:\n%s', self.app_info)
 
-        r = requests.post(url,
-                          data=json.dumps(pipeline_json),
-                          headers=self.header)
+            pipeline_json = self.get_template(
+                template_name='pipeline_template.json',
+                template_dict=self.app_info[env],
+            )
 
-        if not r.ok:
-            logging.error('Failed to create pipeline: %s', r.text)
-            raise SpinnakerPipelineCreationFailed(r.json())
+            self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
-        logging.info('Successfully created %s pipeline', self.app_name)
+            r = requests.post(url,
+                              data=json.dumps(pipeline_json),
+                              headers=self.header)
+
+            if not r.ok:
+                logging.error('Failed to create pipeline: %s', r.text)
+                raise SpinnakerPipelineCreationFailed(r.json())
+
+            logging.info('Successfully created %s pipeline', self.app_name)
+
+            previous_env = env
+
         return True
 
     def get_apps(self):
@@ -191,9 +202,6 @@ def main():
     parser.add_argument("--vpc",
                         help="The vpc to create the security group",
                         required=True)
-    parser.add_argument("--env",
-                        help="The environment to create the security group",
-                        required=True)
     parser.add_argument("--triggerjob",
                         help="The job to monitor for pipeline triggering",
                         required=True)
@@ -209,7 +217,6 @@ def main():
         'app': args.app,
         'vpc': args.vpc,
         'region': args.region,
-        'env': args.env,
         'triggerjob': args.triggerjob
     }
 

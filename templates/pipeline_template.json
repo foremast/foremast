@@ -1,5 +1,5 @@
 {
-  "name": "{{ app }}-Pipeline",
+  "name": "{{ app }}-{{ env }}-Pipeline",
   "application": "{{ app }}",
   "stages": [
     {
@@ -51,14 +51,14 @@
       ],
       "refId": "2",
       "type": "deploy",
-      "name": "Deploy Dev",
+      "name": "Deploy {{ env }}",
       "clusters": [
         {
           "application": "{{ app }}",
           "strategy": "highlander",
           "capacity": {
-            "min": {{ dev.asg.min_inst }},
-            "max": {{ dev.asg.max_inst }},
+            "min": {{ asg.min_inst }},
+            "max": {{ asg.max_inst }},
             "desired": 2
           },
           "targetHealthyDeployPercentage": 100,
@@ -67,7 +67,7 @@
           "healthCheckGracePeriod": "60",
           "instanceMonitoring": false,
           "ebsOptimized": false,
-          "iamRole": "{{ dev.app.instance_profile }}",
+          "iamRole": "{{ app.instance_profile }}",
           "terminationPolicies": [
             "Default"
           ],
@@ -78,7 +78,7 @@
               "us-east-1e"
             ]
           },
-          "keyPair": "dev_access",
+          "keyPair": "{{ env }}_access",
           "suspendedProcesses": [],
           "securityGroups": [
             "sg_apps",
@@ -90,12 +90,12 @@
           "subnetType": "internal",
           "virtualizationType": null,
           "loadBalancers": [],
-          "instanceType": "{{ dev.app.instance_type }}",
+          "instanceType": "{{ app.instance_type }}",
           "useSourceCapacity": false,
           "associatePublicIpAddress": null,
           "provider": "aws",
           "cloudProvider": "aws",
-          "account": "dev",
+          "account": "{{ env }}",
           "interestingHealthProviderNames": [
             "Amazon"
           ]
