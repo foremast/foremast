@@ -65,6 +65,8 @@ def process_git_configs(git_short='', token_file=''):
         pipeline_contents = b64decode(pipeline_blob['content'])
         LOG.info(pipeline_contents.decode())
         app_configs['pipeline'] = json.loads(pipeline_contents.decode())
+        if 'env' not in app_configs['pipeline']:
+            app_configs['pipeline']['env'] = ['stage', 'prod']
 
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
@@ -102,6 +104,9 @@ def process_runway_configs(runway_dir=''):
         LOG.debug('Reading pipeline.json from %s' % pipeline_file)
         with open(pipeline_file) as pipeline:
             app_configs['pipeline'] = json.load(pipeline)
+
+        if 'env' not in app_configs['pipeline']:
+            app_configs['pipeline']['env'] = ['stage', 'prod']
     except FileNotFoundError:
         LOG.warn('Unable to process pipeline.json. Using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
