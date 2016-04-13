@@ -188,6 +188,7 @@ class SpinnakerPipeline:
         data = self.app_info[env]
         data['app']['appname'] = self.app_info['app']
         data['app']['environment'] = env
+        data['app']['region'] = self.app_info['region']
         pipeline_json = self.get_template(template_name=template_name,
                                           template_dict=data, )
 
