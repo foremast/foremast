@@ -332,7 +332,8 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    # Dictionary containing application info. This is passed to the class for processing
+    # Dictionary containing application info. This is passed to the class for
+    # processing
     appinfo = {
         'app': args.app,
         'vpc': args.vpc,
