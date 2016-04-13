@@ -85,10 +85,42 @@ class SpinnakerPipeline:
         self.log.debug('Rendered template: %s', rendered_json)
         return rendered_json
 
+    def clean_pipelines(self):
+        defined_envs = self.settings['pipeline']['env']
+        current_envs = []
+        all_pipelines = self.get_all_pipelines('{app}'.format(**self.app_info))
+
+        for pipeline in all_pipelines.json():
+            if pipeline['name'].endswith('-Pipeline'):
+                app, env, _ = pipeline['name'].split('-')
+                current_envs.append(env)
+
+        self.log.debug('Pipelines found - User (%s), Spinnaker (%s)', defined_envs, current_envs)
+
+        if sorted(defined_envs) == sorted(current_envs):
+            return True
+        else:
+            removed_pipelines = list(set(current_envs) - set(defined_envs))
+
+            for pipeline in removed_pipelines:
+                app = self.app_info['app']
+                pipeline_name = '{app}-{env}-Pipeline'.format(
+                    app=app,
+                    env=pipeline,
+                )
+                self.log.info('Deleted pipeline: %s', pipeline_name)
+                url = murl.Url(self.gate_url)
+                url.path = 'pipelines/{app}/{pipeline_name}'.format(
+                    app=app,
+                    pipeline_name=pipeline_name,
+                )
+                response = requests.delete(url.url)
+
     def create_pipeline(self):
         """Sends a POST to spinnaker to create a new security group."""
         url = "{0}/pipelines".format(self.gate_url)
 
+        self.clean_pipelines()
         previous_env = None
         self.log.debug('Envs: %s', self.settings['pipeline']['env'])
         for env in self.settings['pipeline']['env']:
