@@ -72,11 +72,7 @@
             "Default"
           ],
           "availabilityZones": {
-            "us-east-1": [
-              "us-east-1a",
-              "us-east-1d",
-              "us-east-1e"
-            ]
+            "{{ app.region }}": "{{ app.subnets }}"
           },
           "keyPair": "{{ env }}_access",
           "suspendedProcesses": [],
