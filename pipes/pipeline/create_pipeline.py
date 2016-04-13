@@ -140,6 +140,9 @@ class SpinnakerPipeline:
                                               data=json.dumps(pipeline_json),
                                               headers=self.header)
 
+            self.log.debug('Pipeline creation response:\n%s',
+                           pipeline_response.text)
+
             if not pipeline_response.ok:
                 logging.error('Failed to create pipeline: %s',
                               pipeline_response.text)
