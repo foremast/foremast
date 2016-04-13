@@ -133,10 +133,10 @@
       ],
       "refId": "3",
       "type": "jenkins",
-      "name": "QE Dev",
+      "name": "QE {{ app.environment }}",
       "failPipeline": true,
       "master": "JenkinsCI",
-      "job": "promote-qe-stage",
+      "job": "promote-qe-{{ app.environment }}",
       "parameters": {
         "test_job": "profileservice_QE"
       }
