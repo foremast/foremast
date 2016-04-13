@@ -1,6 +1,6 @@
 {
-  "name": "{{ app }}-{{ env }}-Pipeline",
-  "application": "{{ app }}",
+  "name": "{{ app.appname }}-{{ app.environment }}-Pipeline",
+  "application": "{{ app.appname }}",
   "stages": [
     {
       "requisiteStageRefIds": [],

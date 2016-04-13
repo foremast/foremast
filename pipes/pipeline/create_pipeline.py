@@ -97,18 +97,21 @@ class SpinnakerPipeline:
 
             self.log.debug('App info:\n%s', self.app_info)
 
-            previous_env = env
             if previous_env:
                 # use pipeline template
                 template_name = 'pipeline_pipelinetrigger_template.json.j2'
-                self.app_info[env].update({'pipeline_id': 'xxxxxxxxx'})
+                pipeline_id = self.get_pipe_id('{0}-{1}-Pipeline'.format(self.app_info['app'], previous_env))
+                self.app_info[env].update({'pipeline_id': pipeline_id})
             else:
                 # use template that uses jenkins
                 template_name = 'pipeline_template.json'
 
-            # temporary hack
+            previous_env = env
+
+            # Use different variable to keep template simple
             data = self.app_info[env]
-            data['app']['appname'] = self.app_info[env]['app']
+            data['app']['appname'] = self.app_info['app']
+            data['app']['environment'] = env
 
             pipeline_json = self.get_template(template_name=template_name,
                                               template_dict=data, )
@@ -174,6 +177,7 @@ class SpinnakerPipeline:
 
                 if pipeline['name'] == name:
                     return_id = pipeline['id']
+                    self.log.info('Pipeline found!')
                     break
 
         return return_id
