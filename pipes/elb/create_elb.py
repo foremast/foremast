@@ -9,7 +9,6 @@ from jinja2 import Environment, FileSystemLoader
 
 
 class SpinnakerELB:
-
     def __init__(self):
         ''
         self.curdir = os.path.dirname(os.path.realpath(__file__))
@@ -49,7 +48,9 @@ class SpinnakerELB:
             task id to track the elb creation status.
         """
         url = self.gate_url + '/applications/%s/tasks' % app
-        response = requests.post(url, data=json.dumps(json_data), headers=self.header)
+        response = requests.post(url,
+                                 data=json.dumps(json_data),
+                                 headers=self.header)
         if response.ok:
             logging.info('%s ELB Created' % app)
             logging.info(response.text)
@@ -79,11 +80,8 @@ class SpinnakerELB:
 
         logging.info('Checking taskid %s' % taskid)
 
-        url = '{0}/applications/{1}/tasks/{2}'.format(
-            self.gate_url,
-            app_name,
-            taskid
-        )
+        url = '{0}/applications/{1}/tasks/{2}'.format(self.gate_url, app_name,
+                                                      taskid)
 
         r = requests.get(url, headers=self.header)
 
@@ -101,10 +99,33 @@ class SpinnakerELB:
             else:
                 raise Exception
 
-# python create_elb.py --app testapp --stack teststack --elb_type internal --env dev --health_protocol HTTP --health_port 80 --health_path /health --security_groups sg_apps --int_listener_port 80 --int_listener_protocol HTTP --ext_listener_port 8080 --ext_listener_protocol HTTP --elb_name dougtestapp-teststack --elb_subnet internal --health_timeout=10 --health_interval 2 --healthy_threshold 4 --unhealthy_threshold 6
-if __name__ == '__main__':
+def main():
+    """Create ELBs.
+
+    python create_elb.py \
+        --app testapp \
+        --stack teststack \
+        --elb_type internal \
+        --env dev \
+        --health_protocol HTTP \
+        --health_port 80 \
+        --health_path /health \
+        --security_groups sg_apps \
+        --int_listener_port 80 \
+        --int_listener_protocol HTTP \
+        --ext_listener_port 8080 \
+        --ext_listener_protocol HTTP \
+        --elb_name dougtestapp-teststack \
+        --elb_subnet internal \
+        --health_timeout=10 \
+        --health_interval 2 \
+        --healthy_threshold 4 \
+        --unhealthy_threshold 6
+    """
     elb = SpinnakerELB()
-    parser = argparse.ArgumentParser(description='Example with non-optional arguments')
+
+    parser = argparse.ArgumentParser(
+        description='Example with non-optional arguments')
 
     parser.add_argument('--app', action="store", help="application name", required=True)
     parser.add_argument('--elb_type', action="store", help="elb type: internal/external", required=True)
@@ -123,29 +144,35 @@ if __name__ == '__main__':
     parser.add_argument('--ext_listener_protocol', action="store", help="external listener protocol", required=True, default="HTTP")
     # parser.add_argument('--elb_name', action="store", help="elb name", required=True)
     parser.add_argument('--elb_subnet', action="store", help="elb subnet", required=True, default="internal")
+    parser.add_argument('--region', help="region name", required=True, default="us-east-1")
     args = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
-    template = elb.elb_template.render(app_name=args.app,
-                                            env=args.env,
-                                            isInternal='true' if args.elb_type == 'internal' else 'false',
-                                            vpc_id=elb.get_vpc_id(args.env),
-                                            health_protocol=args.health_protocol,
-                                            health_port=args.health_port,
-                                            health_path=args.health_path,
-                                            health_timeout=args.health_timeout,
-                                            health_interval=args.health_interval,
-                                            unhealthy_threshold=args.unhealthy_threshold,
-                                            healthy_threshold=args.healthy_threshold,
-                                            security_groups=args.security_groups[0],
-                                            int_listener_protocol=args.int_listener_protocol,
-                                            ext_listener_protocol=args.ext_listener_protocol,
-                                            int_listener_port=args.int_listener_port,
-                                            ext_listener_port=args.ext_listener_port,
-                                            # elb_name=args.elb_name,
-                                            subnet_type=args.elb_subnet,
-                                            elb_subnet=args.elb_subnet,
-                                            hc_string=args.int_listener_protocol+':'+str(args.int_listener_port)+args.health_path if args.health_protocol == 'HTTP' else args.health_protocol+':'+str(args.int_listener_port))
+    template = elb.elb_template.render(
+        app_name=args.app,
+        env=args.env,
+        isInternal='true' if args.elb_type == 'internal' else 'false',
+        vpc_id=elb.get_vpc_id(args.env),
+        health_protocol=args.health_protocol,
+        health_port=args.health_port,
+        health_path=args.health_path,
+        health_timeout=args.health_timeout,
+        health_interval=args.health_interval,
+        unhealthy_threshold=args.unhealthy_threshold,
+        healthy_threshold=args.healthy_threshold,
+        security_groups=args.security_groups[0],
+        int_listener_protocol=args.int_listener_protocol,
+        ext_listener_protocol=args.ext_listener_protocol,
+        int_listener_port=args.int_listener_port,
+        ext_listener_port=args.ext_listener_port,
+        # elb_name=args.elb_name,
+        subnet_type=args.elb_subnet,
+        elb_subnet=args.elb_subnet,
+        region=args.region,
+        hc_string=args.int_listener_protocol + ':' + str(
+            args.int_listener_port) + args.health_path if args.health_protocol
+        == 'HTTP' else args.health_protocol + ':' + str(
+            args.int_listener_port))
 
     rendered_json = json.loads(template)
     logging.info(rendered_json)
@@ -156,3 +183,6 @@ if __name__ == '__main__':
     else:
         logging.error("Error upserting ELB, exiting ...")
         sys.exit(1)
+
+if __name__ == '__main__':
+    main()
