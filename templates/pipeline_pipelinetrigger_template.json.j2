@@ -13,7 +13,7 @@
         "app_name": "${ trigger.properties.APP_NAME }"
       },
       "regions": [
-        "us-east-1"
+        "{{ app.region }}"
       ],
       "user": "[anonymous]",
       "vmType": "hvm",
@@ -54,7 +54,7 @@
       "name": "Deploy {{ env }}",
       "clusters": [
         {
-          "application": "{{ app }}",
+          "application": "{{ app.appname }}",
           "strategy": "highlander",
           "capacity": {
             "min": {{ asg.min_inst }},
