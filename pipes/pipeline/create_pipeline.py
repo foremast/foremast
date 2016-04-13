@@ -125,28 +125,32 @@ class SpinnakerPipeline:
         self.log.debug('Envs: %s', self.settings['pipeline']['env'])
         for env in self.settings['pipeline']['env']:
             # Assume order of environments is correct
-            self.app_info[env] = self.settings[env]
-
-            self.log.debug('App info:\n%s', self.app_info)
-
-            if previous_env:
-                # use pipeline template
-                template_name = 'pipeline_pipelinetrigger_template.json.j2'
-                pipeline_id = self.get_pipe_id('{0}-{1}-Pipeline'.format(self.app_info['app'], previous_env))
-                self.app_info[env].update({'pipeline_id': pipeline_id})
+            if env in self.settings['pipeline']:
+                self.log.info('Found overriding Pipeline JSON for %s.', env)
+                pipeline_json = self.settings['pipeline'].get(env, None)
             else:
-                # use template that uses jenkins
-                template_name = 'pipeline_template.json'
+                self.log.info('Using predefined template for %s.', env)
+                self.app_info[env] = self.settings[env]
 
-            previous_env = env
+                self.log.debug('App info:\n%s', self.app_info)
 
-            # Use different variable to keep template simple
-            data = self.app_info[env]
-            data['app']['appname'] = self.app_info['app']
-            data['app']['environment'] = env
+                if previous_env:
+                    # use pipeline template
+                    template_name = 'pipeline_pipelinetrigger_template.json.j2'
+                    pipeline_id = self.get_pipe_id('{0}-{1}-Pipeline'.format(
+                        self.app_info['app'], previous_env))
+                    self.app_info[env].update({'pipeline_id': pipeline_id})
+                else:
+                    # use template that uses jenkins
+                    template_name = 'pipeline_template.json'
 
-            pipeline_json = self.get_template(template_name=template_name,
-                                              template_dict=data, )
+                # Use different variable to keep template simple
+                data = self.app_info[env]
+                data['app']['appname'] = self.app_info['app']
+                data['app']['environment'] = env
+
+                pipeline_json = self.get_template(template_name=template_name,
+                                                  template_dict=data, )
 
             self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
@@ -160,6 +164,8 @@ class SpinnakerPipeline:
                 raise SpinnakerPipelineCreationFailed(pipeline_response.json())
 
             logging.info('Successfully created %s pipeline', self.app_name)
+
+            previous_env = env
 
         return True
 
