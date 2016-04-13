@@ -82,9 +82,11 @@ class SpinnakerPipeline:
         jinja_env = Environment(loader=FileSystemLoader(templatedir))
         template = jinja_env.get_template(template_name)
 
-        rendered_json = json.loads(template.render(**template_dict))
-        self.log.debug('Rendered template: %s', rendered_json)
-        return rendered_json
+        rendered_template = template.render(**template_dict)
+        self.log.debug('Rendered template:\n%s', rendered_template)
+        rendered_json_dict = json.loads(rendered_template)
+        self.log.debug('Rendered JSON dict: %s', rendered_json_dict)
+        return rendered_json_dict
 
     def clean_pipelines(self):
         """Delete Pipelines not defined in pipeline.json.
@@ -169,7 +171,7 @@ class SpinnakerPipeline:
                 Trigger.
 
         Returns:
-            str: Pipeline JSON template rendered with configurations.
+            dict: Pipeline JSON template rendered with configurations.
         """
         self.app_info[env] = self.settings[env]
 
@@ -185,15 +187,22 @@ class SpinnakerPipeline:
             # use template that uses jenkins
             template_name = 'pipeline_template.json'
 
+        raw_subnets = get_subnets()
+        self.log.debug('Raw subnets:\n%s', raw_subnets)
+        subnets = raw_subnets[env][self.app_info['region']]
+        self.log.debug('Using subnets: %s', subnets)
+
         # Use different variable to keep template simple
         data = self.app_info[env]
-        data['app']['appname'] = self.app_info['app']
-        data['app']['environment'] = env
-        data['app']['region'] = self.app_info['region']
-        data['app']['subnets'] = get_subnets()[env][self.app_info['region']]
+        data['app'].update({
+            'appname': self.app_info['app'],
+            'environment': env,
+            'region': self.app_info['region'],
+            'subnets': json.dumps(subnets)
+        })
+
         pipeline_json = self.get_template(template_name=template_name,
                                           template_dict=data, )
-
         return pipeline_json
 
     def app_exists(self):

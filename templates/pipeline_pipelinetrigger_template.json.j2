@@ -72,7 +72,7 @@
             "Default"
           ],
           "availabilityZones": {
-            "{{ app.region }}": "{{ app.subnets }}"
+            "{{ app.region }}": {{ app.subnets }}
           },
           "keyPair": "{{ env }}_access",
           "suspendedProcesses": [],
