@@ -86,6 +86,11 @@ class SpinnakerPipeline:
         return rendered_json
 
     def clean_pipelines(self):
+        """Delete Pipelines not defined in pipeline.json.
+
+        Returns:
+            True: Existing Pipelines match defined Pipelines.
+        """
         defined_envs = self.settings['pipeline']['env']
         current_envs = []
         all_pipelines = self.get_all_pipelines('{app}'.format(**self.app_info))
@@ -211,6 +216,14 @@ class SpinnakerPipeline:
                 app_name))
 
     def get_all_pipelines(self, app=''):
+        """Get a list of all the Pipelines in _app_.
+
+        Args:
+            app (str): Name of Spinnaker Application.
+
+        Returns:
+            requests.models.Response: Response from Gate containing Pipelines.
+        """
         url = murl.Url(self.gate_url)
         url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
         response = requests.get(url.url)
