@@ -271,8 +271,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d',
                         '--debug',
-                        action='store_true',
-                        help='DEBUG output')
+                        action='store_const',
+                        const=logging.DEBUG,
+                        default=logging.INFO,
+                        help='Set DEBUG output')
     parser.add_argument("--app",
                         help="The application name to create",
                         required=True)
@@ -287,8 +289,8 @@ def main():
                         required=True)
     args = parser.parse_args()
 
-    if args.debug:
-        log.setLevel(logging.DEBUG)
+    log.setLevel(args.debug)
+    logging.getLogger(__package__).setLevel(args.debug)
 
     log.debug('Parsed arguments: %s', args)
 
