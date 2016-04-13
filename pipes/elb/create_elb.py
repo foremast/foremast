@@ -123,6 +123,7 @@ if __name__ == '__main__':
     parser.add_argument('--ext_listener_protocol', action="store", help="external listener protocol", required=True, default="HTTP")
     # parser.add_argument('--elb_name', action="store", help="elb name", required=True)
     parser.add_argument('--elb_subnet', action="store", help="elb subnet", required=True, default="internal")
+    parser.add_argument('--region', help="region name", required=True, default="us-east-1")
     args = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
@@ -145,6 +146,7 @@ if __name__ == '__main__':
                                             # elb_name=args.elb_name,
                                             subnet_type=args.elb_subnet,
                                             elb_subnet=args.elb_subnet,
+                                            region=args.region,
                                             hc_string=args.int_listener_protocol+':'+str(args.int_listener_port)+args.health_path if args.health_protocol == 'HTTP' else args.health_protocol+':'+str(args.int_listener_port))
 
     rendered_json = json.loads(template)
