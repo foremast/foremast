@@ -136,7 +136,7 @@ class SpinnakerPipeline:
                 pipeline_json = self.settings['pipeline'].get(env, None)
             else:
                 self.log.info('Using predefined template for %s.', env)
-                pipeline_json = self.construct_pipline(
+                pipeline_json = self.construct_pipeline(
                     env=env,
                     previous_env=previous_env)
 
@@ -160,7 +160,7 @@ class SpinnakerPipeline:
 
         return True
 
-    def construct_pipline(self, env='', previous_env=None):
+    def construct_pipeline(self, env='', previous_env=None):
         """Create the Pipeline JSON from template.
 
         Args:
