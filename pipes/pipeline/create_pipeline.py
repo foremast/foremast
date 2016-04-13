@@ -86,6 +86,11 @@ class SpinnakerPipeline:
         return rendered_json
 
     def clean_pipelines(self):
+        """Delete Pipelines not defined in pipeline.json.
+
+        Returns:
+            True: Existing Pipelines match defined Pipelines.
+        """
         defined_envs = self.settings['pipeline']['env']
         current_envs = []
         all_pipelines = self.get_all_pipelines('{app}'.format(**self.app_info))
@@ -95,7 +100,8 @@ class SpinnakerPipeline:
                 app, env, _ = pipeline['name'].split('-')
                 current_envs.append(env)
 
-        self.log.debug('Pipelines found - User (%s), Spinnaker (%s)', defined_envs, current_envs)
+        self.log.debug('Pipelines found - User (%s), Spinnaker (%s)',
+                       defined_envs, current_envs)
 
         if sorted(defined_envs) == sorted(current_envs):
             return True
@@ -104,17 +110,16 @@ class SpinnakerPipeline:
 
             for pipeline in removed_pipelines:
                 app = self.app_info['app']
-                pipeline_name = '{app}-{env}-Pipeline'.format(
-                    app=app,
-                    env=pipeline,
-                )
+                pipeline_name = '{app}-{env}-Pipeline'.format(app=app,
+                                                              env=pipeline, )
                 self.log.info('Deleted pipeline: %s', pipeline_name)
                 url = murl.Url(self.gate_url)
                 url.path = 'pipelines/{app}/{pipeline_name}'.format(
                     app=app,
-                    pipeline_name=pipeline_name,
-                )
+                    pipeline_name=pipeline_name, )
                 response = requests.delete(url.url)
+                self.log.debug('Delete %s Pipeline response:\n%s', pipeline,
+                               response.text)
 
     def create_pipeline(self):
         """Sends a POST to spinnaker to create a new security group."""
@@ -125,34 +130,23 @@ class SpinnakerPipeline:
         self.log.debug('Envs: %s', self.settings['pipeline']['env'])
         for env in self.settings['pipeline']['env']:
             # Assume order of environments is correct
-            self.app_info[env] = self.settings[env]
-
-            self.log.debug('App info:\n%s', self.app_info)
-
-            if previous_env:
-                # use pipeline template
-                template_name = 'pipeline_pipelinetrigger_template.json.j2'
-                pipeline_id = self.get_pipe_id('{0}-{1}-Pipeline'.format(self.app_info['app'], previous_env))
-                self.app_info[env].update({'pipeline_id': pipeline_id})
+            if env in self.settings['pipeline']:
+                self.log.info('Found overriding Pipeline JSON for %s.', env)
+                pipeline_json = self.settings['pipeline'].get(env, None)
             else:
-                # use template that uses jenkins
-                template_name = 'pipeline_template.json'
-
-            previous_env = env
-
-            # Use different variable to keep template simple
-            data = self.app_info[env]
-            data['app']['appname'] = self.app_info['app']
-            data['app']['environment'] = env
-
-            pipeline_json = self.get_template(template_name=template_name,
-                                              template_dict=data, )
+                self.log.info('Using predefined template for %s.', env)
+                pipeline_json = self.construct_pipline(
+                    env=env,
+                    previous_env=previous_env)
 
             self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
             pipeline_response = requests.post(url,
                                               data=json.dumps(pipeline_json),
                                               headers=self.header)
+
+            self.log.debug('Pipeline creation response:\n%s',
+                           pipeline_response.text)
 
             if not pipeline_response.ok:
                 logging.error('Failed to create pipeline: %s',
@@ -161,7 +155,43 @@ class SpinnakerPipeline:
 
             logging.info('Successfully created %s pipeline', self.app_name)
 
+            previous_env = env
+
         return True
+
+    def construct_pipline(self, env='', previous_env=None):
+        """Create the Pipeline JSON from template.
+
+        Args:
+            env (str): Deploy environment name, e.g. dev, stage, prod.
+            previous_env (str): The previous deploy environment to use as
+                Trigger.
+
+        Returns:
+            str: Pipeline JSON template rendered with configurations.
+        """
+        self.app_info[env] = self.settings[env]
+
+        self.log.debug('App info:\n%s', self.app_info)
+
+        if previous_env:
+            # use pipeline template
+            template_name = 'pipeline_pipelinetrigger_template.json.j2'
+            pipeline_id = self.get_pipe_id('{0}-{1}-Pipeline'.format(
+                self.app_info['app'], previous_env))
+            self.app_info[env].update({'pipeline_id': pipeline_id})
+        else:
+            # use template that uses jenkins
+            template_name = 'pipeline_template.json'
+
+        # Use different variable to keep template simple
+        data = self.app_info[env]
+        data['app']['appname'] = self.app_info['app']
+        data['app']['environment'] = env
+        pipeline_json = self.get_template(template_name=template_name,
+                                          template_dict=data, )
+
+        return pipeline_json
 
     def app_exists(self):
         """Checks to see if application already exists.
@@ -186,6 +216,14 @@ class SpinnakerPipeline:
                 app_name))
 
     def get_all_pipelines(self, app=''):
+        """Get a list of all the Pipelines in _app_.
+
+        Args:
+            app (str): Name of Spinnaker Application.
+
+        Returns:
+            requests.models.Response: Response from Gate containing Pipelines.
+        """
         url = murl.Url(self.gate_url)
         url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
         response = requests.get(url.url)
@@ -294,7 +332,8 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    # Dictionary containing application info. This is passed to the class for processing
+    # Dictionary containing application info. This is passed to the class for
+    # processing
     appinfo = {
         'app': args.app,
         'vpc': args.vpc,
