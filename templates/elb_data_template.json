@@ -5,7 +5,7 @@
          "detail": "detail",
          "isInternal":{{ isInternal }},
          "credentials":"{{ env }}",
-         "region":"us-east-1",
+         "region":"{{ region }}",
          "vpcId":"{{ vpc_id }}",
          "healthCheckProtocol":"{{ health_protocol }}",
          "healthCheckPort":{{ health_port }},
