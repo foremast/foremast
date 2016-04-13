@@ -100,7 +100,8 @@ class SpinnakerPipeline:
                 app, env, _ = pipeline['name'].split('-')
                 current_envs.append(env)
 
-        self.log.debug('Pipelines found - User (%s), Spinnaker (%s)', defined_envs, current_envs)
+        self.log.debug('Pipelines found - User (%s), Spinnaker (%s)',
+                       defined_envs, current_envs)
 
         if sorted(defined_envs) == sorted(current_envs):
             return True
@@ -109,17 +110,16 @@ class SpinnakerPipeline:
 
             for pipeline in removed_pipelines:
                 app = self.app_info['app']
-                pipeline_name = '{app}-{env}-Pipeline'.format(
-                    app=app,
-                    env=pipeline,
-                )
+                pipeline_name = '{app}-{env}-Pipeline'.format(app=app,
+                                                              env=pipeline, )
                 self.log.info('Deleted pipeline: %s', pipeline_name)
                 url = murl.Url(self.gate_url)
                 url.path = 'pipelines/{app}/{pipeline_name}'.format(
                     app=app,
-                    pipeline_name=pipeline_name,
-                )
+                    pipeline_name=pipeline_name, )
                 response = requests.delete(url.url)
+                self.log.debug('Delete %s Pipeline response:\n%s', pipeline,
+                               response.text)
 
     def create_pipeline(self):
         """Sends a POST to spinnaker to create a new security group."""
