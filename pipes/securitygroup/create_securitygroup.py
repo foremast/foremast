@@ -75,7 +75,7 @@ class SpinnakerSecurityGroup:
         self.log.debug('Rendered template: %s', rendered_json)
         return rendered_json
 
-    def get_vpc_id(self, account):
+    def get_vpc_id(self, account, region):
         """Get vpc id.
 
         Args:
@@ -88,7 +88,9 @@ class SpinnakerSecurityGroup:
         response = requests.get(url)
         if response.ok:
             for vpc in response.json():
-                if vpc['name'] == 'vpc' and vpc['account'] == account:
+                if vpc['name'] == 'vpc' and \
+                   vpc['account'] == account and \
+                   vpc['region'] == region:
                     return vpc['id']
         else:
             logging.error(response.text)
@@ -169,7 +171,9 @@ class SpinnakerSecurityGroup:
         url = "{0}/applications/{1}/tasks".format(self.gate_url,
                                                 self.app_name)
 
-        app_data = {'vpc': self.get_vpc_id(self.app_info['env'])}
+        app_data = {
+            'vpc': self.get_vpc_id(self.app_info['env'], self.app_info['region']),
+        }
         app_data.update(self.app_info)
 
         secgroup_json = self.get_template(
