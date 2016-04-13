@@ -153,6 +153,12 @@ class SpinnakerPipeline:
             raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
                 app_name))
 
+    def get_all_pipelines(self, app=''):
+        url = murl.Url(self.gate_url)
+        url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
+        response = requests.get(url.url)
+        return response
+
     def get_pipe_id(self, name=''):
         """Get the ID for Pipeline _name_.
 
@@ -165,9 +171,7 @@ class SpinnakerPipeline:
         """
         return_id = None
 
-        url = murl.Url(self.gate_url)
-        url.path = 'applications/{app}/pipelineConfigs'.format(**self.app_info)
-        response = requests.get(url.url)
+        response = self.get_all_pipelines('{app}'.format(**self.app_info))
 
         if response.ok:
             pipe_configs = response.json()
