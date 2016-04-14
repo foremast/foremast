@@ -4,11 +4,13 @@ import configparser
 import json
 import logging
 import os
+from pprint import pformat
 
 import murl
 import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
+
 from utils import get_subnets
 
 
@@ -173,6 +175,8 @@ class SpinnakerPipeline:
             dict: Pipeline JSON template rendered with configurations.
         """
         self.app_info[env] = self.settings[env]
+        regions = self.app_info[env]['regions']
+        self.log.info('Create Pipeline for %s in %s.', env, regions)
 
         self.log.debug('App info:\n%s', self.app_info)
 
@@ -187,9 +191,13 @@ class SpinnakerPipeline:
             template_name = 'pipeline_template.json'
 
         raw_subnets = get_subnets()
-        self.log.debug('Raw subnets:\n%s', raw_subnets)
-        subnets = raw_subnets[env][self.app_info['region']]
-        self.log.debug('Using subnets: %s', subnets)
+        self.log.debug('%s info:\n%s', env, pformat(self.app_info[env]))
+
+        self.log.debug('Regions: %s', regions)
+        region_subnets = {region: subnets
+                          for region, subnets in raw_subnets[env].items()
+                          if region in regions}
+        self.log.debug('Regions and subnets in use:\n%s', region_subnets)
 
         # Use different variable to keep template simple
         data = self.app_info[env]
@@ -197,8 +205,8 @@ class SpinnakerPipeline:
             'appname': self.app_info['app'],
             'environment': env,
             'triggerjob': self.app_info['triggerjob'],
-            'region': self.app_info['region'],
-            'subnets': json.dumps(subnets)
+            'regions': json.dumps(list(region_subnets.keys())),
+            'az_dict': json.dumps(region_subnets)
         })
 
         pipeline_json = self.get_template(template_name=template_name,
@@ -315,7 +323,9 @@ class SpinnakerPipeline:
 
 def main():
     """Run newer stuffs."""
-    logging.basicConfig(format='%(asctime)s %(message)s')
+    logging.basicConfig(
+        format=
+        '[%(levelname)s]%(module)s:%(funcName)s:%(lineno)d - %(message)s')
     log = logging.getLogger(__name__)
 
     parser = argparse.ArgumentParser()
@@ -328,19 +338,18 @@ def main():
     parser.add_argument("--app",
                         help="The application name to create",
                         required=True)
-    parser.add_argument("--region",
-                        help="The region to create the security group",
-                        required=True)
+    parser.add_argument(
+        "--triggerjob",
+        help="The jenkins job to monitor for pipeline triggering",
+        required=True)
+    parser.add_argument(
+        "--properties",
+        help="Location of json file that contains application.json details",
+        default="../raw.properties.json",
+        required=False)
     #parser.add_argument("--vpc",
     #                    help="The vpc to create the security group",
     #                    required=True)
-    parser.add_argument("--triggerjob",
-                        help="The jenkins job to monitor for pipeline triggering",
-                        required=True)
-    parser.add_argument("--properties",
-                        help="Location of json file that contains application.json details",
-                        default="../raw.properties.json",
-                        required=False)
     args = parser.parse_args()
 
     log.setLevel(args.debug)
@@ -352,8 +361,7 @@ def main():
     # processing
     appinfo = {
         'app': args.app,
-    #    'vpc': args.vpc,
-        'region': args.region,
+        # 'vpc': args.vpc,
         'triggerjob': args.triggerjob,
         'properties': args.properties
     }

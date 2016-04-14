@@ -12,9 +12,7 @@
         "app_group": "${ trigger.properties.GROUP_NAME }",
         "app_name": "${ trigger.properties.APP_NAME }"
       },
-      "regions": [
-        "{{ app.region }}"
-      ],
+      "regions": {{ app.regions }},
       "user": "[anonymous]",
       "vmType": "hvm",
       "storeType": "ebs",
@@ -60,9 +58,7 @@
           "terminationPolicies": [
             "Default"
           ],
-          "availabilityZones": {
-            "{{ app.region }}": {{ app.subnets }}
-          },
+          "availabilityZones": {{ app.az_dict }},
           "keyPair": "{{ env }}_access",
           "suspendedProcesses": [],
           "securityGroups": [
