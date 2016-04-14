@@ -5,34 +5,15 @@
     {
       "requisiteStageRefIds": [],
       "refId": "1",
-      "type": "bake",
-      "name": "Bake",
+      "type": "findImage",
+      "name": "Find Image",
       "cloudProviderType": "aws",
-      "extendedAttributes": {
-        "app_group": "${ trigger.properties.GROUP_NAME }",
-        "app_name": "${ trigger.properties.APP_NAME }"
-      },
-      "regions": [
-        "{{ app.region }}"
-      ],
-      "user": "[anonymous]",
-      "vmType": "hvm",
-      "storeType": "ebs",
-      "baseOs": "fedora",
-      "baseLabel": "release",
-      "showAdvancedOptions": true,
-      "overrideTimeout": true,
-      "stageTimeoutMs": 600000,
-      "sendNotifications": false,
-      "notifications": [],
-      "restrictExecutionDuringTimeWindow": false,
-      "restrictedExecutionWindow": {
-        "whitelist": []
-      },
-      "enhancedNetworking": true,
-      "comments": "baking",
-      "package": "${ trigger.properties.ARTIFACT_RPM }",
-      "baseAmi": "ami-xxxx"
+      "regions": [ "{{ app.region }}" ],
+      "cloudProvider": "aws",
+      "selectionStrategy": "LARGEST",
+      "onlyEnabled": true,
+      "cluster": "pcitest",
+      "credentials": "build"
     },
     {
       "requisiteStageRefIds": [
