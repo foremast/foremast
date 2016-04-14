@@ -6,17 +6,47 @@
       "requisiteStageRefIds": [],
       "refId": "1",
       "type": "bake",
-      "name": "Bake",
+      "name": "Bake [US-EAST-1]",
       "cloudProviderType": "aws",
       "extendedAttributes": {
         "app_group": "${ trigger.properties.GROUP_NAME }",
         "app_name": "${ trigger.properties.APP_NAME }"
       },
-      "regions": {{ app.regions }},
+      "regions": ["us-east-1"],
       "user": "[anonymous]",
       "vmType": "hvm",
       "storeType": "ebs",
-      "baseOs": "fedora",
+      "baseOs": "tomcat",
+      "baseLabel": "release",
+      "showAdvancedOptions": true,
+      "overrideTimeout": true,
+      "stageTimeoutMs": 600000,
+      "sendNotifications": false,
+      "notifications": [],
+      "restrictExecutionDuringTimeWindow": false,
+      "restrictedExecutionWindow": {
+        "whitelist": []
+      },
+      "enhancedNetworking": true,
+      "comments": "Baking",
+      "package": "${ trigger.properties.ARTIFACT_RPM }",
+      "baseAmi": "ami-xxxx"
+    },
+    {
+      "requisiteStageRefIds": [],
+      "refId": "2",
+      "type": "bake",
+      "name": "Bake [US-WEST-1]",
+      "cloudProviderType": "aws",
+      "extendedAttributes": {
+        "app_group": "${ trigger.properties.GROUP_NAME }",
+        "app_name": "${ trigger.properties.APP_NAME }"
+      },
+      "regions": ["us-west-2"],
+      "user": "[anonymous]",
+      "vmType": "hvm",
+      "storeType": "ebs",
+      "baseOs": "tomcat",
       "baseLabel": "release",
       "showAdvancedOptions": true,
       "overrideTimeout": true,
@@ -34,9 +64,10 @@
     },
     {
       "requisiteStageRefIds": [
-        "1"
+        "1",
+        "2"
       ],
-      "refId": "2",
+      "refId": "3",
       "type": "deploy",
       "name": "Deploy {{ env }}",
       "clusters": [
@@ -99,9 +130,9 @@
     },
     {
       "requisiteStageRefIds": [
-        "2"
+        "3"
       ],
-      "refId": "3",
+      "refId": "4",
       "type": "jenkins",
       "name": "QE {{ app.environment }}",
       "failPipeline": true,
@@ -112,7 +143,7 @@
       }
     },
     {
-      "requisiteStageRefIds": ["3"],
+      "requisiteStageRefIds": ["4"],
       "refId": "5",
       "type": "manualJudgment",
       "name": "Checkpoint",
