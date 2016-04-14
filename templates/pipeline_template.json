@@ -60,7 +60,8 @@
       "enhancedNetworking": true,
       "comments": "Baking",
       "package": "${ trigger.properties.ARTIFACT_RPM }",
-      "baseAmi": "ami-xxxx"
+      "baseAmi": "ami-xxxx",
+      "templateFileName": "aws-ebs-west-2.json"
     },
     {
       "requisiteStageRefIds": [
