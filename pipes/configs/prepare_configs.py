@@ -85,7 +85,7 @@ def process_runway_configs(runway_dir=''):
     LOG.info('Processing application.json files from local directory.')
 
     app_configs = collections.defaultdict(dict)
-    for env in ('dev', 'stage', 'prod'):
+    for env in ENVS:
         file_name = os.path.join(runway_dir,
                                  'application-master-{env}.json'.format(
                                      env=env))
