@@ -23,19 +23,8 @@
       "showAdvancedOptions": true,
       "overrideTimeout": true,
       "stageTimeoutMs": 600000,
-      "sendNotifications": true,
-      "notifications": [
-        {
-          "level": "stage",
-          "when": [
-            "stage.starting",
-            "stage.complete",
-            "stage.failed"
-          ],
-          "type": "slack",
-          "address": "#spinnaker"
-        }
-      ],
+      "sendNotifications": false,
+      "notifications": [],
       "restrictExecutionDuringTimeWindow": false,
       "restrictedExecutionWindow": {
         "whitelist": []
@@ -109,19 +98,8 @@
           }
         ]
       },
-      "sendNotifications": true,
-      "notifications": [
-        {
-          "level": "stage",
-          "when": [
-            "stage.starting",
-            "stage.complete",
-            "stage.failed"
-          ],
-          "type": "email",
-          "address": "devops@example.com"
-        }
-      ]
+      "sendNotifications": false,
+      "notifications": []
     },
     {
       "requisiteStageRefIds": [
