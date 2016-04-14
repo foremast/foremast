@@ -123,10 +123,13 @@
       "notifications": [],
       "judgmentInputs": [
         {
-          "value": "Input 1"
+          "value": "Reason: Testing"
         },
         {
-          "value": "Input 2"
+          "value": "Reason: Change Request"
+        },
+        {
+          "value": "Reason: Hotfix"
         }
       ],
       "failPipeline": true,
