@@ -36,7 +36,7 @@
       "requisiteStageRefIds": [],
       "refId": "2",
       "type": "bake",
-      "name": "Bake [US-WEST-1]",
+      "name": "Bake [US-WEST-2]",
       "cloudProviderType": "aws",
       "extendedAttributes": {
         "app_group": "${ trigger.properties.GROUP_NAME }",
