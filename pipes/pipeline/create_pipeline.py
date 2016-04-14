@@ -48,10 +48,9 @@ class SpinnakerPipeline:
 
         self.settings = self.get_settings()
 
-    @staticmethod
-    def get_settings():
+    def get_settings(self):
         """Get the specified Application configurations."""
-        with open('../raw.properties.json') as data_file:
+        with open(self.app_info['properties']) as data_file:
             data = json.load(data_file)
         return data
 
@@ -337,6 +336,10 @@ def main():
     parser.add_argument("--triggerjob",
                         help="The job to monitor for pipeline triggering",
                         required=True)
+    parser.add_argument("--properties",
+                        help="Location of json file that contains application.json details",
+                        default="../raw.properties.json",
+                        required=False)
     args = parser.parse_args()
 
     log.setLevel(args.debug)
@@ -350,7 +353,8 @@ def main():
         'app': args.app,
         'vpc': args.vpc,
         'region': args.region,
-        'triggerjob': args.triggerjob
+        'triggerjob': args.triggerjob,
+        'properties': args.properties
     }
 
     spinnakerapps = SpinnakerPipeline(app_info=appinfo)
