@@ -139,7 +139,7 @@
       "enabled": true,
       "type": "jenkins",
       "master": "JenkinsCI",
-      "job": "{{ triggerjob }}",
+      "job": "{{ app.triggerjob }}",
       "propertyFile": "jenkins_vars"
     }
   ],
