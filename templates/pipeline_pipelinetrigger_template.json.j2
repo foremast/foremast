@@ -30,7 +30,7 @@
         "whitelist": []
       },
       "enhancedNetworking": true,
-      "comments": "<b>hello</b>",
+      "comments": "baking",
       "package": "${ trigger.properties.ARTIFACT_RPM }",
       "baseAmi": "ami-xxxx"
     },
@@ -86,7 +86,7 @@
           ]
         }
       ],
-      "comments": "<b>Comment comes here !</b>",
+      "comments": "",
       "restrictExecutionDuringTimeWindow": false,
       "restrictedExecutionWindow": {
         "whitelist": [
@@ -134,7 +134,7 @@
       ],
       "failPipeline": true,
       "instructions": "Do you want to proceed and promote the deployment to ${ trigger.properties.DEPLOY_ENV } ?",
-      "comments": "Comment<br>goes<br>here<br><b>application: ${ trigger.properties.APP_NAME }</b>"
+      "comments": "application: ${ trigger.properties.APP_NAME }"
     }
   ],
   "triggers": [
