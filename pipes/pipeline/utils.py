@@ -1,6 +1,11 @@
 import requests
 from collections import defaultdict 
+from tryagain import retries
 
+class SpinnakerTimeout(Exception):
+    pass
+
+@retries(max_attempts=6, wait=10.0, exceptions=SpinnakerTimeout)
 def get_subnets(gate_url='http://gate-api.build.example.com:8084', target='ec2'):
     """ Gets all availability zones for a given target
         Params:
@@ -9,11 +14,12 @@ def get_subnets(gate_url='http://gate-api.build.example.com:8084', target='ec2')
         Return:
             az_dict: dictionary of  availbility zones, structured like
             { $account: { $region: [ $avaibilityzones ] } } """
-    az_dict = {}
-    az_list = []
     account_az_dict = defaultdict(defaultdict)
     subnet_url = gate_url + "/subnets/aws"
     r = requests.get(subnet_url)
+
+    if not r.ok:
+        raise SpinnakerTimeout(r.text)
 
     for subnet in r.json():
         if subnet['target'] == target:
