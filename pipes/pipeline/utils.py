@@ -21,8 +21,6 @@ def get_subnets(gate_url='http://gate-api.build.example.com:8084', target='ec2')
 
             account = subnet['account']
             region = subnet['region']
-            if account == 'pci':
-                print(az)
             try:
                 if az not in account_az_dict[account][region]:
                     account_az_dict[account][region].append(az)
