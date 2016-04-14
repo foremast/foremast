@@ -175,7 +175,12 @@ class SpinnakerPipeline:
             dict: Pipeline JSON template rendered with configurations.
         """
         self.app_info[env] = self.settings[env]
-        regions = self.app_info[env]['regions']
+        try:
+            regions = self.app_info[env]['regions']
+        except KeyError:
+            self.log.warning('No regions specified in application.json, '
+                             'defaulting to "us-east-1".')
+            regions = ['us-east-1']
         self.log.info('Create Pipeline for %s in %s.', env, regions)
 
         self.log.debug('App info:\n%s', self.app_info)
