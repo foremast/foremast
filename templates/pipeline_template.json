@@ -30,7 +30,7 @@
         "whitelist": []
       },
       "enhancedNetworking": true,
-      "comments": "<b>hello</b>",
+      "comments": "Baking",
       "package": "${ trigger.properties.ARTIFACT_RPM }",
       "baseAmi": "ami-xxxx"
     },
@@ -86,7 +86,7 @@
           ]
         }
       ],
-      "comments": "<b>Comment comes here !</b>",
+      "comments": "",
       "restrictExecutionDuringTimeWindow": false,
       "restrictedExecutionWindow": {
         "whitelist": [
