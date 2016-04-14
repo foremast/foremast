@@ -8,7 +8,7 @@
       "type": "findImage",
       "name": "Find Image",
       "cloudProviderType": "aws",
-      "regions": [ "{{ app.region }}" ],
+      "regions": {{ app.regions }},
       "cloudProvider": "aws",
       "selectionStrategy": "LARGEST",
       "onlyEnabled": true,
@@ -41,9 +41,7 @@
           "terminationPolicies": [
             "Default"
           ],
-          "availabilityZones": {
-            "{{ app.region }}": {{ app.subnets }}
-          },
+          "availabilityZones": {{ app.az_dict }},
           "keyPair": "{{ env }}_access",
           "suspendedProcesses": [],
           "securityGroups": [
