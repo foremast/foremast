@@ -197,6 +197,7 @@ class SpinnakerPipeline:
         data['app'].update({
             'appname': self.app_info['app'],
             'environment': env,
+            'triggerjob': self.app_info['triggerjob'],
             'region': self.app_info['region'],
             'subnets': json.dumps(subnets)
         })
@@ -331,11 +332,11 @@ def main():
     parser.add_argument("--region",
                         help="The region to create the security group",
                         required=True)
-    parser.add_argument("--vpc",
-                        help="The vpc to create the security group",
-                        required=True)
+    #parser.add_argument("--vpc",
+    #                    help="The vpc to create the security group",
+    #                    required=True)
     parser.add_argument("--triggerjob",
-                        help="The job to monitor for pipeline triggering",
+                        help="The jenkins job to monitor for pipeline triggering",
                         required=True)
     args = parser.parse_args()
 
@@ -348,7 +349,7 @@ def main():
     # processing
     appinfo = {
         'app': args.app,
-        'vpc': args.vpc,
+    #    'vpc': args.vpc,
         'region': args.region,
         'triggerjob': args.triggerjob
     }
