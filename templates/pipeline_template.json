@@ -39,8 +39,7 @@
     },
     {
       "requisiteStageRefIds": [
-        "1",
-        "2"
+        "1"
       ],
       "refId": "3",
       "type": "deploy",
