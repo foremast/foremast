@@ -2,6 +2,7 @@
 import json
 import logging
 from collections import defaultdict
+from pprint import pformat
 
 import requests
 from tryagain import retries
@@ -45,12 +46,15 @@ def get_subnets(gate_url='http://gate-api.build.example.com:8084',
     LOG.debug('Subnet list: %s', subnet_list)
 
     for subnet in subnet_list:
-        LOG.debug('Subnet:\n%s', subnet)
+        LOG.debug('Subnet:\n%s', pformat(subnet))
 
         if subnet['target'] == target:
             az = subnet['availabilityZone']
             account = subnet['account']
             region = subnet['region']
+
+            LOG.debug('%s regions: %s', account,
+                      list(account_az_dict[account].keys()))
 
             try:
                 if az not in account_az_dict[account][region]:
@@ -58,6 +62,7 @@ def get_subnets(gate_url='http://gate-api.build.example.com:8084',
             except KeyError:
                 account_az_dict[account][region] = [az]
 
+    LOG.debug('AZ dict:\n%s', pformat(dict(account_az_dict)))
     return account_az_dict
 
 
@@ -71,7 +76,7 @@ def main():
         except FileNotFoundError:
             pass
 
-    print(get_subnets(sample=sample))
+    get_subnets(sample=sample)
 
 
 if __name__ == "__main__":
