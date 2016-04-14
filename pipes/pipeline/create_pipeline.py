@@ -101,33 +101,64 @@ class SpinnakerPipeline:
 
         for pipeline in all_pipelines.json():
             if pipeline['name'].endswith('-Pipeline'):
-                app, env, _ = pipeline['name'].split('-')
+                app, env, *_ = pipeline['name'].split('-')
                 current_envs.append(env)
 
+        defined_envs = sorted(set(defined_envs))
+        current_envs = sorted(set(current_envs))
         self.log.debug('Pipelines found - User (%s), Spinnaker (%s)',
                        defined_envs, current_envs)
 
-        if sorted(defined_envs) == sorted(current_envs):
+        if defined_envs == current_envs:
+            self.log.info('No pipelines to delete.')
             return True
         else:
-            removed_pipelines = list(set(current_envs) - set(defined_envs))
+            self.log.info('We need to removed undefined pipelines.')
+            removed_pipelines = set(current_envs) - set(defined_envs)
+            self.log.debug('Pipelines to remove: %s', removed_pipelines)
 
             for pipeline in removed_pipelines:
                 app = self.app_info['app']
-                pipeline_name = '{app}-{env}-Pipeline'.format(app=app,
-                                                              env=pipeline, )
-                self.log.info('Deleted pipeline: %s', pipeline_name)
-                url = murl.Url(self.gate_url)
-                url.path = 'pipelines/{app}/{pipeline_name}'.format(
-                    app=app,
-                    pipeline_name=pipeline_name, )
-                response = requests.delete(url.url)
-                self.log.debug('Delete %s Pipeline response:\n%s', pipeline,
-                               response.text)
+
+                # TODO: Get real region list
+                regions = ['us-east-1', 'us-west-2']
+                for region in regions:
+                    pipeline_name = '{app}-{env}-{region}-Pipeline'.format(
+                        app=app,
+                        env=pipeline,
+                        region=region,
+                    )
+                    self.log.info('Deleted pipeline: %s', pipeline_name)
+                    url = murl.Url(self.gate_url)
+                    url.path = 'pipelines/{app}/{pipeline_name}'.format(
+                        app=app,
+                        pipeline_name=pipeline_name, )
+                    response = requests.delete(url.url)
+                    self.log.debug('Delete %s Pipeline response:\n%s', pipeline,
+                                   response.text)
+
+    def post_pipeline(self, pipeline_json):
+
+        url = "{0}/pipelines".format(self.gate_url)
+        self.log.debug('Pipeline JSON:\n%s', pipeline_json)
+
+        pipeline_response = requests.post(url,
+                                          data=json.dumps(pipeline_json),
+                                          headers=self.header)
+
+        self.log.debug('Pipeline creation response:\n%s',
+                       pipeline_response.text)
+
+        if not pipeline_response.ok:
+            logging.error('Failed to create pipeline: %s',
+                          pipeline_response.text)
+            raise SpinnakerPipelineCreationFailed(pipeline_response.json())
+
+        logging.info('Successfully created %s pipeline', self.app_name)
+
 
     def create_pipeline(self):
         """Sends a POST to spinnaker to create a new security group."""
-        url = "{0}/pipelines".format(self.gate_url)
 
         self.clean_pipelines()
         previous_env = None
@@ -135,35 +166,24 @@ class SpinnakerPipeline:
         for env in self.settings['pipeline']['env']:
             # Assume order of environments is correct
             if env in self.settings['pipeline']:
+                # The custom provided pipeline
                 self.log.info('Found overriding Pipeline JSON for %s.', env)
                 pipeline_json = self.settings['pipeline'].get(env, None)
+                self.post_pipeline(pipeline_json)
             else:
                 self.log.info('Using predefined template for %s.', env)
-                pipeline_json = self.construct_pipeline(
-                    env=env,
-                    previous_env=previous_env)
-
-            self.log.debug('Pipeline JSON:\n%s', pipeline_json)
-
-            pipeline_response = requests.post(url,
-                                              data=json.dumps(pipeline_json),
-                                              headers=self.header)
-
-            self.log.debug('Pipeline creation response:\n%s',
-                           pipeline_response.text)
-
-            if not pipeline_response.ok:
-                logging.error('Failed to create pipeline: %s',
-                              pipeline_response.text)
-                raise SpinnakerPipelineCreationFailed(pipeline_response.json())
-
-            logging.info('Successfully created %s pipeline', self.app_name)
+                for region in self.settings[env]['regions']:
+                    pipeline_json = self.construct_pipeline(
+                        env=env,
+                        previous_env=previous_env,
+                        region=region)
+                    self.post_pipeline(pipeline_json)
 
             previous_env = env
 
         return True
 
-    def construct_pipeline(self, env='', previous_env=None):
+    def construct_pipeline(self, env='', previous_env=None, region='us-east-1'):
         """Create the Pipeline JSON from template.
 
         Args:
@@ -175,21 +195,16 @@ class SpinnakerPipeline:
             dict: Pipeline JSON template rendered with configurations.
         """
         self.app_info[env] = self.settings[env]
-        try:
-            regions = self.app_info[env]['regions']
-        except KeyError:
-            self.log.warning('No regions specified in application.json, '
-                             'defaulting to "us-east-1".')
-            regions = ['us-east-1']
-        self.log.info('Create Pipeline for %s in %s.', env, regions)
+        self.log.info('Create Pipeline for %s in %s.', env, region)
 
         self.log.debug('App info:\n%s', self.app_info)
 
         if previous_env:
             # use pipeline template
             template_name = 'pipeline_pipelinetrigger_template.json.j2'
-            pipeline_id = self.get_pipe_id('{0}-{1}-Pipeline'.format(
-                self.app_info['app'], previous_env))
+            pipeline_id = self.get_pipe_id('{0}-{1}-{2}-Pipeline'.format(
+                self.app_info['app'], previous_env, region)
+            )
             self.app_info[env].update({'pipeline_id': pipeline_id})
         else:
             # use template that uses jenkins
@@ -198,11 +213,8 @@ class SpinnakerPipeline:
         raw_subnets = get_subnets()
         self.log.debug('%s info:\n%s', env, pformat(self.app_info[env]))
 
-        self.log.debug('Regions: %s', regions)
-        region_subnets = {region: subnets
-                          for region, subnets in raw_subnets[env].items()
-                          if region in regions}
-        self.log.debug('Regions and subnets in use:\n%s', region_subnets)
+        region_subnets = {region: raw_subnets[env][region]}
+        self.log.debug('Region and subnets in use:\n%s', region_subnets)
 
         # Use different variable to keep template simple
         data = self.app_info[env]
@@ -211,6 +223,7 @@ class SpinnakerPipeline:
             'environment': env,
             'triggerjob': self.app_info['triggerjob'],
             'regions': json.dumps(list(region_subnets.keys())),
+            'region': region,
             'az_dict': json.dumps(region_subnets)
         })
 
