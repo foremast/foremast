@@ -12,7 +12,7 @@
       "cloudProvider": "aws",
       "selectionStrategy": "LARGEST",
       "onlyEnabled": true,
-      "cluster": "pcitest",
+      "cluster": "{{ app.appname }}",
       "credentials": "{{ app.environment }}"
     },
     {
