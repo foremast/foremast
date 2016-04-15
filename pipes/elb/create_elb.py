@@ -171,7 +171,7 @@ def main():
         unhealthy_threshold=args.unhealthy_threshold,
         healthy_threshold=args.healthy_threshold,
         # FIXME: Use json.dumps(args.security_groups) to format for template
-        security_groups=args.security_groups[0],
+        security_groups=args.security_groups,
         int_listener_protocol=args.int_listener_protocol,
         ext_listener_protocol=args.ext_listener_protocol,
         int_listener_port=args.int_listener_port,
