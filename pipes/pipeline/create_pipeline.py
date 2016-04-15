@@ -154,7 +154,7 @@ class SpinnakerPipeline:
                           pipeline_response.text)
             raise SpinnakerPipelineCreationFailed(pipeline_response.json())
 
-        logging.info('Successfully created %s pipeline', self.app_name)
+        logging.info('Successfully created %s pipeline', pipeline_json['name'])
 
 
     def create_pipeline(self):
