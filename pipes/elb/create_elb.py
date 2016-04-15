@@ -133,51 +133,49 @@ def main():
         description='Example with non-optional arguments')
 
     parser.add_argument('--app', action="store", help="application name", required=True)
-    parser.add_argument('--elb_type', action="store", help="elb type: internal/external", required=True)
     parser.add_argument('--env', action="store", help="environment: dev, stage, prod", required=True)
-    parser.add_argument('--health_protocol', action="store", help="health check protocol: http/tcp", required=True)
-    parser.add_argument('--health_port', action="store", help="health check port", required=True)
-    parser.add_argument('--health_path', action="store", help="health check path", required=False, default="/health")
-    parser.add_argument('--health_timeout', action="store", help="health check timeout in seconds", required=True, default=10)
-    parser.add_argument('--health_interval', action="store", help="health check interval in seconds", required=True, default=20)
-    parser.add_argument('--healthy_threshold', action="store", help="healthy threshold", required=True, default=2)
-    parser.add_argument('--unhealthy_threshold', action="store", help="unhealthy threshold", required=True, default=5)
-    parser.add_argument('--security_groups', action="store", help="security groups", required=True, default="sg_apps", nargs="+")
-    parser.add_argument('--int_listener_port', action="store", help="internal listener port", required=True, default=8080)
-    parser.add_argument('--int_listener_protocol', action="store", help="internal listener protocol", required=True, default="HTTP")
-    parser.add_argument('--ext_listener_port', action="store", help="internal listener port", required=True, default=80)
-    parser.add_argument('--ext_listener_protocol', action="store", help="external listener protocol", required=True, default="HTTP")
+    parser.add_argument('--health-target', action="store", help="Target for Health Check, e.g. HTTP:80/health", required=True)
+    parser.add_argument('--health-timeout', action="store", help="health check timeout in seconds", required=True, default=10)
+    parser.add_argument('--health-interval', action="store", help="health check interval in seconds", required=True, default=20)
+    parser.add_argument('--healthy-threshold', action="store", help="healthy threshold", required=True, default=2)
+    parser.add_argument('--unhealthy-threshold', action="store", help="unhealthy threshold", required=True, default=5)
+    parser.add_argument('--security-groups', action="store", help="security groups", required=True, default="sg_apps", nargs="+")
+    parser.add_argument('--int-listener-port', action="store", help="internal listener port", required=True, default=8080)
+    parser.add_argument('--int-listener-protocol', action="store", help="internal listener protocol", required=True, default="HTTP")
+    parser.add_argument('--ext-listener-port', action="store", help="internal listener port", required=True, default=80)
+    parser.add_argument('--ext-listener-protocol', action="store", help="external listener protocol", required=True, default="HTTP")
     # parser.add_argument('--elb_name', action="store", help="elb name", required=True)
-    parser.add_argument('--elb_subnet', action="store", help="elb subnet", required=True, default="internal")
+    parser.add_argument('--subnet-xxxx', action="store", help="ELB Subnet type, e.g. external, internal", required=True, default="internal")
     parser.add_argument('--region', help="region name", required=True, default="us-east-1")
     args = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+
+    health_proto, health_port_path = args.hc_target.split(':')
+    health_port, *health_path = health_port_path.split('/')
 
     template = elb.elb_template.render(
         app_name=args.app,
         env=args.env,
         isInternal='true' if args.elb_type == 'internal' else 'false',
         vpc_id=elb.get_vpc_id(args.env),
-        health_protocol=args.health_protocol,
-        health_port=args.health_port,
-        health_path=args.health_path,
+        health_protocol=health_proto,
+        health_port=health_port,
+        health_path='/{0}'.format('/'.join(health_path)),
         health_timeout=args.health_timeout,
         health_interval=args.health_interval,
         unhealthy_threshold=args.unhealthy_threshold,
         healthy_threshold=args.healthy_threshold,
+        # FIXME: Use json.dumps(args.security_groups) to format for template
         security_groups=args.security_groups[0],
         int_listener_protocol=args.int_listener_protocol,
         ext_listener_protocol=args.ext_listener_protocol,
         int_listener_port=args.int_listener_port,
         ext_listener_port=args.ext_listener_port,
         # elb_name=args.elb_name,
-        subnet_type=args.elb_subnet,
-        elb_subnet=args.elb_subnet,
+        subnet_type=args.subnet_type,
         region=args.region,
-        hc_string=args.int_listener_protocol + ':' + str(
-            args.int_listener_port) + args.health_path if args.health_protocol
-        == 'HTTP' else args.health_protocol + ':' + str(
-            args.int_listener_port))
+        hc_string=args.hc_target,
+    )
 
     rendered_json = json.loads(template)
     logging.info(rendered_json)
