@@ -126,16 +126,15 @@ class SpinnakerPipeline:
                     pipeline_name = '{app}-{env}-{region}-Pipeline'.format(
                         app=app,
                         env=pipeline,
-                        region=region,
-                    )
+                        region=region, )
                     self.log.info('Deleted pipeline: %s', pipeline_name)
                     url = murl.Url(self.gate_url)
                     url.path = 'pipelines/{app}/{pipeline_name}'.format(
                         app=app,
                         pipeline_name=pipeline_name, )
                     response = requests.delete(url.url)
-                    self.log.debug('Delete %s Pipeline response:\n%s', pipeline,
-                                   response.text)
+                    self.log.debug('Delete %s Pipeline response:\n%s',
+                                   pipeline, response.text)
 
     def post_pipeline(self, pipeline_json):
 
@@ -155,7 +154,6 @@ class SpinnakerPipeline:
             raise SpinnakerPipelineCreationFailed(pipeline_response.json())
 
         logging.info('Successfully created %s pipeline', pipeline_json['name'])
-
 
     def create_pipeline(self):
         """Sends a POST to spinnaker to create a new security group."""
@@ -183,7 +181,10 @@ class SpinnakerPipeline:
 
         return True
 
-    def construct_pipeline(self, env='', previous_env=None, region='us-east-1'):
+    def construct_pipeline(self,
+                           env='',
+                           previous_env=None,
+                           region='us-east-1'):
         """Create the Pipeline JSON from template.
 
         Args:
@@ -203,8 +204,7 @@ class SpinnakerPipeline:
             # use pipeline template
             template_name = 'pipeline_pipelinetrigger_template.json.j2'
             pipeline_id = self.get_pipe_id('{0}-{1}-{2}-Pipeline'.format(
-                self.app_info['app'], previous_env, region)
-            )
+                self.app_info['app'], previous_env, region))
             self.app_info[env].update({'pipeline_id': pipeline_id})
         else:
             # use template that uses jenkins
