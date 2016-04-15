@@ -150,7 +150,7 @@ def main():
     args = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
-    health_proto, health_port_path = args.hc_target.split(':')
+    health_proto, health_port_path = args.health_target.split(':')
     health_port, *health_path = health_port_path.split('/')
 
     if len(health_path) > 0:
