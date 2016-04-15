@@ -87,21 +87,22 @@ def get_subnets(gate_url='http://gate-api.build.example.com:8084',
     LOG.debug('Subnet list: %s', subnet_list)
 
     for subnet in subnet_list:
-        LOG.debug('Subnet:\n%s', pformat(subnet))
+        LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t'
+                  '%(availabilityZone)s', subnet)
 
         if subnet['target'] == target:
             az = subnet['availabilityZone']
             account = subnet['account']
             region = subnet['region']
 
-            LOG.debug('%s regions: %s', account,
-                      list(account_az_dict[account].keys()))
-
             try:
                 if az not in account_az_dict[account][region]:
                     account_az_dict[account][region].append(az)
             except KeyError:
                 account_az_dict[account][region] = [az]
+
+            LOG.debug('%s regions: %s', account,
+                      list(account_az_dict[account].keys()))
 
     LOG.debug('AZ dict:\n%s', pformat(dict(account_az_dict)))
     return account_az_dict
@@ -126,8 +127,7 @@ def check_task(taskid, app_name):
 
     LOG.info('Checking taskid %s', taskid)
 
-    url = '{0}/applications/{1}/tasks/{2}'.format(GATE_URL, app_name,
-                                                  taskid)
+    url = '{0}/applications/{1}/tasks/{2}'.format(GATE_URL, app_name, taskid)
     task_response = requests.get(url, headers=HEADERS)
 
     LOG.debug(task_response.json())

@@ -136,7 +136,6 @@ def main():
         ext_listener_protocol=args.ext_listener_protocol,
         int_listener_port=args.int_listener_port,
         ext_listener_port=args.ext_listener_port,
-        # elb_name=args.elb_name,
         subnet_type=args.subnet_type,
         region=args.region,
         hc_string=args.health_target,
