@@ -345,6 +345,7 @@ def main():
         format=
         '[%(levelname)s]%(module)s:%(funcName)s:%(lineno)d - %(message)s')
     log = logging.getLogger(__name__)
+    logging.getLogger('utils').setLevel(logging.WARNING)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-d',
