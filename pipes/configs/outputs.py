@@ -37,13 +37,16 @@ def convert_ini(config_dict):
 
                     line = "{variable}={value}".format(variable=variable,
                                                        value=safe_value)
+
+                    LOG.debug('INI line: %s', line)
+                    config_lines.append(line)
             except AttributeError:
                 resource = resource.upper()
                 app_properties = "'{}'".format(json.dumps(app_properties))
                 line = '{0}={1}'.format(resource, app_properties)
 
-            LOG.debug('INI line: %s', line)
-            config_lines.append(line)
+                LOG.debug('INI line: %s', line)
+                config_lines.append(line)
     return config_lines
 
 
