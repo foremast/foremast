@@ -285,11 +285,11 @@ class SpinnakerPipeline:
             pipe_configs = response.json()
 
             for pipeline in pipe_configs:
-                self.log.info('ID of %(name)s: %(id)s', pipeline)
+                self.log.debug('ID of %(name)s: %(id)s', pipeline)
 
                 if pipeline['name'] == name:
                     return_id = pipeline['id']
-                    self.log.info('Pipeline found!')
+                    self.log.info('Pipeline %s found, ID: %s', name, return_id)
                     break
 
         return return_id
