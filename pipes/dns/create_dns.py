@@ -1,15 +1,16 @@
 """DNS functions for deployment."""
-import logging
-from pprint import pformat
 import argparse
-import os
 import configparser
 import json
+import logging
+import os
+from pprint import pformat
 
-import gogoutils
-from jinja2 import Environment, FileSystemLoader
-import requests
 import boto3.session
+import gogoutils
+import requests
+from jinja2 import Environment, FileSystemLoader
+from tryagain import retries
 
 
 class SpinnakerAppNotFound(Exception):
@@ -120,6 +121,7 @@ class SpinnakerDns:
 
         return details
 
+    @retries(max_attempts=10, wait=10.0, exceptions=SpinnakerElbNotFound)
     def get_app_aws_elb(self):
         """Get an application's AWS elb dns name"""
         url = '{0}/applications/{1}/loadBalancers'.format(self.gate_url, self.app_name)
