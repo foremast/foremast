@@ -14,3 +14,8 @@ class SpinnakerVPCNotFound(SpinnakerError):
 class SpinnakerVPCIDNotFound(SpinnakerError):
     """Spinnaker did not find the VPC ID."""
     pass
+
+
+class SpinnakerTaskError(SpinnakerError):
+    """Spinnaker Task did not finish properly."""
+    pass

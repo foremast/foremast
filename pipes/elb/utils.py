@@ -2,7 +2,8 @@
 import json
 import logging
 from collections import defaultdict
-from exceptions import SpinnakerVPCIDNotFound, SpinnakerVPCNotFound
+from exceptions import (SpinnakerTaskError, SpinnakerVPCIDNotFound,
+                        SpinnakerVPCNotFound)
 from pprint import pformat
 
 import requests
@@ -16,6 +17,7 @@ class SpinnakerTimeout(Exception):
 LOG = logging.getLogger(__name__)
 
 GATE_URL = "http://gate-api.build.example.com:8084"
+HEADERS = {'Content-Type': 'application/json', 'Accept': '*/*'}
 
 
 def get_vpc_id(account, region):
@@ -103,6 +105,46 @@ def get_subnets(gate_url='http://gate-api.build.example.com:8084',
 
     LOG.debug('AZ dict:\n%s', pformat(dict(account_az_dict)))
     return account_az_dict
+
+
+@retries(max_attempts=10, wait=10, exceptions=Exception)
+def check_task(taskid, app_name):
+    """Check ELB creation status.
+    Args:
+        taskid: the task id returned from create_elb.
+        app_name: application name related to this task.
+
+    Returns:
+        polls for task status.
+    """
+    try:
+        taskurl = taskid.get('ref', '0000')
+    except AttributeError:
+        taskurl = taskid
+
+    taskid = taskurl.split('/tasks/')[-1]
+
+    LOG.info('Checking taskid %s', taskid)
+
+    url = '{0}/applications/{1}/tasks/{2}'.format(GATE_URL, app_name,
+                                                  taskid)
+    task_response = requests.get(url, headers=HEADERS)
+
+    LOG.debug(task_response.json())
+
+    if not task_response.ok:
+        raise Exception
+    else:
+        task_state = task_response.json()
+        status = task_state['status']
+        LOG.info('Current task status: %s', status)
+
+        if status == 'SUCCEEDED':
+            return status
+        elif status == 'TERMINAL':
+            raise SpinnakerTaskError(task_response.text)
+        else:
+            raise Exception
 
 
 def main():
