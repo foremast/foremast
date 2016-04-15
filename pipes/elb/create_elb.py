@@ -124,7 +124,8 @@ def main():
         --health_timeout=10 \
         --health_interval 2 \
         --healthy_threshold 4 \
-        --unhealthy_threshold 6
+        --unhealthy_threshold 6 \
+        --region us-east-1
     """
     elb = SpinnakerELB()
 
