@@ -13,7 +13,7 @@
       "selectionStrategy": "LARGEST",
       "onlyEnabled": true,
       "cluster": "{{ app.appname }}",
-      "credentials": "{{ app.environment }}"
+      "credentials": "{{ app.previous_env }}"
     },
     {
       "requisiteStageRefIds": [

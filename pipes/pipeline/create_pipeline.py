@@ -224,7 +224,8 @@ class SpinnakerPipeline:
             'triggerjob': self.app_info['triggerjob'],
             'regions': json.dumps(list(region_subnets.keys())),
             'region': region,
-            'az_dict': json.dumps(region_subnets)
+            'az_dict': json.dumps(region_subnets),
+            'previous_env': previous_env,
         })
 
         pipeline_json = self.get_template(template_name=template_name,
