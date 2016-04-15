@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sys
+from exceptions import SpinnakerVPCNotFound
 
 import requests
 from jinja2 import Environment, FileSystemLoader
@@ -23,24 +24,27 @@ class SpinnakerELB:
         self.gate_url = "http://gate-api.build.example.com:8084"
         self.header = {'Content-Type': 'application/json', 'Accept': '*/*'}
 
-    def get_vpc_id(self, account):
+    def get_vpc_id(self, account, region):
         """Get vpc id.
 
         Args:
             account: AWS account name.
+            region: Region name, e.g. us-east-1.
 
         Returns:
             vpc_id.
         """
-        url = self.gate_url + "/vpcs"
+        url = '{0}/vpcs'.format(self.gate_url)
         response = requests.get(url)
         if response.ok:
             for vpc in response.json():
-                if vpc['name'] == 'vpc' and vpc['account'] == account:
+                if vpc['name'] == 'vpc' and \
+                   vpc['account'] == account and \
+                   vpc['region'] == region:
                     return vpc['id']
         else:
             logging.error(response.text)
-            sys.exit(1)
+            raise SpinnakerVPCNotFound(response.text)
 
     def create_elb(self, json_data, app):
         """Create/Update ELB.
@@ -167,7 +171,7 @@ def main():
         app_name=args.app,
         env=args.env,
         isInternal='true' if args.subnet_type == 'internal' else 'false',
-        vpc_id=elb.get_vpc_id(args.env),
+        vpc_id=elb.get_vpc_id(args.env, args.region),
         health_protocol=health_proto,
         health_port=health_port,
         health_path=health_path,
