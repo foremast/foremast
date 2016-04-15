@@ -161,7 +161,7 @@ def main():
     template = elb.elb_template.render(
         app_name=args.app,
         env=args.env,
-        isInternal='true' if args.elb_type == 'internal' else 'false',
+        isInternal='true' if args.subnet_type == 'internal' else 'false',
         vpc_id=elb.get_vpc_id(args.env),
         health_protocol=health_proto,
         health_port=health_port,
