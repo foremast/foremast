@@ -162,7 +162,7 @@ def main():
     if len(health_path) > 0:
         health_path = '/{0}'.format(health_path)
     else:
-        health_path = ''
+        health_path = '/healthcheck'
 
     raw_subnets = get_subnets()
     region_subnets = {args.region: raw_subnets[args.env][args.region]}
