@@ -153,6 +153,11 @@ def main():
     health_proto, health_port_path = args.hc_target.split(':')
     health_port, *health_path = health_port_path.split('/')
 
+    if len(health_path) > 0:
+        health_path = '/{0}'.format(health_path)
+    else:
+        health_path = ''
+
     template = elb.elb_template.render(
         app_name=args.app,
         env=args.env,
@@ -160,7 +165,7 @@ def main():
         vpc_id=elb.get_vpc_id(args.env),
         health_protocol=health_proto,
         health_port=health_port,
-        health_path='/{0}'.format('/'.join(health_path)),
+        health_path=health_path,
         health_timeout=args.health_timeout,
         health_interval=args.health_interval,
         unhealthy_threshold=args.unhealthy_threshold,
