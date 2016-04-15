@@ -18,4 +18,6 @@ class SpinnakerVPCIDNotFound(SpinnakerError):
 
 class SpinnakerTaskError(SpinnakerError):
     """Spinnaker Task did not finish properly."""
-    pass
+
+    def __init__(self, task_state):
+        super().__init__(task_state['variables'][-1]['value'][-1]['exception'])

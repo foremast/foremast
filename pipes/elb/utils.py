@@ -142,7 +142,7 @@ def check_task(taskid, app_name):
         if status == 'SUCCEEDED':
             return status
         elif status == 'TERMINAL':
-            raise SpinnakerTaskError(task_response.text)
+            raise SpinnakerTaskError(task_state)
         else:
             raise Exception
 
