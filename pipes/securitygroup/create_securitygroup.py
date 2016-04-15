@@ -80,6 +80,7 @@ class SpinnakerSecurityGroup:
 
         Args:
             account: AWS account name.
+            region: Region name, e.g. us-east-1.
 
         Returns:
             vpc_id.
