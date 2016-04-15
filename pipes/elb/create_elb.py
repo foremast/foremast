@@ -3,12 +3,12 @@ import argparse
 import json
 import logging
 import os
+from exceptions import SpinnakerTaskError
 
 import requests
 from jinja2 import Environment, FileSystemLoader
-from tryagain import retries
 
-from utils import get_subnets, get_vpc_id
+from utils import check_task, get_subnets, get_vpc_id
 
 LOG = logging.getLogger(__name__)
 
@@ -46,45 +46,6 @@ class SpinnakerELB:
             LOG.error('Error creating %s ELB:', app)
             LOG.error(response.text)
             return response.json()
-
-    @retries(max_attempts=10, wait=10, exceptions=Exception)
-    def check_task(self, taskid, app_name):
-        """Check ELB creation status.
-        Args:
-            taskid: the task id returned from create_elb.
-            app_name: application name related to this task.
-
-        Returns:
-            polls for task status.
-        """
-
-        try:
-            taskurl = taskid.get('ref', '0000')
-        except AttributeError:
-            taskurl = taskid
-
-        taskid = taskurl.split('/tasks/')[-1]
-
-        LOG.info('Checking taskid %s', taskid)
-
-        url = '{0}/applications/{1}/tasks/{2}'.format(self.gate_url, app_name,
-                                                      taskid)
-
-        r = requests.get(url, headers=self.header)
-
-        LOG.debug(r.json())
-        if not r.ok:
-            raise Exception
-        else:
-            json = r.json()
-            status = json['status']
-            LOG.info('Current task status: %s', status)
-            STATUSES = ('SUCCEEDED', 'TERMINAL')
-
-            if status in STATUSES:
-                return status
-            else:
-                raise Exception
 
 
 def main():
@@ -186,12 +147,11 @@ def main():
     rendered_json = json.loads(template)
     LOG.info(rendered_json)
     taskid = elb.create_elb(rendered_json, args.app)
-    if elb.check_task(taskid, args.app) == "SUCCEEDED":
-        LOG.info("ELB upserted successfully.")
-    else:
-        error = 'Error upserting ELB, exiting ...'
-        LOG.error(error)
-        raise SystemExit(error)
+    try:
+        check_task(taskid, args.app)
+    except SpinnakerTaskError:
+        LOG.error('Error upserting ELB, exiting ...')
+        raise
 
 
 if __name__ == '__main__':
