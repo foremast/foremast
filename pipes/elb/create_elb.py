@@ -115,7 +115,7 @@ def main():
     else:
         health_path = '/healthcheck'
 
-    raw_subnets = get_subnets()
+    raw_subnets = get_subnets(target='elb')
     region_subnets = {args.region: raw_subnets[args.env][args.region]}
 
     template = elb.elb_template.render(
