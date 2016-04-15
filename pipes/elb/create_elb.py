@@ -9,6 +9,8 @@ import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
+from utils import get_subnets
+
 
 class SpinnakerELB:
     """Create ELBs for Spinnaker."""
@@ -158,6 +160,9 @@ def main():
     else:
         health_path = ''
 
+    raw_subnets = get_subnets()
+    region_subnets = {args.region: raw_subnets[args.env][args.region]}
+
     template = elb.elb_template.render(
         app_name=args.app,
         env=args.env,
@@ -180,6 +185,8 @@ def main():
         subnet_type=args.subnet_type,
         region=args.region,
         hc_string=args.health_target,
+        availability_zones=json.dumps(region_subnets),
+        region_zones=json.dumps(region_subnets[args.region]),
     )
 
     rendered_json = json.loads(template)
