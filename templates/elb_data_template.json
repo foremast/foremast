@@ -14,12 +14,7 @@
          "healthInterval":{{ health_interval }},
          "healthyThreshold":{{ healthy_threshold }},
          "unhealthyThreshold":{{ unhealthy_threshold }},
-         "regionZones":[
-            "us-east-1b",
-            "us-east-1c",
-            "us-east-1d",
-            "us-east-1e"
-         ],
+         "regionZones": {{ region_zones }},
          "securityGroups":[
             "{{ security_groups }}"
          ],
@@ -36,14 +31,7 @@
          "subnetType":"{{ subnet_type }}",
          "healthCheck":"{{ hc_string }}",
          "type":"upsertLoadBalancer",
-         "availabilityZones":{
-            "us-east-1":[
-               "us-east-1b",
-               "us-east-1c",
-               "us-east-1d",
-               "us-east-1e"
-            ]
-         },
+         "availabilityZones": {{ availability_zones }},
          "user":"pipes-elb"
       }
    ],
