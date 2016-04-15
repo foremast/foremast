@@ -43,7 +43,7 @@
       ],
       "refId": "3",
       "type": "deploy",
-      "name": "Deploy {{ env }}",
+      "name": "Deploy {{ app.environment }}",
       "clusters": [
         {
           "application": "{{ app.appname }}",
@@ -64,7 +64,7 @@
             "Default"
           ],
           "availabilityZones": {{ app.az_dict }},
-          "keyPair": "{{ env }}_access",
+          "keyPair": "{{ app.environment }}_access",
           "suspendedProcesses": [],
           "securityGroups": [
             "sg_apps",
@@ -81,7 +81,7 @@
           "associatePublicIpAddress": null,
           "provider": "aws",
           "cloudProvider": "aws",
-          "account": "{{ env }}",
+          "account": "{{ app.environment }}",
           "interestingHealthProviderNames": [
             "Amazon"
           ]
