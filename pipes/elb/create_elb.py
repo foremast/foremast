@@ -1,16 +1,19 @@
-import requests
+"""Create ELBs for Spinnaker Pipelines."""
 import argparse
 import json
 import logging
-import sys
 import os
-from tryagain import retries
+import sys
+
+import requests
 from jinja2 import Environment, FileSystemLoader
+from tryagain import retries
 
 
 class SpinnakerELB:
+    """Create ELBs for Spinnaker."""
+
     def __init__(self):
-        ''
         self.curdir = os.path.dirname(os.path.realpath(__file__))
         self.templatedir = "{}/../../templates".format(self.curdir)
         jinjaenv = Environment(loader=FileSystemLoader(self.templatedir))
@@ -99,6 +102,7 @@ class SpinnakerELB:
             else:
                 raise Exception
 
+
 def main():
     """Create ELBs.
 
@@ -183,6 +187,7 @@ def main():
     else:
         logging.error("Error upserting ELB, exiting ...")
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main()
