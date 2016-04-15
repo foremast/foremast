@@ -20,7 +20,7 @@ def main():
                         help='Set DEBUG output')
     parser.add_argument('-e',
                         '--env',
-                        choices=('build', 'dev', 'stage', 'prod'),
+                        choices=('build', 'dev', 'stage', 'prod', 'sox', 'pci'),
                         default='dev',
                         help='Deploy environment')
     parser.add_argument('-a',
