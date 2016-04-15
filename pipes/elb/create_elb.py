@@ -189,8 +189,8 @@ def main():
         subnet_type=args.subnet_type,
         region=args.region,
         hc_string=args.health_target,
-        availability_zones=json.dumps(region_subnets[args.region]),
-        region_zones=json.dumps(region_subnets),
+        availability_zones=json.dumps(region_subnets),
+        region_zones=json.dumps(region_subnets[args.region]),
     )
 
     rendered_json = json.loads(template)
