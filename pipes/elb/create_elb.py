@@ -179,7 +179,7 @@ def main():
         # elb_name=args.elb_name,
         subnet_type=args.subnet_type,
         region=args.region,
-        hc_string=args.hc_target,
+        hc_string=args.health_target,
     )
 
     rendered_json = json.loads(template)
