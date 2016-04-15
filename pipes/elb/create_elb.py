@@ -144,9 +144,11 @@ def main():
         region_zones=json.dumps(region_subnets[args.region]),
     )
 
+    LOG.info('Rendered template:\n%s', template)
+
     rendered_json = json.loads(template)
-    LOG.info(rendered_json)
     taskid = elb.create_elb(rendered_json, args.app)
+
     try:
         check_task(taskid, args.app)
     except SpinnakerTaskError:
