@@ -3,7 +3,6 @@ import argparse
 import json
 import logging
 import os
-import sys
 from exceptions import SpinnakerVPCNotFound
 
 import requests
@@ -11,6 +10,8 @@ from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
 from utils import get_subnets
+
+LOG = logging.getLogger(__name__)
 
 
 class SpinnakerELB:
@@ -43,7 +44,7 @@ class SpinnakerELB:
                    vpc['region'] == region:
                     return vpc['id']
         else:
-            logging.error(response.text)
+            LOG.error(response.text)
             raise SpinnakerVPCNotFound(response.text)
 
     def create_elb(self, json_data, app):
@@ -61,12 +62,12 @@ class SpinnakerELB:
                                  data=json.dumps(json_data),
                                  headers=self.header)
         if response.ok:
-            logging.info('%s ELB Created' % app)
-            logging.info(response.text)
+            LOG.info('%s ELB Created', app)
+            LOG.info(response.text)
             return response.json()
         else:
-            logging.error('Error creating %s ELB:' % app)
-            logging.error(response.text)
+            LOG.error('Error creating %s ELB:', app)
+            LOG.error(response.text)
             return response.json()
 
     @retries(max_attempts=10, wait=10, exceptions=Exception)
@@ -87,20 +88,20 @@ class SpinnakerELB:
 
         taskid = taskurl.split('/tasks/')[-1]
 
-        logging.info('Checking taskid %s' % taskid)
+        LOG.info('Checking taskid %s', taskid)
 
         url = '{0}/applications/{1}/tasks/{2}'.format(self.gate_url, app_name,
                                                       taskid)
 
         r = requests.get(url, headers=self.header)
 
-        logging.debug(r.json())
+        LOG.debug(r.json())
         if not r.ok:
             raise Exception
         else:
             json = r.json()
             status = json['status']
-            logging.info('Current task status: %s', status)
+            LOG.info('Current task status: %s', status)
             STATUSES = ('SUCCEEDED', 'TERMINAL')
 
             if status in STATUSES:
@@ -133,11 +134,19 @@ def main():
         --unhealthy_threshold 6 \
         --region us-east-1
     """
-    elb = SpinnakerELB()
+    logging.basicConfig(
+        format=
+        '[%(levelname)s]%(module)s:%(funcName)s:%(lineno)d - %(message)s')
 
     parser = argparse.ArgumentParser(
         description='Example with non-optional arguments')
 
+    parser.add_argument('-d',
+                        '--debug',
+                        action='store_const',
+                        const=logging.DEBUG,
+                        default=logging.INFO,
+                        help='Set DEBUG output')
     parser.add_argument('--app', action="store", help="application name", required=True)
     parser.add_argument('--env', action="store", help="environment: dev, stage, prod", required=True)
     parser.add_argument('--health-target', action="store", help="Target for Health Check, e.g. HTTP:80/health", required=True)
@@ -153,8 +162,12 @@ def main():
     # parser.add_argument('--elb_name', action="store", help="elb name", required=True)
     parser.add_argument('--subnet-xxxx', action="store", help="ELB Subnet type, e.g. external, internal", default="internal")
     parser.add_argument('--region', help="region name", default="us-east-1")
+
     args = parser.parse_args()
-    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+
+    LOG.setLevel(args.debug)
+
+    elb = SpinnakerELB()
 
     health_proto, health_port_path = args.health_target.split(':')
     health_port, *health_path = health_port_path.split('/')
@@ -194,14 +207,14 @@ def main():
     )
 
     rendered_json = json.loads(template)
-    logging.info(rendered_json)
+    LOG.info(rendered_json)
     taskid = elb.create_elb(rendered_json, args.app)
     if elb.check_task(taskid, args.app) == "SUCCEEDED":
-        logging.info("ELB upserted successfully.")
-        sys.exit(0)
+        LOG.info("ELB upserted successfully.")
     else:
-        logging.error("Error upserting ELB, exiting ...")
-        sys.exit(1)
+        error = 'Error upserting ELB, exiting ...'
+        LOG.error(error)
+        raise SystemExit(error)
 
 
 if __name__ == '__main__':
