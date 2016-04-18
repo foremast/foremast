@@ -79,7 +79,7 @@ def attach_profile_to_role(client,
     else:
         for remove_profile in current_instance_profiles:
             client.remove_role_from_instance_profile(
-                InstanceProfileName=remove_profile,
+                InstanceProfileName=remove_profile['InstanceProfileName'],
                 RoleName=role_name)
             LOG.info('Removed Instance Profile from Role: %s -> %s',
                      remove_profile, role_name)
