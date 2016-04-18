@@ -57,7 +57,7 @@ def process_git_configs(git_short='', token_file=''):
                                    'master', )
 
     if not pipeline_blob:
-        LOG.info('Pipeline configuration not available, using defualts.')
+        LOG.info('Pipeline configuration not available, using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
     else:
         LOG.info('Pipeline configuration found.')
