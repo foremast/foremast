@@ -123,3 +123,18 @@ override the default of `us-east-1`.
     ]
 }
 ```
+
+## Migration with FIG TODOs
+
+- [ ] Update Pipeline templates to include `gitlab-tagger`
+- [ ] Pipeline JSON template did not pick up Jenkins Job
+- Update gogo-sauce credentials
+
+  - [x] sox
+  - [ ] pci
+
+- [ ] DSL should make Job names lower cased
+- [x] S3 Bucket name for sox
+- [ ] Have Developers delete current Jenkins Job so Job can be recreated with
+  lower casing
+- [x] Fix hard coded `desired` ASG
