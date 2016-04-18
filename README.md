@@ -74,11 +74,14 @@ environment.
 
 #### Example Deployment Environments Override
 
+Custom deployment environment order and selection can be provided in the `env`
+key. When missing, the default provided is `{"env": ["stage", "prod"]}`. Here,
+the order matters and Pipelines will be triggered in the given order.
+
 ```json
 {
     "deployment": "spinnaker",
     "env": [
-        "stage",
         "prod"
     ]
 }
