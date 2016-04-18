@@ -161,8 +161,13 @@ class SpinnakerPipeline:
         self.clean_pipelines()
         previous_env = None
         self.log.debug('Envs: %s', self.settings['pipeline']['env'])
-        for env in self.settings['pipeline']['env']:
+        for index, env in enumerate(self.settings['pipeline']['env']):
             # Assume order of environments is correct
+            try:
+                next_env = self.settings['pipeline']['env'][index + 1]
+            except IndexError:
+                next_env = None
+
             if env in self.settings['pipeline']:
                 # The custom provided pipeline
                 self.log.info('Found overriding Pipeline JSON for %s.', env)
@@ -174,6 +179,7 @@ class SpinnakerPipeline:
                     pipeline_json = self.construct_pipeline(
                         env=env,
                         previous_env=previous_env,
+                        next_env=next_env,
                         region=region)
                     self.post_pipeline(pipeline_json)
 
@@ -184,6 +190,7 @@ class SpinnakerPipeline:
     def construct_pipeline(self,
                            env='',
                            previous_env=None,
+                           next_env=None,
                            region='us-east-1'):
         """Create the Pipeline JSON from template.
 
@@ -191,6 +198,8 @@ class SpinnakerPipeline:
             env (str): Deploy environment name, e.g. dev, stage, prod.
             previous_env (str): The previous deploy environment to use as
                 Trigger.
+            next_env (str): Name of next deployment environment.
+            region (str): AWS Region to deploy to.
 
         Returns:
             dict: Pipeline JSON template rendered with configurations.
@@ -226,6 +235,7 @@ class SpinnakerPipeline:
             'region': region,
             'az_dict': json.dumps(region_subnets),
             'previous_env': previous_env,
+            'next_env': next_env,
         })
 
         pipeline_json = self.get_template(template_name=template_name,
