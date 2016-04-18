@@ -3,19 +3,26 @@
 This repository will contain scripts for all of the "pipes" tasks for Spinnaker
 deployments.
 
-
 ## Basic Task Overview
-
-1. Create logical Spinnaker app
-1. Create/modify ELB
-1. Create/modify server group/ASG
-1. Create/modify Security Groups
-1. Create/skip S3 Archaius application.properties file
-1. Create/modify application pipeline
 
 These are designed to be loosely coupled applications and we will continue to
 update this README as the project grows.
 
+### Implementation
+
+1. Create logical Spinnaker app (triggered by Git Hook)
+1. Call downstream Job to manage infrastructure
+1. Read configurations from `application-master-{env}.json` and `pipeline.json`
+1. Create/modify IAM Profile and Role
+1. Create/skip S3 Archaius application.properties file
+1. Create/modify Security Groups
+1. Create/modify ELB
+1. Create DNS record to ELB
+1. Create/modify application pipeline
+
+### Not Used
+
+1. Create/modify server group/ASG
 
 ## Technology Used
 
