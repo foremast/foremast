@@ -10,6 +10,9 @@ update this README as the project grows.
 
 ### Implementation
 
+See `pipes-pipeline-prepare` in [dsl.groovy](runway/dsl.groovy) for Jenkins Job
+configuration.
+
 1. Create logical Spinnaker app (triggered by Git Hook)
 1. Call downstream Job to manage infrastructure
 1. Read configurations from `application-master-{env}.json` and `pipeline.json`
