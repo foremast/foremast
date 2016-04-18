@@ -93,6 +93,7 @@
       "parameters": {
         "test_job": "profileservice_QE"
       }
+    {% if app.next_env %}
     },
     {
       "requisiteStageRefIds": ["3"],
@@ -112,8 +113,9 @@
         }
       ],
       "failPipeline": true,
-      "instructions": "Do you want to proceed and promote the deployment to ${ trigger.properties.DEPLOY_ENV } ?",
+      "instructions": "Do you want to proceed and promote the deployment to {{ app.next_env }}?",
       "comments": "application: ${ trigger.properties.APP_NAME }"
+    {% endif %}
     }
   ],
   "triggers": [
