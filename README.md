@@ -27,6 +27,8 @@ configuration.
 
 1. Create/modify server group/ASG
 
+    * Part of the Pipeline creation
+
 ## Technology Used
 
 See [requirements](requirements.txt) for package listing.
