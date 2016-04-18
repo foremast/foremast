@@ -9,7 +9,8 @@ import gitlab
 
 from .utils import get_configs
 
-ENVS = ('dev', 'stage', 'prod', 'prodpci', 'stagepci', 'prodsox', 'stagesox', 'pci', 'sox')
+ENVS = ('dev', 'stage', 'prod', 'prodpci', 'stagepci', 'prodsox', 'stagesox',
+        'pci', 'sox')
 LOG = logging.getLogger(__name__)
 
 
@@ -51,11 +52,9 @@ def process_git_configs(git_short='', token_file=''):
             app_configs[env] = json.loads(file_contents.decode())
 
     LOG.info('Processing pipeline.json from GitLab.')
-    pipeline_blob = server.getfile(
-        project_id,
-        'runway/pipeline.json',
-        'master',
-        )
+    pipeline_blob = server.getfile(project_id,
+                                   'runway/pipeline.json',
+                                   'master', )
 
     if not pipeline_blob:
         LOG.info('Pipeline configuration not available, using defualts.')
@@ -101,14 +100,14 @@ def process_runway_configs(runway_dir=''):
     LOG.info('Processing pipeline.json from local directory')
     try:
         pipeline_file = os.path.join(runway_dir, 'pipeline.json')
-        LOG.debug('Reading pipeline.json from %s' % pipeline_file)
+        LOG.debug('Reading pipeline.json from %s', pipeline_file)
         with open(pipeline_file) as pipeline:
             app_configs['pipeline'] = json.load(pipeline)
 
         if 'env' not in app_configs['pipeline']:
             app_configs['pipeline']['env'] = ['stage', 'prod']
     except FileNotFoundError:
-        LOG.warn('Unable to process pipeline.json. Using defaults.')
+        LOG.warning('Unable to process pipeline.json. Using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
 
     LOG.debug('Application configs:\n%s', app_configs)
