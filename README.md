@@ -84,6 +84,24 @@ environment.
 }
 ```
 
+#### Complete JSON Override
+
+Complete manual overrides can also be provided based on JSON configuration for a
+Spinnaker Pipeline, but are not supported. JSON dump can be found in the
+Pipeline view.
+
+```json
+{
+    "deployment": "spinnaker",
+    "env": [
+        "prod"
+    ],
+    "prod": {
+        "_Custom Spinnaker Pipeline configuration": "Insert here."
+    }
+}
+```
+
 Each deployment environment specified in the `pipeline.json` file will need an
 accompanying `application-master-{env}.json` file.
 
