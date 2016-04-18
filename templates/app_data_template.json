@@ -1,7 +1,9 @@
-  { "job":
-    [{
+{
+"job": [
+    {%for account in appinfo.accounts %}
+    {
         "type":"createApplication",
-        "account":"dev",
+        "account":"{{ account.name }}",
         "application":{
             "cloudProviders":"aws",
             "name": "{{ appinfo.app }}",
@@ -10,38 +12,11 @@
             "repoProjectKey": "{{ appinfo.project }}",
             "repoSlug": "{{ appinfo.repo }}",
             "platformHealthOnlyShowOverride": true
-          },
-      "user":"Pipes-Script"
-      },
-      {
-        "type":"createApplication",
-        "account":"stage",
-        "application":{
-            "cloudProviders":"aws",
-            "name": "{{ appinfo.app }}",
-            "email": "{{ appinfo.email }}",
-            "repoType": "github",
-            "repoProjectKey": "{{ appinfo.project }}",
-            "repoSlug": "{{ appinfo.repo }}",
-            "platformHealthOnlyShowOverride": true
-              },
-        "user":"Pipes-Script"
-       },
-       {
-        "type":"createApplication",
-        "account":"prod",
-        "application":{
-            "cloudProviders":"aws",
-            "name": "{{ appinfo.app }}",
-            "email": "{{ appinfo.email }}",
-            "repoType": "github",
-            "repoProjectKey": "{{ appinfo.project }}",
-            "repoSlug": "{{ appinfo.repo }}",
-            "platformHealthOnlyShowOverride": true
-              },
+        },
         "user":"pipes-app"
-          }
-      ],
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ],
 "application": "{{ appinfo.app }}",
 "description": "Created application {{ appinfo.app }}"
 }

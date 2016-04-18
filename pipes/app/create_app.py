@@ -34,6 +34,22 @@ class SpinnakerApp:
             logging.error(r.text)
             sys.exit(1)
 
+    def get_accounts(self, provider='aws'):
+        url = '{gate}/credentials'.format(gate=self.gate_url)
+        r = requests.get(url)
+        if r.ok:
+            all_accounts = r.json()
+            filtered_accounts = []
+
+            for account in all_accounts:
+                if account['type'] == provider:
+                    filtered_accounts.append(account)
+            return filtered_accounts
+
+        else:
+            logging.error(r.text)
+            sys.exit(1)
+
     def app_exists(self):
         '''Checks to see if application already exists'''
         self.get_apps()
@@ -61,6 +77,7 @@ class SpinnakerApp:
             self.appname = appinfo['app']
 
         url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
+        self.appinfo['accounts'] = self.get_accounts()
         jsondata = self.setup_appdata()
         r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
 
