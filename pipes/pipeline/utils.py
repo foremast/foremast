@@ -124,7 +124,7 @@ def generate_encoded_user_data(env='dev',
                              region=region,
                              app_name=app_name,
                              group_name=group_name, )
-    return base64.b64encode(user_data.encode())
+    return base64.b64encode(user_data.encode()).decode()
 
 
 def main():
