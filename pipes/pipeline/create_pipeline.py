@@ -102,7 +102,7 @@ class SpinnakerPipeline:
         all_pipelines = self.get_all_pipelines('{app}'.format(**self.app_info))
 
         for pipeline in all_pipelines.json():
-            if pipeline['name'].endswith('-Pipeline'):
+            if pipeline['name'].endswith('-pipeline'):
                 app, env, *_ = pipeline['name'].split('-')
                 current_envs.append(env)
 
@@ -125,7 +125,7 @@ class SpinnakerPipeline:
                 # TODO: Get real region list
                 regions = ['us-east-1', 'us-west-2']
                 for region in regions:
-                    pipeline_name = '{app}-{env}-{region}-Pipeline'.format(
+                    pipeline_name = '{app}-{env}-{region}-pipeline'.format(
                         app=app,
                         env=pipeline,
                         region=region, )
@@ -213,7 +213,7 @@ class SpinnakerPipeline:
         if previous_env:
             # use pipeline template
             template_name = 'pipeline_pipelinetrigger_template.json.j2'
-            pipeline_id = self.get_pipe_id('{0}-{1}-{2}-Pipeline'.format(
+            pipeline_id = self.get_pipe_id('{0}-{1}-{2}-pipeline'.format(
                 self.app_info['app'], previous_env, region))
             self.app_info[env].update({'pipeline_id': pipeline_id})
         else:
