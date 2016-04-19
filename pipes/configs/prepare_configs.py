@@ -46,6 +46,7 @@ def process_git_configs(git_short='', token_file=''):
 
         if not file_blob:
             LOG.debug('Application configuration not available for %s.', env)
+            # TODO: Use default configs anyways?
             continue
         else:
             file_contents = b64decode(file_blob['content'])
