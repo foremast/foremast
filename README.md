@@ -136,6 +136,6 @@ override the default of `us-east-1`.
 - [ ] Have Developers delete current Jenkins Job so Job can be recreated with
   lower casing
 - [x] Fix hard coded `desired` ASG
-- [ ] Manual Judgement: Do you want to proceed and promote the deployment to
+- [x] Manual Judgement: Do you want to proceed and promote the deployment to
   {env}?
 - For customers of FIG, dependant services will need access to SOX throug public
