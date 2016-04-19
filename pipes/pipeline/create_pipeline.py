@@ -11,7 +11,7 @@ import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
-from utils import get_subnets
+from utils import generate_encoded_user_data, get_subnets
 
 
 class SpinnakerAppNotFound(Exception):
@@ -46,7 +46,9 @@ class SpinnakerPipeline:
         self.gate_url = self.config['spinnaker']['gate_url']
 
         self.app_info = app_info
-        self.app_name = self.app_exists()
+        self.app_name = ''
+        self.group_name = ''
+        self.app_exists()
 
         self.settings = self.get_settings()
 
@@ -236,6 +238,11 @@ class SpinnakerPipeline:
             'az_dict': json.dumps(region_subnets),
             'previous_env': previous_env,
             'next_env': next_env,
+            'encoded_user_data': generate_encoded_user_data(
+                env=env,
+                region=region,
+                app_name=self.app_name,
+                group_name=self.group_name),
         })
 
         pipeline_json = self.get_template(template_name=template_name,
@@ -243,10 +250,13 @@ class SpinnakerPipeline:
         return pipeline_json
 
     def app_exists(self):
-        """Checks to see if application already exists.
+        """Check to see if application already exists.
+
+        Sets self.app_name and self.group_name based on Spinnaker Application
+        attributes.
 
         Returns:
-            Str of application name
+            bool: True when Spinnaker Application exists.
 
         Raises:
             SpinnakerAppNotFound: Could not find Spinnaker Application.
@@ -258,7 +268,10 @@ class SpinnakerPipeline:
         app_response = requests.get(url.url, headers=self.header)
 
         if app_response.ok:
-            return app_name
+            app_dict = app_response.json()
+            self.app_name = app_dict['attributes']['name']
+            self.group_name = app_dict['attributes']['repoProjectKey']
+            return True
         else:
             logging.info('Application %s does not exist ... exiting', app_name)
             raise SpinnakerAppNotFound('Application "{0}" not found.'.format(

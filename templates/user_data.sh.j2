@@ -1,0 +1,8 @@
+#!/bin/bash
+export CLOUD_ENVIRONMENT={{ env }}
+export CLOUD_APP={{ app_name }}
+export CLOUD_APP_GROUP={{ group_name }}
+export CLOUD_STACK={{ group_name }}
+export EC2_REGION={{ region }}
+export CLOUD_DOMAIN={{ env }}.example.com
+printenv | grep 'CLOUD\|EC2' | awk '$0="export "$0' >> /etc/gogo/cloud_env
