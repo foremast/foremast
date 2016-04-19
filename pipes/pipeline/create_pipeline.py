@@ -1,4 +1,4 @@
-"""Create Pipelines for Spinnaker"""
+"""Create Pipelines for Spinnaker."""
 import argparse
 import configparser
 import json
@@ -139,7 +139,7 @@ class SpinnakerPipeline:
                                    pipeline, response.text)
 
     def post_pipeline(self, pipeline_json):
-
+        """Send Pipeline JSON to Spinnaker."""
         url = "{0}/pipelines".format(self.gate_url)
         self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
@@ -158,8 +158,7 @@ class SpinnakerPipeline:
         logging.info('Successfully created %s pipeline', pipeline_json['name'])
 
     def create_pipeline(self):
-        """Sends a POST to spinnaker to create a new security group."""
-
+        """Send a POST to spinnaker to create a new security group."""
         self.clean_pipelines()
         previous_env = None
         self.log.debug('Envs: %s', self.settings['pipeline']['env'])
