@@ -1,5 +1,5 @@
 {
-  "name": "{{ app.appname }}-{{ app.environment }}-{{ app.region }}-Pipeline",
+  "name": "{{ app.appname }}-{{ app.environment }}-{{ app.region }}-pipeline",
   "application": "{{ app.appname }}",
   "stages": [
     {
