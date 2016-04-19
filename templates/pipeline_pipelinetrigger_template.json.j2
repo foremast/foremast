@@ -46,14 +46,15 @@
           "suspendedProcesses": [],
           "securityGroups": [
             "sg_apps",
-            "sg_offices"
+            "sg_offices",
+            "{{ app.appname }}"
           ],
           "tags": {
             "app_group": "${ trigger.properties.GROUP_NAME }"
           },
           "subnetType": "internal",
           "virtualizationType": null,
-          "loadBalancers": [],
+          "loadBalancers": ["{{ app.appname }}"],
           "instanceType": "{{ app.instance_type }}",
           "useSourceCapacity": false,
           "associatePublicIpAddress": null,
