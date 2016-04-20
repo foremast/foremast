@@ -164,6 +164,8 @@ class SpinnakerPipeline:
         self.log.debug('Envs: %s', self.settings['pipeline']['env'])
         pipeline_list = []
         self.log.info('Creating wrapper template')
+        
+        #Sets up wrapper template
         pipeline_json = self.construct_pipeline_block(
             env='dev',
             previous_env=None,
@@ -172,7 +174,7 @@ class SpinnakerPipeline:
             )
         pipeline_list.append(pipeline_json)
         
-
+        
         for index, env in enumerate(self.settings['pipeline']['env']):
             # Assume order of environments is correct
             try:
@@ -215,8 +217,6 @@ class SpinnakerPipeline:
         
         return pipeline_start
 
-
-
     def construct_pipeline_block(self,
                            env='',
                            previous_env=None,
@@ -244,8 +244,10 @@ class SpinnakerPipeline:
             # use pipeline template
             template_name = 'pipeline_wrapper.json'
         elif (env == 'sox') :
-            # use template that uses jenkins
             template_name = 'pipeline_sox.json'
+        elif (env == 'pci') :
+            template_name = 'pipeline_pci.json'
+        else:
         else:
             template_name = 'pipeline_stages.json'
 
