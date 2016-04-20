@@ -87,7 +87,7 @@
       "failPipeline": false,
       "job": "git-tagger-{{ app.environment }}",
       "master": "JenkinsCI",
-      "name": "Jenkins",
+      "name": "Git Tag {{ app.environment }}",
       "parameters": {
         "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
         "BUILD_TRIGGER_GIT_COMMIT": "${trigger.properties.BUILD_TRIGGER_GIT_COMMIT}",
