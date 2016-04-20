@@ -163,6 +163,16 @@ class SpinnakerPipeline:
         previous_env = None
         self.log.debug('Envs: %s', self.settings['pipeline']['env'])
         pipeline_list = []
+        self.log.info('Creating wrapper template')
+        pipeline_json = self.construct_pipeline_block(
+            env='dev',
+            previous_env=None,
+            next_env=None,
+            wrapper=True
+            )
+        pipeline_list.append(pipeline_json)
+        
+
         for index, env in enumerate(self.settings['pipeline']['env']):
             # Assume order of environments is correct
             try:
@@ -186,6 +196,7 @@ class SpinnakerPipeline:
                 
 
             previous_env = env
+
         newpipeline = self.combine_pipelines(pipeline_list)
         self.post_pipeline(newpipeline)
 
@@ -205,11 +216,13 @@ class SpinnakerPipeline:
         return pipeline_start
 
 
+
     def construct_pipeline_block(self,
                            env='',
                            previous_env=None,
                            next_env=None,
-                           region='us-east-1'):
+                           region='us-east-1',
+                           wrapper=False):
         """Create the Pipeline JSON from template.
 
         Args:
@@ -227,12 +240,14 @@ class SpinnakerPipeline:
 
         self.log.debug('App info:\n%s', self.app_info)
 
-        if previous_env:
+        if wrapper:
             # use pipeline template
-            template_name = 'pipeline_middle.json'
-        else:
+            template_name = 'pipeline_wrapper.json'
+        elif (env == 'sox') :
             # use template that uses jenkins
-            template_name = 'pipeline_start.json'
+            template_name = 'pipeline_sox.json'
+        else:
+            template_name = 'pipeline_stages.json'
 
         raw_subnets = get_subnets()
         self.log.debug('%s info:\n%s', env, pformat(self.app_info[env]))

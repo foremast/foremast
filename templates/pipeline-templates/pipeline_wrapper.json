@@ -1,0 +1,64 @@
+{
+  "name": "{{ app.appname }}-{{ app.region }}-pipeline",
+  "application": "{{ app.appname }}",
+  "triggers": [
+    {
+      "enabled": true,
+      "type": "jenkins",
+      "master": "JenkinsCI",
+      "job": "{{ app.triggerjob }}",
+      "propertyFile": "jenkins_vars"
+    }
+  ],
+  "limitConcurrent": false,
+  "parallel": true,
+  "notifications": [
+    {
+      "level": "pipeline",
+      "when": [
+        "pipeline.starting",
+        "pipeline.complete",
+        "pipeline.failed"
+      ],
+      "type": "slack",
+      "address": "#spinnaker"
+    }
+  ],
+  "stages": [
+    {
+      "requisiteStageRefIds": [],
+      "refId": "1",
+      "type": "bake",
+      "name": "Bake [{{ app.region }}]",
+      "cloudProviderType": "aws",
+      "extendedAttributes": {
+        "app_group": "${ trigger.properties.GROUP_NAME }",
+        "app_name": "${ trigger.properties.APP_NAME }"
+      },
+      "regions": ["{{ app.region }}"],
+      "user": "[anonymous]",
+      "vmType": "hvm",
+      "storeType": "ebs",
+      "baseOs": "tomcat",
+      "baseLabel": "release",
+      "showAdvancedOptions": true,
+      "overrideTimeout": true,
+      "stageTimeoutMs": 600000,
+      "sendNotifications": false,
+      "notifications": [],
+      "restrictExecutionDuringTimeWindow": false,
+      "restrictedExecutionWindow": {
+        "whitelist": []
+      },
+      "enhancedNetworking": true,
+      "comments": "Baking",
+      "package": "${ trigger.properties.ARTIFACT_RPM }",
+      {% if app.region == 'us-east-1' %}
+      "baseAmi": "ami-xxxx"
+      {% elif app.region == 'us-west-2' %}
+      "baseAmi": "ami-xxxx",
+      "templateFileName": "aws-ebs-west-2.json"
+      {% endif %}
+    }
+  ]
+}
