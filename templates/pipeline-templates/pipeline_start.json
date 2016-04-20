@@ -1,0 +1,164 @@
+{
+  "name": "{{ app.appname }}-{{ app.region }}-pipeline",
+  "application": "{{ app.appname }}",
+  "triggers": [
+    {
+      "enabled": true,
+      "type": "jenkins",
+      "master": "JenkinsCI",
+      "job": "{{ app.triggerjob }}",
+      "propertyFile": "jenkins_vars"
+    }
+  ],
+  "limitConcurrent": false,
+  "parallel": true,
+  "notifications": [
+    {
+      "level": "pipeline",
+      "when": [
+        "pipeline.starting",
+        "pipeline.complete",
+        "pipeline.failed"
+      ],
+      "type": "slack",
+      "address": "#spinnaker"
+    }
+  ],
+  "stages": [
+    {
+      "requisiteStageRefIds": [],
+      "refId": "1",
+      "type": "bake",
+      "name": "Bake [{{ app.region }}]",
+      "cloudProviderType": "aws",
+      "extendedAttributes": {
+        "app_group": "${ trigger.properties.GROUP_NAME }",
+        "app_name": "${ trigger.properties.APP_NAME }"
+      },
+      "regions": ["{{ app.region }}"],
+      "user": "[anonymous]",
+      "vmType": "hvm",
+      "storeType": "ebs",
+      "baseOs": "tomcat",
+      "baseLabel": "release",
+      "showAdvancedOptions": true,
+      "overrideTimeout": true,
+      "stageTimeoutMs": 600000,
+      "sendNotifications": false,
+      "notifications": [],
+      "restrictExecutionDuringTimeWindow": false,
+      "restrictedExecutionWindow": {
+        "whitelist": []
+      },
+      "enhancedNetworking": true,
+      "comments": "Baking",
+      "package": "${ trigger.properties.ARTIFACT_RPM }",
+      {% if app.region == 'us-east-1' %}
+      "baseAmi": "ami-xxxx"
+      {% elif app.region == 'us-west-2' %}
+      "baseAmi": "ami-xxxx",
+      "templateFileName": "aws-ebs-west-2.json"
+      {% endif %}
+    },
+    {
+      "requisiteStageRefIds": [
+        "1"
+      ],
+      "refId": "3",
+      "type": "deploy",
+      "name": "Deploy {{ app.environment }}",
+      "clusters": [
+        {
+          "application": "{{ app.appname }}",
+          "strategy": "highlander",
+          "capacity": {
+            "min": {{ asg.min_inst }},
+            "max": {{ asg.max_inst }},
+            "desired": 2
+          },
+          "targetHealthyDeployPercentage": 100,
+          "cooldown": 10,
+          "healthCheckType": "ELB",
+          "healthCheckGracePeriod": "60",
+          "instanceMonitoring": false,
+          "ebsOptimized": false,
+          "iamRole": "{{ app.instance_profile }}",
+          "terminationPolicies": [
+            "Default"
+          ],
+          "availabilityZones": {{ app.az_dict }},
+          "keyPair": "{{ app.environment }}_access",
+          "suspendedProcesses": [],
+          "securityGroups": [
+            "sg_apps",
+            "sg_offices"
+          ],
+          "tags": {
+            "app_group": "${ trigger.properties.GROUP_NAME }"
+          },
+          "subnetType": "internal",
+          "virtualizationType": null,
+          "loadBalancers": [],
+          "instanceType": "{{ app.instance_type }}",
+          "useSourceCapacity": false,
+          "associatePublicIpAddress": null,
+          "provider": "aws",
+          "cloudProvider": "aws",
+          "account": "{{ app.environment }}",
+          "interestingHealthProviderNames": [
+            "Amazon"
+          ]
+        }
+      ],
+      "comments": "",
+      "restrictExecutionDuringTimeWindow": false,
+      "restrictedExecutionWindow": {
+        "whitelist": [
+          {
+            "startHour": 3,
+            "startMin": 0,
+            "endHour": 11,
+            "endMin": 0
+          }
+        ]
+      },
+      "sendNotifications": false,
+      "notifications": []
+    },
+    {
+      "requisiteStageRefIds": [
+        "3"
+      ],
+      "refId": "4",
+      "type": "jenkins",
+      "name": "QE {{ app.environment }}",
+      "failPipeline": true,
+      "master": "JenkinsCI",
+      "job": "promote-qe-{{ app.environment }}",
+      "parameters": {
+        "test_job": "profileservice_QE"
+      }
+    },
+    {
+      "requisiteStageRefIds": ["4"],
+      "refId": "5",
+      "type": "manualJudgment",
+      "name": "{{ app.next_env }} Checkpoint",
+      "notifications": [],
+      "judgmentInputs": [
+        {
+          "value": "Reason: Testing"
+        },
+        {
+          "value": "Reason: Change Request"
+        },
+        {
+          "value": "Reason: Hotfix"
+        }
+      ],
+      "failPipeline": true,
+      "instructions": "Do you want to proceed and promote the deployment to ${ trigger.properties.DEPLOY_ENV } ?",
+      "comments": ""
+    }
+  ]
+}

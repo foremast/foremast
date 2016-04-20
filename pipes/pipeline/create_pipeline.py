@@ -81,7 +81,7 @@ class SpinnakerPipeline:
         Returns:
             Dict of rendered JSON to send to Spinnaker.
         """
-        templatedir = "{}/../../templates".format(self.here)
+        templatedir = "{}/../../templates/pipeline-templates".format(self.here)
         jinja_env = Environment(loader=FileSystemLoader(templatedir))
         template = jinja_env.get_template(template_name)
 
@@ -162,6 +162,7 @@ class SpinnakerPipeline:
         self.clean_pipelines()
         previous_env = None
         self.log.debug('Envs: %s', self.settings['pipeline']['env'])
+        pipeline_list = []
         for index, env in enumerate(self.settings['pipeline']['env']):
             # Assume order of environments is correct
             try:
@@ -176,19 +177,35 @@ class SpinnakerPipeline:
                 self.post_pipeline(pipeline_json)
             else:
                 self.log.info('Using predefined template for %s.', env)
-                for region in self.settings[env]['regions']:
-                    pipeline_json = self.construct_pipeline(
-                        env=env,
-                        previous_env=previous_env,
-                        next_env=next_env,
-                        region=region)
-                    self.post_pipeline(pipeline_json)
+                pipeline_json = self.construct_pipeline_block(
+                    env=env,
+                    previous_env=previous_env,
+                    next_env=next_env
+                    )
+                pipeline_list.append(pipeline_json)
+                
 
             previous_env = env
+        newpipeline = self.combine_pipelines(pipeline_list)
+        self.post_pipeline(newpipeline)
 
         return True
 
-    def construct_pipeline(self,
+    def combine_pipelines(self, pipeline_list):
+        pipeline_start = pipeline_list[0]
+        lastref = pipeline_start['stages'][-1]['refId']
+        for step in pipeline_list[1:]:
+            for idx,item in enumerate(step):
+               nextref = int(lastref)+1
+               step[idx]['requisiteStageRefIds'] = [str(lastref)]
+               step[idx]['refId'] = str(nextref)
+               lastref = nextref
+            pipeline_start['stages'] += step
+        
+        return pipeline_start
+
+
+    def construct_pipeline_block(self,
                            env='',
                            previous_env=None,
                            next_env=None,
@@ -212,13 +229,10 @@ class SpinnakerPipeline:
 
         if previous_env:
             # use pipeline template
-            template_name = 'pipeline_pipelinetrigger_template.json.j2'
-            pipeline_id = self.get_pipe_id('{0}-{1}-{2}-pipeline'.format(
-                self.app_info['app'], previous_env, region))
-            self.app_info[env].update({'pipeline_id': pipeline_id})
+            template_name = 'pipeline_middle.json'
         else:
             # use template that uses jenkins
-            template_name = 'pipeline_template.json'
+            template_name = 'pipeline_start.json'
 
         raw_subnets = get_subnets()
         self.log.debug('%s info:\n%s', env, pformat(self.app_info[env]))
