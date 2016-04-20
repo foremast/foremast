@@ -38,6 +38,24 @@
       {% endif %}
     },
     {
+      "comments": "Create Git Tag to reference commits that have been built into an AMI.",
+      "failPipeline": false,
+      "job": "git-tagger-packaging",
+      "master": "JenkinsCI",
+      "name": "Jenkins",
+      "parameters": {
+        "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
+        "BUILD_TRIGGER_GIT_COMMIT": "${trigger.properties.BUILD_TRIGGER_GIT_COMMIT}",
+        "DEPLOY_ENV": "packaging",
+        "GIT_PROJECT": "${trigger.properties.GIT_PROJECT}"
+      },
+      "refId": "6",
+      "requisiteStageRefIds": [
+        "1"
+      ],
+      "type": "jenkins"
+    },
+    {
       "requisiteStageRefIds": [
         "1"
       ],
@@ -103,6 +121,24 @@
       },
       "sendNotifications": false,
       "notifications": []
+    },
+    {
+      "comments": "Create Git Tag to reference commits that have deployed to {{ app.environment }}.",
+      "failPipeline": false,
+      "job": "git-tagger-{{ app.environment }}",
+      "master": "JenkinsCI",
+      "name": "Jenkins",
+      "parameters": {
+        "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
+        "BUILD_TRIGGER_GIT_COMMIT": "${trigger.properties.BUILD_TRIGGER_GIT_COMMIT}",
+        "DEPLOY_ENV": "{{ app.environment }}",
+        "GIT_PROJECT": "${trigger.properties.GIT_PROJECT}"
+      },
+      "refId": "7",
+      "requisiteStageRefIds": [
+        "3"
+      ],
+      "type": "jenkins"
     },
     {
       "requisiteStageRefIds": [
