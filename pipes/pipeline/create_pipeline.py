@@ -221,21 +221,35 @@ class SpinnakerPipeline:
         Returns:
             dict: dictionary of one big pipeline.
         """
-        pipeline_start = pipeline_list[0]
-        lastref = pipeline_start['stages'][-1]['refId']
-        for step in pipeline_list[1:]:
-            # This list increments the pipeline stage refId
-            for idx, item in enumerate(step):
-                nextref = int(lastref) + 1
-                step[idx]['requisiteStageRefIds'] = [str(lastref)]
-                step[idx]['refId'] = str(nextref)
-                lastref = nextref
-            pipeline_start['stages'] += step
+        self.log.debug('Pipeline list: %s', pipeline_list)
 
-        # removes last step, this is an unnecessary checkpoint
-        del pipeline_start['stages'][-1]
+        pipeline = pipeline_list[0]
+        stages = pipeline['stages']
+        for stage in pipeline_list[1:]:
+            stages += stage
+        self.log.debug('Combined Stages:\n%s', pformat(stages))
 
-        return pipeline_start
+        main_index = 1
+        for stage in stages:
+            if stage['name'].startswith('Git Tag'):
+                stage['requisiteStageRefIds'] = [str(main_index)]
+                stage['refId'] = str(main_index * 100)
+            elif stage['type'] == 'bake':
+                stage['requisiteStageRefIds'] = []
+                stage['refId'] = str(main_index)
+            else:
+                stage['requisiteStageRefIds'] = [str(main_index)]
+                main_index += 1
+                stage['refId'] = str(main_index)
+
+            self.log.debug('step=%(name)s\trefId=%(refId)s\t'
+                           'requisiteStageRefIds=%(requisiteStageRefIds)s',
+                           stage)
+
+        self.log.debug('Deleting last Manual Judgement, Stage not needed.')
+        del stages[-1]
+
+        return pipeline
 
     def construct_pipeline_block(self,
                                  env='',
