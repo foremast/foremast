@@ -164,22 +164,20 @@ class SpinnakerPipeline:
         self.log.debug('Envs: %s', self.settings['pipeline']['env'])
         pipeline_list = []
         self.log.info('Creating wrapper template')
-        
-        #sets up dict for managing region specific pipelines
-        #generates pipeline wrapper per region
+
+        # sets up dict for managing region specific pipelines
+        # generates pipeline wrapper per region
         regiondict = {}
         for env in self.settings['pipeline']['env']:
             for region in self.settings[env]['regions']:
                 pipeline_json = self.construct_pipeline_block(
-                            env='dev',
-                            previous_env=None,
-                            next_env=None,
-                            region=region,
-                            wrapper=True
-                            )
+                    env='dev',
+                    previous_env=None,
+                    next_env=None,
+                    region=region,
+                    wrapper=True)
                 regiondict[region] = [pipeline_json]
-                
-        
+
         for index, env in enumerate(self.settings['pipeline']['env']):
             # Assume order of environments is correct
             try:
@@ -190,7 +188,8 @@ class SpinnakerPipeline:
             for region in self.settings[env]['regions']:
                 if env in self.settings['pipeline']:
                     # The custom provided pipeline
-                    self.log.info('Found overriding Pipeline JSON for %s.', env)
+                    self.log.info('Found overriding Pipeline JSON for %s.',
+                                  env)
                     pipeline_json = self.settings['pipeline'].get(env, None)
                     self.post_pipeline(pipeline_json)
                 else:
@@ -199,14 +198,12 @@ class SpinnakerPipeline:
                         env=env,
                         previous_env=previous_env,
                         region=region,
-                        next_env=next_env
-                        )
+                        next_env=next_env)
                     regiondict[region].append(pipeline_json)
-                    
 
             previous_env = env
-    
-        #builds pipeline for each region
+
+        # builds pipeline for each region
         for key in regiondict.keys():
             newpipeline = self.combine_pipelines(regiondict[key])
             self.post_pipeline(newpipeline)
@@ -214,8 +211,8 @@ class SpinnakerPipeline:
         return True
 
     def combine_pipelines(self, pipeline_list):
-        """ Combines pipelines in a list to one big pipeline 
-            for posting to Spinnaker
+        """Combine _pipeline_list_ into single pipeline for Spinnaker.
+
         Args:
             pipeline_list (list): List of pipelines to combine..
 
@@ -225,25 +222,25 @@ class SpinnakerPipeline:
         pipeline_start = pipeline_list[0]
         lastref = pipeline_start['stages'][-1]['refId']
         for step in pipeline_list[1:]:
-            #This list increments the pipeline stage refId
-            for idx,item in enumerate(step):
-               nextref = int(lastref)+1
-               step[idx]['requisiteStageRefIds'] = [str(lastref)]
-               step[idx]['refId'] = str(nextref)
-               lastref = nextref
+            # This list increments the pipeline stage refId
+            for idx, item in enumerate(step):
+                nextref = int(lastref) + 1
+                step[idx]['requisiteStageRefIds'] = [str(lastref)]
+                step[idx]['refId'] = str(nextref)
+                lastref = nextref
             pipeline_start['stages'] += step
 
-        #removes last step, this is an unnecessary checkpoint
+        # removes last step, this is an unnecessary checkpoint
         del pipeline_start['stages'][-1]
-        
+
         return pipeline_start
 
     def construct_pipeline_block(self,
-                           env='',
-                           previous_env=None,
-                           next_env=None,
-                           region='us-east-1',
-                           wrapper=False):
+                                 env='',
+                                 previous_env=None,
+                                 next_env=None,
+                                 region='us-east-1',
+                                 wrapper=False):
         """Create the Pipeline JSON from template.
 
         Args:
@@ -264,9 +261,9 @@ class SpinnakerPipeline:
         if wrapper:
             # use pipeline template
             template_name = 'pipeline_wrapper.json'
-        elif (env == 'sox') :
+        elif (env == 'sox'):
             template_name = 'pipeline_sox.json'
-        elif (env == 'pci') :
+        elif (env == 'pci'):
             template_name = 'pipeline_pci.json'
         else:
             template_name = 'pipeline_stages.json'
@@ -275,7 +272,7 @@ class SpinnakerPipeline:
         self.log.debug('%s info:\n%s', env, pformat(self.app_info[env]))
 
         region_subnets = {region: raw_subnets[env][region]}
-        
+
         self.log.debug('Region and subnets in use:\n%s', region_subnets)
 
         # Use different variable to keep template simple
@@ -417,8 +414,8 @@ class SpinnakerPipeline:
 def main():
     """Run newer stuffs."""
     logging.basicConfig(
-        format=
-        '[%(levelname)s]%(module)s:%(funcName)s:%(lineno)d - %(message)s')
+        format='[%(levelname)s]%(module)s:%(funcName)s:%(lineno)d - '
+        '%(message)s')
     log = logging.getLogger(__name__)
     logging.getLogger('utils').setLevel(logging.WARNING)
 
@@ -441,9 +438,9 @@ def main():
         help="Location of json file that contains application.json details",
         default="../raw.properties.json",
         required=False)
-    #parser.add_argument("--vpc",
-    #                    help="The vpc to create the security group",
-    #                    required=True)
+    # parser.add_argument("--vpc",
+    #                     help="The vpc to create the security group",
+    #                     required=True)
     args = parser.parse_args()
 
     log.setLevel(args.debug)
