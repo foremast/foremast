@@ -16,8 +16,6 @@
     {
       "level": "pipeline",
       "when": [
-        "pipeline.starting",
-        "pipeline.complete",
         "pipeline.failed"
       ],
       "type": "slack",
