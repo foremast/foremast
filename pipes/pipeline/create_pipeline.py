@@ -161,9 +161,9 @@ class SpinnakerPipeline:
         """Send a POST to spinnaker to create a new security group."""
         self.clean_pipelines()
         previous_env = None
-        self.log.debug('Envs: %s', self.settings['pipeline']['env'])
-        pipeline_list = []
+
         self.log.info('Creating wrapper template')
+        self.log.debug('Envs: %s', self.settings['pipeline']['env'])
 
         # sets up dict for managing region specific pipelines
         # generates pipeline wrapper per region
@@ -177,6 +177,8 @@ class SpinnakerPipeline:
                     region=region,
                     wrapper=True)
                 regiondict[region] = [pipeline_json]
+
+        self.log.debug('Region dict:\n%s', regiondict)
 
         for index, env in enumerate(self.settings['pipeline']['env']):
             # Assume order of environments is correct
