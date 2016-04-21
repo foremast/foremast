@@ -173,7 +173,12 @@ class SpinnakerPipeline:
             wrapper=True
             )
         pipeline_list.append(pipeline_json)
-        
+
+        #sets up dict for managing region specific pipelines
+        regiondict = {}
+        for env in self.settings['pipeline']['env']:
+            for region in self.settings[env]['regions']:
+                regiondict[region] = pipeline_list
         
         for index, env in enumerate(self.settings['pipeline']['env']):
             # Assume order of environments is correct
@@ -182,25 +187,29 @@ class SpinnakerPipeline:
             except IndexError:
                 next_env = None
 
-            if env in self.settings['pipeline']:
-                # The custom provided pipeline
-                self.log.info('Found overriding Pipeline JSON for %s.', env)
-                pipeline_json = self.settings['pipeline'].get(env, None)
-                self.post_pipeline(pipeline_json)
-            else:
-                self.log.info('Using predefined template for %s.', env)
-                pipeline_json = self.construct_pipeline_block(
-                    env=env,
-                    previous_env=previous_env,
-                    next_env=next_env
-                    )
-                pipeline_list.append(pipeline_json)
-                
+            for region in self.settings[env]['regions']:
+                if env in self.settings['pipeline']:
+                    # The custom provided pipeline
+                    self.log.info('Found overriding Pipeline JSON for %s.', env)
+                    pipeline_json = self.settings['pipeline'].get(env, None)
+                    self.post_pipeline(pipeline_json)
+                else:
+                    self.log.info('Using predefined template for %s.', env)
+                    pipeline_json = self.construct_pipeline_block(
+                        env=env,
+                        previous_env=previous_env,
+                        region=region,
+                        next_env=next_env
+                        )
+                    regiondict[region].append(pipeline_json)
+                    
 
             previous_env = env
-
-        newpipeline = self.combine_pipelines(pipeline_list)
-        self.post_pipeline(newpipeline)
+    
+        #builds pipeline for each region
+        for key in regiondict.keys():
+            newpipeline = self.combine_pipelines(regiondict[key])
+            self.post_pipeline(newpipeline)
 
         return True
 
@@ -214,6 +223,9 @@ class SpinnakerPipeline:
                step[idx]['refId'] = str(nextref)
                lastref = nextref
             pipeline_start['stages'] += step
+
+        #removes last step, this is an unnecessary checkpoint
+        del pipeline_start['stages'][-1]
         
         return pipeline_start
 
@@ -247,7 +259,6 @@ class SpinnakerPipeline:
             template_name = 'pipeline_sox.json'
         elif (env == 'pci') :
             template_name = 'pipeline_pci.json'
-        else:
         else:
             template_name = 'pipeline_stages.json'
 
