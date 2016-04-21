@@ -247,9 +247,9 @@ class SpinnakerPipeline:
         """
         self.log.debug('Pipeline list: %s', pipeline_list)
 
-        pipeline = pipeline_list[0]
+        pipeline, *more_stages = pipeline_list
         stages = pipeline['stages']
-        for stage in pipeline_list[1:]:
+        for stage in more_stages:
             stages += stage
         self.log.debug('Combined Stages:\n%s', pformat(stages))
 
