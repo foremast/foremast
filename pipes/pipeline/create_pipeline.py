@@ -165,20 +165,20 @@ class SpinnakerPipeline:
         pipeline_list = []
         self.log.info('Creating wrapper template')
         
-        #Sets up wrapper template
-        pipeline_json = self.construct_pipeline_block(
-            env='dev',
-            previous_env=None,
-            next_env=None,
-            wrapper=True
-            )
-        pipeline_list.append(pipeline_json)
-
         #sets up dict for managing region specific pipelines
+        #generates pipeline wrapper per region
         regiondict = {}
         for env in self.settings['pipeline']['env']:
             for region in self.settings[env]['regions']:
-                regiondict[region] = pipeline_list
+                pipeline_json = self.construct_pipeline_block(
+                            env='dev',
+                            previous_env=None,
+                            next_env=None,
+                            region=region,
+                            wrapper=True
+                            )
+                regiondict[region] = [pipeline_json]
+                
         
         for index, env in enumerate(self.settings['pipeline']['env']):
             # Assume order of environments is correct
@@ -214,9 +214,18 @@ class SpinnakerPipeline:
         return True
 
     def combine_pipelines(self, pipeline_list):
+        """ Combines pipelines in a list to one big pipeline 
+            for posting to Spinnaker
+        Args:
+            pipeline_list (list): List of pipelines to combine..
+
+        Returns:
+            dict: dictionary of one big pipeline.
+        """
         pipeline_start = pipeline_list[0]
         lastref = pipeline_start['stages'][-1]['refId']
         for step in pipeline_list[1:]:
+            #This list increments the pipeline stage refId
             for idx,item in enumerate(step):
                nextref = int(lastref)+1
                step[idx]['requisiteStageRefIds'] = [str(lastref)]
@@ -266,6 +275,7 @@ class SpinnakerPipeline:
         self.log.debug('%s info:\n%s', env, pformat(self.app_info[env]))
 
         region_subnets = {region: raw_subnets[env][region]}
+        
         self.log.debug('Region and subnets in use:\n%s', region_subnets)
 
         # Use different variable to keep template simple
