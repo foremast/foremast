@@ -66,7 +66,7 @@
       "requisiteStageRefIds":["7"],
       "refId": "8",
       "type": "manualJudgment",
-      "name": "{{ app.next_env }} Checkpoint",
+      "name": "Checkpoint {{ app.next_env }}",
       "notifications": [],
       "judgmentInputs": [
         {
@@ -80,7 +80,7 @@
         }
       ],
       "failPipeline": true,
-      "instructions": "Do you want to proceed and promote the deployment to ${ trigger.properties.DEPLOY_ENV } ?",
+      "instructions": "Do you want to proceed and promote the deployment to {{ app.next_env }}?",
       "comments": "application: ${ trigger.properties.APP_NAME }"
     }
 ]

@@ -66,7 +66,7 @@
       "requisiteStageRefIds":["7"],
       "refId": "8",
       "type": "manualJudgment",
-      "name": "{{ app.next_env }} Checkpoint",
+      "name": "Checkpoint {{ app.next_env }}",
       "notifications": [],
       "judgmentInputs": [
         {
