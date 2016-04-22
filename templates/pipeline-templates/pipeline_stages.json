@@ -6,6 +6,7 @@
       "name": "Deploy {{ app.environment }}",
       "clusters": [
         {
+          "base64UserData": "{{ app.encoded_user_data }}", 
           "application": "{{ app.appname }}",
           "strategy": "highlander",
           "capacity": {
@@ -28,7 +29,8 @@
           "suspendedProcesses": [],
           "securityGroups": [
             "sg_apps",
-            "sg_offices"
+            "sg_offices",
+            {{ app.appname }}"
           ],
           "tags": {
             "app_group": "${ trigger.properties.GROUP_NAME }"
