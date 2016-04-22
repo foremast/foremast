@@ -110,10 +110,10 @@ def main():
     health_proto, health_port_path = args.health_target.split(':')
     health_port, *health_path = health_port_path.split('/')
 
-    if len(health_path) > 0:
-        health_path = '/{0}'.format(health_path)
-    else:
+    if not health_path:
         health_path = '/healthcheck'
+    else:
+        health_path = '/{0}'.format('/'.join(health_path))
 
     LOG.info('Health Check\n\tprotocol: %s\n\tport: %s\n\tpath: %s',
              health_proto, health_port, health_path)
