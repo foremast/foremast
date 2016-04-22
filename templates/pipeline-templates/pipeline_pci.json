@@ -37,7 +37,7 @@
           },
           "subnetType": "internal",
           "virtualizationType": null,
-          "loadBalancers": [{{ app.appname }}],
+          "loadBalancers": [ "{{ app.appname }}" ],
           "instanceType": "{{ app.instance_type }}",
           "useSourceCapacity": false,
           "associatePublicIpAddress": null,
