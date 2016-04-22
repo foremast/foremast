@@ -115,6 +115,9 @@ def main():
     else:
         health_path = '/healthcheck'
 
+    LOG.info('Health Check\n\tprotocol: %s\n\tport: %s\n\tpath: %s',
+             health_proto, health_port, health_path)
+
     raw_subnets = get_subnets(target='elb')
     region_subnets = {args.region: raw_subnets[args.env][args.region]}
 
