@@ -11,7 +11,7 @@
           "capacity": {
             "min": {{ asg.min_inst }},
             "max": {{ asg.max_inst }},
-            "desired": 2
+            "desired": {{ asg.min_inst }}
           },
           "targetHealthyDeployPercentage": 100,
           "cooldown": 10,
