@@ -30,7 +30,7 @@
           "securityGroups": [
             "sg_apps",
             "sg_offices",
-            {{ app.appname }}"
+            "{{ app.appname }}"
           ],
           "tags": {
             "app_group": "${ trigger.properties.GROUP_NAME }"
