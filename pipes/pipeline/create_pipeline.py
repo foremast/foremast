@@ -125,9 +125,8 @@ class SpinnakerPipeline:
                 # TODO: Get real region list
                 regions = ['us-east-1', 'us-west-2']
                 for region in regions:
-                    pipeline_name = '{app}-{env}-{region}-pipeline'.format(
+                    pipeline_name = '{app} [{region}]'.format(
                         app=app,
-                        env=pipeline,
                         region=region, )
                     self.log.info('Deleted pipeline: %s', pipeline_name)
                     url = murl.Url(self.gate_url)
