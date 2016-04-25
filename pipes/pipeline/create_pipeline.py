@@ -300,9 +300,9 @@ class SpinnakerPipeline:
         if wrapper:
             # use pipeline template
             template_name = 'pipeline_wrapper.json'
-        elif (env == 'sox'):
+        elif (env == 'prodsox'):
             template_name = 'pipeline_sox.json'
-        elif (env == 'pci'):
+        elif (env == 'prodpci'):
             template_name = 'pipeline_pci.json'
         else:
             template_name = 'pipeline_stages.json'
