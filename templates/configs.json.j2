@@ -33,7 +33,7 @@
     },
     "app": {
         "eureka_enabled": false,
-        "instance_profile": "app_default_profile",
+        "instance_profile": "{{ profile }}",
         "instance_type": "t2.micro",
         "app_ssh_key": "{{ env }}_access",
         "email": null,
