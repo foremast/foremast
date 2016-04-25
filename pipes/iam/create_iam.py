@@ -49,7 +49,6 @@ def create_iam_resources(env='dev', app=''):
     resource_action(client,
                     action='add_user_to_group',
                     log_format='User to Group: %(UserName)s -> %(GroupName)s',
-                    log_failure=True,
                     GroupName=details.group,
                     UserName=details.user)
 
@@ -95,7 +94,6 @@ def attach_profile_to_role(client,
 def resource_action(client,
                     action='',
                     log_format='item: %(key)s',
-                    log_failure=False,
                     **kwargs):
     """Call _action_ using boto3 _client_ with _kwargs_.
 
@@ -109,8 +107,6 @@ def resource_action(client,
         action (str): Client method to call.
         log_format (str): Generic log message format, 'Added' or 'Found' will
             be prepended depending on the scenario.
-        log_failure (bool): Will log WARNING level 'Failed' instead of 'Found'
-            message.
         **kwargs: Keyword arguments to pass to _action_ method.
 
     Returns:
@@ -119,10 +115,15 @@ def resource_action(client,
     try:
         getattr(client, action)(**kwargs)
         LOG.info(' '.join(('Added', log_format)), kwargs)
-    except botocore.exceptions.ClientError:
-        if not log_failure:
+    except botocore.exceptions.ClientError as error:
+        error_code = error.response['Error']['Code']
+
+        if error_code == 'AccessDenied':
+            LOG.fatal(error)
+            raise
+        elif error_code == 'EntityAlreadyExists':
             LOG.info(' '.join(('Found', log_format)), kwargs)
         else:
-            LOG.warning(' '.join(('Failed', log_format)), kwargs)
+            LOG.fatal(error)
 
     return True
