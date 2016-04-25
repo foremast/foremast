@@ -25,7 +25,7 @@
             "Default"
           ],
           "availabilityZones": {{ app.az_dict }},
-          "keyPair": "{{ app.environment }}_access",
+          "keyPair": "{{ app.environment }}_{{ app.region }}_default",
           "suspendedProcesses": [],
           "securityGroups": [
             "sg_apps",
