@@ -33,7 +33,8 @@
             "{{ app.appname }}"
           ],
           "tags": {
-            "app_group": "${ trigger.properties.GROUP_NAME }"
+            "app_group": "${ trigger.properties.GROUP_NAME }",
+            "Name": "{{ app.appname }}"
           },
           "subnetType": "internal",
           "virtualizationType": null,
