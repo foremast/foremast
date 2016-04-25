@@ -9,8 +9,7 @@ import gitlab
 
 from .utils import get_configs
 
-ENVS = ('dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods', 'stagesox',
-        'pci', 'sox')
+ENVS = ('dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods', 'stagesox')
 LOG = logging.getLogger(__name__)
 
 
