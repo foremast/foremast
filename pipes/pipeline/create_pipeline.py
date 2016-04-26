@@ -11,7 +11,8 @@ import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
-from utils import generate_encoded_user_data, get_subnets
+from utils import (check_managed_pipeline, generate_encoded_user_data,
+                   get_subnets)
 
 
 class SpinnakerAppNotFound(Exception):
@@ -92,50 +93,49 @@ class SpinnakerPipeline:
         return rendered_json_dict
 
     def clean_pipelines(self):
-        """Delete Pipelines not defined in pipeline.json.
+        """Delete Pipelines for regions not defined in application.json files.
+
+        For Pipelines named **app_name [region]**, _region_ will need to appear
+        in at least one application.json file. All other names are assumed
+        unamanaged.
 
         Returns:
-            True: Existing Pipelines match defined Pipelines.
+            True: Upon successful completion.
         """
-        defined_envs = self.settings['pipeline']['env']
-        current_envs = []
-        all_pipelines = self.get_all_pipelines('{app}'.format(**self.app_info))
+        url = murl.Url(self.gate_url)
+        pipelines = self.get_all_pipelines(app=self.app_info['app']).json()
 
-        for pipeline in all_pipelines.json():
-            if pipeline['name'].endswith('-pipeline'):
-                app, env, *_ = pipeline['name'].split('-')
-                current_envs.append(env)
+        envs = self.settings['pipeline']['env']
+        self.log.debug('Find Regions in: %s', envs)
 
-        defined_envs = sorted(set(defined_envs))
-        current_envs = sorted(set(current_envs))
-        self.log.debug('Pipelines found - User (%s), Spinnaker (%s)',
-                       defined_envs, current_envs)
+        regions = set()
+        for env in envs:
+            regions.update(self.settings[env]['regions'])
+        self.log.debug('Regions defined: %s', regions)
 
-        if defined_envs == current_envs:
-            self.log.info('No pipelines to delete.')
-            return True
-        else:
-            self.log.info('We need to removed undefined pipelines.')
-            removed_pipelines = set(current_envs) - set(defined_envs)
-            self.log.debug('Pipelines to remove: %s', removed_pipelines)
+        for pipeline in pipelines:
+            pipeline_name = pipeline['name']
 
-            for pipeline in removed_pipelines:
-                app = self.app_info['app']
+            try:
+                region = check_managed_pipeline(name=pipeline_name,
+                                                app_name=self.app_name)
+            except ValueError:
+                continue
 
-                # TODO: Get real region list
-                regions = ['us-east-1', 'us-west-2']
-                for region in regions:
-                    pipeline_name = '{app} [{region}]'.format(
-                        app=app,
-                        region=region, )
-                    self.log.info('Deleted pipeline: %s', pipeline_name)
-                    url = murl.Url(self.gate_url)
-                    url.path = 'pipelines/{app}/{pipeline_name}'.format(
-                        app=app,
-                        pipeline_name=pipeline_name, )
-                    response = requests.delete(url.url)
-                    self.log.debug('Delete %s Pipeline response:\n%s',
-                                   pipeline, response.text)
+            self.log.debug('Check "%s" in defined Regions.', region)
+
+            if region not in regions:
+                self.log.warning('Deleting Pipeline: %s', pipeline_name)
+
+                url.path = 'pipelines/{app}/{pipeline}'.format(
+                    app=self.app_info['app'],
+                    pipeline=pipeline_name)
+                response = requests.delete(url.url)
+
+                self.log.debug('Deleted "%s" Pipeline response:\n%s',
+                               pipeline_name, response.text)
+
+        return True
 
     def post_pipeline(self, pipeline_json):
         """Send Pipeline JSON to Spinnaker."""
@@ -488,6 +488,7 @@ def main():
 
     log.setLevel(args.debug)
     logging.getLogger(__package__).setLevel(args.debug)
+    logging.getLogger('utils').setLevel(args.debug)
 
     log.debug('Parsed arguments: %s', args)
 

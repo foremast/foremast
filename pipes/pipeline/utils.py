@@ -127,6 +127,39 @@ def generate_encoded_user_data(env='dev',
     return base64.b64encode(user_data.encode()).decode()
 
 
+def check_managed_pipeline(name='', app_name=''):
+    """Check a Pipeline name is a managed format **app_name [region]**.
+
+    Args:
+        name (str): Name of Pipeline to check.
+        app_name (str): Name of Application to find in Pipeline name.
+
+    Returns:
+        str: Region name from managed Pipeline name.
+
+    Raises:
+        ValueError: Pipeline is not managed.
+    """
+    *pipeline_name_prefix, bracket_region = name.split()
+    region = bracket_region.strip('[]')
+
+    not_managed_message = '"{0}" is not managed.'.format(name)
+
+    if not all([bracket_region.startswith('['), bracket_region.endswith(']')]):
+        LOG.info(not_managed_message)
+        raise ValueError(not_managed_message)
+
+    if len(pipeline_name_prefix) is not 1:
+        LOG.info(not_managed_message)
+        raise ValueError(not_managed_message)
+
+    if app_name not in pipeline_name_prefix:
+        LOG.info(not_managed_message)
+        raise ValueError(not_managed_message)
+
+    return region
+
+
 def main():
     """MAIN."""
     logging.basicConfig(level=logging.DEBUG)
