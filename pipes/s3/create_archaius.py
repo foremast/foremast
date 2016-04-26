@@ -26,7 +26,7 @@ def init_properties(env='dev', app='unnecessary'):
     s3client = aws_env.resource('s3')
     generated = get_details(app=app, env=env)
 
-    archaius_bucket, app, project = generated.archaius()['s3'].split('/')[:-1]
+    archaius_bucket, project, app = generated.archaius()['s3'].split('/')[:-1]
     archaius_bucket = 'archaius-{env}'.format(env=env)
     archaius_file = ('{project}/{app}/application.properties').format(
         project=project,
