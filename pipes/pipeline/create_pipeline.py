@@ -170,7 +170,7 @@ class SpinnakerPipeline:
         for env in self.settings['pipeline']['env']:
             for region in self.settings[env]['regions']:
                 pipeline_json = self.construct_pipeline_block(
-                    env='dev',
+                    env=env,
                     previous_env=None,
                     next_env=None,
                     region=region,
