@@ -4,6 +4,7 @@ import logging
 
 import gogoutils
 
+from ..consts import LOGGING_FORMAT
 from .create_app import SpinnakerApp
 
 
@@ -28,8 +29,8 @@ def main():
     parser.add_argument("--git", help="Git URI", default=None)
     args = parser.parse_args()
 
-    logging.basicConfig(format='%(asctime)s %(message)s')
-    logging.getLogger(__name__).setLevel(args.debug)
+    logging.basicConfig(format=LOGGING_FORMAT)
+    logging.getLogger(__package__).setLevel(args.debug)
 
     if args.git and args.git != 'None':
         generated = gogoutils.Generator(*gogoutils.Parser(args.git).parse_url())
