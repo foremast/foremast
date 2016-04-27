@@ -33,7 +33,7 @@ setup(name='foremast',
               'create-dns=foremast.dns.create_dns:main',
               'create-elb=foremast.elb.__main__:main',
               'create-iam=foremast.iam.__main__:main',
-              'create-pipeline=foremast.pipeline.create_pipeline:main',
+              'create-pipeline=foremast.pipeline.__main__:main',
               'create-s3=foremast.s3.__main__:main',
               'create-sg=foremast.securitygroup.create_securitygroup:main'
           ]
