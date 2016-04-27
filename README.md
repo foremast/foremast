@@ -10,24 +10,54 @@ update this README as the project grows.
 
 ## Usage
 
+Run code directly without installing the `foremast` package.
+
 ```bash
-cd ./pipes/
-python pipes/app/create_app.py -h
-python -m pipes.configs -h
-python pipes/dns/create_dns.py -h
-python pipes/elb/create_elb.py -h
-python -m pipes.iam -h
-python pipes/pipeline/create_pipeline.py -h
-python -m pipes.s3 -h
-python pipes/securitygroup/create_securitygroup.py -h
+virtualenv venv
+source ./venv/bin/activate
+pip install -U -r requirements.txt
+
+cd ./src/
+python -m foremast.app -h
+python -m foremast.configs -h
+python -m foremast.configurations -h
+python -m foremast.dns -h
+python -m foremast.elb -h
+python -m foremast.iam -h
+python -m foremast.pipeline -h
+python -m foremast.s3 -h
+python -m foremast.securitygroup -h
+```
+### Install
+
+Installing the package will provide CLI commands for convenience.
+
+```bash
+virutalenv venv
+source ./venv/bin/activate
+pip install .
+
+create-app -h
+create-configs -h
+create-dns -h
+create-elb -h
+create-iam -h
+create-pipeline -h
+create-s3 -h
+create-sg -h
 ```
 
 ### Testing
+
+Run any unit tests available in `./tests/`.
 
 ```bash
 virtualenv venv
 source ./venv/bin/activate
 pip install -U -r requirements-dev.txt
+
+tox
+# OR
 ./runtests.py
 ```
 
