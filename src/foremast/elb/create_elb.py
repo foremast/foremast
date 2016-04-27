@@ -1,5 +1,4 @@
 """Create ELBs for Spinnaker Pipelines."""
-import argparse
 import json
 import logging
 import os
@@ -16,8 +15,8 @@ class SpinnakerELB:
     """Create ELBs for Spinnaker."""
 
     def __init__(self):
-        self.curdir = os.path.dirname(os.path.realpath(__file__))
-        self.templatedir = "{}/../../templates".format(self.curdir)
+        self.here = os.path.dirname(os.path.realpath(__file__))
+        self.templatedir = '{0}/../templates/'.format(self.here)
         jinjaenv = Environment(loader=FileSystemLoader(self.templatedir))
         self.elb_template = jinjaenv.get_template("elb_data_template.json")
         self.gate_url = "http://gate-api.build.example.com:8084"

@@ -85,8 +85,9 @@ def get_template(template_file='', **kwargs):
     Returns:
         String of rendered JSON template.
     """
-    templatedir = os.path.sep.join((os.path.dirname(__file__), os.path.pardir,
-                                    os.path.pardir, 'templates'))
+    here = os.path.dirname(os.path.realpath(__file__))
+    templatedir = '{0}/../templates/'.format(here)
+
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(templatedir))
     template = jinjaenv.get_template(template_file)
     rendered_json = template.render(**kwargs)
