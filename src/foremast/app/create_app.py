@@ -19,7 +19,7 @@ class SpinnakerApp:
     def __init__(self):
         config = configparser.ConfigParser()
         self.here = os.path.dirname(os.path.realpath(__file__))
-        configpath = "{}/../../configs/spinnaker.conf".format(self.here)
+        configpath = '{0}/../configurations/spinnaker.conf'.format(self.here)
         config.read(configpath)
         self.gate_url = config['spinnaker']['gate_url']
         self.header = {'content-type': 'application/json'}
@@ -62,11 +62,11 @@ class SpinnakerApp:
 
     def setup_appdata(self):
         '''Uses jinja2 to setup POST data for application creation'''
-        templatedir = "{}/../../templates".format(self.here)
+        templatedir = '{0}/../templates/'.format(self.here)
         jinjaenv = Environment(loader=FileSystemLoader(templatedir))
         template = jinjaenv.get_template("app_data_template.json")
         rendered_json = json.loads(template.render(appinfo=self.appinfo))
-        print(rendered_json)
+        logging.debug(rendered_json)
         return rendered_json
 
     def create_app(self, appinfo=None):

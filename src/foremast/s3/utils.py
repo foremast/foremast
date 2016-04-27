@@ -19,7 +19,7 @@ def get_configs(file_name='spinnaker.conf'):
         configparser.ConfigParser object with configuration loaded.
     """
     here = os.path.dirname(os.path.realpath(__file__))
-    configpath = '{0}/../../configs/{1}'.format(here, file_name)
+    configpath = '{0}/../configurations/{1}'.format(here, file_name)
     config = configparser.ConfigParser()
     config.read(configpath)
 

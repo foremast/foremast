@@ -50,8 +50,9 @@ class SpinnakerSecurityGroup:
         Returns:
             configparser.ConfigParser object with configuration loaded.
         """
+        file_name = 'spinnaker.conf'
         config = configparser.ConfigParser()
-        configpath = "{}/../../configs/spinnaker.conf".format(self.here)
+        configpath = '{0}/../configurations/{1}'.format(self.here, file_name)
         config.read(configpath)
 
         self.log.debug('Configuration sections found: %s', config.sections())
@@ -67,7 +68,7 @@ class SpinnakerSecurityGroup:
         Returns:
             Dict of rendered JSON to send to Spinnaker.
         """
-        templatedir = "{}/../../templates".format(self.here)
+        templatedir = '{0}/../templates/'.format(self.here)
         jinja_env = Environment(loader=FileSystemLoader(templatedir))
         template = jinja_env.get_template(template_name)
 
