@@ -146,15 +146,15 @@ def check_managed_pipeline(name='', app_name=''):
     not_managed_message = '"{0}" is not managed.'.format(name)
 
     if not all([bracket_region.startswith('['), bracket_region.endswith(']')]):
-        LOG.info(not_managed_message)
+        LOG.debug('"%s" does not end with "[region]".', name)
         raise ValueError(not_managed_message)
 
     if len(pipeline_name_prefix) is not 1:
-        LOG.info(not_managed_message)
+        LOG.debug('"%s" does not only have one word before [region].', name)
         raise ValueError(not_managed_message)
 
     if app_name not in pipeline_name_prefix:
-        LOG.info(not_managed_message)
+        LOG.debug('"%s" does not use "%s" before [region].', name, app_name)
         raise ValueError(not_managed_message)
 
     return region
