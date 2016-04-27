@@ -1,6 +1,6 @@
 import pytest
 
-from pipes.pipeline.utils import check_managed_pipeline
+from foremast.pipeline.utils import check_managed_pipeline
 
 
 def test_pipeline_names():
