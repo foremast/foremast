@@ -12,14 +12,14 @@ update this README as the project grows.
 
 ```bash
 cd ./pipes/
-python app/create_app.py -h
-python -m configs -h
-python dns/create_dns.py -h
-python elb/create_elb.py -h
-python -m iam -h
-python pipeline/create_pipeline.py -h
-python -m s3 -h
-python securitygroup/create_securitygroup.py -h
+python pipes/app/create_app.py -h
+python -m pipes.configs -h
+python pipes/dns/create_dns.py -h
+python pipes/elb/create_elb.py -h
+python -m pipes.iam -h
+python pipes/pipeline/create_pipeline.py -h
+python -m pipes.s3 -h
+python pipes/securitygroup/create_securitygroup.py -h
 ```
 
 ### Testing
