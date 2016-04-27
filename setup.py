@@ -35,6 +35,6 @@ setup(name='foremast',
               'create-iam=foremast.iam.__main__:main',
               'create-pipeline=foremast.pipeline.__main__:main',
               'create-s3=foremast.s3.__main__:main',
-              'create-sg=foremast.securitygroup.create_securitygroup:main'
+              'create-sg=foremast.securitygroup.__main__:main'
           ]
       }, )
