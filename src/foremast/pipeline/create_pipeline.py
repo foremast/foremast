@@ -1,5 +1,4 @@
 """Create Pipelines for Spinnaker."""
-import argparse
 import configparser
 import json
 import logging
@@ -11,8 +10,8 @@ import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
-from utils import (check_managed_pipeline, generate_encoded_user_data,
-                   get_subnets)
+from .utils import (check_managed_pipeline, generate_encoded_user_data,
+                    get_subnets)
 
 
 class SpinnakerAppNotFound(Exception):
@@ -120,7 +119,7 @@ class SpinnakerPipeline:
                 region = check_managed_pipeline(name=pipeline_name,
                                                 app_name=self.app_name)
             except ValueError:
-                self.log.info('"{0}" is not managed.'.format(pipeline_name))
+                self.log.info('"%s" is not managed.', pipeline_name)
                 continue
 
             self.log.debug('Check "%s" in defined Regions.', region)
@@ -453,58 +452,3 @@ class SpinnakerPipeline:
                 return status
             else:
                 raise Exception
-
-
-def main():
-    """Run newer stuffs."""
-    logging.basicConfig(
-        format='[%(levelname)s]%(module)s:%(funcName)s:%(lineno)d - '
-        '%(message)s')
-    log = logging.getLogger(__name__)
-    logging.getLogger('utils').setLevel(logging.WARNING)
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-d',
-                        '--debug',
-                        action='store_const',
-                        const=logging.DEBUG,
-                        default=logging.INFO,
-                        help='Set DEBUG output')
-    parser.add_argument("--app",
-                        help="The application name to create",
-                        required=True)
-    parser.add_argument(
-        "--triggerjob",
-        help="The jenkins job to monitor for pipeline triggering",
-        required=True)
-    parser.add_argument(
-        "--properties",
-        help="Location of json file that contains application.json details",
-        default="../raw.properties.json",
-        required=False)
-    # parser.add_argument("--vpc",
-    #                     help="The vpc to create the security group",
-    #                     required=True)
-    args = parser.parse_args()
-
-    log.setLevel(args.debug)
-    logging.getLogger(__package__).setLevel(args.debug)
-    logging.getLogger('utils').setLevel(args.debug)
-
-    log.debug('Parsed arguments: %s', args)
-
-    # Dictionary containing application info. This is passed to the class for
-    # processing
-    appinfo = {
-        'app': args.app,
-        # 'vpc': args.vpc,
-        'triggerjob': args.triggerjob,
-        'properties': args.properties
-    }
-
-    spinnakerapps = SpinnakerPipeline(app_info=appinfo)
-    spinnakerapps.create_pipeline()
-
-
-if __name__ == "__main__":
-    main()
