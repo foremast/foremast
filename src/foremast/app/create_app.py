@@ -1,18 +1,15 @@
-#!/usr/bin/env python
+"""A script for creating an application in spinnaker.
 
-# A script for creating an application in spinnaker.
-# Simply looks to see if the application already exists, if not, creates
-
-import argparse
+Simply looks to see if the application already exists, if not, creates.
+"""
 import configparser
 import json
 import logging
 import os
 import sys
-import gogoutils
 
-from jinja2 import Environment, FileSystemLoader
 import requests
+from jinja2 import Environment, FileSystemLoader
 
 
 class SpinnakerApp:
