@@ -2,22 +2,18 @@
 
 Simply looks to see if the application already exists, if not, creates.
 """
-import configparser
 import json
 import logging
-import os
 import sys
 
 import requests
-from jinja2 import Environment, FileSystemLoader
+
+from ..utils import get_configs, get_template
 
 
 class SpinnakerApp:
     def __init__(self):
-        config = configparser.ConfigParser()
-        self.here = os.path.dirname(os.path.realpath(__file__))
-        configpath = '{0}/../configurations/spinnaker.conf'.format(self.here)
-        config.read(configpath)
+        config = get_configs('spinnaker.conf')
         self.gate_url = config['spinnaker']['gate_url']
         self.header = {'content-type': 'application/json'}
 
@@ -59,10 +55,8 @@ class SpinnakerApp:
 
     def setup_appdata(self):
         '''Uses jinja2 to setup POST data for application creation'''
-        templatedir = '{0}/../templates/'.format(self.here)
-        jinjaenv = Environment(loader=FileSystemLoader(templatedir))
-        template = jinjaenv.get_template("app_data_template.json")
-        rendered_json = json.loads(template.render(appinfo=self.appinfo))
+        rendered_json = get_template(template_file='app_data_template.json',
+                                     appinfo=self.appinfo)
         logging.debug(rendered_json)
         return rendered_json
 
@@ -82,5 +76,6 @@ class SpinnakerApp:
             logging.error("Failed to create app: {}".format(r.text))
             sys.exit(1)
 
-        logging.info("Successfully created {} application".format(self.appname))
+        logging.info("Successfully created {} application".format(
+            self.appname))
         return
