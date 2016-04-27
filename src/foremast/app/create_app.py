@@ -88,7 +88,9 @@ class SpinnakerApp:
         logging.info("Successfully created {} application".format(self.appname))
         return
 
-if __name__ == "__main__":
+
+def main():
+    """Create Spinnaker Application."""
     # Setup parser
     parser = argparse.ArgumentParser()
     parser.add_argument("--app", help="The application name to create",
@@ -122,3 +124,7 @@ if __name__ == "__main__":
 
     spinnakerapps = SpinnakerApp()
     spinnakerapps.create_app(appinfo=appinfo)
+
+
+if __name__ == "__main__":
+    main()
