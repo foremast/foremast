@@ -7,29 +7,21 @@ def test_pipeline_names():
     """Only manage names matching **app_name [region]**."""
     app_name = 'unicornforrest'
 
-    with pytest.raises(ValueError):
-        check_managed_pipeline(name='something', app_name=app_name)
-    with pytest.raises(ValueError):
-        check_managed_pipeline(name=app_name, app_name=app_name)
+    bad_names = [
+        'something',
+        app_name,
+        'something [us-east-1',
+        'something us-east-1]',
+        '{0} [us-east-1'.format(app_name),
+        '{0} us-east-1]'.format(app_name),
+        'some some',
+        'something [us-east-1]',
+        'some some [us-east-1]',
+        ]
 
-    with pytest.raises(ValueError):
-        check_managed_pipeline(name='something [us-east-1', app_name=app_name)
-    with pytest.raises(ValueError):
-        check_managed_pipeline(name='something us-east-1]', app_name=app_name)
-    with pytest.raises(ValueError):
-        check_managed_pipeline(name='{0} [us-east-1'.format(app_name),
-                               app_name=app_name)
-    with pytest.raises(ValueError):
-        check_managed_pipeline(name='{0} us-east-1]'.format(app_name),
-                               app_name=app_name)
-
-    with pytest.raises(ValueError):
-        check_managed_pipeline(name='some some', app_name=app_name)
-    with pytest.raises(ValueError):
-        check_managed_pipeline(name='some some [us-east-1]', app_name=app_name)
-
-    with pytest.raises(ValueError):
-        check_managed_pipeline(name='something [us-east-1]', app_name=app_name)
+    for name in bad_names:
+        with pytest.raises(ValueError):
+            check_managed_pipeline(name=name, app_name=app_name)
 
     assert 'us-east-1' == check_managed_pipeline(
         name='{0} [us-east-1]'.format(app_name),
