@@ -257,6 +257,9 @@ class SpinnakerPipeline:
             if stage['name'].startswith('Git Tag'):
                 stage['requisiteStageRefIds'] = [str(main_index)]
                 stage['refId'] = str(main_index * 100)
+            elif stage['name'].startswith('Log Deploy'):
+                stage['requisiteStageRefIds'] = [str(main_index)]
+                stage['refId'] = str(main_index * 101)
             elif stage['type'] == 'bake':
                 stage['requisiteStageRefIds'] = []
                 stage['refId'] = str(main_index)
@@ -308,6 +311,7 @@ class SpinnakerPipeline:
             template_name = 'pipeline_stages.json'
 
         raw_subnets = get_subnets()
+        print(raw_subnets)
         self.log.debug('%s info:\n%s', env, pformat(self.app_info[env]))
 
         region_subnets = {region: raw_subnets[env][region]}
