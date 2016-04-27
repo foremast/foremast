@@ -16,7 +16,7 @@ if __name__ == '__main__':
         level=logging.DEBUG,
         format='[%(levelname)s]%(module)s:%(funcName)s - %(message)s')
 
-    TEST_ARGS = ['-v', '--cov-report', 'term-missing', '--cov-report', 'html',
-                 '--cov', 'pipes', 'tests']
+    TEST_ARGS = ['-s', '-v', '--cov-report', 'term-missing', '--cov-report',
+                 'html', '--cov', 'src/foremast', '--pep8', 'tests']
 
     pytest.main(TEST_ARGS)
