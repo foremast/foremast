@@ -16,6 +16,7 @@ class SpinnakerApp:
         config = get_configs('spinnaker.conf')
         self.gate_url = config['spinnaker']['gate_url']
         self.header = {'content-type': 'application/json'}
+        self.log = logging.getLogger(__name__)
 
     def get_apps(self):
         '''Gets all applications from spinnaker'''
@@ -24,7 +25,7 @@ class SpinnakerApp:
         if r.status_code == 200:
             self.apps = r.json()
         else:
-            logging.error(r.text)
+            self.log.error(r.text)
             sys.exit(1)
 
     def get_accounts(self, provider='aws'):
@@ -40,7 +41,7 @@ class SpinnakerApp:
             return filtered_accounts
 
         else:
-            logging.error(r.text)
+            self.log.error(r.text)
             sys.exit(1)
 
     def app_exists(self):
@@ -48,16 +49,16 @@ class SpinnakerApp:
         self.get_apps()
         for app in self.apps:
             if app['name'].lower() == self.appname.lower():
-                logging.info('{} app already exists'.format(self.appname))
+                self.log.info('%s app already exists', self.appname)
                 return True
-        logging.info('{} does not exist...creating'.format(self.appname))
+        self.log.info('%s does not exist...creating', self.appname)
         return False
 
     def setup_appdata(self):
         '''Uses jinja2 to setup POST data for application creation'''
         rendered_json = get_template(template_file='app_data_template.json',
                                      appinfo=self.appinfo)
-        logging.debug(rendered_json)
+        self.log.debug(rendered_json)
         return rendered_json
 
     def create_app(self, appinfo=None):
@@ -73,9 +74,8 @@ class SpinnakerApp:
         r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
 
         if not r.ok:
-            logging.error("Failed to create app: {}".format(r.text))
+            self.log.error("Failed to create app: %s", r.text)
             sys.exit(1)
 
-        logging.info("Successfully created {} application".format(
-            self.appname))
+        self.log.info("Successfully created %s application", self.appname)
         return
