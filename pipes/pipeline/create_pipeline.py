@@ -120,6 +120,7 @@ class SpinnakerPipeline:
                 region = check_managed_pipeline(name=pipeline_name,
                                                 app_name=self.app_name)
             except ValueError:
+                self.log.info('"{0}" is not managed.'.format(pipeline_name))
                 continue
 
             self.log.debug('Check "%s" in defined Regions.', region)
