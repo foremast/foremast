@@ -28,7 +28,7 @@ setup(name='foremast',
       ],
       entry_points={
           'console_scripts': [
-              'create-app=foremast.app.create_app:main',
+              'create-app=foremast.app.__main__:main',
               'create-configs=foremast.configs.__main__:main',
               'create-dns=foremast.dns.__main__:main',
               'create-elb=foremast.elb.__main__:main',
