@@ -16,22 +16,22 @@ def main():
     python create_elb.py \
         --app testapp \
         --stack teststack \
-        --elb_type internal \
+        --elb-type internal \
         --env dev \
-        --health_protocol HTTP \
-        --health_port 80 \
-        --health_path /health \
-        --security_groups sg_apps \
-        --int_listener_port 80 \
-        --int_listener_protocol HTTP \
-        --ext_listener_port 8080 \
-        --ext_listener_protocol HTTP \
-        --elb_name dougtestapp-teststack \
-        --elb_subnet internal \
-        --health_timeout=10 \
-        --health_interval 2 \
-        --healthy_threshold 4 \
-        --unhealthy_threshold 6 \
+        --health-protocol HTTP \
+        --health-port 80 \
+        --health-path /health \
+        --security-groups apps-all \
+        --int-listener-port 80 \
+        --int-listener-protocol HTTP \
+        --ext-listener-port 8080 \
+        --ext-listener-protocol HTTP \
+        --elb-name dougtestapp-teststack \
+        --elb-subnet internal \
+        --health-timeout=10 \
+        --health-interval 2 \
+        --healthy-threshold 4 \
+        --unhealthy-threshold 6 \
         --region us-east-1
     """
     logging.basicConfig(format='[%(levelname)s]%(module)s:%(funcName)s:'
@@ -58,7 +58,7 @@ def main():
     parser.add_argument('--int-listener-protocol', action="store", help="internal listener protocol", default="HTTP")
     parser.add_argument('--ext-listener-port', action="store", help="internal listener port", default=80)
     parser.add_argument('--ext-listener-protocol', action="store", help="external listener protocol", default="HTTP")
-    # parser.add_argument('--elb_name', action="store", help="elb name", required=True)
+    # parser.add_argument('--elb-name', action="store", help="elb name", required=True)
     parser.add_argument('--subnet-xxxx', action="store", help="ELB Subnet type, e.g. external, internal", default="internal")
     parser.add_argument('--region', help="region name", default="us-east-1")
 
