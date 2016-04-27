@@ -8,7 +8,30 @@ deployments.
 These are designed to be loosely coupled applications and we will continue to
 update this README as the project grows.
 
-### Implementation
+## Usage
+
+```bash
+cd ./pipes/
+python app/create_app.py -h
+python -m configs -h
+python dns/create_dns.py -h
+python elb/create_elb.py -h
+python -m iam -h
+python pipeline/create_pipeline.py -h
+python -m s3 -h
+python securitygroup/create_securitygroup.py -h
+```
+
+### Testing
+
+```bash
+virtualenv venv
+source ./venv/bin/activate
+pip install -U -r requirements-dev.txt
+./runtests.py
+```
+
+## Implementation
 
 See `pipes-pipeline-prepare` in [dsl.groovy](runway/dsl.groovy) for Jenkins Job
 configuration.
