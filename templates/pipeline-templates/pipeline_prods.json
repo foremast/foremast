@@ -1,4 +1,20 @@
 [
+  {
+      "requisiteStageRefIds": [
+        "6"
+      ],
+      "refId": "700",
+      "type": "jenkins",
+      "name": "Log Deployment [{{ app.environment }}]",
+      "failPipeline": false,
+      "master": "JenkinsCI",
+      "job": "pipeline-processor",
+      "parameters": {
+        "EXECUTION_ID": "${execution.id}",
+        "FUNCTION": "log_approval",
+        "ACCOUNT": "{{ app.environment }}"
+        }
+    },
     {
       "requisiteStageRefIds": ["5"],
       "refId": "6",
