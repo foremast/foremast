@@ -11,6 +11,12 @@ def main():
     """Create Spinnaker Application."""
     # Setup parser
     parser = argparse.ArgumentParser()
+    parser.add_argument('-d',
+                        '--debug',
+                        action='store_const',
+                        const=logging.DEBUG,
+                        default=logging.INFO,
+                        help='Set DEBUG output')
     parser.add_argument("--app", help="The application name to create",
                         required=True)
     parser.add_argument("--email", help="Email address to associate with application",
@@ -22,7 +28,8 @@ def main():
     parser.add_argument("--git", help="Git URI", default=None)
     args = parser.parse_args()
 
-    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s %(message)s')
+    logging.getLogger(__name__).setLevel(args.debug)
 
     if args.git and args.git != 'None':
         generated = gogoutils.Generator(*gogoutils.Parser(args.git).parse_url())
