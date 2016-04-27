@@ -30,7 +30,7 @@ setup(name='foremast',
           'console_scripts': [
               'create-app=foremast.app.create_app:main',
               'create-configs=foremast.configs.__main__:main',
-              'create-dns=foremast.dns.create_dns:main',
+              'create-dns=foremast.dns.__main__:main',
               'create-elb=foremast.elb.__main__:main',
               'create-iam=foremast.iam.__main__:main',
               'create-pipeline=foremast.pipeline.__main__:main',
