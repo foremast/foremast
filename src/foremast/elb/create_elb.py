@@ -1,13 +1,10 @@
 """Create ELBs for Spinnaker Pipelines."""
-import argparse
 import json
 import logging
 import os
 
 import requests
 from jinja2 import Environment, FileSystemLoader
-
-from .utils import check_task, get_subnets, get_vpc_id
 
 LOG = logging.getLogger(__name__)
 
