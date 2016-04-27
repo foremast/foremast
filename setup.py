@@ -25,4 +25,9 @@ setup(name='foremast',
           'Programming Language :: Python :: 3.5',
           'License :: OSI Approved :: MIT License',
           'Operating System :: OS Independent',
-      ], )
+      ],
+      entry_points={
+          'console_scripts': [
+              'configs=foremast.configs.__main__:main',
+          ]
+      }, )
