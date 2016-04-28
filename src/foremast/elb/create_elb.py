@@ -66,7 +66,7 @@ class SpinnakerELB:
 
         health = self.splay_health(self.args.health_target)
 
-        kwargs = {
+        template_kwargs = {
             'app_name': self.args.app,
             'availability_zones': json.dumps(region_subnets),
             'env': env,
@@ -93,7 +93,7 @@ class SpinnakerELB:
 
         rendered_template = get_template(
             template_file='elb_data_template.json',
-            **kwargs)
+            **template_kwargs)
         return rendered_template
 
     def create_elb(self):
