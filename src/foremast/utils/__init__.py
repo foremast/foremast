@@ -4,3 +4,4 @@ from .deep_chain_map import DeepChainMap
 from .check_task import *
 from .get_subnets import *
 from .get_vpc_id import *
+from .get_app_details import *

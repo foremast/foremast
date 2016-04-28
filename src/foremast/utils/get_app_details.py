@@ -1,12 +1,8 @@
-import collections
-import logging
-import os
-
 import murl
 import requests
-from jinja2 import Environment, FileSystemLoader
-
-import gogoutils
+import collections
+import googutils
+import logging
 
 from ..consts import API_URL
 
@@ -24,6 +20,7 @@ def get_details(app='groupproject', env='dev'):
     api.path = 'applications/{app}'.format(app=app)
 
     app_details = requests.get(api.url).json()
+    assert app_details.ok, 'App does not Exist'
 
     group = app_details['attributes'].get('repoProjectKey')
     project = app_details['attributes'].get('repoSlug')
@@ -36,23 +33,3 @@ def get_details(app='groupproject', env='dev'):
 
     LOG.debug('Application details: %s', details)
     return details
-
-
-def get_template(template_file='', **kwargs):
-    """Gets the Jinja2 template and renders with dict _kwargs_.
-
-    Args:
-        kwargs: Keywords to use for rendering the Jinja2 template.
-
-    Returns:
-        String of rendered JSON template.
-    """
-    here = os.path.dirname(os.path.realpath(__file__))
-    templatedir = '{0}/../templates/'.format(here)
-
-    jinjaenv = Environment(loader=FileSystemLoader(templatedir))
-    template = jinjaenv.get_template(template_file)
-    rendered_json = template.render(**kwargs)
-
-    LOG.debug('Rendered JSON:\n%s', rendered_json)
-    return rendered_json
