@@ -3,7 +3,7 @@ import logging
 
 import boto3
 
-from .utils import get_details
+from ..utils import get_app_details as get_details
 
 LOG = logging.getLogger(__name__)
 
