@@ -3,7 +3,7 @@ import logging
 
 import boto3
 
-from ..utils import get_app_details as get_details
+from ..utils import get_app_details
 
 LOG = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def init_properties(env='dev', app='unnecessary'):
     """
     aws_env = boto3.session.Session(profile_name=env)
     s3client = aws_env.resource('s3')
-    generated = get_details(app=app, env=env)
+    generated = get_app_details.get_details(app=app, env=env)
 
     archaius_bucket, project, app = generated.archaius()['s3'].split('/')[:-1]
     archaius_bucket = 'archaius-{env}'.format(env=env)

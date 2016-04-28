@@ -19,17 +19,15 @@ def get_details(app='groupproject', env='dev'):
     api = murl.Url(API_URL)
     api.path = 'applications/{app}'.format(app=app)
 
-    app_details = requests.get(api.url).json()
-    assert app_details.ok, 'App does not Exist'
+    request = requests.get(api.url)
+    assert request.ok, 'App does not Exist'
 
+    app_details = request.json()
+
+    LOG.debug('App details: %s', app_details)
     group = app_details['attributes'].get('repoProjectKey')
     project = app_details['attributes'].get('repoSlug')
     generated = gogoutils.Generator(group, project, env=env)
 
-    app_details = collections.namedtuple('AppDetails',
-                                         ['group', 'policy', 'profile', 'role',
-                                          'user'])
-    details = app_details(**generated.iam())
-
-    LOG.debug('Application details: %s', details)
-    return details
+    LOG.debug('Application details: %s', generated)
+    return generated
