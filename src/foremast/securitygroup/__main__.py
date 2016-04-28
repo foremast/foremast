@@ -2,19 +2,22 @@
 import argparse
 import logging
 
+from ..consts import LOGGING_FORMAT
 from .create_securitygroup import SpinnakerSecurityGroup
 
 
 def main():
     """Run newer stuffs."""
-    logging.basicConfig(format='%(asctime)s %(message)s')
+    logging.basicConfig(format=LOGGING_FORMAT)
     log = logging.getLogger(__name__)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-d',
                         '--debug',
-                        action='store_true',
-                        help='DEBUG output')
+                        action='store_const',
+                        const=logging.DEBUG,
+                        default=logging.INFO,
+                        help='Set DEBUG output')
     parser.add_argument("--app",
                         help="The application name to create",
                         required=True)
@@ -26,8 +29,7 @@ def main():
                         required=True)
     args = parser.parse_args()
 
-    if args.debug:
-        log.setLevel(logging.DEBUG)
+    logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     log.debug('Parsed arguments: %s', args)
 

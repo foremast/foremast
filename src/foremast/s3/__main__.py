@@ -2,6 +2,7 @@
 import argparse
 import logging
 
+from ..consts import LOGGING_FORMAT
 from .create_archaius import init_properties
 
 LOG = logging.getLogger(__name__)
@@ -9,7 +10,7 @@ LOG = logging.getLogger(__name__)
 
 def main():
     """Create application.properties for a given application."""
-    logging.basicConfig()
+    logging.basicConfig(format=LOGGING_FORMAT)
     parser = argparse.ArgumentParser(description=main.__doc__)
 
     parser.add_argument('-d',
@@ -29,8 +30,7 @@ def main():
                         help='Application name, e.g. forrestcore')
     args = parser.parse_args()
 
-    LOG.setLevel(args.debug)
-    logging.getLogger(__package__).setLevel(args.debug)
+    logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
     vars(args).pop('debug')
 
     LOG.debug('Args: %s', vars(args))

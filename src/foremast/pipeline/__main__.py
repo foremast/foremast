@@ -2,16 +2,14 @@
 import argparse
 import logging
 
+from ..consts import LOGGING_FORMAT
 from .create_pipeline import SpinnakerPipeline
 
 
 def main():
     """Run newer stuffs."""
-    logging.basicConfig(
-        format='[%(levelname)s]%(module)s:%(funcName)s:%(lineno)d - '
-        '%(message)s')
+    logging.basicConfig(format=LOGGING_FORMAT)
     log = logging.getLogger(__name__)
-    logging.getLogger('utils').setLevel(logging.WARNING)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-d',
@@ -37,9 +35,7 @@ def main():
     #                     required=True)
     args = parser.parse_args()
 
-    log.setLevel(args.debug)
-    logging.getLogger(__package__).setLevel(args.debug)
-    logging.getLogger('utils').setLevel(args.debug)
+    logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     log.debug('Parsed arguments: %s', args)
 
