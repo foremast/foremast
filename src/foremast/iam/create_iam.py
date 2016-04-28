@@ -1,4 +1,5 @@
 """Create IAM Instance Profiles, Roles, Users, and Groups."""
+import collections
 import logging
 
 import boto3
@@ -22,7 +23,13 @@ def create_iam_resources(env='dev', app='', **_):
     session = boto3.session.Session(profile_name=env)
     client = session.client('iam')
 
-    details = get_app_details.get_details(env=env, app=app)
+    generated = get_app_details.get_details(env=env, app=app)
+    app_details = collections.namedtuple('AppDetails',
+                                         ['group', 'policy', 'profile', 'role',
+                                          'user'])
+    details = app_details(**generated.iam())
+
+    LOG.debug('Application details: %s', details)
 
     resource_action(
         client,
