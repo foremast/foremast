@@ -3,6 +3,7 @@ import logging
 
 import boto3
 from boto3.exceptions import botocore
+import collections
 
 from ..utils import get_app_details, get_template
 
@@ -22,7 +23,12 @@ def create_iam_resources(env='dev', app=''):
     session = boto3.session.Session(profile_name=env)
     client = session.client('iam')
 
-    details = get_app_details.get_details(env=env, app=app)
+    generated = get_app_details.get_details(env=env, app=app)
+
+    app_details = collections.namedtuple('AppDetails',
+                                         ['group', 'policy', 'profile', 'role',
+                                          'user'])
+    details = app_details(**generated.iam())
 
     resource_action(
         client,
