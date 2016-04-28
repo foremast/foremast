@@ -1,10 +1,13 @@
 """Create ELBs for Spinnaker Pipelines."""
+import collections
 import json
 import logging
 
 import requests
 
-from ..utils import check_task, get_subnets, get_template, get_vpc_id
+from ..consts import HEADERS
+from ..utils import (check_task, get_configs, get_subnets, get_template,
+                     get_vpc_id)
 
 
 class SpinnakerELB:
@@ -14,29 +17,39 @@ class SpinnakerELB:
     def __init__(self, args=None):
         self.args = args
 
-        self.health_path = ''
-        self.health_port = ''
-        self.health_proto = ''
-        self.set_health()
+        configs = get_configs()
+        self.gate_url = configs['spinnaker']['gate_url']
 
-        self.gate_url = "http://gate-api.build.example.com:8084"
-        self.header = {'Content-Type': 'application/json', 'Accept': '*/*'}
+    @staticmethod
+    def splay_health(health_target):
+        """Set Health Check path, port, and protocol.
 
-    def set_health(self):
-        """Set Health Check path, port, and protocol."""
-        target = self.args.health_target
-        self.health_proto, health_port_path = target.split(':')
-        self.health_port, *health_path = health_port_path.split('/')
+        Returns:
+            HealthCheck: A **collections.namedtuple** class with *path*, *port*,
+            *proto*, and *target* attributes.
+        """
+        log = logging.getLogger(__name__)
 
-        if not health_path:
-            self.health_path = '/healthcheck'
+        HealthCheck = collections.namedtuple('HealthCheck',
+                                             ['path', 'port', 'proto',
+                                              'target'])
+
+        proto, health_port_path = health_target.split(':')
+        port, *health_path = health_port_path.split('/')
+
+        if proto == 'TCP':
+            path = ''
+        elif not health_path:
+            path = '/healthcheck'
         else:
-            self.health_path = '/{0}'.format('/'.join(health_path))
+            path = '/{0}'.format('/'.join(health_path))
 
-        self.log.info('Health Check\n\tprotocol: %s\n\tport: %s\n\tpath: %s',
-                      self.health_proto, self.health_port, self.health_path)
+        target = '{0}:{1}{2}'.format(proto, port, path)
 
-        return True
+        health = HealthCheck(path, port, proto, target)
+        log.info(health)
+
+        return health
 
     def make_elb_json(self):
         """Render the JSON template with arguments.
@@ -53,34 +66,35 @@ class SpinnakerELB:
 
         elb_facing = 'true' if self.args.subnet_type == 'internal' else 'false'
 
-        kwargs = {
+        health = self.splay_health(self.args.health_target)
+
+        template_kwargs = {
             'app_name': self.args.app,
+            'availability_zones': json.dumps(region_subnets),
             'env': env,
-            'isInternal': elb_facing,
-            'vpc_id': get_vpc_id(env, region),
-            'health_protocol': self.health_proto,
-            'health_path': self.health_path,
-            'health_port': self.health_port,
-            'health_timeout': self.args.health_timeout,
-            'health_interval': self.args.health_interval,
-            'unhealthy_threshold': self.args.unhealthy_threshold,
-            'healthy_threshold': self.args.healthy_threshold,
-            # FIXME: Use json.dumps(args.security_groups) to format for template
-            'security_groups': self.args.security_groups,
-            'int_listener_protocol': self.args.int_listener_protocol,
-            'int_listener_port': self.args.int_listener_port,
             'ext_listener_port': self.args.ext_listener_port,
             'ext_listener_protocol': self.args.ext_listener_protocol,
-            'subnet_type': self.args.subnet_type,
-            'region': region,
-            'hc_string': self.args.health_target,
-            'availability_zones': json.dumps(region_subnets),
+            'hc_string': health.target,
+            'health_interval': self.args.health_interval,
+            'health_path': health.path,
+            'health_port': health.port,
+            'health_protocol': health.proto,
+            'health_timeout': self.args.health_timeout,
+            'healthy_threshold': self.args.healthy_threshold,
+            'int_listener_port': self.args.int_listener_port,
+            'int_listener_protocol': self.args.int_listener_protocol,
+            'isInternal': elb_facing,
             'region_zones': json.dumps(region_subnets[region]),
+            'region': region,
+            'security_groups': json.dumps([self.args.security_groups]),
+            'subnet_type': self.args.subnet_type,
+            'unhealthy_threshold': self.args.unhealthy_threshold,
+            'vpc_id': get_vpc_id(env, region),
         }
 
         rendered_template = get_template(
             template_file='elb_data_template.json',
-            **kwargs)
+            **template_kwargs)
         return rendered_template
 
     def create_elb(self):
@@ -97,7 +111,7 @@ class SpinnakerELB:
         json_data = self.make_elb_json()
 
         url = self.gate_url + '/applications/%s/tasks' % app
-        response = requests.post(url, data=json_data, headers=self.header)
+        response = requests.post(url, data=json_data, headers=HEADERS)
 
         assert response.ok, 'Error creating {0} ELB: {1}'.format(app,
                                                                  response.text)
