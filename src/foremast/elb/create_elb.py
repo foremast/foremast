@@ -4,7 +4,6 @@ import logging
 
 import requests
 
-from ..exceptions import SpinnakerTaskError
 from ..utils import check_task, get_subnets, get_template, get_vpc_id
 
 LOG = logging.getLogger(__name__)
@@ -105,9 +104,4 @@ class SpinnakerELB:
                                                                  response.text)
 
         taskid = response.json()
-
-        try:
-            check_task(taskid, app)
-        except SpinnakerTaskError:
-            self.log.fatal('Error upserting ELB.')
-            raise
+        assert check_task(taskid, app)
