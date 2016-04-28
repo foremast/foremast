@@ -7,6 +7,7 @@ from pprint import pformat
 
 import requests
 
+from ..consts import HEADERS
 from ..utils import get_configs, get_template
 
 
@@ -21,7 +22,6 @@ class SpinnakerApp:
 
         config = get_configs('spinnaker.conf')
         self.gate_url = config['spinnaker']['gate_url']
-        self.header = {'content-type': 'application/json'}
 
     def get_accounts(self, provider='aws'):
         """Get Accounts added to Spinnaker.
@@ -61,7 +61,7 @@ class SpinnakerApp:
                                 appinfo=self.appinfo)
 
         url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
-        r = requests.post(url, data=jsondata, headers=self.header)
+        r = requests.post(url, data=jsondata, headers=HEADERS)
 
         assert r.ok, 'Failed to create "{0}": {1}'.format(self.appname, r.text)
 
