@@ -1,6 +1,5 @@
 import murl
 import requests
-import collections
 import gogoutils
 import logging
 
