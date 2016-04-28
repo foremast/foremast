@@ -23,7 +23,7 @@ def main():
     parser.add_argument("--env",
                         help="The environment to create the security group",
                         required=True)
-    parser.add_argument("--elb_subnet",
+    parser.add_argument("--elb-subnet",
                         help="The environment to create the security group",
                         required=True)
     args = parser.parse_args()
