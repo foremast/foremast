@@ -11,11 +11,10 @@ from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
 from ..consts import API_URL
-from ..utils import (check_managed_pipeline, generate_encoded_user_data,
-                    get_subnets, check_task, get_template, get_configs,
-                    get_app_details)
-
 from ..exceptions import SpinnakerAppNotFound
+from ..utils import (check_managed_pipeline, check_task,
+                     generate_encoded_user_data, get_app_details, get_configs,
+                     get_subnets, get_template)
 
 
 class SpinnakerPipeline:
