@@ -26,3 +26,8 @@ class SpinnakerTaskError(SpinnakerError):
 
     def __init__(self, task_state):
         super().__init__(task_state['variables'][-1]['value'][-1]['exception'])
+
+
+class SpinnakerPipelineCreationFailed(Exception):
+    """Could not create Spinnaker Pipeline."""
+    pass

@@ -11,22 +11,10 @@ from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
 from ..utils import (check_managed_pipeline, generate_encoded_user_data,
-                    get_subnets)
+                    get_subnets, check_task, get_template, get_configs,
+                    get_app_details)
 
-
-class SpinnakerAppNotFound(Exception):
-    """Missing Spinnaker Application."""
-    pass
-
-
-class SpinnakerApplicationListError(Exception):
-    """Issue with getting list of all Spinnaker Applications."""
-    pass
-
-
-class SpinnakerPipelineCreationFailed(Exception):
-    """Could not create Spinnaker Pipeline."""
-    pass
+from ..exceptions import SpinnakerAppNotFound
 
 
 class SpinnakerPipeline:
@@ -42,13 +30,15 @@ class SpinnakerPipeline:
         self.header = {'content-type': 'application/json'}
         self.here = os.path.dirname(os.path.realpath(__file__))
 
-        self.config = self.get_configs()
+        self.config = get_configs()
         self.gate_url = self.config['spinnaker']['gate_url']
 
         self.app_info = app_info
         self.app_name = ''
         self.group_name = ''
-        self.app_exists()
+        if not app_get_details(self.app_info['app']):
+            raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
+                                  self.app_info['app']))
 
         self.settings = self.get_settings()
 
@@ -57,39 +47,6 @@ class SpinnakerPipeline:
         with open(self.app_info['properties']) as data_file:
             data = json.load(data_file)
         return data
-
-    def get_configs(self):
-        """Get main configuration.
-
-        Returns:
-            configparser.ConfigParser object with configuration loaded.
-        """
-        config = configparser.ConfigParser()
-        configpath = "{}/../../configs/spinnaker.conf".format(self.here)
-        config.read(configpath)
-
-        self.log.debug('Configuration sections found: %s', config.sections())
-        return config
-
-    def get_template(self, template_name='', template_dict=None):
-        """Get Jinja2 Template _template_name_.
-
-        Args:
-            template_name: Str of template name to retrieve.
-            template_dict: Dict to use for template rendering.
-
-        Returns:
-            Dict of rendered JSON to send to Spinnaker.
-        """
-        templatedir = "{}/../../templates/pipeline-templates".format(self.here)
-        jinja_env = Environment(loader=FileSystemLoader(templatedir))
-        template = jinja_env.get_template(template_name)
-
-        rendered_template = template.render(**template_dict)
-        self.log.debug('Rendered template:\n%s', rendered_template)
-        rendered_json_dict = json.loads(rendered_template)
-        self.log.debug('Rendered JSON dict: %s', rendered_json_dict)
-        return rendered_json_dict
 
     def clean_pipelines(self):
         """Delete Pipelines for regions not defined in application.json files.
@@ -336,37 +293,9 @@ class SpinnakerPipeline:
                 group_name=self.group_name),
         })
 
-        pipeline_json = self.get_template(template_name=template_name,
+        pipeline_json = get_template(template_name=template_name,
                                           template_dict=data, )
         return pipeline_json
-
-    def app_exists(self):
-        """Check to see if application already exists.
-
-        Sets self.app_name and self.group_name based on Spinnaker Application
-        attributes.
-
-        Returns:
-            bool: True when Spinnaker Application exists.
-
-        Raises:
-            SpinnakerAppNotFound: Could not find Spinnaker Application.
-        """
-        app_name = self.app_info['app']
-
-        url = murl.Url(self.gate_url)
-        url.path = 'applications/{app}'.format(app=app_name)
-        app_response = requests.get(url.url, headers=self.header)
-
-        if app_response.ok:
-            app_dict = app_response.json()
-            self.app_name = app_dict['attributes']['name']
-            self.group_name = app_dict['attributes']['repoProjectKey']
-            return True
-        else:
-            logging.info('Application %s does not exist ... exiting', app_name)
-            raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
-                app_name))
 
     def get_all_pipelines(self, app=''):
         """Get a list of all the Pipelines in _app_.
@@ -408,47 +337,3 @@ class SpinnakerPipeline:
                     break
 
         return return_id
-
-    @retries(max_attempts=10, wait=10.0, exceptions=Exception)
-    def check_task(self, taskid):
-        """Check for the completion of _taskid_.
-
-        Args:
-            taskid (str): ID of Task to poll.
-
-        Raises:
-            Exception: Task has not completed yet.
-
-        Returns:
-            str: Task status of SUCCEEDED or TERMINAL.
-        """
-        try:
-            taskurl = taskid.get('ref', '0000')
-        except AttributeError:
-            taskurl = taskid
-
-        taskid = taskurl.split('/tasks/')[-1]
-
-        self.log.info('Checking taskid %s', taskid)
-
-        url = '{0}/applications/{1}/tasks/{2}'.format(self.gate_url,
-                                                      self.app_name,
-                                                      taskid, )
-
-        task_response = requests.get(url, headers=self.header)
-
-        self.log.debug(task_response.json())
-        if not task_response.ok:
-            raise Exception
-        else:
-            task_json = task_response.json()
-
-            status = task_json['status']
-
-            self.log.info('Current task status: %s', status)
-            statuses = ('SUCCEEDED', 'TERMINAL')
-
-            if status in statuses:
-                return status
-            else:
-                raise Exception
