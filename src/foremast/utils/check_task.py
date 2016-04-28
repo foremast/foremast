@@ -9,7 +9,7 @@ GATE_URL = "http://gate-api.build.example.com:8084"
 LOG = logging.getLogger(__name__)
 
 
-@retries(max_attempts=10, wait=10, exceptions=Exception)
+@retries(max_attempts=10, wait=10, exceptions=(AssertionError, ValueError))
 def check_task(taskid, app_name):
     """Check task status.
     Args:
@@ -33,16 +33,15 @@ def check_task(taskid, app_name):
 
     LOG.debug(task_response.json())
 
-    if not task_response.ok:
-        raise Exception
-    else:
-        task_state = task_response.json()
-        status = task_state['status']
-        LOG.info('Current task status: %s', status)
+    assert task_response.ok
 
-        if status == 'SUCCEEDED':
-            return status
-        elif status == 'TERMINAL':
-            raise SpinnakerTaskError(task_state)
-        else:
-            raise Exception
+    task_state = task_response.json()
+    status = task_state['status']
+    LOG.info('Current task status: %s', status)
+
+    if status == 'SUCCEEDED':
+        return status
+    elif status == 'TERMINAL':
+        raise SpinnakerTaskError(task_state)
+    else:
+        raise ValueError
