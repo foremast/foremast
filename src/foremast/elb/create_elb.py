@@ -6,11 +6,10 @@ import requests
 
 from ..utils import check_task, get_subnets, get_template, get_vpc_id
 
-LOG = logging.getLogger(__name__)
-
 
 class SpinnakerELB:
     """Create ELBs for Spinnaker."""
+    log = logging.getLogger(__name__)
 
     def __init__(self, args=None):
         self.args = args
@@ -34,8 +33,8 @@ class SpinnakerELB:
         else:
             self.health_path = '/{0}'.format('/'.join(health_path))
 
-        LOG.info('Health Check\n\tprotocol: %s\n\tport: %s\n\tpath: %s',
-                 self.health_proto, self.health_port, self.health_path)
+        self.log.info('Health Check\n\tprotocol: %s\n\tport: %s\n\tpath: %s',
+                      self.health_proto, self.health_port, self.health_path)
 
         return True
 
