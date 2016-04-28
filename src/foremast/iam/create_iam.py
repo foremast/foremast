@@ -1,4 +1,5 @@
 """Create IAM Instance Profiles, Roles, Users, and Groups."""
+import collections
 import logging
 
 import boto3
@@ -10,7 +11,7 @@ from ..utils import get_app_details, get_template
 LOG = logging.getLogger(__name__)
 
 
-def create_iam_resources(env='dev', app=''):
+def create_iam_resources(env='dev', app='', **_):
     """Create the IAM Resources for the application.
 
     Args:
@@ -24,11 +25,12 @@ def create_iam_resources(env='dev', app=''):
     client = session.client('iam')
 
     generated = get_app_details.get_details(env=env, app=app)
-
     app_details = collections.namedtuple('AppDetails',
                                          ['group', 'policy', 'profile', 'role',
                                           'user'])
     details = app_details(**generated.iam())
+
+    LOG.debug('Application details: %s', details)
 
     resource_action(
         client,
