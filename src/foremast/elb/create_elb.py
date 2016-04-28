@@ -18,27 +18,34 @@ class SpinnakerELB:
         self.gate_url = "http://gate-api.build.example.com:8084"
         self.header = {'Content-Type': 'application/json', 'Accept': '*/*'}
 
-    def splay_health(self):
+    @staticmethod
+    def splay_health(health_target):
         """Set Health Check path, port, and protocol.
 
         Returns:
             HealthCheck: A **collections.namedtuple** class with *path*, *port*,
-            and *proto* attributes.
+            *proto*, and *target* attributes.
         """
-        HealthCheck = collections.namedtuple('HealthCheck', ['path', 'port',
-                                                             'proto'])
+        log = logging.getLogger(__name__)
 
-        target = self.args.health_target
-        proto, health_port_path = target.split(':')
+        HealthCheck = collections.namedtuple('HealthCheck',
+                                             ['path', 'port', 'proto',
+                                              'target'])
+
+        proto, health_port_path = health_target.split(':')
         port, *health_path = health_port_path.split('/')
 
-        if not health_path:
+        if proto == 'TCP':
+            path = ''
+        elif not health_path:
             path = '/healthcheck'
         else:
             path = '/{0}'.format('/'.join(health_path))
 
-        health = HealthCheck(path, port, proto)
-        self.log.info(health)
+        target = '{0}:{1}{2}'.format(proto, port, path)
+
+        health = HealthCheck(path, port, proto, target)
+        log.info(health)
 
         return health
 
@@ -57,7 +64,7 @@ class SpinnakerELB:
 
         elb_facing = 'true' if self.args.subnet_type == 'internal' else 'false'
 
-        health = self.splay_health()
+        health = self.splay_health(self.args.health_target)
 
         kwargs = {
             'app_name': self.args.app,
@@ -79,7 +86,7 @@ class SpinnakerELB:
             'ext_listener_protocol': self.args.ext_listener_protocol,
             'subnet_type': self.args.subnet_type,
             'region': region,
-            'hc_string': self.args.health_target,
+            'hc_string': health.target,
             'availability_zones': json.dumps(region_subnets),
             'region_zones': json.dumps(region_subnets[region]),
         }
