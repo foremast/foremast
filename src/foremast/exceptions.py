@@ -1,6 +1,11 @@
 """Spinnaker related custom exceptions."""
 
 
+class SpinnakerTimeout(Exception):
+    """Spinnaker Timeout error."""
+    pass
+
+
 class SpinnakerError(Exception):
     """Spinnaker related error."""
     pass
