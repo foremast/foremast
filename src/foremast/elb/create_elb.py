@@ -84,8 +84,7 @@ class SpinnakerELB:
             'isInternal': elb_facing,
             'region_zones': json.dumps(region_subnets[region]),
             'region': region,
-            # FIXME: Use json.dumps(args.security_groups) to format for template
-            'security_groups': self.args.security_groups,
+            'security_groups': json.dumps([self.args.security_groups]),
             'subnet_type': self.args.subnet_type,
             'unhealthy_threshold': self.args.unhealthy_threshold,
             'vpc_id': get_vpc_id(env, region),
