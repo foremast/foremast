@@ -1,12 +1,12 @@
 {
-  "name": "{{ app.appname }} [{{ app.region }}]",
-  "application": "{{ app.appname }}",
+  "name": "{{ data.app.appname }} [{{ data.app.region }}]",
+  "application": "{{ data.app.appname }}",
   "triggers": [
     {
       "enabled": true,
       "type": "jenkins",
       "master": "JenkinsCI",
-      "job": "{{ app.triggerjob }}",
+      "job": "{{ data.app.triggerjob }}",
       "propertyFile": "jenkins_vars"
     }
   ],
@@ -27,13 +27,13 @@
       "requisiteStageRefIds": [],
       "refId": "1",
       "type": "bake",
-      "name": "Bake [{{ app.region }}]",
+      "name": "Bake [{{ data.app.region }}]",
       "cloudProviderType": "aws",
       "extendedAttributes": {
         "app_group": "${ trigger.properties.GROUP_NAME }",
         "app_name": "${ trigger.properties.APP_NAME }"
       },
-      "regions": ["{{ app.region }}"],
+      "regions": ["{{ data.app.region }}"],
       "user": "[anonymous]",
       "vmType": "hvm",
       "storeType": "ebs",
@@ -51,9 +51,9 @@
       "enhancedNetworking": true,
       "comments": "Baking",
       "package": "${ trigger.properties.ARTIFACT_RPM }",
-      {% if app.region == 'us-east-1' %}
+      {% if data.app.region == 'us-east-1' %}
       "baseAmi": "ami-xxxx"
-      {% elif app.region == 'us-west-2' %}
+      {% elif data.app.region == 'us-west-2' %}
       "baseAmi": "ami-xxxx",
       "templateFileName": "aws-ebs-west-2.json"
       {% endif %}
