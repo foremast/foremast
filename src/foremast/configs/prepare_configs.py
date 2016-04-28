@@ -7,7 +7,7 @@ from base64 import b64decode
 
 import gitlab
 
-from .utils import get_configs
+from ..utils import get_configs
 
 ENVS = ('dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods', 'stagesox')
 LOG = logging.getLogger(__name__)
