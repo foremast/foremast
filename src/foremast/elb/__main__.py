@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 
+from ..args import add_debug
 from ..consts import LOGGING_FORMAT
 from .create_elb import SpinnakerELB
 from .exceptions import SpinnakerTaskError
@@ -40,12 +41,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Example with non-optional arguments')
 
-    parser.add_argument('-d',
-                        '--debug',
-                        action='store_const',
-                        const=logging.DEBUG,
-                        default=logging.INFO,
-                        help='Set DEBUG output')
+    add_debug(parser)
     parser.add_argument('--app', action="store", help="application name", required=True)
     parser.add_argument('--env', action="store", help="environment: dev, stage, prod", required=True)
     parser.add_argument('--health-target', action="store", help="Target for Health Check, e.g. HTTP:80/health", required=True)

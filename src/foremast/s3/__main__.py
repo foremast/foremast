@@ -2,6 +2,7 @@
 import argparse
 import logging
 
+from ..args import add_debug
 from ..consts import LOGGING_FORMAT
 from .create_archaius import init_properties
 
@@ -13,12 +14,7 @@ def main():
     logging.basicConfig(format=LOGGING_FORMAT)
     parser = argparse.ArgumentParser(description=main.__doc__)
 
-    parser.add_argument('-d',
-                        '--debug',
-                        action='store_const',
-                        const=logging.DEBUG,
-                        default=logging.INFO,
-                        help='Set DEBUG output')
+    add_debug(parser)
     parser.add_argument('-e',
                         '--env',
                         choices=('build', 'dev', 'stage', 'prod', 'prods', 'prodp'),

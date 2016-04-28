@@ -2,6 +2,7 @@
 import argparse
 import logging
 
+from ..args import add_debug
 from ..consts import LOGGING_FORMAT
 from .create_pipeline import SpinnakerPipeline
 
@@ -12,12 +13,7 @@ def main():
     log = logging.getLogger(__name__)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d',
-                        '--debug',
-                        action='store_const',
-                        const=logging.DEBUG,
-                        default=logging.INFO,
-                        help='Set DEBUG output')
+    add_debug(parser)
     parser.add_argument("--app",
                         help="The application name to create",
                         required=True)

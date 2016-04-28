@@ -4,6 +4,7 @@ import logging
 
 import gogoutils
 
+from ..args import add_debug
 from ..consts import LOGGING_FORMAT
 from .outputs import write_variables
 from .prepare_configs import process_git_configs, process_runway_configs
@@ -16,12 +17,7 @@ def main():
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)
-    parser.add_argument('-d',
-                        '--debug',
-                        action='store_const',
-                        const=logging.DEBUG,
-                        default=logging.INFO,
-                        help='Set DEBUG output')
+    add_debug(parser)
     parser.add_argument('-o',
                         '--output',
                         required=True,
