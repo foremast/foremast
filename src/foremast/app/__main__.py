@@ -36,7 +36,6 @@ def main():
         project = args.project
         repo = args.repo
 
-    # Dictionary containing application info. This is passed to the class for processing
     appinfo = {
         "app": args.app,
         "email": args.email,
