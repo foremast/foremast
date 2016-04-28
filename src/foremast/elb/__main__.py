@@ -6,8 +6,8 @@ import logging
 from ..args import add_debug
 from ..consts import LOGGING_FORMAT
 from .create_elb import SpinnakerELB
-from .exceptions import SpinnakerTaskError
-from .utils import check_task, get_subnets, get_vpc_id
+from ..exceptions import SpinnakerTaskError
+from ..utils import check_task, get_subnets, get_vpc_id
 
 LOG = logging.getLogger(__name__)
 
