@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 
+from ..consts import LOGGING_FORMAT
 from .create_elb import SpinnakerELB
 from .exceptions import SpinnakerTaskError
 from .utils import check_task, get_subnets, get_vpc_id
@@ -34,8 +35,7 @@ def main():
         --unhealthy-threshold 6 \
         --region us-east-1
     """
-    logging.basicConfig(format='[%(levelname)s]%(module)s:%(funcName)s:'
-                        '%(lineno)d - %(message)s')
+    logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(
         description='Example with non-optional arguments')
@@ -64,7 +64,7 @@ def main():
 
     args = parser.parse_args()
 
-    LOG.setLevel(args.debug)
+    logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     elb = SpinnakerELB()
 

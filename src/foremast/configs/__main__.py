@@ -4,6 +4,7 @@ import logging
 
 import gogoutils
 
+from ..consts import LOGGING_FORMAT
 from .outputs import write_variables
 from .prepare_configs import process_git_configs, process_runway_configs
 
@@ -12,7 +13,7 @@ LOG = logging.getLogger(__name__)
 
 def main():
     """Append Application Configurations to a given file in INI format."""
-    logging.basicConfig()
+    logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)
     parser.add_argument('-d',
@@ -42,7 +43,7 @@ def main():
     args = parser.parse_args()
 
     LOG.setLevel(args.debug)
-    logging.getLogger(__package__).setLevel(args.debug)
+    logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     generated = gogoutils.Generator(
         *gogoutils.Parser(args.git_short).parse_url())
