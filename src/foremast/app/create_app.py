@@ -3,7 +3,6 @@
 Simply looks to see if the application already exists, if not, creates.
 """
 import logging
-import sys
 
 import requests
 
@@ -24,18 +23,16 @@ class SpinnakerApp:
     def get_accounts(self, provider='aws'):
         url = '{gate}/credentials'.format(gate=self.gate_url)
         r = requests.get(url)
-        if r.ok:
-            all_accounts = r.json()
-            filtered_accounts = []
 
-            for account in all_accounts:
-                if account['type'] == provider:
-                    filtered_accounts.append(account)
-            return filtered_accounts
+        assert r.ok, 'Failed to get accounts: {0}'.format(r.text)
 
-        else:
-            self.log.error(r.text)
-            sys.exit(1)
+        all_accounts = r.json()
+        filtered_accounts = []
+
+        for account in all_accounts:
+            if account['type'] == provider:
+                filtered_accounts.append(account)
+        return filtered_accounts
 
     def create_app(self):
         '''Sends a POST to spinnaker to create a new application'''
@@ -47,9 +44,7 @@ class SpinnakerApp:
         url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
         r = requests.post(url, data=jsondata, headers=self.header)
 
-        if not r.ok:
-            self.log.error("Failed to create app: %s", r.text)
-            sys.exit(1)
+        assert r.ok, 'Failed to create "{0}": {1}'.format(self.appname, r.text)
 
         self.log.info("Successfully created %s application", self.appname)
         return
