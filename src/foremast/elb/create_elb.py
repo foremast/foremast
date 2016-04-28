@@ -5,7 +5,8 @@ import logging
 
 import requests
 
-from ..utils import check_task, get_subnets, get_template, get_vpc_id
+from ..utils import (check_task, get_configs, get_subnets, get_template,
+                     get_vpc_id)
 
 
 class SpinnakerELB:
@@ -15,7 +16,8 @@ class SpinnakerELB:
     def __init__(self, args=None):
         self.args = args
 
-        self.gate_url = "http://gate-api.build.example.com:8084"
+        configs = get_configs()
+        self.gate_url = configs['spinnaker']['gate_url']
         self.header = {'Content-Type': 'application/json', 'Accept': '*/*'}
 
     @staticmethod
