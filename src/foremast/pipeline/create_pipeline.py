@@ -31,7 +31,7 @@ class SpinnakerPipeline:
         self.group_name = ''
         if not get_app_details.get_details(self.app_info['app']):
             raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
-                                  self.app_info['app']))
+                self.app_info['app']))
 
         self.settings = self.get_settings()
 
@@ -93,7 +93,7 @@ class SpinnakerPipeline:
         self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
         pipeline_response = requests.post(url,
-                                          data=json.dumps(pipeline_json),
+                                          data=pipeline_json,
                                           headers=self.header)
 
         self.log.debug('Pipeline creation response:\n%s',
@@ -104,7 +104,8 @@ class SpinnakerPipeline:
                           pipeline_response.text)
             raise SpinnakerPipelineCreationFailed(pipeline_response.json())
 
-        logging.info('Successfully created %s pipeline', pipeline_json['name'])
+        self.log.info('Successfully created "%s" pipeline',
+                      json.loads(pipeline_json)['name'])
 
     def create_pipeline(self):
         """Send a POST to spinnaker to create a new security group."""
