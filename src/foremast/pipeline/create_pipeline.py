@@ -1,5 +1,4 @@
 """Create Pipelines for Spinnaker."""
-import configparser
 import json
 import logging
 import os
@@ -7,14 +6,11 @@ from pprint import pformat
 
 import murl
 import requests
-from jinja2 import Environment, FileSystemLoader
-from tryagain import retries
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerAppNotFound, SpinnakerPipelineCreationFailed
-from ..utils import (check_managed_pipeline, check_task,
-                     generate_encoded_user_data, get_app_details, get_configs,
-                     get_subnets, get_template)
+from ..utils import (check_managed_pipeline, generate_encoded_user_data,
+                     get_app_details, get_subnets, get_template)
 
 
 class SpinnakerPipeline:
