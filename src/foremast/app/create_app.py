@@ -2,7 +2,6 @@
 
 Simply looks to see if the application already exists, if not, creates.
 """
-import json
 import logging
 import sys
 
