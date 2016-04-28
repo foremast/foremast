@@ -36,7 +36,7 @@ class SpinnakerPipeline:
         self.app_info = app_info
         self.app_name = ''
         self.group_name = ''
-        if not app_get_details(self.app_info['app']):
+        if not get_app_details.get_details(self.app_info['app']):
             raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
                                   self.app_info['app']))
 

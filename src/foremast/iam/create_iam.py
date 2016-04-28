@@ -4,7 +4,7 @@ import logging
 import boto3
 from boto3.exceptions import botocore
 
-from ..utils import get_app_details as get_details, get_template
+from ..utils import get_app_details, get_template
 
 LOG = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def create_iam_resources(env='dev', app=''):
     session = boto3.session.Session(profile_name=env)
     client = session.client('iam')
 
-    details = get_details(env=env, app=app)
+    details = get_app_details.get_details(env=env, app=app)
 
     resource_action(
         client,
