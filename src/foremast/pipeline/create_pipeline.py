@@ -10,7 +10,7 @@ import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
-from .utils import (check_managed_pipeline, generate_encoded_user_data,
+from ..utils import (check_managed_pipeline, generate_encoded_user_data,
                     get_subnets)
 
 
