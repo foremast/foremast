@@ -10,22 +10,8 @@ import gogoutils
 import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
-
-
-class SpinnakerAppNotFound(Exception):
-    pass
-
-
-class SpinnakerApplicationListError(Exception):
-    pass
-
-
-class SpinnakerDnsCreationFailed(Exception):
-    pass
-
-
-class SpinnakerElbNotFound(Exception):
-    pass
+from ..utils import get_configs
+from ..exceptions import SpinnakerApplicationListError, SpinnakerElbNotFound
 
 
 class SpinnakerDns:
@@ -39,7 +25,7 @@ class SpinnakerDns:
         self.log = logging.getLogger(__name__)
 
         self.here = os.path.dirname(os.path.realpath(__file__))
-        self.config = self.get_configs()
+        self.config = get_configs()
         self.gate_url = self.config['spinnaker']['gate_url']
         self.app_name = self.app_exists(app_name=app_info['app'])
 
@@ -52,20 +38,6 @@ class SpinnakerDns:
         env = boto3.session.Session(
             profile_name=self.app_info['env'])
         self.r53client = env.client('route53')
-
-    def get_configs(self):
-        """Get main configuration.
-
-        Returns:
-            configparser.ConfigParser object with configuration loaded.
-        """
-        file_name = 'spinnaker.conf'
-        config = configparser.ConfigParser()
-        configpath = '{0}/../configurations/{1}'.format(self.here, file_name)
-        config.read(configpath)
-
-        self.log.debug('Configuration sections found: %s', config.sections())
-        return config
 
     def get_template(self, template_name='', template_dict=None):
         """Get Jinja2 Template _template_name_.
