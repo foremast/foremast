@@ -4,7 +4,6 @@ import logging
 
 from ..args import add_debug
 from ..consts import LOGGING_FORMAT
-from ..exceptions import SpinnakerTaskError
 from .create_elb import SpinnakerELB
 
 LOG = logging.getLogger(__name__)
@@ -61,13 +60,7 @@ def main():
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     elb = SpinnakerELB(args)
-    taskid = elb.create_elb()
-
-    try:
-        check_task(taskid, args.app)
-    except SpinnakerTaskError:
-        LOG.error('Error upserting ELB, exiting ...')
-        raise
+    elb.create_elb()
 
 
 if __name__ == '__main__':
