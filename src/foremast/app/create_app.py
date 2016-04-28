@@ -10,6 +10,8 @@ from ..utils import get_configs, get_template
 
 
 class SpinnakerApp:
+    """Spinnaker Application creation."""
+
     def __init__(self, appinfo=None):
         self.log = logging.getLogger(__name__)
 
@@ -21,6 +23,17 @@ class SpinnakerApp:
         self.header = {'content-type': 'application/json'}
 
     def get_accounts(self, provider='aws'):
+        """Get Accounts added to Spinnaker.
+
+        Args:
+            provider (str): What provider to find accounts for.
+
+        Returns:
+            list: Dicts of Spinnaker credentials matching _provider_.
+
+        Raises:
+            AssertionError: Failure getting accounts from Spinnaker.
+        """
         url = '{gate}/credentials'.format(gate=self.gate_url)
         r = requests.get(url)
 
@@ -28,14 +41,18 @@ class SpinnakerApp:
 
         all_accounts = r.json()
         filtered_accounts = []
-
         for account in all_accounts:
             if account['type'] == provider:
                 filtered_accounts.append(account)
+
         return filtered_accounts
 
     def create_app(self):
-        '''Sends a POST to spinnaker to create a new application'''
+        """Send a POST to spinnaker to create a new application.
+
+        Raises:
+            AssertionError: Application creation failed.
+        """
         self.appinfo['accounts'] = self.get_accounts()
 
         jsondata = get_template(template_file='app_data_template.json',
