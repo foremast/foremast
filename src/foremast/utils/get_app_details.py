@@ -1,7 +1,7 @@
 import murl
 import requests
 import collections
-import googutils
+import gogoutils
 import logging
 
 from ..consts import API_URL
