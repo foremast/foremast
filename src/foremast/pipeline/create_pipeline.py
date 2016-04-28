@@ -11,7 +11,7 @@ from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
 from ..consts import API_URL
-from ..exceptions import SpinnakerAppNotFound
+from ..exceptions import SpinnakerAppNotFound, SpinnakerPipelineCreationFailed
 from ..utils import (check_managed_pipeline, check_task,
                      generate_encoded_user_data, get_app_details, get_configs,
                      get_subnets, get_template)
@@ -201,9 +201,9 @@ class SpinnakerPipeline:
         self.log.debug('Pipeline list: %s', pipeline_list)
 
         pipeline, *more_stages = pipeline_list
-        stages = pipeline['stages']
+        stages = json.loads(pipeline)['stages']
         for stage in more_stages:
-            stages += stage
+            stages += json.loads(stage)
         self.log.debug('Combined Stages:\n%s', pformat(stages))
 
         main_index = 1
