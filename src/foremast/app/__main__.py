@@ -33,7 +33,8 @@ def main():
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     if args.git and args.git != 'None':
-        generated = gogoutils.Generator(*gogoutils.Parser(args.git).parse_url())
+        parsed = gogoutils.Parser(args.git).parse_url()
+        generated = gogoutils.Generator(*parsed)
         project = generated.project
         repo = generated.repo
     else:
