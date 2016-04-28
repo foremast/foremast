@@ -27,9 +27,8 @@ def main():
     args = parser.parse_args()
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
-    vars(args).pop('debug')
 
-    assert create_iam_resources(env=args.env, app=args.app)
+    assert create_iam_resources(**args.__dict__)
 
 
 if __name__ == '__main__':
