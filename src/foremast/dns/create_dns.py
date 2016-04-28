@@ -10,7 +10,7 @@ import gogoutils
 import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
-from ..utils import get_configs
+from ..utils import get_configs, get_template
 from ..exceptions import SpinnakerApplicationListError, SpinnakerElbNotFound
 
 
@@ -24,7 +24,6 @@ class SpinnakerDns:
     def __init__(self, app_info):
         self.log = logging.getLogger(__name__)
 
-        self.here = os.path.dirname(os.path.realpath(__file__))
         self.config = get_configs()
         self.gate_url = self.config['spinnaker']['gate_url']
         self.app_name = self.app_exists(app_name=app_info['app'])
@@ -38,25 +37,6 @@ class SpinnakerDns:
         env = boto3.session.Session(
             profile_name=self.app_info['env'])
         self.r53client = env.client('route53')
-
-    def get_template(self, template_name='', template_dict=None):
-        """Get Jinja2 Template _template_name_.
-
-        Args:
-            template_name: Str of template name to retrieve.
-            template_dict: Dict to use for template rendering.
-
-        Returns:
-            Dict of rendered JSON to send to Spinnaker.
-        """
-        templatedir = '{0}/../templates/'.format(self.here)
-        jinja_env = Environment(loader=FileSystemLoader(templatedir))
-        template = jinja_env.get_template(template_name)
-
-        rendered_json = json.loads(template.render(**template_dict))
-        self.log.debug('Template directory: %s', templatedir)
-        self.log.debug('Rendered template: %s', rendered_json)
-        return rendered_json
 
     def get_apps(self):
         """Gets all applications from spinnaker."""
@@ -171,19 +151,17 @@ class SpinnakerDns:
         self.log.info('Updating Application URL: %s', app_details['dns_elb'])
 
         # This is what will be added to DNS
-        dns_json = self.get_template(
-            template_name='dns_upsert_template.json',
-            template_dict=app_details,
+        dns_json = get_template(
+            template_file='dns_upsert_template.json',
+            data=app_details,
         )
-
-        self.log.debug('Dns json to send: %s', pformat(dns_json))
 
         for zone_id in zone_ids:
 
             self.log.debug('zone_id: %s', zone_id)
             response = self.r53client.change_resource_record_sets(
                 HostedZoneId=zone_id,
-                ChangeBatch=dns_json,
+                ChangeBatch=json.loads(dns_json),
             )
             self.log.debug('Dns upsert response: %s', pformat(response))
         return app_details['dns_elb']
