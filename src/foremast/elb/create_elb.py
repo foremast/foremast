@@ -68,27 +68,27 @@ class SpinnakerELB:
 
         kwargs = {
             'app_name': self.args.app,
+            'availability_zones': json.dumps(region_subnets),
             'env': env,
-            'isInternal': elb_facing,
-            'vpc_id': get_vpc_id(env, region),
-            'health_protocol': health.proto,
-            'health_path': health.path,
-            'health_port': health.port,
-            'health_timeout': self.args.health_timeout,
-            'health_interval': self.args.health_interval,
-            'unhealthy_threshold': self.args.unhealthy_threshold,
-            'healthy_threshold': self.args.healthy_threshold,
-            # FIXME: Use json.dumps(args.security_groups) to format for template
-            'security_groups': self.args.security_groups,
-            'int_listener_protocol': self.args.int_listener_protocol,
-            'int_listener_port': self.args.int_listener_port,
             'ext_listener_port': self.args.ext_listener_port,
             'ext_listener_protocol': self.args.ext_listener_protocol,
-            'subnet_type': self.args.subnet_type,
-            'region': region,
             'hc_string': health.target,
-            'availability_zones': json.dumps(region_subnets),
+            'health_interval': self.args.health_interval,
+            'health_path': health.path,
+            'health_port': health.port,
+            'health_protocol': health.proto,
+            'health_timeout': self.args.health_timeout,
+            'healthy_threshold': self.args.healthy_threshold,
+            'int_listener_port': self.args.int_listener_port,
+            'int_listener_protocol': self.args.int_listener_protocol,
+            'isInternal': elb_facing,
             'region_zones': json.dumps(region_subnets[region]),
+            'region': region,
+            # FIXME: Use json.dumps(args.security_groups) to format for template
+            'security_groups': self.args.security_groups,
+            'subnet_type': self.args.subnet_type,
+            'unhealthy_threshold': self.args.unhealthy_threshold,
+            'vpc_id': get_vpc_id(env, region),
         }
 
         rendered_template = get_template(
