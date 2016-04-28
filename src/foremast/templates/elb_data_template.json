@@ -15,9 +15,7 @@
          "healthyThreshold":{{ healthy_threshold }},
          "unhealthyThreshold":{{ unhealthy_threshold }},
          "regionZones": {{ region_zones }},
-         "securityGroups":[
-            "{{ security_groups }}"
-         ],
+         "securityGroups": {{ security_groups }},
          "listeners":[
             {
                "internalProtocol":"{{ int_listener_protocol }}",
