@@ -3,6 +3,7 @@
 Simply looks to see if the application already exists, if not, creates.
 """
 import logging
+from pprint import pformat
 
 import requests
 
@@ -54,6 +55,7 @@ class SpinnakerApp:
             AssertionError: Application creation failed.
         """
         self.appinfo['accounts'] = self.get_accounts()
+        self.log.debug('App info:\n%s', pformat(self.appinfo))
 
         jsondata = get_template(template_file='app_data_template.json',
                                 appinfo=self.appinfo)
