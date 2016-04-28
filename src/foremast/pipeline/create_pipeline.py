@@ -255,7 +255,6 @@ class SpinnakerPipeline:
         self.log.debug('App info:\n%s', self.app_info)
 
         if wrapper:
-            # use pipeline template
             template_name = 'pipeline-templates/pipeline_wrapper.json'
         elif env.startswith('prod'):
             template_name = 'pipeline-templates/pipeline_{}.json'.format(env)
