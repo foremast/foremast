@@ -5,7 +5,7 @@ from pprint import pformat
 
 import gogoutils
 
-from .utils import DeepChainMap, get_template
+from ..utils import DeepChainMap, get_template
 
 LOG = logging.getLogger(__name__)
 
