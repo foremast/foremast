@@ -5,30 +5,30 @@
       ],
       "refId": "700",
       "type": "jenkins",
-      "name": "Log Deployment [{{ app.environment }}]",
+      "name": "Log Deployment [{{ data.app.environment }}]",
       "failPipeline": false,
       "master": "JenkinsCI",
       "job": "pipeline-processor",
       "parameters": {
         "EXECUTION_ID": "${execution.id}",
         "FUNCTION": "log_approval",
-        "ACCOUNT": "{{ app.environment }}"
+        "ACCOUNT": "{{ data.app.environment }}"
         }
     },
     {
       "requisiteStageRefIds": ["5"],
       "refId": "6",
       "type": "deploy",
-      "name": "Deploy {{ app.environment }}",
+      "name": "Deploy {{ data.app.environment }}",
       "clusters": [
         {
-          "base64UserData": "{{ app.encoded_user_data }}", 
-          "application": "{{ app.appname }}",
+          "base64UserData": "{{ data.app.encoded_user_data }}",
+          "application": "{{ data.app.appname }}",
           "strategy": "highlander",
           "capacity": {
-            "min": {{ asg.min_inst }},
-            "max": {{ asg.max_inst }},
-            "desired": {{ asg.min_inst }}
+            "min": {{ data.asg.min_inst }},
+            "max": {{ data.asg.max_inst }},
+            "desired": {{ data.asg.min_inst }}
           },
           "targetHealthyDeployPercentage": 100,
           "cooldown": 10,
@@ -36,31 +36,31 @@
           "healthCheckGracePeriod": "60",
           "instanceMonitoring": false,
           "ebsOptimized": false,
-          "iamRole": "{{ app.instance_profile }}",
+          "iamRole": "{{ data.app.instance_profile }}",
           "terminationPolicies": [
             "Default"
           ],
-          "availabilityZones": {{ app.az_dict }},
-          "keyPair": "{{ app.environment }}_{{ app.region }}_default",
+          "availabilityZones": {{ data.app.az_dict }},
+          "keyPair": "{{ data.app.environment }}_{{ data.app.region }}_default",
           "suspendedProcesses": [],
           "securityGroups": [
             "sg_apps",
             "sg_offices",
-            "{{ app.appname }}"
+            "{{ data.app.appname }}"
           ],
           "tags": {
             "app_group": "${ trigger.properties.GROUP_NAME }",
-            "Name": "{{ app.appname }}"
+            "Name": "{{ data.app.appname }}"
           },
           "subnetType": "internal",
           "virtualizationType": null,
-          "loadBalancers": [ "{{ app.appname }}" ],
-          "instanceType": "{{ app.instance_type }}",
+          "loadBalancers": [ "{{ data.app.appname }}" ],
+          "instanceType": "{{ data.app.instance_type }}",
           "useSourceCapacity": false,
           "associatePublicIpAddress": null,
           "provider": "aws",
           "cloudProvider": "aws",
-          "account": "{{ app.environment }}",
+          "account": "{{ data.app.environment }}",
           "interestingHealthProviderNames": [
             "Amazon"
           ]
@@ -70,15 +70,15 @@
       "restrictExecutionDuringTimeWindow": false
     },
     {
-      "comments": "Create Git Tag to reference commits that have deployed to {{ app.environment }}.",
+      "comments": "Create Git Tag to reference commits that have deployed to {{ data.app.environment }}.",
       "failPipeline": false,
-      "job": "git-tagger-{{ app.environment }}",
+      "job": "git-tagger-{{ data.app.environment }}",
       "master": "JenkinsCI",
-      "name": "Git Tag {{ app.environment }}",
+      "name": "Git Tag {{ data.app.environment }}",
       "parameters": {
         "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
         "BUILD_TRIGGER_GIT_COMMIT": "${trigger.properties.BUILD_TRIGGER_GIT_COMMIT}",
-        "DEPLOY_ENV": "{{ app.environment }}",
+        "DEPLOY_ENV": "{{ data.app.environment }}",
         "GIT_PROJECT": "${trigger.properties.GIT_PROJECT}"
       },
       "refId": "600",
@@ -91,10 +91,10 @@
       "requisiteStageRefIds":["6"],
       "refId": "7",
       "type": "jenkins",
-      "name": "QE {{ app.environment }}",
+      "name": "QE {{ data.app.environment }}",
       "failPipeline": true,
       "master": "JenkinsCI",
-      "job": "promote-qe-{{ app.environment }}",
+      "job": "promote-qe-{{ data.app.environment }}",
       "parameters": {
         "test_job": "profileservice_QE"
       }
@@ -103,7 +103,7 @@
       "requisiteStageRefIds":["7"],
       "refId": "8",
       "type": "manualJudgment",
-      "name": "Checkpoint {{ app.next_env }}",
+      "name": "Checkpoint {{ data.app.next_env }}",
       "notifications": [],
       "judgmentInputs": [
         {
@@ -117,7 +117,7 @@
         }
       ],
       "failPipeline": true,
-      "instructions": "By approving this application promotion to <strong>{{ app.next_env }}</strong>, I certify that:\n<ul>\n<li>I am authorized by Gogo to perform this change</li>\n<li> To the best of my knowledge and ability, this version of the software is fit for purpose</li>\n<li>I did not develop any aspects of the code or configuration that will be promoted with this approval</li>\n</ul>",
+      "instructions": "By approving this application promotion to <strong>{{ data.app.next_env }}</strong>, I certify that:\n<ul>\n<li>I am authorized by Gogo to perform this change</li>\n<li> To the best of my knowledge and ability, this version of the software is fit for purpose</li>\n<li>I did not develop any aspects of the code or configuration that will be promoted with this approval</li>\n</ul>",
       "comments": "application: ${ trigger.properties.APP_NAME }"
     }
 ]

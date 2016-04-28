@@ -259,16 +259,13 @@ class SpinnakerPipeline:
 
         if wrapper:
             # use pipeline template
-            template_name = 'pipeline_wrapper.json'
-        elif (env == 'prods'):
-            template_name = 'pipeline_prods.json'
-        elif (env == 'prodp'):
-            template_name = 'pipeline_prodp.json'
+            template_name = 'pipeline-templates/pipeline_wrapper.json'
+        elif env.startswith('prod'):
+            template_name = 'pipeline-templates/pipeline_{}.json'.format(env)
         else:
-            template_name = 'pipeline_stages.json'
+            template_name = 'pipeline-templates/pipeline_stages.json'
 
         raw_subnets = get_subnets()
-        print(raw_subnets)
         self.log.debug('%s info:\n%s', env, pformat(self.app_info[env]))
 
         region_subnets = {region: raw_subnets[env][region]}
@@ -293,8 +290,7 @@ class SpinnakerPipeline:
                 group_name=self.group_name),
         })
 
-        pipeline_json = get_template(template_name=template_name,
-                                          template_dict=data, )
+        pipeline_json = get_template(template_file=template_name, data=data)
         return pipeline_json
 
     def get_all_pipelines(self, app=''):
