@@ -1,5 +1,5 @@
 import base64
-from .utils import get_template
+from ..utils import get_template
 
 
 def generate_encoded_user_data(env='dev',
