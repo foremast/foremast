@@ -62,7 +62,7 @@ def main():
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
-    elb = SpinnakerELB()
+    elb = SpinnakerELB(args)
 
     health_proto, health_port_path = args.health_target.split(':')
     health_port, *health_path = health_port_path.split('/')

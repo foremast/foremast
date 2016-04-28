@@ -12,7 +12,9 @@ LOG = logging.getLogger(__name__)
 class SpinnakerELB:
     """Create ELBs for Spinnaker."""
 
-    def __init__(self):
+    def __init__(self, args=None):
+        self.args = args
+
         self.here = os.path.dirname(os.path.realpath(__file__))
         self.templatedir = '{0}/../templates/'.format(self.here)
         jinjaenv = Environment(loader=FileSystemLoader(self.templatedir))
