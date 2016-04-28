@@ -10,6 +10,7 @@ import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
+from ..consts import API_URL
 from ..utils import (check_managed_pipeline, generate_encoded_user_data,
                     get_subnets, check_task, get_template, get_configs,
                     get_app_details)
@@ -29,9 +30,6 @@ class SpinnakerPipeline:
 
         self.header = {'content-type': 'application/json'}
         self.here = os.path.dirname(os.path.realpath(__file__))
-
-        self.config = get_configs()
-        self.gate_url = self.config['spinnaker']['gate_url']
 
         self.app_info = app_info
         self.app_name = ''
@@ -58,7 +56,7 @@ class SpinnakerPipeline:
         Returns:
             True: Upon successful completion.
         """
-        url = murl.Url(self.gate_url)
+        url = murl.Url(API_URL)
         pipelines = self.get_all_pipelines(app=self.app_info['app']).json()
 
         envs = self.settings['pipeline']['env']
@@ -96,7 +94,7 @@ class SpinnakerPipeline:
 
     def post_pipeline(self, pipeline_json):
         """Send Pipeline JSON to Spinnaker."""
-        url = "{0}/pipelines".format(self.gate_url)
+        url = "{0}/pipelines".format(API_URL)
         self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
         pipeline_response = requests.post(url,
@@ -302,7 +300,7 @@ class SpinnakerPipeline:
         Returns:
             requests.models.Response: Response from Gate containing Pipelines.
         """
-        url = murl.Url(self.gate_url)
+        url = murl.Url(API_URL)
         url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
         response = requests.get(url.url)
         return response
