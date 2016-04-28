@@ -5,6 +5,7 @@ import logging
 
 import requests
 
+from ..consts import HEADERS
 from ..utils import (check_task, get_configs, get_subnets, get_template,
                      get_vpc_id)
 
@@ -18,7 +19,6 @@ class SpinnakerELB:
 
         configs = get_configs()
         self.gate_url = configs['spinnaker']['gate_url']
-        self.header = {'Content-Type': 'application/json', 'Accept': '*/*'}
 
     @staticmethod
     def splay_health(health_target):
@@ -111,7 +111,7 @@ class SpinnakerELB:
         json_data = self.make_elb_json()
 
         url = self.gate_url + '/applications/%s/tasks' % app
-        response = requests.post(url, data=json_data, headers=self.header)
+        response = requests.post(url, data=json_data, headers=HEADERS)
 
         assert response.ok, 'Error creating {0} ELB: {1}'.format(app,
                                                                  response.text)
