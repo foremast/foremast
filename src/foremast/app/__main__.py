@@ -30,7 +30,7 @@ def main():
     args = parser.parse_args()
 
     logging.basicConfig(format=LOGGING_FORMAT)
-    logging.getLogger(__package__).setLevel(args.debug)
+    logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     if args.git and args.git != 'None':
         generated = gogoutils.Generator(*gogoutils.Parser(args.git).parse_url())
