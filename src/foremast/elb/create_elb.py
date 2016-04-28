@@ -4,7 +4,8 @@ import logging
 
 import requests
 
-from ..utils import get_subnets, get_template, get_vpc_id
+from ..exceptions import SpinnakerTaskError
+from ..utils import check_task, get_subnets, get_template, get_vpc_id
 
 LOG = logging.getLogger(__name__)
 
@@ -99,11 +100,14 @@ class SpinnakerELB:
 
         url = self.gate_url + '/applications/%s/tasks' % app
         response = requests.post(url, data=json_data, headers=self.header)
-        if response.ok:
-            LOG.info('%s ELB Created', app)
-            LOG.info(response.text)
-            return response.json()
-        else:
-            LOG.error('Error creating %s ELB:', app)
-            LOG.error(response.text)
-            return response.json()
+
+        assert response.ok, 'Error creating {0} ELB: {1}'.format(app,
+                                                                 response.text)
+
+        taskid = response.json()
+
+        try:
+            check_task(taskid, app)
+        except SpinnakerTaskError:
+            self.log.fatal('Error upserting ELB.')
+            raise
