@@ -4,7 +4,7 @@ import logging
 import boto3
 from boto3.exceptions import botocore
 
-from .utils import get_details, get_template
+from ..utils import get_app_details as get_details, get_template
 
 LOG = logging.getLogger(__name__)
 
