@@ -14,15 +14,19 @@ def main():
     # Setup parser
     parser = argparse.ArgumentParser()
     add_debug(parser)
-    parser.add_argument("--app", help="The application name to create",
+    parser.add_argument('--app',
+                        help='The application name to create',
                         required=True)
-    parser.add_argument("--email", help="Email address to associate with application",
-                        default="PS-DevOpsTooling@example.com")
-    parser.add_argument("--project", help="The project to associate with application",
-                        default="None")
-    parser.add_argument("--repo", help="The repo to associate with application",
-                        default="None")
-    parser.add_argument("--git", help="Git URI", default=None)
+    parser.add_argument('--email',
+                        help='Email address to associate with application',
+                        default='PS-DevOpsTooling@example.com')
+    parser.add_argument('--project',
+                        help='Git project to associate with application',
+                        default='None')
+    parser.add_argument('--repo',
+                        help='Git repo to associate with application',
+                        default='None')
+    parser.add_argument('--git', help='Git URI', default=None)
     args = parser.parse_args()
 
     logging.basicConfig(format=LOGGING_FORMAT)
@@ -37,15 +41,15 @@ def main():
         repo = args.repo
 
     appinfo = {
-        "app": args.app,
-        "email": args.email,
-        "project": project,
-        "repo": repo
+        'app': args.app,
+        'email': args.email,
+        'project': project,
+        'repo': repo
     }
 
     spinnakerapps = SpinnakerApp(appinfo=appinfo)
     spinnakerapps.create_app()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
