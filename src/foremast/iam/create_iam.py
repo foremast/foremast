@@ -9,7 +9,7 @@ from ..utils import get_app_details, get_template
 LOG = logging.getLogger(__name__)
 
 
-def create_iam_resources(env='dev', app=''):
+def create_iam_resources(env='dev', app='', **_):
     """Create the IAM Resources for the application.
 
     Args:
