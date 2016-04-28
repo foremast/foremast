@@ -4,6 +4,7 @@ import logging
 
 import gogoutils
 
+from ..args import add_debug
 from ..consts import LOGGING_FORMAT
 from .create_app import SpinnakerApp
 
@@ -12,12 +13,7 @@ def main():
     """Create Spinnaker Application."""
     # Setup parser
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d',
-                        '--debug',
-                        action='store_const',
-                        const=logging.DEBUG,
-                        default=logging.INFO,
-                        help='Set DEBUG output')
+    add_debug(parser)
     parser.add_argument("--app", help="The application name to create",
                         required=True)
     parser.add_argument("--email", help="Email address to associate with application",
