@@ -226,7 +226,10 @@ class SpinnakerPipeline:
         self.log.debug('Deleting last Manual Judgement, Stage not needed.')
         del stages[-1]
 
-        return pipeline
+        pipeline = json.loads(pipeline)
+        pipeline['stages'] = stages
+
+        return json.dumps(pipeline)
 
     def construct_pipeline_block(self,
                                  env='',
