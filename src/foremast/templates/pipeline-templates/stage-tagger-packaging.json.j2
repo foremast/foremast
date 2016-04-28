@@ -1,0 +1,19 @@
+
+    {
+      "comments": "Create Git Tag to reference commits that have been built into an AMI.",
+      "failPipeline": false,
+      "job": "git-tagger-packaging",
+      "master": "JenkinsCI",
+      "name": "Git Tag packaging",
+      "parameters": {
+        "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
+        "BUILD_TRIGGER_GIT_COMMIT": "${trigger.properties.BUILD_TRIGGER_GIT_COMMIT}",
+        "DEPLOY_ENV": "packaging",
+        "GIT_PROJECT": "${trigger.properties.GIT_PROJECT}"
+      },
+      "refId": "100",
+      "requisiteStageRefIds": [
+        "1"
+      ],
+      "type": "jenkins"
+    }

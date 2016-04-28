@@ -2,13 +2,7 @@
   "name": "{{ data.app.appname }} [{{ data.app.region }}]",
   "application": "{{ data.app.appname }}",
   "triggers": [
-    {
-      "enabled": true,
-      "type": "jenkins",
-      "master": "JenkinsCI",
-      "job": "{{ data.app.triggerjob }}",
-      "propertyFile": "jenkins_vars"
-    }
+    {% include "pipeline-templates/trigger-jenkins.json.j2" %}
   ],
   "limitConcurrent": false,
   "parallel": true,
@@ -23,58 +17,7 @@
     }
   ],
   "stages": [
-    {
-      "requisiteStageRefIds": [],
-      "refId": "1",
-      "type": "bake",
-      "name": "Bake [{{ data.app.region }}]",
-      "cloudProviderType": "aws",
-      "extendedAttributes": {
-        "app_group": "${ trigger.properties.GROUP_NAME }",
-        "app_name": "${ trigger.properties.APP_NAME }"
-      },
-      "regions": ["{{ data.app.region }}"],
-      "user": "[anonymous]",
-      "vmType": "hvm",
-      "storeType": "ebs",
-      "baseOs": "tomcat",
-      "baseLabel": "release",
-      "showAdvancedOptions": true,
-      "overrideTimeout": true,
-      "stageTimeoutMs": 600000,
-      "sendNotifications": false,
-      "notifications": [],
-      "restrictExecutionDuringTimeWindow": false,
-      "restrictedExecutionWindow": {
-        "whitelist": []
-      },
-      "enhancedNetworking": true,
-      "comments": "Baking",
-      "package": "${ trigger.properties.ARTIFACT_RPM }",
-      {% if data.app.region == 'us-east-1' %}
-      "baseAmi": "ami-xxxx"
-      {% elif data.app.region == 'us-west-2' %}
-      "baseAmi": "ami-xxxx",
-      "templateFileName": "aws-ebs-west-2.json"
-      {% endif %}
-    },
-    {
-      "comments": "Create Git Tag to reference commits that have been built into an AMI.",
-      "failPipeline": false,
-      "job": "git-tagger-packaging",
-      "master": "JenkinsCI",
-      "name": "Git Tag packaging",
-      "parameters": {
-        "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
-        "BUILD_TRIGGER_GIT_COMMIT": "${trigger.properties.BUILD_TRIGGER_GIT_COMMIT}",
-        "DEPLOY_ENV": "packaging",
-        "GIT_PROJECT": "${trigger.properties.GIT_PROJECT}"
-      },
-      "refId": "100",
-      "requisiteStageRefIds": [
-        "1"
-      ],
-      "type": "jenkins"
-    }
+    {% include "pipeline-templates/stage-bake.json.j2" %},
+    {% include "pipeline-templates/stage-tagger-packaging.json.j2" %}
   ]
 }

@@ -1,0 +1,13 @@
+
+    {
+      "requisiteStageRefIds":["6"],
+      "refId": "7",
+      "type": "jenkins",
+      "name": "QE {{ data.app.environment }}",
+      "failPipeline": true,
+      "master": "JenkinsCI",
+      "job": "promote-qe-{{ data.app.environment }}",
+      "parameters": {
+        "test_job": "profileservice_QE"
+      }
+    }
