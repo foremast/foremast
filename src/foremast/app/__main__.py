@@ -44,8 +44,8 @@ def main():
         "repo": repo
     }
 
-    spinnakerapps = SpinnakerApp()
-    spinnakerapps.create_app(appinfo=appinfo)
+    spinnakerapps = SpinnakerApp(appinfo=appinfo)
+    spinnakerapps.create_app()
 
 
 if __name__ == "__main__":
