@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 
 import gogoutils
 
-from .consts import API_URL
+from ..consts import API_URL
 
 LOG = logging.getLogger(__name__)
 
