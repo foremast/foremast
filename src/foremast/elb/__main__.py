@@ -1,13 +1,11 @@
 """ELB creation."""
 import argparse
-import json
 import logging
 
 from ..args import add_debug
 from ..consts import LOGGING_FORMAT
-from .create_elb import SpinnakerELB
 from ..exceptions import SpinnakerTaskError
-from ..utils import check_task, get_subnets, get_vpc_id
+from .create_elb import SpinnakerELB
 
 LOG = logging.getLogger(__name__)
 
@@ -63,49 +61,7 @@ def main():
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     elb = SpinnakerELB(args)
-
-    health_proto, health_port_path = args.health_target.split(':')
-    health_port, *health_path = health_port_path.split('/')
-
-    if not health_path:
-        health_path = '/healthcheck'
-    else:
-        health_path = '/{0}'.format('/'.join(health_path))
-
-    LOG.info('Health Check\n\tprotocol: %s\n\tport: %s\n\tpath: %s',
-             health_proto, health_port, health_path)
-
-    raw_subnets = get_subnets(target='elb')
-    region_subnets = {args.region: raw_subnets[args.env][args.region]}
-
-    template = elb.elb_template.render(
-        app_name=args.app,
-        env=args.env,
-        isInternal='true' if args.subnet_type == 'internal' else 'false',
-        vpc_id=get_vpc_id(args.env, args.region),
-        health_protocol=health_proto,
-        health_port=health_port,
-        health_path=health_path,
-        health_timeout=args.health_timeout,
-        health_interval=args.health_interval,
-        unhealthy_threshold=args.unhealthy_threshold,
-        healthy_threshold=args.healthy_threshold,
-        # FIXME: Use json.dumps(args.security_groups) to format for template
-        security_groups=args.security_groups,
-        int_listener_protocol=args.int_listener_protocol,
-        ext_listener_protocol=args.ext_listener_protocol,
-        int_listener_port=args.int_listener_port,
-        ext_listener_port=args.ext_listener_port,
-        subnet_type=args.subnet_type,
-        region=args.region,
-        hc_string=args.health_target,
-        availability_zones=json.dumps(region_subnets),
-        region_zones=json.dumps(region_subnets[args.region]), )
-
-    LOG.info('Rendered template:\n%s', template)
-
-    rendered_json = json.loads(template)
-    taskid = elb.create_elb(rendered_json, args.app)
+    taskid = elb.create_elb()
 
     try:
         check_task(taskid, args.app)
