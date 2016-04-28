@@ -70,8 +70,11 @@ class SpinnakerApp:
 
         url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
         self.appinfo['accounts'] = self.get_accounts()
-        jsondata = self.setup_appdata()
-        r = requests.post(url, data=json.dumps(jsondata), headers=self.header)
+
+        jsondata = get_template(template_file='app_data_template.json',
+                                appinfo=self.appinfo)
+
+        r = requests.post(url, data=jsondata, headers=self.header)
 
         if not r.ok:
             self.log.error("Failed to create app: %s", r.text)
