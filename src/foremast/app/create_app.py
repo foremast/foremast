@@ -7,8 +7,8 @@ from pprint import pformat
 
 import requests
 
-from ..consts import HEADERS
-from ..utils import get_configs, get_template
+from ..consts import API_URL, HEADERS
+from ..utils import get_template
 
 
 class SpinnakerApp:
@@ -19,9 +19,6 @@ class SpinnakerApp:
 
         self.appinfo = appinfo
         self.appname = self.appinfo['app']
-
-        config = get_configs('spinnaker.conf')
-        self.gate_url = config['spinnaker']['gate_url']
 
     def get_accounts(self, provider='aws'):
         """Get Accounts added to Spinnaker.
@@ -35,7 +32,7 @@ class SpinnakerApp:
         Raises:
             AssertionError: Failure getting accounts from Spinnaker.
         """
-        url = '{gate}/credentials'.format(gate=self.gate_url)
+        url = '{gate}/credentials'.format(gate=API_URL)
         r = requests.get(url)
 
         assert r.ok, 'Failed to get accounts: {0}'.format(r.text)
@@ -60,7 +57,7 @@ class SpinnakerApp:
         jsondata = get_template(template_file='app_data_template.json',
                                 appinfo=self.appinfo)
 
-        url = "{}/applications/{}/tasks".format(self.gate_url, self.appname)
+        url = "{}/applications/{}/tasks".format(API_URL, self.appname)
         r = requests.post(url, data=jsondata, headers=HEADERS)
 
         assert r.ok, 'Failed to create "{0}": {1}'.format(self.appname, r.text)
