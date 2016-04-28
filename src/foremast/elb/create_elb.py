@@ -1,4 +1,5 @@
 """Create ELBs for Spinnaker Pipelines."""
+import collections
 import json
 import logging
 
@@ -14,29 +15,32 @@ class SpinnakerELB:
     def __init__(self, args=None):
         self.args = args
 
-        self.health_path = ''
-        self.health_port = ''
-        self.health_proto = ''
-        self.set_health()
-
         self.gate_url = "http://gate-api.build.example.com:8084"
         self.header = {'Content-Type': 'application/json', 'Accept': '*/*'}
 
-    def set_health(self):
-        """Set Health Check path, port, and protocol."""
+    def splay_health(self):
+        """Set Health Check path, port, and protocol.
+
+        Returns:
+            HealthCheck: A **collections.namedtuple** class with *path*, *port*,
+            and *proto* attributes.
+        """
+        HealthCheck = collections.namedtuple('HealthCheck', ['path', 'port',
+                                                             'proto'])
+
         target = self.args.health_target
-        self.health_proto, health_port_path = target.split(':')
-        self.health_port, *health_path = health_port_path.split('/')
+        proto, health_port_path = target.split(':')
+        port, *health_path = health_port_path.split('/')
 
         if not health_path:
-            self.health_path = '/healthcheck'
+            path = '/healthcheck'
         else:
-            self.health_path = '/{0}'.format('/'.join(health_path))
+            path = '/{0}'.format('/'.join(health_path))
 
-        self.log.info('Health Check\n\tprotocol: %s\n\tport: %s\n\tpath: %s',
-                      self.health_proto, self.health_port, self.health_path)
+        health = HealthCheck(path, port, proto)
+        self.log.info(health)
 
-        return True
+        return health
 
     def make_elb_json(self):
         """Render the JSON template with arguments.
@@ -53,14 +57,16 @@ class SpinnakerELB:
 
         elb_facing = 'true' if self.args.subnet_type == 'internal' else 'false'
 
+        health = self.splay_health()
+
         kwargs = {
             'app_name': self.args.app,
             'env': env,
             'isInternal': elb_facing,
             'vpc_id': get_vpc_id(env, region),
-            'health_protocol': self.health_proto,
-            'health_path': self.health_path,
-            'health_port': self.health_port,
+            'health_protocol': health.proto,
+            'health_path': health.path,
+            'health_port': health.port,
             'health_timeout': self.args.health_timeout,
             'health_interval': self.args.health_interval,
             'unhealthy_threshold': self.args.unhealthy_threshold,
