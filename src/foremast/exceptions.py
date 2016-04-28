@@ -1,6 +1,26 @@
 """Spinnaker related custom exceptions."""
 
 
+class SpinnakerAppNotFound(Exception):
+    """Spinnaker app not found error"""
+    pass
+
+
+class SpinnakerApplicationListError(Exception):
+    """Spinnaker application list error"""
+    pass
+
+
+class SpinnakerDnsCreationFailed(Exception):
+    """Spinnaker DNS creation error"""
+    pass
+
+
+class SpinnakerElbNotFound(Exception):
+    """Spinnaker Elb not found"""
+    pass
+
+
 class SpinnakerTimeout(Exception):
     """Spinnaker Timeout error."""
     pass
