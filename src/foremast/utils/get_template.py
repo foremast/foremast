@@ -19,10 +19,11 @@ def get_template(template_file='', **kwargs):
 
     here = os.path.dirname(os.path.realpath(__file__))
     templatedir = '{0}/../templates/'.format(here)
+    LOG.debug('Template directory: %s', templatedir)
+
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(templatedir))
     template = jinjaenv.get_template(template_file)
     rendered_json = template.render(**kwargs)
 
-    LOG.debug('Template directory: %s', templatedir)
     LOG.debug('Rendered JSON:\n%s', rendered_json)
     return rendered_json
