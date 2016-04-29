@@ -34,8 +34,7 @@ class SpinnakerDns:
 
         self.header = {'content-type': 'application/json'}
 
-        env = boto3.session.Session(
-            profile_name=self.app_info['env'])
+        env = boto3.session.Session(profile_name=self.app_info['env'])
         self.r53client = env.client('route53')
 
     def get_apps(self):
@@ -59,16 +58,15 @@ class SpinnakerDns:
             details.update(r.json())
             group = details['attributes'].get('repoProjectKey')
             project = details['attributes'].get('repoSlug')
-            generator = gogoutils.Generator(
-                    project=group,
-                    repo=project,
-                    env=self.app_info['env']
-            )
+            generator = gogoutils.Generator(project=group,
+                                            repo=project,
+                                            env=self.app_info['env'])
 
             details.update({'dns_elb': generator.dns()['elb']})
             details.update({'dns_elb_aws': self.get_app_aws_elb()})
         else:
-            raise SpinnakerAppNotFound('Application %s not found', self.app_name)
+            raise SpinnakerAppNotFound('Application %s not found',
+                                       self.app_name)
 
         self.log.debug('Application details: %s', details)
 
@@ -77,7 +75,8 @@ class SpinnakerDns:
     @retries(max_attempts=10, wait=10.0, exceptions=SpinnakerElbNotFound)
     def get_app_aws_elb(self):
         """Get an application's AWS elb dns name"""
-        url = '{0}/applications/{1}/loadBalancers'.format(API_URL, self.app_name)
+        url = '{0}/applications/{1}/loadBalancers'.format(API_URL,
+                                                          self.app_name)
         r = requests.get(url)
 
         elb_dns = None
@@ -90,8 +89,9 @@ class SpinnakerDns:
                     elb_dns = account['dnsname']
 
         if not elb_dns:
-            raise SpinnakerElbNotFound('Elb for %s in region %s not found' %
-                   (self.app_name, self.app_info['region']))
+            raise SpinnakerElbNotFound(
+                'Elb for "{0}" in region {1} not found'.format(
+                    self.app_name, self.app_info['region']))
         return elb_dns
 
     def app_exists(self, app_name):
@@ -133,8 +133,7 @@ class SpinnakerDns:
         app_details = self.get_app_detail()
 
         # get correct hosted zone
-        zones = self.r53client.list_hosted_zones_by_name(
-            DNSName=dns_zone)
+        zones = self.r53client.list_hosted_zones_by_name(DNSName=dns_zone)
         # self.log.debug('zones:\n%s', pformat(zones))
 
         zone_ids = []
@@ -151,17 +150,14 @@ class SpinnakerDns:
         self.log.info('Updating Application URL: %s', app_details['dns_elb'])
 
         # This is what will be added to DNS
-        dns_json = get_template(
-            template_file='dns_upsert_template.json',
-            data=app_details,
-        )
+        dns_json = get_template(template_file='dns_upsert_template.json',
+                                data=app_details, )
 
         for zone_id in zone_ids:
 
             self.log.debug('zone_id: %s', zone_id)
             response = self.r53client.change_resource_record_sets(
                 HostedZoneId=zone_id,
-                ChangeBatch=json.loads(dns_json),
-            )
+                ChangeBatch=json.loads(dns_json), )
             self.log.debug('Dns upsert response: %s', pformat(response))
         return app_details['dns_elb']
