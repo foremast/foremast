@@ -36,7 +36,7 @@ class SpinnakerDns:
         self.r53client = env.client('route53')
 
     def get_apps(self):
-        """Gets all applications from spinnaker."""
+        """Get all applications from spinnaker."""
         url = '{0}/applications'.format(API_URL)
         r = requests.get(url)
         if r.ok:
@@ -46,7 +46,7 @@ class SpinnakerDns:
             raise SpinnakerApplicationListError(r.text)
 
     def get_app_detail(self):
-        """Retrieve app details"""
+        """Retrieve app details."""
         url = '{0}/applications/{1}'.format(API_URL, self.app_name)
         r = requests.get(url)
 
@@ -72,7 +72,7 @@ class SpinnakerDns:
 
     @retries(max_attempts=10, wait=10.0, exceptions=SpinnakerElbNotFound)
     def get_app_aws_elb(self):
-        """Get an application's AWS elb dns name"""
+        """Get an application's AWS elb dns name."""
         url = '{0}/applications/{1}/loadBalancers'.format(API_URL,
                                                           self.app_name)
         r = requests.get(url)
@@ -93,7 +93,7 @@ class SpinnakerDns:
         return elb_dns
 
     def app_exists(self, app_name):
-        """Checks to see if application already exists.
+        """Check to see if application already exists.
 
         Args:
             app_name: Str of application name to check.
@@ -116,7 +116,7 @@ class SpinnakerDns:
             app_name))
 
     def create_elb_dns(self):
-        """ Creates dns entries in route53
+        """Create dns entries in route53.
 
         Args:
             app_catalog: A dictionary containing all parameters.
