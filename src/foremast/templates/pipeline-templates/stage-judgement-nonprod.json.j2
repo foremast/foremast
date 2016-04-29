@@ -1,0 +1,22 @@
+
+    {
+      "requisiteStageRefIds":["7"],
+      "refId": "8",
+      "type": "manualJudgment",
+      "name": "Checkpoint {{ data.app.next_env }}",
+      "notifications": [],
+      "judgmentInputs": [
+        {
+          "value": "Reason: Testing"
+        },
+        {
+          "value": "Reason: Change Request"
+        },
+        {
+          "value": "Reason: Hotfix"
+        }
+      ],
+      "failPipeline": true,
+      "instructions": "Do you want to proceed and promote the deployment to {{ data.app.next_env }}?",
+      "comments": "application: ${ trigger.properties.APP_NAME }"
+    }
