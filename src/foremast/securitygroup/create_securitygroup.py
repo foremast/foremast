@@ -8,19 +8,9 @@ from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
 from ..consts import API_URL, HEADERS
+from ..exceptions import (SpinnakerApplicationListError, SpinnakerAppNotFound,
+                          SpinnakerSecurityGroupCreationFailed)
 from ..utils import get_vpc_id
-
-
-class SpinnakerAppNotFound(Exception):
-    pass
-
-
-class SpinnakerApplicationListError(Exception):
-    pass
-
-
-class SpinnakerSecurityGroupCreationFailed(Exception):
-    pass
 
 
 class SpinnakerSecurityGroup:
