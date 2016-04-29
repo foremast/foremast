@@ -22,18 +22,25 @@ def get_vpc_id(account, region):
     url = '{0}/vpcs'.format(API_URL)
     response = requests.get(url)
 
-    LOG.debug('VPC response:\n%s', response.text)
-
     if not response.ok:
-        LOG.error(response.text)
         raise SpinnakerVPCNotFound(response.text)
 
-    for vpc in response.json():
+    vpcs = response.json()
+
+    vpc_id = ''
+    for vpc in vpcs:
         LOG.debug('VPC: %(name)s, %(account)s, %(region)s => %(id)s', vpc)
-        if all([vpc['name'] == 'vpc', vpc['account'] == account, vpc[
-                'region'] == region]):
+        if all([
+                vpc['name'] == 'vpc', vpc['account'] == account, vpc[
+                    'region'] == region
+        ]):
             LOG.info('Found VPC ID for %s in %s: %s', account, region,
                      vpc['id'])
-            return vpc['id']
+            vpc_id = vpc['id']
+            break
     else:
-        raise SpinnakerVPCIDNotFound(response.text)
+        LOG.fatal('VPC list: %s', vpcs)
+        raise SpinnakerVPCIDNotFound('No VPC available for {0} [{1}].'.format(
+            account, region))
+
+    return vpc_id
