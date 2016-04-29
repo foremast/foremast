@@ -24,21 +24,20 @@ def init_properties(env='dev', app='unnecessary'):
     """
     aws_env = boto3.session.Session(profile_name=env)
     s3client = aws_env.resource('s3')
-    generated = get_app_details.get_details(app=app, env=env)
 
-    archaius_bucket, project, app = generated.archaius()['s3'].split('/')[:-1]
-    archaius_bucket = 'archaius-{env}'.format(env=env)
-    archaius_file = ('{project}/{app}/application.properties').format(
-        project=project,
-        app=app)
+    generated = get_app_details.get_details(app=app, env=env)
+    archaius = generated.archaius()
+
+    archaius_file = ('{path}/application.properties').format(
+        path=archaius['path'])
 
     try:
-        s3client.Object(archaius_bucket, archaius_file).get()
-        LOG.info('Found: %(bucket)s/%(file)s', {'bucket': archaius_bucket,
+        s3client.Object(archaius['bucket'], archaius_file).get()
+        LOG.info('Found: %(bucket)s/%(file)s', {'bucket': archaius['bucket'],
                                                 'file': archaius_file})
         return True
     except boto3.exceptions.botocore.client.ClientError:
-        s3client.Object(archaius_bucket, archaius_file).put()
-        LOG.info('Created: %(bucket)s/%(file)s', {'bucket': archaius_bucket,
+        s3client.Object(archaius['bucket'], archaius_file).put()
+        LOG.info('Created: %(bucket)s/%(file)s', {'bucket': archaius['bucket'],
                                                   'file': archaius_file})
         return False
