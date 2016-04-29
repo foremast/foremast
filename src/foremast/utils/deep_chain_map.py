@@ -1,3 +1,4 @@
+"""ChainMap modification to handle nested dict objects."""
 import collections
 
 
@@ -23,6 +24,7 @@ class DeepChainMap(collections.ChainMap):
     """
 
     def __getitem__(self, key):
+        """Recursively retrieve value for _key_ in dict."""
         for mapping in self.maps:
             try:
                 value = mapping[key]

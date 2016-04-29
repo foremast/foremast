@@ -8,7 +8,7 @@ LOG = logging.getLogger(__name__)
 
 
 def get_template(template_file='', **kwargs):
-    """Gets the Jinja2 template and renders with dict _kwargs_.
+    """Get the Jinja2 template and renders with dict _kwargs_.
 
     Args:
         kwargs: Keywords to use for rendering the Jinja2 template.
@@ -16,7 +16,6 @@ def get_template(template_file='', **kwargs):
     Returns:
         String of rendered JSON template.
     """
-
     here = os.path.dirname(os.path.realpath(__file__))
     templatedir = '{0}/../templates/'.format(here)
     LOG.debug('Template directory: %s', templatedir)

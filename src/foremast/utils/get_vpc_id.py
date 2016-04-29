@@ -1,4 +1,4 @@
-"""Get VPC Id"""
+"""Get VPC ID."""
 import logging
 
 import requests
