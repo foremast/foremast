@@ -7,7 +7,7 @@ import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
-from ..consts import API_URL
+from ..consts import API_URL, HEADERS
 
 
 class SpinnakerAppNotFound(Exception):
@@ -39,8 +39,6 @@ class SpinnakerSecurityGroup:
         self.here = os.path.dirname(os.path.realpath(__file__))
         self.app_name = self.app_exists(app_name=app_info['app'])
         self.app_info = app_info
-
-        self.header = {'content-type': 'application/json'}
 
     def get_template(self, template_name='', template_dict=None):
         """Get Jinja2 Template _template_name_.
@@ -132,7 +130,7 @@ class SpinnakerSecurityGroup:
                                                       self.app_name,
                                                       taskid, )
 
-        r = requests.get(url, headers=self.header)
+        r = requests.get(url, headers=HEADERS)
 
         self.log.debug(r.json())
         if not r.ok:
@@ -164,9 +162,7 @@ class SpinnakerSecurityGroup:
             template_name='securitygroup_template.json',
             template_dict=app_data, )
 
-        r = requests.post(url,
-                          data=json.dumps(secgroup_json),
-                          headers=self.header)
+        r = requests.post(url, data=json.dumps(secgroup_json), headers=HEADERS)
 
         status = self.check_task(r.json())
         if status not in ('SUCCEEDED'):
