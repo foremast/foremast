@@ -1,4 +1,6 @@
+"""Generate base64 encoded User Data."""
 import base64
+
 from ..utils import get_template
 
 

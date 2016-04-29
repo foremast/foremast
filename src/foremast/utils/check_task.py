@@ -1,7 +1,9 @@
-"""Check Taskid status"""
+"""Check Taskid status."""
+import logging
+
 import requests
 from tryagain import retries
-import logging
+
 from ..exceptions import SpinnakerTaskError
 
 HEADERS = {'Content-Type': 'application/json', 'Accept': '*/*'}
@@ -12,6 +14,7 @@ LOG = logging.getLogger(__name__)
 @retries(max_attempts=10, wait=10, exceptions=(AssertionError, ValueError))
 def check_task(taskid, app_name):
     """Check task status.
+
     Args:
         taskid: the task id returned from create_elb.
         app_name: application name related to this task.

@@ -1,7 +1,9 @@
+"""Retrieve Application details."""
+import logging
+
+import gogoutils
 import murl
 import requests
-import gogoutils
-import logging
 
 from ..consts import API_URL
 

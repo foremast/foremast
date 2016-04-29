@@ -1,3 +1,4 @@
+"""Get available Subnets for specific Targets."""
 import json
 import logging
 from collections import defaultdict
@@ -14,16 +15,16 @@ LOG = logging.getLogger(__name__)
 
 @retries(max_attempts=6, wait=10.0, exceptions=SpinnakerTimeout)
 def get_subnets(gate_url=API_URL, target='ec2', sample_file_name=''):
-    """Gets all availability zones for a given target
+    """Get all availability zones for a given target.
 
-        Params:
-            gate_url: The URL to hit for gate API access
-            target: the type of subnets to look up (ec2 or elb)
-            sample_file_name (str): Sample JSON file contents override.
+    Params:
+        gate_url: The URL to hit for gate API access
+        target: the type of subnets to look up (ec2 or elb)
+        sample_file_name (str): Sample JSON file contents override.
 
-        Return:
-            az_dict: dictionary of  availbility zones, structured like
-            { $account: { $region: [ $avaibilityzones ] } }
+    Returns:
+        az_dict: dictionary of  availbility zones, structured like
+        { $account: { $region: [ $avaibilityzones ] } }
     """
     account_az_dict = defaultdict(defaultdict)
 

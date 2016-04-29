@@ -1,3 +1,4 @@
+"""Check Pipeline name to match format."""
 import logging
 
 LOG = logging.getLogger(__name__)
