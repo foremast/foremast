@@ -27,11 +27,9 @@ class SpinnakerPipeline:
         self.here = os.path.dirname(os.path.realpath(__file__))
 
         self.app_info = app_info
-        self.app_name = ''
-        self.group_name = ''
-        if not get_app_details.get_details(self.app_info['app']):
-            raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
-                self.app_info['app']))
+        self.generated = get_app_details.get_details(app=self.app_info['app'])
+        self.app_name = self.generated.app_name()
+        self.group_name = self.generated.project
 
         self.settings = self.get_settings()
 
