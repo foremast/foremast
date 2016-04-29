@@ -60,23 +60,25 @@ def get_subnets(gate_url=API_URL,
         if subnet['target'] == target:
             az = subnet['availabilityZone']
             account = subnet['account']
-            region = subnet['region']
+            subnet_region = subnet['region']
 
             try:
-                if az not in account_az_dict[account][region]:
-                    account_az_dict[account][region].append(az)
+                if az not in account_az_dict[account][subnet_region]:
+                    account_az_dict[account][subnet_region].append(az)
             except KeyError:
-                account_az_dict[account][region] = [az]
+                account_az_dict[account][subnet_region] = [az]
 
             LOG.debug('%s regions: %s', account,
                       list(account_az_dict[account].keys()))
 
-    LOG.debug('AZ dict:\n%s', pformat(dict(account_az_dict)))
-
     if all([env, region]):
         try:
-            return {region: account_az_dict[env][region]}
+            region_dict = {region: account_az_dict[env][region]}
+            LOG.debug('Region dict: %s', region_dict)
+            return region_dict
         except KeyError:
             raise SpinnakerSubnetError(env=env, region=region)
+
+    LOG.debug('AZ dict:\n%s', pformat(dict(account_az_dict)))
 
     return account_az_dict

@@ -54,12 +54,10 @@ class SpinnakerELB:
         Returns:
             str: Rendered ELB template.
         """
-        region_subnets = get_subnets(target='elb',
-                                     env=self.args.env,
-                                     region=self.args.region)
-
         env = self.args.env
         region = self.args.region
+
+        region_subnets = get_subnets(target='elb', env=env, region=region)
 
         elb_facing = 'true' if self.args.subnet_type == 'internal' else 'false'
 
