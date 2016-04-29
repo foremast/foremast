@@ -9,9 +9,9 @@ import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed, SpinnakerSubnetError
-from ..utils import (generate_encoded_user_data, get_app_details, get_subnets,
-                     get_template)
+from ..utils import get_app_details, get_template
 from .clean_pipelines import clean_pipelines
+from .construct_pipeline_block import construct_pipeline_block
 from .renumerate_stages import renumerate_stages
 
 
@@ -117,10 +117,12 @@ class SpinnakerPipeline:
             previous_env = None
             for env in envs:
                 try:
-                    block = self.construct_pipeline_block(
+                    block = construct_pipeline_block(
                         env=env,
+                        generated=self.generated,
                         previous_env=previous_env,
-                        region=region)
+                        region=region,
+                        settings=self.settings[env])
 
                     pipelines[region]['stages'].extend(json.loads(block))
 
@@ -137,53 +139,3 @@ class SpinnakerPipeline:
             self.post_pipeline(pipeline)
 
         return True
-
-    def construct_pipeline_block(
-            self, env='', previous_env=None,
-            region='us-east-1'):
-        """Create the Pipeline JSON from template.
-
-        Args:
-            env (str): Deploy environment name, e.g. dev, stage, prod.
-            previous_env (str): The previous deploy environment to use as
-                Trigger.
-            region (str): AWS Region to deploy to.
-
-        Returns:
-            dict: Pipeline JSON template rendered with configurations.
-        """
-        self.app_info[env] = self.settings[env]
-        self.log.info('Create Pipeline for %s in %s.', env, region)
-
-        self.log.debug('App info:\n%s', self.app_info)
-
-        if env.startswith('prod'):
-            template_name = 'pipeline-templates/pipeline_{}.json'.format(env)
-        else:
-            template_name = 'pipeline-templates/pipeline_stages.json'
-
-        self.log.debug('%s info:\n%s', env, pformat(self.app_info[env]))
-
-        region_subnets = get_subnets(env=env, region=region)
-
-        self.log.debug('Region and subnets in use:\n%s', region_subnets)
-
-        # Use different variable to keep template simple
-        data = self.app_info[env]
-        data['app'].update({
-            'appname': self.app_info['app'],
-            'environment': env,
-            'triggerjob': self.app_info['triggerjob'],
-            'regions': json.dumps(list(region_subnets.keys())),
-            'region': region,
-            'az_dict': json.dumps(region_subnets),
-            'previous_env': previous_env,
-            'encoded_user_data': generate_encoded_user_data(
-                env=env,
-                region=region,
-                app_name=self.app_name,
-                group_name=self.group_name),
-        })
-
-        pipeline_json = get_template(template_file=template_name, data=data)
-        return pipeline_json
