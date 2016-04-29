@@ -47,7 +47,13 @@ class SpinnakerTaskError(SpinnakerError):
     def __init__(self, task_state):
         errors = []
         for stage in task_state['execution']['stages']:
-            errors.extend(stage['context']['exception']['details']['errors'])
+            context = stage['context']
+
+            try:
+                errors.extend(context['exception']['details']['errors'])
+            except KeyError:
+                for task in context['kato.tasks']:
+                    errors.append(task['exception']['message'])
         self.args = errors
 
 
