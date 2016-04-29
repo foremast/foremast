@@ -35,7 +35,7 @@ class SpinnakerDns:
         env = boto3.session.Session(profile_name=self.app_info['env'])
         self.r53client = env.client('route53')
 
-    @retries(max_attempts=10, wait=10.0, exceptions=SpinnakerElbNotFound)
+    @retries(max_attempts=5, wait=2, exceptions=SpinnakerElbNotFound)
     def get_app_aws_elb(self):
         """Get an application's AWS elb dns name."""
         url = '{0}/applications/{1}/loadBalancers'.format(API_URL,
