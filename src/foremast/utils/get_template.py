@@ -23,8 +23,8 @@ def get_template(template_file='', **kwargs):
 
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(templatedir))
     template = jinjaenv.get_template(template_file)
-    for k,v in kwargs.items():
-        LOG.debug('%s => %s', k,v)
+    for key, value in kwargs.items():
+        LOG.debug('%s => %s', key, value)
     rendered_json = template.render(**kwargs)
 
     LOG.debug('Rendered JSON:\n%s', rendered_json)
