@@ -5,18 +5,8 @@
       "type": "manualJudgment",
       "name": "Checkpoint {{ data.app.environment }}",
       "notifications": [],
-      "judgmentInputs": [
-        {
-          "value": "Reason: Testing"
-        },
-        {
-          "value": "Reason: Change Request"
-        },
-        {
-          "value": "Reason: Hotfix"
-        }
-      ],
+      "judgmentInputs": [],
       "failPipeline": true,
-      "instructions": "Do you want to proceed and promote the deployment to {{ data.app.environment }}?",
+      "instructions": "I confirm that I'm ready for this application to be promoted to <strong>{{ data.app.environment }}</strong>.",
       "comments": "application: ${ trigger.properties.APP_NAME }"
     }
