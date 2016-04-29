@@ -1,7 +1,7 @@
 """Generate base64 encoded User Data."""
 import base64
 
-from ..utils import get_template
+from .get_template import get_template
 
 
 def generate_encoded_user_data(env='dev',
