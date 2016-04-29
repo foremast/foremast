@@ -1,10 +1,12 @@
 """Get VPC Id"""
-import requests
 import logging
+
+import requests
+
+from ..consts import API_URL
 from ..exceptions import SpinnakerVPCIDNotFound, SpinnakerVPCNotFound
 
 LOG = logging.getLogger(__name__)
-GATE_URL = "http://gate-api.build.example.com:8084"
 
 
 def get_vpc_id(account, region):
@@ -17,7 +19,7 @@ def get_vpc_id(account, region):
     Returns:
         str: ID for the requested _account_ in _region_.
     """
-    url = '{0}/vpcs'.format(GATE_URL)
+    url = '{0}/vpcs'.format(API_URL)
     response = requests.get(url)
 
     LOG.debug('VPC response:\n%s', response.text)

@@ -1,19 +1,19 @@
-
-import requests
 import json
 import logging
-from pprint import pformat
-from tryagain import retries
 from collections import defaultdict
+from pprint import pformat
+
+import requests
+from tryagain import retries
+
+from ..consts import API_URL
 from ..exceptions import SpinnakerTimeout
 
 LOG = logging.getLogger(__name__)
 
 
 @retries(max_attempts=6, wait=10.0, exceptions=SpinnakerTimeout)
-def get_subnets(gate_url='http://gate-api.build.example.com:8084',
-                target='ec2',
-                sample_file_name=''):
+def get_subnets(gate_url=API_URL, target='ec2', sample_file_name=''):
     """Gets all availability zones for a given target
 
         Params:
