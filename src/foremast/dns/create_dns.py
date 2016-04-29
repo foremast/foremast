@@ -22,7 +22,8 @@ class SpinnakerDns:
     def __init__(self, app_info):
         self.log = logging.getLogger(__name__)
 
-        self.generated = get_app_details.get_details(app_info['app'])
+        self.generated = get_app_details.get_details(app_info['app'],
+                                                     env=app_info['env'])
         self.app_name = self.generated.app_name()
 
         # Add domain
