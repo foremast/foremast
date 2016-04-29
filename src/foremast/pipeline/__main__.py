@@ -24,7 +24,7 @@ def main():
     parser.add_argument(
         "--properties",
         help="Location of json file that contains application.json details",
-        default="../raw.properties.json",
+        default="./raw.properties.json",
         required=False)
     # parser.add_argument("--vpc",
     #                     help="The vpc to create the security group",
