@@ -26,9 +26,6 @@ def main():
         help="Location of json file that contains application.json details",
         default="./raw.properties.json",
         required=False)
-    # parser.add_argument("--vpc",
-    #                     help="The vpc to create the security group",
-    #                     required=True)
     args = parser.parse_args()
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
@@ -39,7 +36,6 @@ def main():
     # processing
     appinfo = {
         'app': args.app,
-        # 'vpc': args.vpc,
         'triggerjob': args.triggerjob,
         'properties': args.properties
     }
