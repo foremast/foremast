@@ -58,9 +58,9 @@ class SpinnakerPipeline:
                        pipeline_response.text)
 
         if not pipeline_response.ok:
-            logging.error('Failed to create pipeline: %s',
-                          pipeline_response.text)
-            raise SpinnakerPipelineCreationFailed(pipeline_response.json())
+            raise SpinnakerPipelineCreationFailed(
+                'Failed to create pipeline for {0}: {1}'.format(
+                    self.app_name, pipeline_response.json()))
 
         self.log.info('Successfully created "%s" pipeline',
                       json.loads(pipeline_json)['name'])
