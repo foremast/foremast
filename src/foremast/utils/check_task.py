@@ -10,7 +10,7 @@ from ..exceptions import SpinnakerTaskError
 LOG = logging.getLogger(__name__)
 
 
-@retries(max_attempts=10, wait=10, exceptions=(AssertionError, ValueError))
+@retries(max_attempts=10, wait=2, exceptions=(AssertionError, ValueError))
 def check_task(taskid, app_name):
     """Check task status.
 
