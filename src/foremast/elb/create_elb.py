@@ -11,6 +11,7 @@ from ..utils import check_task, get_subnets, get_template, get_vpc_id
 
 class SpinnakerELB:
     """Create ELBs for Spinnaker."""
+
     log = logging.getLogger(__name__)
 
     def __init__(self, args=None):
