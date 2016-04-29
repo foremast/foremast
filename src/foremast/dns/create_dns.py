@@ -9,9 +9,8 @@ import requests
 from tryagain import retries
 
 from ..consts import API_URL
-from ..exceptions import (SpinnakerApplicationListError, SpinnakerAppNotFound,
-                          SpinnakerElbNotFound)
-from ..utils import get_template
+from ..exceptions import SpinnakerAppNotFound, SpinnakerElbNotFound
+from ..utils import get_app_details, get_template
 
 
 class SpinnakerDns:
@@ -24,7 +23,7 @@ class SpinnakerDns:
     def __init__(self, app_info):
         self.log = logging.getLogger(__name__)
 
-        self.app_name = self.app_exists(app_name=app_info['app'])
+        self.app_name = get_app_details.get_details(app_info['app']).app_name()
 
         # Add domain
         app_info.update({'domain': 'example.com'})
@@ -34,16 +33,6 @@ class SpinnakerDns:
 
         env = boto3.session.Session(profile_name=self.app_info['env'])
         self.r53client = env.client('route53')
-
-    def get_apps(self):
-        """Get all applications from spinnaker."""
-        url = '{0}/applications'.format(API_URL)
-        r = requests.get(url)
-        if r.ok:
-            return r.json()
-        else:
-            self.log.error(r.text)
-            raise SpinnakerApplicationListError(r.text)
 
     def get_app_detail(self):
         """Retrieve app details."""
@@ -91,29 +80,6 @@ class SpinnakerDns:
                 'Elb for "{0}" in region {1} not found'.format(
                     self.app_name, self.app_info['region']))
         return elb_dns
-
-    def app_exists(self, app_name):
-        """Check to see if application already exists.
-
-        Args:
-            app_name: Str of application name to check.
-
-        Returns:
-            Str of application name
-
-        Raises:
-            SpinnakerAppNotFound
-        """
-        apps = self.get_apps()
-        app_name = app_name.lower()
-        for app in apps:
-            if app['name'].lower() == app_name:
-                self.log.info('Application %s found!', app_name)
-                return app_name
-
-        self.log.info('Application %s does not exist ... exiting', app_name)
-        raise SpinnakerAppNotFound('Application "{0}" not found.'.format(
-            app_name))
 
     def create_elb_dns(self):
         """Create dns entries in route53.
