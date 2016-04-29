@@ -9,7 +9,8 @@ import requests
 from tryagain import retries
 
 from ..consts import API_URL
-from ..exceptions import SpinnakerApplicationListError, SpinnakerElbNotFound
+from ..exceptions import (SpinnakerApplicationListError, SpinnakerAppNotFound,
+                          SpinnakerElbNotFound)
 from ..utils import get_template
 
 
