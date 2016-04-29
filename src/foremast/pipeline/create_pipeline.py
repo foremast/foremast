@@ -8,7 +8,7 @@ import murl
 import requests
 
 from ..consts import API_URL
-from ..exceptions import SpinnakerAppNotFound, SpinnakerPipelineCreationFailed
+from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import (check_managed_pipeline, generate_encoded_user_data,
                      get_app_details, get_subnets, get_template)
 
