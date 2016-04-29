@@ -8,18 +8,24 @@ import requests
 from tryagain import retries
 
 from ..consts import API_URL
-from ..exceptions import SpinnakerTimeout
+from ..exceptions import SpinnakerSubnetError, SpinnakerTimeout
 
 LOG = logging.getLogger(__name__)
 
 
 @retries(max_attempts=6, wait=10.0, exceptions=SpinnakerTimeout)
-def get_subnets(gate_url=API_URL, target='ec2', sample_file_name=''):
+def get_subnets(gate_url=API_URL,
+                target='ec2',
+                env='',
+                region='',
+                sample_file_name=''):
     """Get all availability zones for a given target.
 
     Params:
-        gate_url: The URL to hit for gate API access
-        target: the type of subnets to look up (ec2 or elb)
+        gate_url (str): Gate API url.
+        target (str): Type of subnets to look up (ec2 or elb).
+        env (str): Environment to look up.
+        region (str): AWS Region to find Subnets for.
         sample_file_name (str): Sample JSON file contents override.
 
     Returns:
@@ -66,4 +72,11 @@ def get_subnets(gate_url=API_URL, target='ec2', sample_file_name=''):
                       list(account_az_dict[account].keys()))
 
     LOG.debug('AZ dict:\n%s', pformat(dict(account_az_dict)))
+
+    if all([env, region]):
+        try:
+            return {region: account_az_dict[env][region]}
+        except KeyError:
+            raise SpinnakerSubnetError(env=env, region=region)
+
     return account_az_dict
