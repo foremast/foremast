@@ -6,6 +6,7 @@ import murl
 import requests
 
 from ..consts import API_URL
+from ..exceptions import SpinnakerAppNotFound
 
 LOG = logging.getLogger(__name__)
 
@@ -21,7 +22,9 @@ def get_details(app='groupproject', env='dev'):
     api.path = 'applications/{app}'.format(app=app)
 
     request = requests.get(api.url)
-    assert request.ok, 'App does not Exist'
+
+    if not request.ok:
+        raise SpinnakerAppNotFound('"{0}" not found.'.format(app))
 
     app_details = request.json()
 
