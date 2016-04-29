@@ -66,3 +66,11 @@ class SpinnakerPipelineCreationFailed(SpinnakerError):
 class SpinnakerSecurityGroupCreationFailed(SpinnakerError):
     """Could not create Security Group."""
     pass
+
+
+class SpinnakerSubnetError(SpinnakerError):
+    """Unavailable environment or region."""
+
+    def __init__(self, env='', region=''):
+        error = '{0} is not available for {1}'.format(region, env)
+        super().__init__(error)

@@ -54,9 +54,9 @@ class SpinnakerELB:
         Returns:
             str: Rendered ELB template.
         """
-        raw_subnets = get_subnets(target='elb')
-        region_subnets = {self.args.region:
-                          raw_subnets[self.args.env][self.args.region]}
+        region_subnets = get_subnets(target='elb',
+                                     env=self.args.env,
+                                     region=self.args.region)
 
         env = self.args.env
         region = self.args.region

@@ -261,10 +261,9 @@ class SpinnakerPipeline:
         else:
             template_name = 'pipeline-templates/pipeline_stages.json'
 
-        raw_subnets = get_subnets()
         self.log.debug('%s info:\n%s', env, pformat(self.app_info[env]))
 
-        region_subnets = {region: raw_subnets[env][region]}
+        region_subnets = get_subnets(env=env, region=region)
 
         self.log.debug('Region and subnets in use:\n%s', region_subnets)
 
