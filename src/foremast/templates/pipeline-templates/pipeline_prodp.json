@@ -1,7 +1,7 @@
 [
+    {% include "pipeline-templates/stage-judgement-prod.json.j2" %},
     {% include "pipeline-templates/stage-log-deployment.json.j2" %},
     {% include "pipeline-templates/stage-deploy.json.j2" %},
     {% include "pipeline-templates/stage-tagger.json.j2" %},
-    {% include "pipeline-templates/stage-qe.json.j2" %},
-    {% include "pipeline-templates/stage-judgement-prod.json.j2" %}
+    {% include "pipeline-templates/stage-qe.json.j2" %}
 ]

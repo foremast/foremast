@@ -3,7 +3,7 @@
       "requisiteStageRefIds":["7"],
       "refId": "8",
       "type": "manualJudgment",
-      "name": "Checkpoint {{ data.app.next_env }}",
+      "name": "Checkpoint {{ data.app.environment }}",
       "notifications": [],
       "judgmentInputs": [
         {
@@ -17,6 +17,6 @@
         }
       ],
       "failPipeline": true,
-      "instructions": "By approving this application promotion to <strong>{{ data.app.next_env }}</strong>, I certify that:\n<ul>\n<li>I am authorized by Gogo to perform this change</li>\n<li> To the best of my knowledge and ability, this version of the software is fit for purpose</li>\n<li>I did not develop any aspects of the code or configuration that will be promoted with this approval</li>\n</ul>",
+      "instructions": "By approving this application promotion to <strong>{{ data.app.environment }}</strong>, I certify that:\n<ul>\n<li>I am authorized by Gogo to perform this change</li>\n<li> To the best of my knowledge and ability, this version of the software is fit for purpose</li>\n<li>I did not develop any aspects of the code or configuration that will be promoted with this approval</li>\n</ul>",
       "comments": "application: ${ trigger.properties.APP_NAME }"
     }
