@@ -8,13 +8,10 @@ from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
 from ..consts import API_URL, HEADERS
+from ..utils import get_vpc_id
 
 
 class SpinnakerAppNotFound(Exception):
-    pass
-
-
-class SpinnakerVPCNotFound(Exception):
     pass
 
 
@@ -57,28 +54,6 @@ class SpinnakerSecurityGroup:
         rendered_json = json.loads(template.render(**template_dict))
         self.log.debug('Rendered template: %s', rendered_json)
         return rendered_json
-
-    def get_vpc_id(self, account, region):
-        """Get vpc id.
-
-        Args:
-            account: AWS account name.
-            region: Region name, e.g. us-east-1.
-
-        Returns:
-            vpc_id.
-        """
-        url = '{0}/vpcs'.format(API_URL)
-        response = requests.get(url)
-        if response.ok:
-            for vpc in response.json():
-                if vpc['name'] == 'vpc' and \
-                   vpc['account'] == account and \
-                   vpc['region'] == region:
-                    return vpc['id']
-        else:
-            logging.error(response.text)
-            raise SpinnakerVPCNotFound(response.text)
 
     def get_apps(self):
         """Gets all applications from spinnaker."""
@@ -153,8 +128,7 @@ class SpinnakerSecurityGroup:
         url = "{0}/applications/{1}/tasks".format(API_URL, self.app_name)
 
         app_data = {
-            'vpc':
-            self.get_vpc_id(self.app_info['env'], self.app_info['region']),
+            'vpc': get_vpc_id(self.app_info['env'], self.app_info['region']),
         }
         app_data.update(self.app_info)
 
