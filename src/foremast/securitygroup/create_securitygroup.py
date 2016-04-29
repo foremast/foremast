@@ -1,12 +1,12 @@
 """Create Security Groups for Spinnaker Pipelines."""
-import json
 import logging
 import os
 
 import requests
 
 from ..consts import API_URL, HEADERS
-from ..exceptions import SpinnakerTaskError, SpinnakerSecurityGroupCreationFailed
+from ..exceptions import (SpinnakerSecurityGroupCreationFailed,
+                          SpinnakerTaskError)
 from ..utils import check_task, get_template, get_vpc_id
 
 
