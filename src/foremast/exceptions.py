@@ -54,7 +54,8 @@ class SpinnakerTaskError(SpinnakerError):
             except KeyError:
                 for task in context['kato.tasks']:
                     errors.append(task['exception']['message'])
-        self.args = errors
+
+        super().__init__(*errors)
 
 
 class SpinnakerPipelineCreationFailed(Exception):
