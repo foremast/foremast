@@ -49,13 +49,13 @@ class SpinnakerDns:
 
     def get_app_detail(self):
         """Retrieve app details"""
-
         url = '{0}/applications/{1}'.format(API_URL, self.app_name)
         r = requests.get(url)
 
         details = {}
         if r.ok:
             details.update(r.json())
+
             group = details['attributes'].get('repoProjectKey')
             project = details['attributes'].get('repoSlug')
             generator = gogoutils.Generator(project=group,
@@ -106,7 +106,6 @@ class SpinnakerDns:
         Raises:
             SpinnakerAppNotFound
         """
-
         apps = self.get_apps()
         app_name = app_name.lower()
         for app in apps:
@@ -127,7 +126,6 @@ class SpinnakerDns:
         Returns:
             Auto-generated DNS name for the Elastic Load Balancer.
         """
-
         dns_zone = '{env}.{domain}'.format(**self.app_info)
 
         app_details = self.get_app_detail()
@@ -154,10 +152,12 @@ class SpinnakerDns:
                                 data=app_details, )
 
         for zone_id in zone_ids:
-
             self.log.debug('zone_id: %s', zone_id)
+
             response = self.r53client.change_resource_record_sets(
                 HostedZoneId=zone_id,
                 ChangeBatch=json.loads(dns_json), )
+
             self.log.debug('Dns upsert response: %s', pformat(response))
+
         return app_details['dns_elb']
