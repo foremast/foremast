@@ -79,9 +79,8 @@ class SpinnakerDns:
             for zone in zones['HostedZones']:
                 # We will always add a private record. The elb subnet must be
                 # specified as 'external' to get added publicly.
-                if zone['Config']['PrivateZone'] or \
-                                self.app_info['elb_subnet'] in (
-                                'external'):
+                if any([zone['Config']['PrivateZone'], self.app_info[
+                        'elb_subnet'] in ('external')]):
                     self.log.info('Adding DNS record to %s zone', zone['Id'])
                     zone_ids.append(zone['Id'])
 
