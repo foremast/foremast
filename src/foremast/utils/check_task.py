@@ -4,10 +4,9 @@ import logging
 import requests
 from tryagain import retries
 
+from ..consts import API_URL, HEADERS
 from ..exceptions import SpinnakerTaskError
 
-HEADERS = {'Content-Type': 'application/json', 'Accept': '*/*'}
-GATE_URL = "http://gate-api.build.example.com:8084"
 LOG = logging.getLogger(__name__)
 
 
@@ -31,7 +30,7 @@ def check_task(taskid, app_name):
 
     LOG.info('Checking taskid %s', taskid)
 
-    url = '{0}/applications/{1}/tasks/{2}'.format(GATE_URL, app_name, taskid)
+    url = '{0}/applications/{1}/tasks/{2}'.format(API_URL, app_name, taskid)
     task_response = requests.get(url, headers=HEADERS)
 
     LOG.debug(task_response.json())
