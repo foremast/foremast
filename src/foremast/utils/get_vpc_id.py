@@ -24,16 +24,16 @@ def get_vpc_id(account, region):
 
     LOG.debug('VPC response:\n%s', response.text)
 
-    if response.ok:
-        for vpc in response.json():
-            LOG.debug('VPC: %(name)s, %(account)s, %(region)s => %(id)s', vpc)
-            if all([vpc['name'] == 'vpc', vpc['account'] == account, vpc[
-                    'region'] == region]):
-                LOG.info('Found VPC ID for %s in %s: %s', account, region,
-                         vpc['id'])
-                return vpc['id']
-        else:
-            raise SpinnakerVPCIDNotFound(response.text)
-    else:
+    if not response.ok:
         LOG.error(response.text)
         raise SpinnakerVPCNotFound(response.text)
+
+    for vpc in response.json():
+        LOG.debug('VPC: %(name)s, %(account)s, %(region)s => %(id)s', vpc)
+        if all([vpc['name'] == 'vpc', vpc['account'] == account, vpc[
+                'region'] == region]):
+            LOG.info('Found VPC ID for %s in %s: %s', account, region,
+                     vpc['id'])
+            return vpc['id']
+    else:
+        raise SpinnakerVPCIDNotFound(response.text)
