@@ -31,11 +31,17 @@ class SpinnakerPipeline:
         self.app_name = self.generated.app_name()
         self.group_name = self.generated.project
 
-        self.settings = self.get_settings()
+        self.settings = self.get_settings(self.app_info['properties'])
 
-    def get_settings(self):
-        """Get the specified Application configurations."""
-        with open(self.app_info['properties']) as data_file:
+    @staticmethod
+    def get_settings(property_file=''):
+        """Get the specified Application configurations.
+
+        Args:
+            property_file (str): Name of JSON property file, e.g.
+                raw.properties.json.
+        """
+        with open(property_file, 'rt') as data_file:
             data = json.load(data_file)
         return data
 
