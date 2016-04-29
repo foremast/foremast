@@ -24,7 +24,7 @@ def main():
                         help="The environment to create the security group",
                         required=True)
     parser.add_argument("--elb-subnet",
-                        help="The environment to create the security group",
+                        help="Subnetnet type, e.g. external, internal",
                         required=True)
     args = parser.parse_args()
 
