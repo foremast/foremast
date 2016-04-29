@@ -10,8 +10,10 @@ import gogoutils
 import requests
 from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
-from ..utils import get_configs, get_template
+
+from ..consts import API_URL
 from ..exceptions import SpinnakerApplicationListError, SpinnakerElbNotFound
+from ..utils import get_configs, get_template
 
 
 class SpinnakerDns:
@@ -24,8 +26,6 @@ class SpinnakerDns:
     def __init__(self, app_info):
         self.log = logging.getLogger(__name__)
 
-        self.config = get_configs()
-        self.gate_url = self.config['spinnaker']['gate_url']
         self.app_name = self.app_exists(app_name=app_info['app'])
 
         # Add domain
@@ -40,7 +40,7 @@ class SpinnakerDns:
 
     def get_apps(self):
         """Gets all applications from spinnaker."""
-        url = '{0}/applications'.format(self.gate_url)
+        url = '{0}/applications'.format(API_URL)
         r = requests.get(url)
         if r.ok:
             return r.json()
@@ -51,7 +51,7 @@ class SpinnakerDns:
     def get_app_detail(self):
         """Retrieve app details"""
 
-        url = '{0}/applications/{1}'.format(self.gate_url, self.app_name)
+        url = '{0}/applications/{1}'.format(API_URL, self.app_name)
         r = requests.get(url)
 
         details = {}
@@ -77,7 +77,7 @@ class SpinnakerDns:
     @retries(max_attempts=10, wait=10.0, exceptions=SpinnakerElbNotFound)
     def get_app_aws_elb(self):
         """Get an application's AWS elb dns name"""
-        url = '{0}/applications/{1}/loadBalancers'.format(self.gate_url, self.app_name)
+        url = '{0}/applications/{1}/loadBalancers'.format(API_URL, self.app_name)
         r = requests.get(url)
 
         elb_dns = None
