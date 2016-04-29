@@ -35,7 +35,8 @@ def check_task(taskid, app_name):
 
     LOG.debug(task_response.json())
 
-    assert task_response.ok
+    assert task_response.ok, 'Spinnaker communication error: {0}'.format(
+        task_response.text)
 
     task_state = task_response.json()
     status = task_state['status']
