@@ -32,4 +32,5 @@ def find_elb(name='', env='', region=''):
         raise SpinnakerElbNotFound(
             'Elb for "{0}" in region {1} not found'.format(name, region))
 
+    LOG.info('Found: %s', elb_dns)
     return elb_dns
