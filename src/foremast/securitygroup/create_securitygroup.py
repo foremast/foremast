@@ -1,12 +1,13 @@
 """Create Security Groups for Spinnaker Pipelines."""
-import configparser
 import json
 import logging
 import os
 
-from tryagain import retries
-from jinja2 import Environment, FileSystemLoader
 import requests
+from jinja2 import Environment, FileSystemLoader
+from tryagain import retries
+
+from ..consts import API_URL
 
 
 class SpinnakerAppNotFound(Exception):
@@ -36,26 +37,10 @@ class SpinnakerSecurityGroup:
         self.log = logging.getLogger(__name__)
 
         self.here = os.path.dirname(os.path.realpath(__file__))
-        self.config = self.get_configs()
-        self.gate_url = self.config['spinnaker']['gate_url']
         self.app_name = self.app_exists(app_name=app_info['app'])
         self.app_info = app_info
 
         self.header = {'content-type': 'application/json'}
-
-    def get_configs(self):
-        """Get main configuration.
-
-        Returns:
-            configparser.ConfigParser object with configuration loaded.
-        """
-        file_name = 'spinnaker.conf'
-        config = configparser.ConfigParser()
-        configpath = '{0}/../configurations/{1}'.format(self.here, file_name)
-        config.read(configpath)
-
-        self.log.debug('Configuration sections found: %s', config.sections())
-        return config
 
     def get_template(self, template_name='', template_dict=None):
         """Get Jinja2 Template _template_name_.
@@ -85,7 +70,7 @@ class SpinnakerSecurityGroup:
         Returns:
             vpc_id.
         """
-        url = '{0}/vpcs'.format(self.gate_url)
+        url = '{0}/vpcs'.format(API_URL)
         response = requests.get(url)
         if response.ok:
             for vpc in response.json():
@@ -99,7 +84,7 @@ class SpinnakerSecurityGroup:
 
     def get_apps(self):
         """Gets all applications from spinnaker."""
-        url = '{0}/applications'.format(self.gate_url)
+        url = '{0}/applications'.format(API_URL)
         r = requests.get(url)
         if r.ok:
             return r.json()
@@ -143,11 +128,9 @@ class SpinnakerSecurityGroup:
 
         self.log.info('Checking taskid %s' % taskid)
 
-        url = '{0}/applications/{1}/tasks/{2}'.format(
-            self.gate_url,
-            self.app_name,
-            taskid,
-        )
+        url = '{0}/applications/{1}/tasks/{2}'.format(API_URL,
+                                                      self.app_name,
+                                                      taskid, )
 
         r = requests.get(url, headers=self.header)
 
@@ -169,18 +152,17 @@ class SpinnakerSecurityGroup:
 
     def create_security_group(self):
         """Sends a POST to spinnaker to create a new security group."""
-        url = "{0}/applications/{1}/tasks".format(self.gate_url,
-                                                self.app_name)
+        url = "{0}/applications/{1}/tasks".format(API_URL, self.app_name)
 
         app_data = {
-            'vpc': self.get_vpc_id(self.app_info['env'], self.app_info['region']),
+            'vpc':
+            self.get_vpc_id(self.app_info['env'], self.app_info['region']),
         }
         app_data.update(self.app_info)
 
         secgroup_json = self.get_template(
             template_name='securitygroup_template.json',
-            template_dict=app_data,
-        )
+            template_dict=app_data, )
 
         r = requests.post(url,
                           data=json.dumps(secgroup_json),
