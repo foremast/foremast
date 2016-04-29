@@ -8,8 +8,8 @@ import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import (generate_encoded_user_data, get_all_pipelines,
-                     get_app_details, get_subnets, get_template)
+from ..utils import (generate_encoded_user_data, get_app_details, get_subnets,
+                     get_template)
 from .clean_pipelines import clean_pipelines
 
 
@@ -240,27 +240,3 @@ class SpinnakerPipeline:
 
         pipeline_json = get_template(template_file=template_name, data=data)
         return pipeline_json
-
-    def get_pipe_id(self, name=''):
-        """Get the ID for Pipeline _name_.
-
-        Args:
-            name (str): Name of Pipeline to get ID for.
-
-        Returns:
-            str: ID of specified Pipeline.
-            None: Pipeline or Spinnake Appliation not found.
-        """
-        return_id = None
-
-        pipelines = get_all_pipelines('{app}'.format(**self.app_info))
-
-        for pipeline in pipelines:
-            self.log.debug('ID of %(name)s: %(id)s', pipeline)
-
-            if pipeline['name'] == name:
-                return_id = pipeline['id']
-                self.log.info('Pipeline %s found, ID: %s', name, return_id)
-                break
-
-        return return_id
