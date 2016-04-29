@@ -45,9 +45,17 @@ class SpinnakerTaskError(SpinnakerError):
     """Spinnaker Task did not finish properly."""
 
     def __init__(self, task_state):
-        super().__init__(task_state['variables'][-1]['value'][-1]['exception'])
+        errors = []
+        for stage in task_state['execution']['stages']:
+            errors.extend(stage['context']['exception']['details']['errors'])
+        self.args = errors
 
 
 class SpinnakerPipelineCreationFailed(Exception):
     """Could not create Spinnaker Pipeline."""
+    pass
+
+
+class SpinnakerSecurityGroupCreationFailed(SpinnakerError):
+    """Could not create Security Group."""
     pass
