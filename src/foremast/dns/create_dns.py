@@ -39,13 +39,13 @@ class SpinnakerDns:
         """Get an application's AWS elb dns name."""
         url = '{0}/applications/{1}/loadBalancers'.format(API_URL,
                                                           self.app_name)
-        r = requests.get(url)
+        response = requests.get(url)
 
         elb_dns = None
 
-        if r.ok:
-            response = r.json()
-            for account in response:
+        if response.ok:
+            accounts = response.json()
+            for account in accounts:
                 if account['account'] == self.app_info['env'] and \
                         account['region'] == self.app_info['region']:
                     elb_dns = account['dnsname']
