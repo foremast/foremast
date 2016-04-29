@@ -1,33 +1,33 @@
 """Spinnaker related custom exceptions."""
 
 
-class SpinnakerAppNotFound(Exception):
+class SpinnakerError(Exception):
+    """Spinnaker related error."""
+    pass
+
+
+class SpinnakerAppNotFound(SpinnakerError):
     """Spinnaker app not found error."""
     pass
 
 
-class SpinnakerApplicationListError(Exception):
+class SpinnakerApplicationListError(SpinnakerError):
     """Spinnaker application list error."""
     pass
 
 
-class SpinnakerDnsCreationFailed(Exception):
+class SpinnakerDnsCreationFailed(SpinnakerError):
     """Spinnaker DNS creation error."""
     pass
 
 
-class SpinnakerElbNotFound(Exception):
+class SpinnakerElbNotFound(SpinnakerError):
     """Spinnaker Elb not found."""
     pass
 
 
-class SpinnakerTimeout(Exception):
+class SpinnakerTimeout(SpinnakerError):
     """Spinnaker Timeout error."""
-    pass
-
-
-class SpinnakerError(Exception):
-    """Spinnaker related error."""
     pass
 
 
@@ -58,7 +58,7 @@ class SpinnakerTaskError(SpinnakerError):
         super().__init__(*errors)
 
 
-class SpinnakerPipelineCreationFailed(Exception):
+class SpinnakerPipelineCreationFailed(SpinnakerError):
     """Could not create Spinnaker Pipeline."""
     pass
 
