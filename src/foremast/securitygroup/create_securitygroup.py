@@ -35,16 +35,16 @@ class SpinnakerSecurityGroup:
             template_file='securitygroup_template.json',
             **self.app_info)
 
-        r = requests.post(url, data=secgroup_json, headers=HEADERS)
+        response = requests.post(url, data=secgroup_json, headers=HEADERS)
 
-        assert r.ok, 'Failed to create Security Group for {0}: {1}'.format(
-            self.app_name, r.text)
+        assert response.ok, ('Failed to create Security Group for {0}: '
+                             '{1}').format(self.app_name, response.text)
 
         try:
-            check_task(r.json(), self.app_name)
+            check_task(response.json(), self.app_name)
         except SpinnakerTaskError as error:
             logging.error('Failed to create Security Group for %s: %s',
-                          self.app_name, r.text)
+                          self.app_name, response.text)
             raise SpinnakerSecurityGroupCreationFailed(error)
 
         logging.info('Successfully created %s security group', self.app_name)
