@@ -37,7 +37,7 @@ class SpinnakerSecurityGroup:
 
         response = requests.post(url, data=secgroup_json, headers=HEADERS)
 
-        assert response.ok, ('Failed to create Security Group for {0}: '
+        assert response.ok, ('Failed Security Group request for {0}: '
                              '{1}').format(self.app_name, response.text)
 
         try:
