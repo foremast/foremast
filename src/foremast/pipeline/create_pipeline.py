@@ -1,4 +1,5 @@
 """Create Pipelines for Spinnaker."""
+import collections
 import json
 import logging
 import os
@@ -7,10 +8,11 @@ from pprint import pformat
 import requests
 
 from ..consts import API_URL
-from ..exceptions import SpinnakerPipelineCreationFailed
+from ..exceptions import SpinnakerPipelineCreationFailed, SpinnakerSubnetError
 from ..utils import (generate_encoded_user_data, get_app_details, get_subnets,
                      get_template)
 from .clean_pipelines import clean_pipelines
+from .renumerate_stages import renumerate_stages
 
 
 class SpinnakerPipeline:
@@ -45,9 +47,15 @@ class SpinnakerPipeline:
             data = json.load(data_file)
         return data
 
-    def post_pipeline(self, pipeline_json):
+    def post_pipeline(self, pipeline):
         """Send Pipeline JSON to Spinnaker."""
         url = "{0}/pipelines".format(API_URL)
+
+        if isinstance(pipeline, str):
+            pipeline_json = pipeline
+        else:
+            pipeline_json = json.dumps(pipeline)
+
         self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
         pipeline_response = requests.post(url,
@@ -65,144 +73,80 @@ class SpinnakerPipeline:
         self.log.info('Successfully created "%s" pipeline',
                       json.loads(pipeline_json)['name'])
 
+    def render_wrapper(self, region='us-east-1'):
+        """Generate the base Pipeline wrapper.
+
+        Args:
+            region (str): AWS Region.
+
+        Returns:
+            dict: Rendered Pipeline wrapper.
+        """
+        data = {'app': {
+            'appname': self.app_name,
+            'region': region,
+            'triggerjob': self.app_info['triggerjob'],
+        }}
+
+        wrapper = get_template(
+            template_file='pipeline-templates/pipeline_wrapper.json',
+            data=data)
+
+        return json.loads(wrapper)
+
     def create_pipeline(self):
         """Send a POST to spinnaker to create a new security group."""
         clean_pipelines(app=self.app_name, settings=self.settings)
 
-        previous_env = None
-
         self.log.info('Creating wrapper template')
         self.log.debug('Envs: %s', self.settings['pipeline']['env'])
 
-        # sets up dict for managing region specific pipelines
-        # generates pipeline wrapper per region
-        regiondict = {}
+        regions_envs = collections.defaultdict(list)
         for env in self.settings['pipeline']['env']:
             for region in self.settings[env]['regions']:
-                pipeline_json = self.construct_pipeline_block(
-                    env=env,
-                    previous_env=None,
-                    next_env=None,
-                    region=region,
-                    wrapper=True)
-                regiondict[region] = [pipeline_json]
+                regions_envs[region].append(env)
+        self.log.info('Environments and Regions for Pipelines: %s',
+                      regions_envs)
 
-        self.log.debug('Region dict:\n%s', regiondict)
+        pipelines = {}
+        for region, envs in regions_envs.items():
+            # TODO: Overrides for an environment no longer makes sense. Need to
+            # provide override for entire Region possibly.
+            pipelines[region] = self.render_wrapper(region=region)
 
-        for index, env in enumerate(self.settings['pipeline']['env']):
-            # Assume order of environments is correct
-            try:
-                next_env = self.settings['pipeline']['env'][index + 1]
-            except IndexError:
-                next_env = None
-
-            for region in self.settings[env]['regions']:
-                if env in self.settings['pipeline']:
-                    # The custom provided pipeline
-                    self.log.info('Found overriding Pipeline JSON for %s.',
-                                  env)
-                    pipeline_json = self.settings['pipeline'].get(env, None)
-                    self.post_pipeline(pipeline_json)
-                else:
-                    self.log.info('Using predefined template for %s.', env)
-                    pipeline_json = self.construct_pipeline_block(
+            previous_env = None
+            for env in envs:
+                try:
+                    block = self.construct_pipeline_block(
                         env=env,
                         previous_env=previous_env,
-                        region=region,
-                        next_env=next_env)
-                    regiondict[region].append(pipeline_json)
+                        region=region)
 
-            previous_env = env
+                    pipelines[region]['stages'].extend(json.loads(block))
 
-        # builds pipeline for each region
-        for key in regiondict.keys():
-            newpipeline = self.combine_pipelines(regiondict[key])
-            self.post_pipeline(newpipeline)
+                    previous_env = env
+                except SpinnakerSubnetError:
+                    pass
+
+        self.log.debug('Assembled Pipelines:\n%s', pformat(pipelines))
+
+        for region, pipeline in pipelines.items():
+            renumerate_stages(pipeline)
+
+            self.log.info('Updating Pipeline for %s.', region)
+            self.post_pipeline(pipeline)
 
         return True
 
-    def combine_pipelines(self, pipeline_list):
-        """Combine _pipeline_list_ into single pipeline for Spinnaker.
-
-        +---------+------------------------+------------+
-        | refId   | stage                  | requires   |
-        +=========+========================+============+
-        | 0       | config                 |            |
-        +---------+------------------------+------------+
-        | 1       | bake                   |            |
-        +---------+------------------------+------------+
-        | 100     | git tagger packaging   | 1          |
-        +---------+------------------------+------------+
-        | 2       | deploy dev             | 1          |
-        +---------+------------------------+------------+
-        | 3       | QE dev                 | 2          |
-        +---------+------------------------+------------+
-        | 200     | git tagger dev         | 2          |
-        +---------+------------------------+------------+
-        | 4       | judgement              | 3          |
-        +---------+------------------------+------------+
-        | 5       | deploy stage           | 4          |
-        +---------+------------------------+------------+
-        | 6       | QE stage               | 5          |
-        +---------+------------------------+------------+
-        | 500     | git tagger stage       | 5          |
-        +---------+------------------------+------------+
-
-        Args:
-            pipeline_list (list): List of pipelines to combine..
-
-        Returns:
-            dict: dictionary of one big pipeline.
-        """
-        self.log.debug('Pipeline list: %s', pipeline_list)
-
-        pipeline, *more_stages = pipeline_list
-        stages = json.loads(pipeline)['stages']
-        for stage in more_stages:
-            stages += json.loads(stage)
-        self.log.debug('Combined Stages:\n%s', pformat(stages))
-
-        main_index = 1
-        for stage in stages:
-            if stage['name'].startswith('Git Tag'):
-                stage['requisiteStageRefIds'] = [str(main_index)]
-                stage['refId'] = str(main_index * 100)
-            elif stage['name'].startswith('Log Deploy'):
-                stage['requisiteStageRefIds'] = [str(main_index)]
-                stage['refId'] = str(main_index * 101)
-            elif stage['type'] == 'bake':
-                stage['requisiteStageRefIds'] = []
-                stage['refId'] = str(main_index)
-            else:
-                stage['requisiteStageRefIds'] = [str(main_index)]
-                main_index += 1
-                stage['refId'] = str(main_index)
-
-            self.log.debug('step=%(name)s\trefId=%(refId)s\t'
-                           'requisiteStageRefIds=%(requisiteStageRefIds)s',
-                           stage)
-
-        self.log.debug('Deleting last Manual Judgement, Stage not needed.')
-        del stages[-1]
-
-        pipeline = json.loads(pipeline)
-        pipeline['stages'] = stages
-
-        return json.dumps(pipeline)
-
-    def construct_pipeline_block(self,
-                                 env='',
-                                 previous_env=None,
-                                 next_env=None,
-                                 region='us-east-1',
-                                 wrapper=False):
+    def construct_pipeline_block(
+            self, env='', previous_env=None,
+            region='us-east-1'):
         """Create the Pipeline JSON from template.
 
         Args:
             env (str): Deploy environment name, e.g. dev, stage, prod.
             previous_env (str): The previous deploy environment to use as
                 Trigger.
-            next_env (str): Name of next deployment environment.
             region (str): AWS Region to deploy to.
 
         Returns:
@@ -213,9 +157,7 @@ class SpinnakerPipeline:
 
         self.log.debug('App info:\n%s', self.app_info)
 
-        if wrapper:
-            template_name = 'pipeline-templates/pipeline_wrapper.json'
-        elif env.startswith('prod'):
+        if env.startswith('prod'):
             template_name = 'pipeline-templates/pipeline_{}.json'.format(env)
         else:
             template_name = 'pipeline-templates/pipeline_stages.json'
@@ -236,7 +178,6 @@ class SpinnakerPipeline:
             'region': region,
             'az_dict': json.dumps(region_subnets),
             'previous_env': previous_env,
-            'next_env': next_env,
             'encoded_user_data': generate_encoded_user_data(
                 env=env,
                 region=region,
