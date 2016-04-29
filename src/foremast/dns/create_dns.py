@@ -1,19 +1,16 @@
 """DNS functions for deployment."""
-import configparser
 import json
 import logging
-import os
 from pprint import pformat
 
 import boto3.session
 import gogoutils
 import requests
-from jinja2 import Environment, FileSystemLoader
 from tryagain import retries
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerApplicationListError, SpinnakerElbNotFound
-from ..utils import get_configs, get_template
+from ..utils import get_template
 
 
 class SpinnakerDns:
