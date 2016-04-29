@@ -4,12 +4,8 @@ import logging
 from pprint import pformat
 
 import boto3.session
-import requests
-from tryagain import retries
 
-from ..consts import API_URL
-from ..exceptions import SpinnakerElbNotFound
-from ..utils import get_app_details, get_template
+from ..utils import find_elb, get_app_details, get_template
 
 
 class SpinnakerDns:
@@ -35,34 +31,6 @@ class SpinnakerDns:
         env = boto3.session.Session(profile_name=self.app_info['env'])
         self.r53client = env.client('route53')
 
-    @retries(max_attempts=5,
-             wait=2,
-             exceptions=(AssertionError, SpinnakerElbNotFound))
-    def get_app_aws_elb(self):
-        """Get an application's AWS elb dns name."""
-        name = self.app_name
-        env = self.app_info['env']
-        region = self.app_info['region']
-
-        self.log.info('Find %s ELB in %s [%s].', name, env, region)
-
-        url = '{0}/applications/{1}/loadBalancers'.format(API_URL, name)
-        response = requests.get(url)
-
-        assert response.ok
-
-        elb_dns = None
-        accounts = response.json()
-        for account in accounts:
-            if account['account'] == env and account['region'] == region:
-                elb_dns = account['dnsname']
-                break
-        else:
-            raise SpinnakerElbNotFound(
-                'Elb for "{0}" in region {1} not found'.format(name, region))
-
-        return elb_dns
-
     def create_elb_dns(self):
         """Create dns entries in route53.
 
@@ -75,7 +43,9 @@ class SpinnakerDns:
         dns_zone = '{env}.{domain}'.format(**self.app_info)
 
         dns_elb = self.generated.dns()['elb']
-        dns_elb_aws = self.get_app_aws_elb()
+        dns_elb_aws = find_elb(name=self.app_name,
+                               env=self.app_info['env'],
+                               region=self.app_info['region'])
 
         # get correct hosted zone
         zones = self.r53client.list_hosted_zones_by_name(DNSName=dns_zone)
