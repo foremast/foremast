@@ -4,13 +4,13 @@ import logging
 import os
 from pprint import pformat
 
-import murl
 import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import (check_managed_pipeline, generate_encoded_user_data,
+from ..utils import (generate_encoded_user_data, get_all_pipelines,
                      get_app_details, get_subnets, get_template)
+from .clean_pipelines import clean_pipelines
 
 
 class SpinnakerPipeline:
@@ -39,52 +39,6 @@ class SpinnakerPipeline:
             data = json.load(data_file)
         return data
 
-    def clean_pipelines(self):
-        """Delete Pipelines for regions not defined in application.json files.
-
-        For Pipelines named **app_name [region]**, _region_ will need to appear
-        in at least one application.json file. All other names are assumed
-        unamanaged.
-
-        Returns:
-            True: Upon successful completion.
-        """
-        url = murl.Url(API_URL)
-        pipelines = self.get_all_pipelines(app=self.app_info['app']).json()
-
-        envs = self.settings['pipeline']['env']
-        self.log.debug('Find Regions in: %s', envs)
-
-        regions = set()
-        for env in envs:
-            regions.update(self.settings[env]['regions'])
-        self.log.debug('Regions defined: %s', regions)
-
-        for pipeline in pipelines:
-            pipeline_name = pipeline['name']
-
-            try:
-                region = check_managed_pipeline(name=pipeline_name,
-                                                app_name=self.app_name)
-            except ValueError:
-                self.log.info('"%s" is not managed.', pipeline_name)
-                continue
-
-            self.log.debug('Check "%s" in defined Regions.', region)
-
-            if region not in regions:
-                self.log.warning('Deleting Pipeline: %s', pipeline_name)
-
-                url.path = 'pipelines/{app}/{pipeline}'.format(
-                    app=self.app_info['app'],
-                    pipeline=pipeline_name)
-                response = requests.delete(url.url)
-
-                self.log.debug('Deleted "%s" Pipeline response:\n%s',
-                               pipeline_name, response.text)
-
-        return True
-
     def post_pipeline(self, pipeline_json):
         """Send Pipeline JSON to Spinnaker."""
         url = "{0}/pipelines".format(API_URL)
@@ -107,7 +61,8 @@ class SpinnakerPipeline:
 
     def create_pipeline(self):
         """Send a POST to spinnaker to create a new security group."""
-        self.clean_pipelines()
+        clean_pipelines(app=self.app_name, settings=self.settings)
+
         previous_env = None
 
         self.log.info('Creating wrapper template')
@@ -286,20 +241,6 @@ class SpinnakerPipeline:
         pipeline_json = get_template(template_file=template_name, data=data)
         return pipeline_json
 
-    def get_all_pipelines(self, app=''):
-        """Get a list of all the Pipelines in _app_.
-
-        Args:
-            app (str): Name of Spinnaker Application.
-
-        Returns:
-            requests.models.Response: Response from Gate containing Pipelines.
-        """
-        url = murl.Url(API_URL)
-        url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
-        response = requests.get(url.url)
-        return response
-
     def get_pipe_id(self, name=''):
         """Get the ID for Pipeline _name_.
 
@@ -312,17 +253,14 @@ class SpinnakerPipeline:
         """
         return_id = None
 
-        response = self.get_all_pipelines('{app}'.format(**self.app_info))
+        pipelines = get_all_pipelines('{app}'.format(**self.app_info))
 
-        if response.ok:
-            pipe_configs = response.json()
+        for pipeline in pipelines:
+            self.log.debug('ID of %(name)s: %(id)s', pipeline)
 
-            for pipeline in pipe_configs:
-                self.log.debug('ID of %(name)s: %(id)s', pipeline)
-
-                if pipeline['name'] == name:
-                    return_id = pipeline['id']
-                    self.log.info('Pipeline %s found, ID: %s', name, return_id)
-                    break
+            if pipeline['name'] == name:
+                return_id = pipeline['id']
+                self.log.info('Pipeline %s found, ID: %s', name, return_id)
+                break
 
         return return_id
