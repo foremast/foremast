@@ -25,7 +25,7 @@ class SpinnakerSecurityGroup:
         self.app_name = app_info['app']
 
     def create_security_group(self):
-        """Sends a POST to spinnaker to create a new security group."""
+        """Send a POST to spinnaker to create a new security group."""
         url = "{0}/applications/{1}/tasks".format(API_URL, self.app_name)
 
         self.app_info['vpc'] = get_vpc_id(self.app_info['env'],
