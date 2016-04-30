@@ -105,8 +105,8 @@ class SpinnakerPipeline:
         for env in self.settings['pipeline']['env']:
             for region in self.settings[env]['regions']:
                 regions_envs[region].append(env)
-        self.log.info('Environments and Regions for Pipelines: %s',
-                      regions_envs)
+        self.log.info('Environments and Regions for Pipelines:\n%s',
+                      json.dumps(regions_envs, indent=4))
 
         subnets = get_subnets()
 
