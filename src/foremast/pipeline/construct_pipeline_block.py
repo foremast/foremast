@@ -29,7 +29,7 @@ def construct_pipeline_block(env='',
     Returns:
         dict: Pipeline JSON template rendered with configurations.
     """
-    LOG.info('Create Pipeline for %s in %s.', env, region)
+    LOG.info('%s block for [%s].', env, region)
 
     if env.startswith('prod'):
         template_name = 'pipeline-templates/pipeline_{}.json'.format(env)
