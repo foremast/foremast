@@ -37,8 +37,6 @@ def construct_pipeline_block(env='',
 
     region_subnets = get_subnets(env=env, region=region)
 
-    LOG.debug('Region and subnets in use:\n%s', region_subnets)
-
     user_data = generate_encoded_user_data(env=env,
                                            region=region,
                                            app_name=generated.app,
