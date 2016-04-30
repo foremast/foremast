@@ -140,7 +140,6 @@ class SpinnakerPipeline:
         for region, pipeline in pipelines.items():
             renumerate_stages(pipeline)
 
-            self.log.info('Updating Pipeline for %s.', region)
             self.post_pipeline(pipeline)
 
         return True
