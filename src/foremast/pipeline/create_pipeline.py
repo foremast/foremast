@@ -98,11 +98,11 @@ class SpinnakerPipeline:
         """Send a POST to spinnaker to create a new security group."""
         clean_pipelines(app=self.app_name, settings=self.settings)
 
-        self.log.info('Creating wrapper template')
-        self.log.debug('Envs: %s', self.settings['pipeline']['env'])
+        pipeline_envs = self.settings['pipeline']['env']
+        self.log.debug('Envs from pipeline.json: %s', pipeline_envs)
 
         regions_envs = collections.defaultdict(list)
-        for env in self.settings['pipeline']['env']:
+        for env in pipeline_envs:
             for region in self.settings[env]['regions']:
                 regions_envs[region].append(env)
         self.log.info('Environments and Regions for Pipelines:\n%s',
