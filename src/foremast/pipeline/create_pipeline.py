@@ -9,7 +9,7 @@ import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed, SpinnakerSubnetError
-from ..utils import get_app_details, get_template
+from ..utils import get_app_details, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block import construct_pipeline_block
 from .renumerate_stages import renumerate_stages
@@ -108,6 +108,8 @@ class SpinnakerPipeline:
         self.log.info('Environments and Regions for Pipelines: %s',
                       regions_envs)
 
+        subnets = get_subnets()
+
         pipelines = {}
         for region, envs in regions_envs.items():
             # TODO: Overrides for an environment no longer makes sense. Need to
@@ -117,18 +119,21 @@ class SpinnakerPipeline:
             previous_env = None
             for env in envs:
                 try:
-                    block = construct_pipeline_block(
-                        env=env,
-                        generated=self.generated,
-                        previous_env=previous_env,
-                        region=region,
-                        settings=self.settings[env])
+                    region_subnets = {region: subnets[env][region]}
+                except KeyError:
+                    self.log.info('%s is not available for %s.', region, env)
+                    continue
 
-                    pipelines[region]['stages'].extend(json.loads(block))
+                block = construct_pipeline_block(env=env,
+                                                 generated=self.generated,
+                                                 previous_env=previous_env,
+                                                 region=region,
+                                                 region_subnets=region_subnets,
+                                                 settings=self.settings[env])
 
-                    previous_env = env
-                except SpinnakerSubnetError:
-                    pass
+                pipelines[region]['stages'].extend(json.loads(block))
+
+                previous_env = env
 
         self.log.debug('Assembled Pipelines:\n%s', pformat(pipelines))
 

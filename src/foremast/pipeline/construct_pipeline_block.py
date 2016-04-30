@@ -3,7 +3,7 @@ import json
 import logging
 from pprint import pformat
 
-from ..utils import generate_encoded_user_data, get_subnets, get_template
+from ..utils import generate_encoded_user_data, get_template
 
 LOG = logging.getLogger(__name__)
 
@@ -12,6 +12,7 @@ def construct_pipeline_block(env='',
                              generated=None,
                              previous_env=None,
                              region='us-east-1',
+                             region_subnets=None,
                              settings=None):
     """Create the Pipeline JSON from template.
 
@@ -22,6 +23,8 @@ def construct_pipeline_block(env='',
             Trigger.
         region (str): AWS Region to deploy to.
         settings (dict): Environment settings from configurations.
+        subnets (dict): Subnets for a Region, e.g.
+            {'us-west-2': ['us-west-2a', 'us-west-2b', 'us-west-2c']}.
 
     Returns:
         dict: Pipeline JSON template rendered with configurations.
@@ -34,8 +37,6 @@ def construct_pipeline_block(env='',
         template_name = 'pipeline-templates/pipeline_stages.json'
 
     LOG.debug('%s info:\n%s', env, pformat(settings))
-
-    region_subnets = get_subnets(env=env, region=region)
 
     user_data = generate_encoded_user_data(env=env,
                                            region=region,
