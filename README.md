@@ -17,16 +17,15 @@ virtualenv venv
 source ./venv/bin/activate
 pip install -U -r requirements.txt
 
-cd ./src/
-python -m foremast.app -h
-python -m foremast.configs -h
-python -m foremast.configurations -h
-python -m foremast.dns -h
-python -m foremast.elb -h
-python -m foremast.iam -h
-python -m foremast.pipeline -h
-python -m foremast.s3 -h
-python -m foremast.securitygroup -h
+python -m src.foremast.app -h
+python -m src.foremast.configs -h
+python -m src.foremast.configurations -h
+python -m src.foremast.dns -h
+python -m src.foremast.elb -h
+python -m src.foremast.iam -h
+python -m src.foremast.pipeline -h
+python -m src.foremast.s3 -h
+python -m src.foremast.securitygroup -h
 ```
 ### Install
 
