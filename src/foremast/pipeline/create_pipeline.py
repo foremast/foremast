@@ -8,7 +8,7 @@ from pprint import pformat
 import requests
 
 from ..consts import API_URL
-from ..exceptions import SpinnakerPipelineCreationFailed, SpinnakerSubnetError
+from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import get_app_details, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block import construct_pipeline_block
