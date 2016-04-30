@@ -51,8 +51,6 @@ def get_subnets(gate_url=API_URL,
 
         subnet_list = subnet_response.json()
 
-    LOG.debug('Subnet list: %s', subnet_list)
-
     for subnet in subnet_list:
         LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t'
                   '%(availabilityZone)s', subnet)
