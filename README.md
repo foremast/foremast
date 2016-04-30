@@ -10,6 +10,17 @@ update this README as the project grows.
 
 ## Usage
 
+### Run Full Job
+
+Commands can be run in the same way that Jenkins will execute using the helper
+Bash script.
+
+```bash
+PROJECT=forrest GIT_REPO=core ./foremast.bash
+```
+
+### Individual Packages
+
 Run code directly without installing the `foremast` package.
 
 ```bash
@@ -27,6 +38,7 @@ python -m src.foremast.pipeline -h
 python -m src.foremast.s3 -h
 python -m src.foremast.securitygroup -h
 ```
+
 ### Install
 
 Installing the package will provide CLI commands for convenience.
