@@ -84,9 +84,12 @@ class SpinnakerPipeline:
         """
         data = {'app': {
             'appname': self.app_name,
+            'base': self.app_info['base'],
             'region': region,
             'triggerjob': self.app_info['triggerjob'],
         }}
+
+        self.log.debug('Wrapper app data:\n%s', pformat(data))
 
         wrapper = get_template(
             template_file='pipeline-templates/pipeline_wrapper.json',

@@ -17,6 +17,9 @@ def main():
     parser.add_argument("--app",
                         help="The application name to create",
                         required=True)
+    parser.add_argument('-b', '--base',
+                        help='Base AMI name to use, e.g. fedora, tomcat',
+                        default='tomcat')
     parser.add_argument(
         "--triggerjob",
         help="The jenkins job to monitor for pipeline triggering",
@@ -32,15 +35,7 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    # Dictionary containing application info. This is passed to the class for
-    # processing
-    appinfo = {
-        'app': args.app,
-        'triggerjob': args.triggerjob,
-        'properties': args.properties
-    }
-
-    spinnakerapps = SpinnakerPipeline(app_info=appinfo)
+    spinnakerapps = SpinnakerPipeline(app_info=vars(args))
     spinnakerapps.create_pipeline()
 
 
