@@ -1,6 +1,7 @@
 """Lookup AMI ID from a simple name."""
 import json
 import logging
+import os
 from base64 import b64decode
 
 import gitlab
@@ -21,7 +22,7 @@ def ami_lookup(region='us-east-1', name='tomcat8', token_file='git.token'):
     Returns:
         str: AMI ID for _name_ in _region_.
     """
-    with open(token_file, 'rt') as token_handle:
+    with open(os.path.expanduser(token_file), 'rt') as token_handle:
         token = token_handle.read().strip()
 
     server = gitlab.Gitlab(GIT_URL, token=token)
