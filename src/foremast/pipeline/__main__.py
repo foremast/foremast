@@ -31,6 +31,9 @@ def main():
         required=False)
     args = parser.parse_args()
 
+    if '"' in args.base:
+        args.base = args.base.strip('"')
+
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     log.debug('Parsed arguments: %s', args)
