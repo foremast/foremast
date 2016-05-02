@@ -84,7 +84,7 @@ class SpinnakerPipeline:
         """
         base = self.settings['pipeline']['base']
 
-        if self.app_info['base']:
+        if self.app_info.get('base'):
             base = self.app_info['base']
 
         ami_id = ami_lookup(name=base,
