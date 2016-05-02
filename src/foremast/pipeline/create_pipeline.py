@@ -9,7 +9,7 @@ import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import get_app_details, get_subnets, get_template
+from ..utils import ami_lookup, get_app_details, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block import construct_pipeline_block
 from .renumerate_stages import renumerate_stages
@@ -87,7 +87,12 @@ class SpinnakerPipeline:
         if self.app_info['base']:
             base = self.app_info['base']
 
+        ami_id = ami_lookup(name=base,
+                            region=region,
+                            token_file=self.app_info['token_file'])
+
         data = {'app': {
+            'ami_id': ami_id,
             'appname': self.app_name,
             'base': base,
             'region': region,
