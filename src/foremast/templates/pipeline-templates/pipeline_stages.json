@@ -1,0 +1,8 @@
+[
+    {% if data.app.previous_env %}
+    {% include "pipeline-templates/stage-judgement-nonprod.json.j2" %},
+    {% endif %}
+    {% include "pipeline-templates/stage-deploy.json.j2" %},
+    {% include "pipeline-templates/stage-tagger.json.j2" %},
+    {% include "pipeline-templates/stage-qe.json.j2" %}
+]

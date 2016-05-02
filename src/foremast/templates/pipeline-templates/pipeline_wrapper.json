@@ -1,0 +1,23 @@
+{
+  "name": "{{ data.app.appname }} [{{ data.app.region }}]",
+  "application": "{{ data.app.appname }}",
+  "triggers": [
+    {% include "pipeline-templates/trigger-jenkins.json.j2" %}
+  ],
+  "limitConcurrent": false,
+  "parallel": true,
+  "notifications": [
+    {
+      "level": "pipeline",
+      "when": [
+        "pipeline.failed"
+      ],
+      "type": "slack",
+      "address": "#spinnaker"
+    }
+  ],
+  "stages": [
+    {% include "pipeline-templates/stage-bake.json.j2" %},
+    {% include "pipeline-templates/stage-tagger-packaging.json.j2" %}
+  ]
+}

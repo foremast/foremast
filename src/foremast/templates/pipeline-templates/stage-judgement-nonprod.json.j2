@@ -1,0 +1,12 @@
+
+    {
+      "requisiteStageRefIds":["7"],
+      "refId": "8",
+      "type": "manualJudgment",
+      "name": "Checkpoint {{ data.app.environment }}",
+      "notifications": [],
+      "judgmentInputs": [],
+      "failPipeline": true,
+      "instructions": "I confirm that I'm ready for this application to be promoted to <strong>{{ data.app.environment }}</strong>.",
+      "comments": "application: ${ trigger.properties.APP_NAME }"
+    }
