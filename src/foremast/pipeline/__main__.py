@@ -17,9 +17,9 @@ def main():
     parser.add_argument("--app",
                         help="The application name to create",
                         required=True)
-    parser.add_argument('-b', '--base',
-                        help='Base AMI name to use, e.g. fedora, tomcat',
-                        default='tomcat')
+    parser.add_argument('-b',
+                        '--base',
+                        help='Base AMI name to use, e.g. fedora, tomcat')
     parser.add_argument(
         "--triggerjob",
         help="The jenkins job to monitor for pipeline triggering",
@@ -31,7 +31,7 @@ def main():
         required=False)
     args = parser.parse_args()
 
-    if '"' in args.base:
+    if args.base and '"' in args.base:
         args.base = args.base.strip('"')
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)

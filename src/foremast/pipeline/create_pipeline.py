@@ -82,9 +82,14 @@ class SpinnakerPipeline:
         Returns:
             dict: Rendered Pipeline wrapper.
         """
+        base = self.settings['pipeline']['base']
+
+        if self.app_info['base']:
+            base = self.app_info['base']
+
         data = {'app': {
             'appname': self.app_name,
-            'base': self.app_info['base'],
+            'base': base,
             'region': region,
             'triggerjob': self.app_info['triggerjob'],
         }}
