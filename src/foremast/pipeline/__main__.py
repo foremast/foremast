@@ -23,7 +23,7 @@ def main():
     parser.add_argument('-t',
                         '--token-file',
                         help='File with GitLab API private token',
-                        default='.aws/git.token')
+                        default='~/.aws/git.token')
     parser.add_argument(
         "--triggerjob",
         help="The jenkins job to monitor for pipeline triggering",
