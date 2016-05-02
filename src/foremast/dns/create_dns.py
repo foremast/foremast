@@ -68,6 +68,9 @@ class SpinnakerDns:
                                 dns_elb=dns_elb,
                                 dns_elb_aws=dns_elb_aws)
 
+        # TODO: Verify zone_id matches the domain we are updating
+        #       There are cases where more than 2 zones are in the account and we need
+        #       to account for that.
         for zone_id in zone_ids:
             self.log.debug('zone_id: %s', zone_id)
 
