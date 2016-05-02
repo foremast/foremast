@@ -78,8 +78,12 @@ def write_variables(app_configs=None, out_file='', git_short=''):
                              app=generated.app,
                              profile=instance_profile))
             json_configs[env] = dict(DeepChainMap(configs, rendered_configs))
+        else:
+            default_pipeline_json = json.loads(get_template(
+                'pipeline.json.j2'))
+            json_configs['pipeline'] = dict(DeepChainMap(
+                configs, default_pipeline_json))
 
-    json_configs['pipeline'] = app_configs['pipeline']
     LOG.debug('Compiled configs:\n%s', pformat(json_configs))
 
     config_lines = convert_ini(json_configs)
