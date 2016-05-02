@@ -8,7 +8,71 @@ deployments.
 These are designed to be loosely coupled applications and we will continue to
 update this README as the project grows.
 
-### Implementation
+## Usage
+
+### Run Full Job
+
+Commands can be run in the same way that Jenkins will execute using the helper
+Bash script.
+
+```bash
+PROJECT=forrest GIT_REPO=core ./foremast.bash
+```
+
+### Individual Packages
+
+Run code directly without installing the `foremast` package.
+
+```bash
+virtualenv venv
+source ./venv/bin/activate
+pip install -U -r requirements.txt
+
+python -m src.foremast.app -h
+python -m src.foremast.configs -h
+python -m src.foremast.configurations -h
+python -m src.foremast.dns -h
+python -m src.foremast.elb -h
+python -m src.foremast.iam -h
+python -m src.foremast.pipeline -h
+python -m src.foremast.s3 -h
+python -m src.foremast.securitygroup -h
+```
+
+### Install
+
+Installing the package will provide CLI commands for convenience.
+
+```bash
+virutalenv venv
+source ./venv/bin/activate
+pip install .
+
+create-app -h
+create-configs -h
+create-dns -h
+create-elb -h
+create-iam -h
+create-pipeline -h
+create-s3 -h
+create-sg -h
+```
+
+### Testing
+
+Run any unit tests available in `./tests/`.
+
+```bash
+virtualenv venv
+source ./venv/bin/activate
+pip install -U -r requirements-dev.txt
+
+tox
+# OR
+./runtests.py
+```
+
+## Implementation
 
 See `pipes-pipeline-prepare` in [dsl.groovy](runway/dsl.groovy) for Jenkins Job
 configuration.

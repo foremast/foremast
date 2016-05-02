@@ -1,0 +1,4 @@
+include README.md
+include requirements.txt
+graft src/foremast/templates
+graft src/foremast/configurations

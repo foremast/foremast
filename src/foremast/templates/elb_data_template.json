@@ -1,0 +1,38 @@
+{
+   "job":[
+      {
+         "stack":"{{ app_stack }}",
+         "detail": "detail",
+         "isInternal":{{ isInternal }},
+         "credentials":"{{ env }}",
+         "region":"{{ region }}",
+         "vpcId":"{{ vpc_id }}",
+         "healthCheckProtocol":"{{ health_protocol }}",
+         "healthCheckPort":{{ health_port }},
+         "healthCheckPath":"{{ health_path }}",
+         "healthTimeout":{{ health_timeout}},
+         "healthInterval":{{ health_interval }},
+         "healthyThreshold":{{ healthy_threshold }},
+         "unhealthyThreshold":{{ unhealthy_threshold }},
+         "regionZones": {{ region_zones }},
+         "securityGroups": {{ security_groups }},
+         "listeners":[
+            {
+               "internalProtocol":"{{ int_listener_protocol }}",
+               "internalPort":{{ int_listener_port }},
+               "externalProtocol":"{{ ext_listener_protocol }}",
+               "externalPort":{{ ext_listener_port }}
+            }
+         ],
+         "name":"{{ app_name }}",
+         "usePreferredZones":true,
+         "subnetType":"{{ subnet_type }}",
+         "healthCheck":"{{ hc_string }}",
+         "type":"upsertLoadBalancer",
+         "availabilityZones": {{ availability_zones }},
+         "user":"pipes-elb"
+      }
+   ],
+   "application":"{{ app_name }}",
+   "description":"Create Load Balancer: {{ app_name }}-{{ app_stack }}"
+}

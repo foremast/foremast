@@ -1,0 +1,19 @@
+
+    {
+      "comments": "Create Git Tag to reference commits that have deployed to {{ data.app.environment }}.",
+      "failPipeline": false,
+      "job": "git-tagger-{{ data.app.environment }}",
+      "master": "JenkinsCI",
+      "name": "Git Tag {{ data.app.environment }}",
+      "parameters": {
+        "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
+        "BUILD_TRIGGER_GIT_COMMIT": "${trigger.properties.BUILD_TRIGGER_GIT_COMMIT}",
+        "DEPLOY_ENV": "{{ data.app.environment }}",
+        "GIT_PROJECT": "${trigger.properties.GIT_PROJECT}"
+      },
+      "refId": "600",
+      "requisiteStageRefIds": [
+        "6"
+      ],
+      "type": "jenkins"
+    }

@@ -1,0 +1,36 @@
+
+    {
+      "requisiteStageRefIds": [],
+      "refId": "1",
+      "type": "bake",
+      "name": "Bake [{{ data.app.region }}]",
+      "cloudProviderType": "aws",
+      "extendedAttributes": {
+        "app_group": "${ trigger.properties.GROUP_NAME }",
+        "app_name": "${ trigger.properties.APP_NAME }"
+      },
+      "regions": ["{{ data.app.region }}"],
+      "user": "[anonymous]",
+      "vmType": "hvm",
+      "storeType": "ebs",
+      "baseOs": "tomcat",
+      "baseLabel": "release",
+      "showAdvancedOptions": true,
+      "overrideTimeout": true,
+      "stageTimeoutMs": 600000,
+      "sendNotifications": false,
+      "notifications": [],
+      "restrictExecutionDuringTimeWindow": false,
+      "restrictedExecutionWindow": {
+        "whitelist": []
+      },
+      "enhancedNetworking": true,
+      "comments": "Baking",
+      "package": "${ trigger.properties.ARTIFACT_RPM }",
+      {% if data.app.region == 'us-east-1' %}
+      "baseAmi": "ami-xxxx"
+      {% elif data.app.region == 'us-west-2' %}
+      "baseAmi": "ami-xxxx",
+      "templateFileName": "aws-ebs-west-2.json"
+      {% endif %}
+    }
