@@ -134,7 +134,7 @@ class SpinnakerPipeline:
                 try:
                     region_subnets = {region: subnets[env][region]}
                 except KeyError:
-                    self.log.info('%s is not available for %s.', region, env)
+                    self.log.info('%s is not available for %s.', env, region)
                     continue
 
                 block = construct_pipeline_block(env=env,
