@@ -41,7 +41,7 @@ def construct_pipeline_block(env='',
     user_data = generate_encoded_user_data(env=env,
                                            region=region,
                                            app_name=generated.app,
-                                           group_name=generated.project),
+                                           group_name=generated.project)
 
     # Use different variable to keep template simple
     data = settings
