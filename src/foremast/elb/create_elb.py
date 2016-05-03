@@ -1,5 +1,4 @@
 """Create ELBs for Spinnaker Pipelines."""
-import collections
 import json
 import logging
 
@@ -8,6 +7,7 @@ import requests
 from ..consts import API_URL, HEADERS
 from ..utils import check_task, get_subnets, get_template, get_vpc_id
 from .add_listeners import add_listeners
+from .splay_health import splay_health
 
 
 class SpinnakerELB:
@@ -28,37 +28,6 @@ class SpinnakerELB:
             properties = json.load(file_handle)
         return properties[env]
 
-    @staticmethod
-    def splay_health(health_target):
-        """Set Health Check path, port, and protocol.
-
-        Returns:
-            HealthCheck: A **collections.namedtuple** class with *path*, *port*,
-            *proto*, and *target* attributes.
-        """
-        log = logging.getLogger(__name__)
-
-        HealthCheck = collections.namedtuple('HealthCheck',
-                                             ['path', 'port', 'proto',
-                                              'target'])
-
-        proto, health_port_path = health_target.split(':')
-        port, *health_path = health_port_path.split('/')
-
-        if proto == 'TCP':
-            path = ''
-        elif not health_path:
-            path = '/healthcheck'
-        else:
-            path = '/{0}'.format('/'.join(health_path))
-
-        target = '{0}:{1}{2}'.format(proto, port, path)
-
-        health = HealthCheck(path, port, proto, target)
-        log.info(health)
-
-        return health
-
     def make_elb_json(self):
         """Render the JSON template with arguments.
 
@@ -72,7 +41,7 @@ class SpinnakerELB:
 
         elb_facing = 'true' if self.args.subnet_type == 'internal' else 'false'
 
-        health = self.splay_health(self.args.health_target)
+        health = splay_health(self.args.health_target)
 
         template_kwargs = {
             'app_name': self.args.app,
