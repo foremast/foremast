@@ -42,13 +42,14 @@ class SpinnakerELB:
         subnet_purpose = self.properties.get('subnet_purpose', 'internal')
         elb_facing = 'true' if subnet_purpose == 'internal' else 'false'
 
-        health = splay_health(self.args.health_target)
+        target = self.properties['elb'].get('target', 'HTTP:80/health')
+        health = splay_health(target)
 
         template_kwargs = {
             'app_name': self.args.app,
             'availability_zones': json.dumps(region_subnets),
             'env': env,
-            'hc_string': health.target,
+            'hc_string': target,
             'health_interval': self.args.health_interval,
             'health_path': health.path,
             'health_port': health.port,

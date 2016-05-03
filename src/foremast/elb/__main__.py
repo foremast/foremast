@@ -42,7 +42,6 @@ def main():
     add_properties(parser)
     parser.add_argument('--app', action="store", help="application name", required=True)
     parser.add_argument('--env', action="store", help="environment: dev, stage, prod", required=True)
-    parser.add_argument('--health-target', action="store", help="Target for Health Check, e.g. HTTP:80/health", required=True)
     parser.add_argument('--health-timeout', action="store", help="health check timeout in seconds", default=10)
     parser.add_argument('--health-interval', action="store", help="health check interval in seconds", default=20)
     parser.add_argument('--healthy-threshold', action="store", help="healthy threshold", default=2)
