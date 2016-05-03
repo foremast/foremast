@@ -95,6 +95,7 @@ class SpinnakerPipeline:
             'ami_id': ami_id,
             'appname': self.app_name,
             'base': base,
+            'environment': 'packaging',
             'region': region,
             'triggerjob': self.app_info['triggerjob'],
         }}
