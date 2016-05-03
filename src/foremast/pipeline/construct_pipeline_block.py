@@ -53,7 +53,8 @@ def construct_pipeline_block(env='',
         'previous_env': previous_env,
         'encoded_user_data': user_data,
     })
-    data['qe'].update({'qe_json': json.dumps(settings['qe'])})
+
+    LOG.debug('Block data:\n%s', pformat(data))
 
     pipeline_json = get_template(template_file=template_name, data=data)
     return pipeline_json
