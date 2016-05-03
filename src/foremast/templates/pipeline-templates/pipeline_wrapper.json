@@ -18,6 +18,6 @@
   ],
   "stages": [
     {% include "pipeline-templates/stage-bake.json.j2" %},
-    {% include "pipeline-templates/stage-tagger-packaging.json.j2" %}
+    {% include "pipeline-templates/stage-tagger.json.j2" %}
   ]
 }
