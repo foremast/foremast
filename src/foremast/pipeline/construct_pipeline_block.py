@@ -23,7 +23,7 @@ def construct_pipeline_block(env='',
             Trigger.
         region (str): AWS Region to deploy to.
         settings (dict): Environment settings from configurations.
-        subnets (dict): Subnets for a Region, e.g.
+        region_subnets (dict): Subnets for a Region, e.g.
             {'us-west-2': ['us-west-2a', 'us-west-2b', 'us-west-2c']}.
 
     Returns:
@@ -53,6 +53,7 @@ def construct_pipeline_block(env='',
         'previous_env': previous_env,
         'encoded_user_data': user_data,
     })
+    data['qe'].update({'qe_json': json.dumps(settings['qe'])})
 
     pipeline_json = get_template(template_file=template_name, data=data)
     return pipeline_json
