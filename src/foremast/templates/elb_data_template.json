@@ -16,14 +16,7 @@
          "unhealthyThreshold":{{ unhealthy_threshold }},
          "regionZones": {{ region_zones }},
          "securityGroups": {{ security_groups }},
-         "listeners":[
-            {
-               "internalProtocol":"{{ int_listener_protocol }}",
-               "internalPort":{{ int_listener_port }},
-               "externalProtocol":"{{ ext_listener_protocol }}",
-               "externalPort":{{ ext_listener_port }}
-            }
-         ],
+         "listeners": [],
          "name":"{{ app_name }}",
          "usePreferredZones":true,
          "subnetType":"{{ subnet_type }}",
