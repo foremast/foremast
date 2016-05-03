@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_debug
+from ..args import add_debug, add_properties
 from ..consts import LOGGING_FORMAT
 from .create_elb import SpinnakerELB
 
@@ -39,6 +39,7 @@ def main():
         description='Example with non-optional arguments')
 
     add_debug(parser)
+    add_properties(parser)
     parser.add_argument('--app', action="store", help="application name", required=True)
     parser.add_argument('--env', action="store", help="environment: dev, stage, prod", required=True)
     parser.add_argument('--health-target', action="store", help="Target for Health Check, e.g. HTTP:80/health", required=True)
