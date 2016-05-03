@@ -16,6 +16,16 @@ class SpinnakerELB:
 
     def __init__(self, args=None):
         self.args = args
+        self.properties = self.get_properties(
+            properties_file=self.args.properties,
+            env=self.args.env)
+
+    @staticmethod
+    def get_properties(properties_file='', env=''):
+        """Get contents of _properties_file_ for the _env_."""
+        with open(properties_file, 'rt') as file_handle:
+            properties = json.load(file_handle)
+        return properties[env]
 
     @staticmethod
     def splay_health(health_target):
