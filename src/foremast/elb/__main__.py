@@ -49,7 +49,6 @@ def main():
     parser.add_argument('--unhealthy-threshold', action="store", help="unhealthy threshold", default=5)
     parser.add_argument('--security-groups', action="store", help="security groups", default="sg_apps", nargs="+")
     # parser.add_argument('--elb-name', action="store", help="elb name", required=True)
-    parser.add_argument('--subnet-xxxx', action="store", help="ELB Subnet type, e.g. external, internal", default="internal")
     parser.add_argument('--region', help="region name", default="us-east-1")
 
     args = parser.parse_args()

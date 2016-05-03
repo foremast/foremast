@@ -39,7 +39,8 @@ class SpinnakerELB:
 
         region_subnets = get_subnets(target='elb', env=env, region=region)
 
-        elb_facing = 'true' if self.args.subnet_type == 'internal' else 'false'
+        subnet_purpose = self.properties.get('subnet_purpose', 'internal')
+        elb_facing = 'true' if subnet_purpose == 'internal' else 'false'
 
         health = splay_health(self.args.health_target)
 
@@ -58,7 +59,7 @@ class SpinnakerELB:
             'region_zones': json.dumps(region_subnets[region]),
             'region': region,
             'security_groups': json.dumps([self.args.security_groups]),
-            'subnet_type': self.args.subnet_type,
+            'subnet_type': subnet_purpose,
             'unhealthy_threshold': self.args.unhealthy_threshold,
             'vpc_id': get_vpc_id(env, region),
         }
