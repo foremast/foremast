@@ -47,10 +47,7 @@ def test_format_listeners():
         'sslCertificateId': None
     }]
 
-    results = format_listeners(elb_settings=test)
-    for index, result in enumerate(results):
-        assert sorted(sample[index]) == sorted(result)
-    assert sample == results
+    assert sample == format_listeners(elb_settings=test)
 
     test = {'ports': [{'instance': 'HTTP:8080', 'loadbalancer': 'http:80'}]}
 
