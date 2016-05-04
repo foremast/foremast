@@ -36,16 +36,17 @@ class SpinnakerELB:
         """
         env = self.args.env
         region = self.args.region
+        elb_settings = self.properties['elb']
 
         region_subnets = get_subnets(target='elb', env=env, region=region)
 
         subnet_purpose = self.properties.get('subnet_purpose', 'internal')
         elb_facing = 'true' if subnet_purpose == 'internal' else 'false'
 
-        target = self.properties['elb'].get('target', 'HTTP:80/health')
+        target = elb_settings.get('target', 'HTTP:80/health')
         health = splay_health(target)
 
-        listeners = format_listeners(elb_settings=self.properties['elb'])
+        listeners = format_listeners(elb_settings=elb_settings)
 
         template_kwargs = {
             'app_name': self.args.app,
