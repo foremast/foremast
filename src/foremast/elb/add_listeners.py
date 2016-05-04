@@ -33,7 +33,11 @@ def format_listeners(elb_settings=None):
             'internalProtocol': elb_settings['i_proto'],
         }]
 
-    LOG.debug('Found ELB Listeners: %s', listeners)
+    for listener in listeners:
+        LOG.info('ELB Listener: '
+                 'loadbalancer %(externalProtocol)s:%(externalPort)d\t'
+                 'instance %(internalProtocol)s:%(internalPort)d\t'
+                 'certificate: %(sslCertificateId)s', listener)
     return listeners
 
 
