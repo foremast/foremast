@@ -1,5 +1,4 @@
 """Add the appropriate ELB Listeners."""
-import json
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -7,6 +6,35 @@ LOG = logging.getLogger(__name__)
 
 def format_listeners(elb_settings=None):
     """Format ELB Listeners into standard list.
+
+    Args:
+        elb_settings (dict): ELB settings including ELB Listeners to add,
+            e.g.
+
+            # old
+            {
+                "i_port": 8080,
+                "lb_port": 80,
+                "subnet_purpose": "internal",
+                "target": "HTTP:8080/health"
+            }
+
+            # new
+            {
+                "ports": [
+                    {
+                        "instance": "HTTP:8080",
+                        "loadbalancer": "HTTP:80"
+                    },
+                    {
+                        "certificate": "cert_name",
+                        "instance": "HTTP:8443",
+                        "loadbalancer": "HTTPS:443"
+                    }
+                ],
+                "subnet_purpose": "internal",
+                "target": "HTTP:8080/health"
+            }
 
     Returns:
         list: ELB Listeners formatted into dicts for Spinnaker.
@@ -54,50 +82,3 @@ def format_listeners(elb_settings=None):
                  'instance %(internalProtocol)s:%(internalPort)d\t'
                  'certificate: %(sslCertificateId)s', listener)
     return listeners
-
-
-def add_listeners(elb_json='', elb_settings=None):
-    """Add ELB Listeners.
-
-    Args:
-        elb_json (str): JSON object of ELB.
-        elb_settings (dict): ELB settings including ELB Listeners to add,
-            e.g.
-
-            # old
-            {
-                "i_port": 8080,
-                "lb_port": 80,
-                "subnet_purpose": "internal",
-                "target": "HTTP:8080/health"
-            }
-
-            # new
-            {
-                "ports": [
-                    {
-                        "instance": "HTTP:8080",
-                        "loadbalancer": "HTTP:80"
-                    },
-                    {
-                        "certificate": "cert_name",
-                        "instance": "HTTP:8443",
-                        "loadbalancer": "HTTPS:443"
-                    }
-                ],
-                "subnet_purpose": "internal",
-                "target": "HTTP:8080/health"
-            }
-
-    Returns:
-        str: JSON text with Listeners filled in.
-    """
-    elb_listeners = format_listeners(elb_settings=elb_settings)
-
-    elb_dict = json.loads(elb_json)
-    for job in elb_dict['job']:
-        job['listeners'] = elb_listeners
-    elb_json = json.dumps(elb_dict)
-
-    LOG.debug('ELB JSON:\n%s', elb_json)
-    return elb_json

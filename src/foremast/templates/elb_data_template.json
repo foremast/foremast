@@ -16,7 +16,7 @@
          "unhealthyThreshold":{{ unhealthy_threshold }},
          "regionZones": {{ region_zones }},
          "securityGroups": {{ security_groups }},
-         "listeners": [],
+         "listeners": {{ listeners }},
          "name":"{{ app_name }}",
          "usePreferredZones":true,
          "subnetType":"{{ subnet_type }}",

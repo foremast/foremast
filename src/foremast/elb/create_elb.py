@@ -6,7 +6,7 @@ import requests
 
 from ..consts import API_URL, HEADERS
 from ..utils import check_task, get_subnets, get_template, get_vpc_id
-from .add_listeners import add_listeners
+from .format_listeners import format_listeners
 from .splay_health import splay_health
 
 
@@ -45,6 +45,8 @@ class SpinnakerELB:
         target = self.properties['elb'].get('target', 'HTTP:80/health')
         health = splay_health(target)
 
+        listeners = format_listeners(elb_settings=self.properties['elb'])
+
         template_kwargs = {
             'app_name': self.args.app,
             'availability_zones': json.dumps(region_subnets),
@@ -57,6 +59,7 @@ class SpinnakerELB:
             'health_timeout': self.args.health_timeout,
             'healthy_threshold': self.args.healthy_threshold,
             'isInternal': elb_facing,
+            'listeners': json.dumps(listeners),
             'region_zones': json.dumps(region_subnets[region]),
             'region': region,
             'security_groups': json.dumps([self.args.security_groups]),
@@ -69,8 +72,6 @@ class SpinnakerELB:
             template_file='elb_data_template.json',
             **template_kwargs)
 
-        rendered_template = add_listeners(elb_json=rendered_template,
-                                          elb_settings=self.properties['elb'])
         return rendered_template
 
     def create_elb(self):
