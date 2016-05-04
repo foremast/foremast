@@ -49,7 +49,15 @@ def test_format_listeners():
 
     assert sample == format_listeners(elb_settings=test)
 
-    test = {'ports': [{'instance': 'HTTP:8080', 'loadbalancer': 'http:80'}]}
+    # 'ports' key should override old style definitions
+    test['ports'] = [{'instance': 'HTTP:8000', 'loadbalancer': 'http:500'}]
+    sample = [{
+        'externalPort': 500,
+        'externalProtocol': 'HTTP',
+        'internalPort': 8000,
+        'internalProtocol': 'HTTP',
+        'sslCertificateId': None
+    }]
 
     assert sample == format_listeners(elb_settings=test)
 
