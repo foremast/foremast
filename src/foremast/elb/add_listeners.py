@@ -6,7 +6,22 @@ LOG = logging.getLogger(__name__)
 
 
 def format_listeners(elb_settings=None):
-    """Format ELB Listeners into standard list."""
+    """Format ELB Listeners into standard list.
+
+    Returns:
+        list: ELB Listeners formatted into dicts for Spinnaker.
+
+            [
+                {
+                    'externalPort': 80,
+                    'externalProtocol': 'HTTP',
+                    'internalPort': 8080,
+                    'internalProtocol': 'HTTP',
+                    'sslCertificateId': None
+                },
+                ...
+            ]
+    """
     LOG.debug('ELB settings:\n%s', elb_settings)
 
     listeners = []
