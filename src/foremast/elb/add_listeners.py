@@ -1,7 +1,6 @@
 """Add the appropriate ELB Listeners."""
 import json
 import logging
-from pprint import pformat
 
 LOG = logging.getLogger(__name__)
 
