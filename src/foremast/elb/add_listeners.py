@@ -6,11 +6,43 @@ from pprint import pformat
 LOG = logging.getLogger(__name__)
 
 
+def format_listeners(elb_settings=None):
+    """Format ELB Listeners into standard list."""
+    LOG.debug('ELB settings:\n%s', elb_settings)
+
+    listeners = []
+
+    if 'ports' in elb_settings:
+        for listener in elb_settings['ports']:
+            lb_proto, lb_port = listener['loadbalancer'].split(':')
+            i_proto, i_port = listener['instance'].split(':')
+
+            elb_data = {
+                'externalPort': int(lb_port),
+                'externalProtocol': lb_proto.upper(),
+                'internalPort': int(i_port),
+                'internalProtocol': i_proto.upper(),
+                'sslCertificateId': listener.get('certificate', None)
+            }
+
+            listeners.append(elb_data)
+    else:
+        listeners = [{
+            'externalPort': int(elb_settings['lb_port']),
+            'externalProtocol': elb_settings['lb_proto'],
+            'internalPort': int(elb_settings['i_port']),
+            'internalProtocol': elb_settings['i_proto'],
+        }]
+
+    LOG.debug('Found ELB Listeners: %s', listeners)
+    return listeners
+
+
 def add_listeners(elb_json='', elb_settings=None):
     """Add ELB Listeners.
 
     Args:
-        template_json (str): JSON object of ELB.
+        elb_json (str): JSON object of ELB.
         elb_settings (dict): ELB settings including ELB Listeners to add,
             e.g.
 
@@ -42,37 +74,12 @@ def add_listeners(elb_json='', elb_settings=None):
     Returns:
         str: JSON text with Listeners filled in.
     """
+    elb_listeners = format_listeners(elb_settings=elb_settings)
+
     elb_dict = json.loads(elb_json)
-
-    elb_listeners = []
-
-    if 'ports' in elb_settings:
-        for listener in elb_settings['ports']:
-            lb_proto, lb_port = listener['loadbalancer'].split(':')
-            i_proto, i_port = listener['instance'].split(':')
-
-            elb_data = {
-                'externalPort': int(lb_port),
-                'externalProtocol': lb_proto.upper(),
-                'internalPort': int(i_port),
-                'internalProtocol': i_proto.upper(),
-                'sslCertificateId': listener.get('certificate', None)
-            }
-
-            elb_listeners.append(elb_data)
-    else:
-        elb_listeners = [{
-            'externalPort': elb_settings.get('lb_port', 80),
-            'externalProtocol': 'HTTP',
-            'internalPort': elb_settings.get('i_port', 8080),
-            'internalProtocol': 'HTTP',
-        }]
-
-    LOG.debug('ELB listeners:\n%s', pformat(elb_listeners))
-
     for job in elb_dict['job']:
         job['listeners'] = elb_listeners
-
     elb_json = json.dumps(elb_dict)
+
     LOG.debug('ELB JSON:\n%s', elb_json)
     return elb_json
