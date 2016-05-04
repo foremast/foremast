@@ -64,7 +64,7 @@ def format_listeners(elb_settings=None):
                 'externalProtocol': lb_proto.upper(),
                 'internalPort': int(i_port),
                 'internalProtocol': i_proto.upper(),
-                'sslCertificateId': listener.get('certificate', None)
+                'sslCertificateId': listener.get('certificate', None),
             }
 
             listeners.append(elb_data)
@@ -74,6 +74,7 @@ def format_listeners(elb_settings=None):
             'externalProtocol': elb_settings['lb_proto'],
             'internalPort': int(elb_settings['i_port']),
             'internalProtocol': elb_settings['i_proto'],
+            'sslCertificateId': elb_settings['certificate'],
         }]
 
     for listener in listeners:
