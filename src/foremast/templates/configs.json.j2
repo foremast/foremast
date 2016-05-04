@@ -1,40 +1,43 @@
 {
-    "elb": {
-        "lb_port": 80,
-        "target": "TCP:8080",
-        "i_port": 8080,
-        "subnet_purpose": "internal"
+    "app": {
+        "app_description": null,
+        "app_ssh_key": "{{ env }}_access",
+        "email": null,
+        "eureka_enabled": false,
+        "instance_profile": "{{ profile }}",
+        "instance_type": "t2.micro"
     },
     "asg": {
         "hc_type": "ELB",
         "max_inst": 3,
-        "subnet_purpose": "internal",
-        "min_inst": 1
+        "min_inst": 1,
+        "subnet_purpose": "internal"
     },
-    "qe": {},
+    "elb": {
+        "i_port": 8080,
+        "lb_port": 80,
+        "subnet_purpose": "internal",
+        "target": "TCP:8080"
+    },
+    "qe": {
+    },
+    "regions": [
+        "us-east-1"
+    ],
     "security_group": {
+        "default_sg": "sg_apps",
+        "description": "Auto-Gen SG for {{ app }}",
         "egress": "0.0.0.0/0",
         "ingress": {
-            "app_b": [
-                8080,
-                8143
-            ],
             "app_a": [
                 8080,
                 8443,
                 8173
+            ],
+            "app_b": [
+                8080,
+                8143
             ]
-        },
-        "description": "Auto-Gen SG for {{ app }}",
-        "default_sg": "sg_apps"
-    },
-    "app": {
-        "eureka_enabled": false,
-        "instance_profile": "{{ profile }}",
-        "instance_type": "t2.micro",
-        "app_ssh_key": "{{ env }}_access",
-        "email": null,
-        "app_description": null
-    },
-    "regions": ["us-east-1"]
+        }
+    }
 }
