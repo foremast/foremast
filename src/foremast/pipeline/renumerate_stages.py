@@ -44,9 +44,6 @@ def renumerate_stages(pipeline):
         if stage['name'].startswith('Git Tag'):
             stage['requisiteStageRefIds'] = [str(main_index)]
             stage['refId'] = str(main_index * 100)
-        elif stage['name'].startswith('Log Deploy'):
-            stage['requisiteStageRefIds'] = [str(main_index)]
-            stage['refId'] = str(main_index * 101)
         elif stage['type'] == 'bake':
             stage['requisiteStageRefIds'] = []
             stage['refId'] = str(main_index)
