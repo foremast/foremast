@@ -8,7 +8,7 @@
       "name": "Audit Approval [{{ data.app.environment }}]",
       "failPipeline": true,
       "master": "JenkinsCI",
-      "job": "pipeline-processor",
+      "job": "spinnaker-pipeline-processor",
       "parameters": {
         "EXECUTION_ID": "${execution.id}",
         "FUNCTION": "audit_approval",
