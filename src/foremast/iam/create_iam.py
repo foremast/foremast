@@ -4,7 +4,6 @@ import logging
 
 import boto3
 from boto3.exceptions import botocore
-import collections
 
 from ..utils import get_app_details, get_template
 
