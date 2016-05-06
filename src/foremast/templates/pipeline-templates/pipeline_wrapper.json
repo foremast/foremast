@@ -14,7 +14,7 @@
       ],
       "type": "slack",
       "address": "{{ data.app.slack }}"
-    }
+    },
     {
       "level": "pipeline",
       "when": [
