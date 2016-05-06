@@ -86,7 +86,9 @@ class SpinnakerPipeline:
 
         if self.app_info.get('base'):
             base = self.app_info['base']
-
+        
+        email = self.settings['pipeline']['notifications']['email']
+        slack = self.settings['pipeline']['notifications']['slack']
         ami_id = ami_lookup(name=base,
                             region=region,
                             token_file=self.app_info['token_file'])
@@ -98,6 +100,8 @@ class SpinnakerPipeline:
             'environment': 'packaging',
             'region': region,
             'triggerjob': self.app_info['triggerjob'],
+            'email': email,
+            'slack': slack
         }}
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
