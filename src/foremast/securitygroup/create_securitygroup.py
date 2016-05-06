@@ -1,13 +1,12 @@
 """Create Security Groups for Spinnaker Pipelines."""
 import logging
-import os
 
 import requests
 
 from ..consts import API_URL, HEADERS
 from ..exceptions import (SpinnakerSecurityGroupCreationFailed,
                           SpinnakerTaskError)
-from ..utils import check_task, get_template, get_vpc_id
+from ..utils import check_task, get_template, get_vpc_id, get_properties
 
 
 class SpinnakerSecurityGroup:
@@ -17,23 +16,32 @@ class SpinnakerSecurityGroup:
         app_name: Str of application name add Security Group to.
     """
 
-    def __init__(self, app_info):
+    def __init__(self, args):
         self.log = logging.getLogger(__name__)
+        self.args = args
 
-        self.here = os.path.dirname(os.path.realpath(__file__))
-        self.app_info = app_info
-        self.app_name = app_info['app']
+        self.app_name = self.args.app
+
+        self.properties = get_properties(
+            properties_file=self.args.properties,
+            env=self.args.env)
 
     def create_security_group(self):
         """Send a POST to spinnaker to create a new security group."""
         url = "{0}/applications/{1}/tasks".format(API_URL, self.app_name)
 
-        self.app_info['vpc'] = get_vpc_id(self.app_info['env'],
-                                          self.app_info['region'])
+        self.args.vpc = get_vpc_id(self.args.env, self.args.region)
+
+        template_kwargs = {
+            'app': self.args.app,
+            'env': self.args.env,
+            'region': self.args.region,
+            'vpc': get_vpc_id(self.args.env, self.args.region),
+        }
 
         secgroup_json = get_template(
             template_file='securitygroup_template.json',
-            **self.app_info)
+            **template_kwargs)
 
         response = requests.post(url, data=secgroup_json, headers=HEADERS)
 
