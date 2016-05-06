@@ -1,0 +1,10 @@
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::archaius-{{ env }}/{{ group }}/{{ app }}",
+                "arn:aws:s3:::archaius-{{ env }}/{{ group }}/{{ app }}/*"
+            ]
+        }
