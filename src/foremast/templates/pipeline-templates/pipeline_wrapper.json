@@ -13,7 +13,15 @@
         "pipeline.failed"
       ],
       "type": "slack",
-      "address": "#spinnaker"
+      "address": "{{ data.app.slack }}"
+    }
+    {
+      "level": "pipeline",
+      "when": [
+        "pipeline.failed"
+      ],
+      "type": "email",
+      "address": "{{ data.app.email }}"
     }
   ],
   "stages": [
