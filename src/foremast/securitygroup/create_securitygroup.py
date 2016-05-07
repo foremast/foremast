@@ -32,11 +32,32 @@ class SpinnakerSecurityGroup:
 
         self.args.vpc = get_vpc_id(self.args.env, self.args.region)
 
+        ingress = self.properties['security_group']['ingress']
+        ingress_rules = []
+        for app in ingress:
+            for rule in ingress[app]['ports']:
+
+                # handle where protocol isn't specified
+                try:
+                    protocol, port = rule.split(':')
+                except AttributeError:
+                    protocol = 'tcp'
+                    port = rule
+
+                protocol = 'tcp'
+                ingress_rules.append({
+                    'app': app,
+                    'port': port,
+                    'protocol': protocol,
+                    })
+        logging.debug(ingress_rules)
+
         template_kwargs = {
             'app': self.args.app,
             'env': self.args.env,
             'region': self.args.region,
             'vpc': get_vpc_id(self.args.env, self.args.region),
+            'ingress': ingress_rules,
         }
 
         secgroup_json = get_template(
