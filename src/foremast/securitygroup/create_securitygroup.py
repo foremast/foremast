@@ -57,6 +57,7 @@ class SpinnakerSecurityGroup:
             'env': self.args.env,
             'region': self.args.region,
             'vpc': get_vpc_id(self.args.env, self.args.region),
+            'description': self.properties['security_group']['description'],
             'ingress': ingress_rules,
         }
 
