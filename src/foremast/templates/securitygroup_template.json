@@ -11,12 +11,14 @@
                 "{{ region }}"
             ],
             "securityGroupIngress": [
+                {% for rule in ingress %}
                 {
-                    "endPort": 8080,
-                    "name": "sg_apps",
-                    "startPort": 8080,
-                    "type": "tcp"
-                }
+                    "name": "{{ rule.app }}",
+                    "type": "{{ rule.protocol }}",
+                    "startPort": {{ rule.port }},
+                    "endPort": {{ rule.port }}
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
             ],
             "subnet": "none",
             "type": "upsertSecurityGroup",

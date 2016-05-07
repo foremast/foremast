@@ -28,19 +28,10 @@
         "us-east-1"
     ],
     "security_group": {
-        "default_sg": "sg_apps",
         "description": "Auto-Gen SG for {{ app }}",
         "egress": "0.0.0.0/0",
         "ingress": {
-            "app_a": [
-                8080,
-                8443,
-                8173
-            ],
-            "app_b": [
-                8080,
-                8143
-            ]
+            "sg_apps": { "ports": ["tcp:8080"] }
         }
     }
 }
