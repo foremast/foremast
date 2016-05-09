@@ -26,7 +26,7 @@ def test_main():
     settings = {}
 
     policy_json = construct_policy(pipeline_settings=settings)
-    assert json.loads(policy_json) == {}
+    assert policy_json is None
 
     settings = {'services': {'s3': True}}
     policy_json = construct_policy(app='unicornforrest',

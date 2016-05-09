@@ -34,14 +34,16 @@ def construct_policy(app='coreforrest',
 
     Returns:
         str: Custom IAM Policy for _app_.
+        None: When no *services* have been defined in *pipeline.json*.
     """
     LOG.info('Create custom IAM Policy for %s.', app)
 
     services = pipeline_settings.get('services', {})
     LOG.debug('Found requested services: %s', services)
 
-    credential = get_env_credential(env=env)
-    account_number = credential['accountId']
+    if services:
+        credential = get_env_credential(env=env)
+        account_number = credential['accountId']
 
     statements = []
     for service, value in services.items():
@@ -63,7 +65,7 @@ def construct_policy(app='coreforrest',
         policy_json = get_template('iam/wrapper.json.j2',
                                    statements=json.dumps(statements))
     else:
-        policy_json = '{}'
-        LOG.warning('No settings for %s found.', env)
+        LOG.info('No services defined for %s.', app)
+        policy_json = None
 
     return policy_json
