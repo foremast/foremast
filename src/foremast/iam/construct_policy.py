@@ -64,5 +64,6 @@ def construct_policy(app='coreforrest',
                                    statements=json.dumps(statements))
     else:
         policy_json = '{}'
+        LOG.warning('No settings for %s found.', env)
 
     return policy_json
