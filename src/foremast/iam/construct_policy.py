@@ -7,7 +7,7 @@ Examples:
             "services": {
                 "dynamodb": [
                     "another_app"
-                ]
+                ],
                 "lambda": true,
                 "s3": true
             }
