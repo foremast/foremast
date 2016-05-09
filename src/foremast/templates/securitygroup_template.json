@@ -15,8 +15,8 @@
                 {
                     "name": "{{ rule.app }}",
                     "type": "{{ rule.protocol }}",
-                    "startPort": {{ rule.port }},
-                    "endPort": {{ rule.port }}
+                    "startPort": {{ rule.start_port }},
+                    "endPort": {{ rule.end_port }}
                 }{% if not loop.last %},{% endif %}
                 {% endfor %}
             ],
