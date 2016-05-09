@@ -35,21 +35,14 @@ class SpinnakerSecurityGroup:
         ingress = self.properties['security_group']['ingress']
         ingress_rules = []
         for app in ingress:
-            for rule in ingress[app]['ports']:
+            rules = ingress[app]
 
-                # handle where protocol isn't specified
-                try:
-                    protocol, port = rule.split(':')
-                except AttributeError:
-                    protocol = 'tcp'
-                    port = rule
-
-                protocol = 'tcp'
-                ingress_rules.append({
-                    'app': app,
-                    'port': port,
-                    'protocol': protocol,
-                    })
+            ingress_rules.append({
+                'app': app,
+                'start_port': rules.get('start_port'),
+                'end_port': rules.get('end_port'),
+                'protocol': rules.get('protocol', 'tcp'),
+                })
         logging.debug(ingress_rules)
 
         template_kwargs = {

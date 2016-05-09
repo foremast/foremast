@@ -31,7 +31,7 @@
         "description": "Auto-Gen SG for {{ app }}",
         "egress": "0.0.0.0/0",
         "ingress": {
-            "sg_apps": { "ports": ["tcp:8080"] }
+            "sg_apps": { "start_port": "8080", "end_port": "8080", "protocol": "tcp" }
         }
     }
 }
