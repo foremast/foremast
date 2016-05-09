@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_debug
+from ..args import add_debug, add_properties
 from ..consts import LOGGING_FORMAT
 from .create_securitygroup import SpinnakerSecurityGroup
 
@@ -14,6 +14,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     add_debug(parser)
+    add_properties(parser)
     parser.add_argument("--app",
                         help="The application name to create",
                         required=True)
@@ -29,14 +30,7 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    # Dictionary containing application info. This is passed to the class for processing
-    appinfo = {
-        'app': args.app,
-        'region': args.region,
-        'env': args.env,
-    }
-
-    spinnakerapps = SpinnakerSecurityGroup(app_info=appinfo)
+    spinnakerapps = SpinnakerSecurityGroup(args)
     spinnakerapps.create_security_group()
 
 

@@ -4,19 +4,21 @@
     "job": [
         {
             "credentials": "{{ env }}",
-            "description": "Security group for {{ app }}",
+            "description": "{{ description }}",
             "detail": "",
             "name": "{{ app }}",
             "regions": [
                 "{{ region }}"
             ],
             "securityGroupIngress": [
+                {% for rule in ingress %}
                 {
-                    "endPort": 8080,
-                    "name": "sg_apps",
-                    "startPort": 8080,
-                    "type": "tcp"
-                }
+                    "name": "{{ rule.app }}",
+                    "type": "{{ rule.protocol }}",
+                    "startPort": {{ rule.start_port }},
+                    "endPort": {{ rule.end_port }}
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
             ],
             "subnet": "none",
             "type": "upsertSecurityGroup",
