@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_debug
+from ..args import add_app, add_debug, add_env
 from ..consts import LOGGING_FORMAT
 from .create_iam import create_iam_resources
 
@@ -15,15 +15,8 @@ def main():
 
     parser = argparse.ArgumentParser(description=main.__doc__)
     add_debug(parser)
-    parser.add_argument('-e',
-                        '--env',
-                        choices=('build', 'dev', 'stage', 'prod', 'prods', 'prodp'),
-                        default='dev',
-                        help='Deploy environment')
-    parser.add_argument('-a',
-                        '--app',
-                        default='testapp',
-                        help='Spinnaker Application name')
+    add_app(parser)
+    add_env(parser)
     args = parser.parse_args()
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
