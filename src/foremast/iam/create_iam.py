@@ -5,7 +5,8 @@ import logging
 import boto3
 from boto3.exceptions import botocore
 
-from ..utils import get_app_details, get_template
+from ..utils import get_app_details, get_properties, get_template
+from .construct_policy import construct_policy
 
 LOG = logging.getLogger(__name__)
 
@@ -44,6 +45,19 @@ def create_iam_resources(env='dev', app='', **_):
     attach_profile_to_role(client,
                            role_name=details.role,
                            profile_name=details.profile)
+
+    iam_policy = construct_policy(
+        app=app,
+        group=details.group,
+        env=env,
+        pipeline_settings=get_properties(env='pipeline'))
+    if iam_policy:
+        resource_action(client,
+                        action='put_role_policy',
+                        log_format='IAM Policy: %(PolicyName)s',
+                        RoleName=details.role,
+                        PolicyName=details.policy,
+                        PolicyDocument=iam_policy)
 
     resource_action(client,
                     action='create_user',
@@ -98,10 +112,7 @@ def attach_profile_to_role(client,
     return True
 
 
-def resource_action(client,
-                    action='',
-                    log_format='item: %(key)s',
-                    **kwargs):
+def resource_action(client, action='', log_format='item: %(key)s', **kwargs):
     """Call _action_ using boto3 _client_ with _kwargs_.
 
     This is meant for _action_ methods that will create or implicitely prove a
