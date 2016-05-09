@@ -9,7 +9,8 @@ ANSWER1 = {
         {
             'Effect': 'Allow',
             'Action': [
-                's3:*'
+                's3:GetObject',
+                's3:ListObject'
             ],
             'Resource': [
                 'arn:aws:s3:::archaius-stage/forrest/unicornforrest',
