@@ -37,12 +37,27 @@ class SpinnakerSecurityGroup:
         for app in ingress:
             rules = ingress[app]
 
-            ingress_rules.append({
-                'app': app,
-                'start_port': rules.get('start_port'),
-                'end_port': rules.get('end_port'),
-                'protocol': rules.get('protocol', 'tcp'),
-                })
+            # Essentially we have two formats: simple, advanced
+            # - simple: is just a list of ports
+            # - advanced: selects ports ranges and protocols
+            try:
+                # Advanced
+                ingress_rules.append({
+                    'app': app,
+                    'start_port': rules.get('start_port'),
+                    'end_port': rules.get('end_port'),
+                    'protocol': rules.get('protocol', 'tcp'),
+                    })
+            except AttributeError:
+                # Simple
+                for rule in rules:
+
+                    ingress_rules.append({
+                        'app': app,
+                        'start_port': rule,
+                        'end_port': rule,
+                        'protocol': 'tcp',
+                        })
         logging.debug(ingress_rules)
 
         template_kwargs = {
