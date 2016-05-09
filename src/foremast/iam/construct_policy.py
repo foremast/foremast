@@ -37,7 +37,7 @@ def construct_policy(app='coreforrest',
     """
     LOG.info('Create custom IAM Policy for %s.', app)
 
-    services = pipeline_settings['services']
+    services = pipeline_settings.get('services', {})
     LOG.debug('Found requested services: %s', services)
 
     credential = get_env_credential(env=env)
@@ -59,7 +59,10 @@ def construct_policy(app='coreforrest',
                                             items=items))
         statements.append(statement)
 
-    policy_json = get_template('iam/wrapper.json.j2',
-                               statements=json.dumps(statements))
+    if statements:
+        policy_json = get_template('iam/wrapper.json.j2',
+                                   statements=json.dumps(statements))
+    else:
+        policy_json = '{}'
 
     return policy_json
