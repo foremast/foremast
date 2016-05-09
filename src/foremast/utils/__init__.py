@@ -11,3 +11,4 @@ from .get_pipeline_id import *
 from .get_subnets import *
 from .get_template import *
 from .get_vpc_id import *
+from .get_properties import *
