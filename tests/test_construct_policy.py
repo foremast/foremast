@@ -31,6 +31,7 @@ def test_main():
 
     assert json.loads(policy_json) == ANSWER1
 
+    # TODO: Test other services besides S3
     settings.update({'services': {'dynamodb': ['coreforrest', 'edgeforrest',
                                                'attendantdevops']}})
     policy_json = construct_policy(pipeline_settings=settings)
