@@ -23,6 +23,11 @@ ANSWER1 = {
 
 def test_main():
     """Check general assemblage."""
+    settings = {}
+
+    policy_json = construct_policy(pipeline_settings=settings)
+    assert json.loads(policy_json) == {}
+
     settings = {'services': {'s3': True}}
     policy_json = construct_policy(app='unicornforrest',
                                    env='stage',
