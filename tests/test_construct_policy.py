@@ -3,14 +3,32 @@ import json
 
 from foremast.iam.construct_policy import construct_policy
 
+ANSWER1 = {
+    'Version': '2012-10-17',
+    'Statement': [
+        {
+            'Effect': 'Allow',
+            'Action': [
+                's3:*'
+            ],
+            'Resource': [
+                'arn:aws:s3:::archaius-stage/forrest/unicornforrest',
+                'arn:aws:s3:::archaius-stage/forrest/unicornforrest/*'
+            ]
+        }
+    ]
+}
+
 
 def test_main():
     """Check general assemblage."""
     settings = {'services': {'s3': True}}
-    policy_json = construct_policy(app='coreforrest',
+    policy_json = construct_policy(app='unicornforrest',
+                                   env='stage',
+                                   group='forrest',
                                    pipeline_settings=settings)
 
-    policy = json.loads(policy_json)
+    assert json.loads(policy_json) == ANSWER1
 
     settings.update({'services': {'dynamodb': ['coreforrest', 'edgeforrest',
                                                'attendantdevops']}})

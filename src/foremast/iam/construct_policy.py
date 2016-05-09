@@ -45,13 +45,18 @@ def construct_policy(app='coreforrest',
 
     statements = []
     for service, value in services.items():
+        if isinstance(value, (bool, str)):
+            items = [value]
+        else:
+            items = value
+
         statement = json.loads(get_template('iam/{0}.json.j2'.format(service),
                                             account_number=account_number,
                                             app=app,
                                             env=env,
                                             group=group,
                                             region=region,
-                                            items=list(value)))
+                                            items=items))
         statements.append(statement)
 
     policy_json = get_template('iam/wrapper.json.j2',
