@@ -1,5 +1,6 @@
 """Common _argparse_ arguments."""
 import logging
+from .consts import ENVS
 
 
 def add_debug(parser):
@@ -14,12 +15,11 @@ def add_debug(parser):
 
 def add_env(parser):
     """Add an `env` flag to the _parser_."""
-    parser.add_argument(
-        '-e',
-        '--env',
-        choices=('build', 'dev', 'stage', 'prod', 'prods', 'prodp'),
-        default='dev',
-        help='Deploy environment')
+    parser.add_argument('-e',
+                        '--env',
+                        choices=ENVS,
+                        default='dev',
+                        help='Deploy environment')
 
 
 def add_app(parser):
