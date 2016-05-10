@@ -1,13 +1,16 @@
 """Create Security Groups for Spinnaker Pipelines."""
+import ipaddress
 import logging
 
+import boto3
+from boto3.exceptions import botocore
 import requests
-import ipaddress
 
 from ..consts import API_URL, HEADERS
 from ..exceptions import (SpinnakerSecurityGroupCreationFailed,
-                          SpinnakerTaskError)
-from ..utils import check_task, get_template, get_vpc_id, get_properties
+                          SpinnakerTaskError, SpinnakerSecurityGroupError)
+from ..utils import (check_task, get_template, get_vpc_id, get_properties,
+                     get_security_group_id)
 
 
 class SpinnakerSecurityGroup(object):
@@ -61,6 +64,45 @@ class SpinnakerSecurityGroup(object):
                 non_cidr.append(rule)
 
         return non_cidr, cidr
+
+    def add_cidr_rules(self, rules):
+        """Add cidr rules to security group via boto"""
+
+        session = boto3.session.Session(profile_name=self.args.env)
+        client = session.client('ec2')
+
+        group_id = get_security_group_id(
+            self.app_name, self.args.env, self.args.region)
+
+        for rule in rules:
+            data = {
+                'DryRun': False,
+                'GroupId': group_id,
+                'IpPermissions': [
+                    {
+                        'IpProtocol': rule['protocol'],
+                        'FromPort': rule['start_port'],
+                        'ToPort': rule['end_port'],
+                        'IpRanges': [
+                            {
+                                'CidrIp': rule['app']
+                            }
+                        ]
+                    }
+                ]
+            }
+
+            self.log.debug(data)
+            try:
+                client.authorize_security_group_ingress(**data)
+            except botocore.exceptions.ClientError as error:
+                if 'InvalidPermission.Duplicate' in error:
+                    self.log.debug('Duplicate rule exist, that is OK.')
+                else:
+                    msg = 'Unable to add cidr rules to {}'.format(rules['app'])
+                    self.log.error(msg)
+                    raise SpinnakerSecurityGroupError(msg)
+        return True
 
     def create_security_group(self):
         """Send a POST to spinnaker to create a new security group."""
@@ -118,8 +160,11 @@ class SpinnakerSecurityGroup(object):
             check_task(response.json(), self.app_name)
         except SpinnakerTaskError as error:
             self.log.error('Failed to create Security Group for %s: %s',
-                          self.app_name, response.text)
+                           self.app_name, response.text)
             raise SpinnakerSecurityGroupCreationFailed(error)
+
+        # Append cidr rules
+        self.add_cidr_rules(ingress_rules_cidr)
 
         self.log.info('Successfully created %s security group', self.app_name)
         return True
