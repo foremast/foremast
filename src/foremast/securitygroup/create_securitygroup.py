@@ -34,9 +34,9 @@ class SpinnakerSecurityGroup:
 
         ingress = self.properties['security_group']['ingress']
         ingress_rules = []
+
         for app in ingress:
             rules = ingress[app]
-
             # Essentially we have two formats: simple, advanced
             # - simple: is just a list of ports
             # - advanced: selects ports ranges and protocols
@@ -80,9 +80,9 @@ class SpinnakerSecurityGroup:
         try:
             check_task(response.json(), self.app_name)
         except SpinnakerTaskError as error:
-            logging.error('Failed to create Security Group for %s: %s',
+            self.log.error('Failed to create Security Group for %s: %s',
                           self.app_name, response.text)
             raise SpinnakerSecurityGroupCreationFailed(error)
 
-        logging.info('Successfully created %s security group', self.app_name)
+        self.log.info('Successfully created %s security group', self.app_name)
         return True
