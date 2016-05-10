@@ -9,7 +9,6 @@ LOG = logging.getLogger(__name__)
 def resource_action(client,
                     action='',
                     log_format='item: %(key)s',
-                    prefix='Added',
                     **kwargs):
     """Call _action_ using boto3 _client_ with _kwargs_.
 
@@ -33,7 +32,7 @@ def resource_action(client,
 
     try:
         result = getattr(client, action)(**kwargs)
-        LOG.info(' '.join((prefix, log_format)), kwargs)
+        LOG.info(log_format, kwargs)
     except botocore.exceptions.ClientError as error:
         error_code = error.response['Error']['Code']
 

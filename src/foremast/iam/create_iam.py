@@ -35,13 +35,14 @@ def create_iam_resources(env='dev', app='', **_):
     resource_action(
         client,
         action='create_role',
-        log_format='Role: %(RoleName)s',
+        log_format='Created Role: %(RoleName)s',
         RoleName=details.role,
         AssumeRolePolicyDocument=get_template('iam_role_policy.json'))
-    resource_action(client,
-                    action='create_instance_profile',
-                    log_format='Instance Profile: %(InstanceProfileName)s',
-                    InstanceProfileName=details.profile)
+    resource_action(
+        client,
+        action='create_instance_profile',
+        log_format='Created Instance Profile: %(InstanceProfileName)s',
+        InstanceProfileName=details.profile)
     attach_profile_to_role(client,
                            role_name=details.role,
                            profile_name=details.profile)
@@ -54,24 +55,25 @@ def create_iam_resources(env='dev', app='', **_):
     if iam_policy:
         resource_action(client,
                         action='put_role_policy',
-                        log_format='IAM Policy: %(PolicyName)s',
+                        log_format='Added IAM Policy: %(PolicyName)s',
                         RoleName=details.role,
                         PolicyName=details.policy,
                         PolicyDocument=iam_policy)
 
     resource_action(client,
                     action='create_user',
-                    log_format='User: %(UserName)s',
+                    log_format='Created User: %(UserName)s',
                     UserName=details.user)
     resource_action(client,
                     action='create_group',
-                    log_format='Group: %(GroupName)s',
+                    log_format='Created Group: %(GroupName)s',
                     GroupName=details.group)
-    resource_action(client,
-                    action='add_user_to_group',
-                    log_format='User to Group: %(UserName)s -> %(GroupName)s',
-                    GroupName=details.group,
-                    UserName=details.user)
+    resource_action(
+        client,
+        action='add_user_to_group',
+        log_format='Added User to Group: %(UserName)s -> %(GroupName)s',
+        GroupName=details.group,
+        UserName=details.user)
 
     return True
 
@@ -88,7 +90,10 @@ def attach_profile_to_role(client,
     Returns:
         True upon successful completion.
     """
-    current_instance_profiles = client.list_instance_profiles_for_role(
+    current_instance_profiles = resource_action(
+        client,
+        action='list_instance_profiles_for_role',
+        log_format='Found Instance Profiles for %(RoleName)s.',
         RoleName=role_name)['InstanceProfiles']
 
     for profile in current_instance_profiles:
@@ -98,15 +103,19 @@ def attach_profile_to_role(client,
             break
     else:
         for remove_profile in current_instance_profiles:
-            client.remove_role_from_instance_profile(
+            resource_action(
+                client,
+                action='remove_role_from_instance_profile',
+                log_format='Removed Instance Profile from Role: '
+                '%(InstanceProfileName)s -> %(RoleName)s',
                 InstanceProfileName=remove_profile['InstanceProfileName'],
                 RoleName=role_name)
-            LOG.info('Removed Instance Profile from Role: %s -> %s',
-                     remove_profile, role_name)
 
-        client.add_role_to_instance_profile(InstanceProfileName=profile_name,
-                                            RoleName=role_name)
-        LOG.info('Added Instance Profile to Role: %s -> %s', profile_name,
-                 role_name)
+        resource_action(client,
+                        action='add_role_to_instance_profile',
+                        log_format='Added Instance Profile to Role: '
+                        '%(InstanceProfileName)s -> %(RoleName)s',
+                        InstanceProfileName=profile_name,
+                        RoleName=role_name)
 
     return True
