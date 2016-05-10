@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_debug
+from ..args import add_app, add_debug
 from ..consts import LOGGING_FORMAT
 from .create_dns import SpinnakerDns
 
@@ -14,9 +14,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     add_debug(parser)
-    parser.add_argument("--app",
-                        help="The application name to create",
-                        required=True)
+    add_app(parser)
     parser.add_argument("--region",
                         help="The region to create the security group",
                         required=True)
