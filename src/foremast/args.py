@@ -37,3 +37,11 @@ def add_properties(parser):
         '--properties',
         help='Location of JSON file produced by *create-configs*',
         default="./raw.properties.json")
+
+
+def add_region(parser):
+    """Add a `region` flag to the _parser_."""
+    parser.add_argument('-r',
+                        '--region',
+                        default='us-east-1',
+                        help='Region to create Resources in, e.g. us-east-1')
