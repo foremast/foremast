@@ -2,6 +2,7 @@
 import logging
 
 import requests
+import ipaddress
 
 from ..consts import API_URL, HEADERS
 from ..exceptions import (SpinnakerSecurityGroupCreationFailed,
@@ -25,6 +26,40 @@ class SpinnakerSecurityGroup:
         self.properties = get_properties(
             properties_file=self.args.properties,
             env=self.args.env)
+
+    def _validate_cidr(self, rule):
+        """Validate the cidr block in a rule"""
+
+        # valid cidr
+        try:
+            network = ipaddress.IPv4Network(rule['app'])
+        except (ipaddress.NetmaskValueError, ValueError) as error:
+            raise SpinnakerSecurityGroupCreationFailed(error)
+
+        # ensure netmask is not wide open
+        if network.prefixlen < 13:
+            msg = 'The network range ({}) specified is too open.'.format(
+                rule['app'])
+            raise SpinnakerSecurityGroupCreationFailed(msg)
+
+        return
+
+    def _process_rules(self, rules):
+        """Process rules into cidr and non-cidr lists"""
+
+        cidr = []
+        non_cidr = []
+
+        for rule in rules:
+            self.log.debug(rule)
+
+            if ('.') in rule['app']:
+                self._validate_cidr(rule)
+                cidr.append(rule)
+            else:
+                non_cidr.append(rule)
+
+        return non_cidr, cidr
 
     def create_security_group(self):
         """Send a POST to spinnaker to create a new security group."""
@@ -57,7 +92,8 @@ class SpinnakerSecurityGroup:
                     'end_port': end_port,
                     'protocol': protocol,
                     })
-        logging.debug(ingress_rules)
+
+        ingress_rules, ingress_rules_cidr = self._process_rules(ingress_rules)
 
         template_kwargs = {
             'app': self.args.app,
