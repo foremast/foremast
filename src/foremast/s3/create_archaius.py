@@ -8,7 +8,7 @@ from ..utils import get_app_details
 LOG = logging.getLogger(__name__)
 
 
-def init_properties(env='dev', app='unnecessary'):
+def init_properties(env='dev', app='unnecessary', **_):
     """Make sure _application.properties_ file exists in S3.
 
     For Applications with Archaius support, there needs to be a file where the

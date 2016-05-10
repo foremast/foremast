@@ -22,11 +22,10 @@ def main():
     args = parser.parse_args()
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
-    vars(args).pop('debug')
 
     LOG.debug('Args: %s', vars(args))
 
-    init_properties(env=args.env, app=args.app)
+    init_properties(**vars(args))
 
 
 if __name__ == '__main__':
