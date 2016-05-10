@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_app, add_debug
+from ..args import add_app, add_debug, add_properties
 from ..consts import LOGGING_FORMAT
 from .create_pipeline import SpinnakerPipeline
 
@@ -15,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     add_debug(parser)
     add_app(parser)
+    add_properties(parser)
     parser.add_argument('-b',
                         '--base',
                         help='Base AMI name to use, e.g. fedora, tomcat')
@@ -26,11 +27,6 @@ def main():
         "--triggerjob",
         help="The jenkins job to monitor for pipeline triggering",
         required=True)
-    parser.add_argument(
-        "--properties",
-        help="Location of json file that contains application.json details",
-        default="./raw.properties.json",
-        required=False)
     args = parser.parse_args()
 
     if args.base and '"' in args.base:
