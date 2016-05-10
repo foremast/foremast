@@ -26,8 +26,8 @@ def add_app(parser):
     """Add an `app` flag to the _parser_."""
     parser.add_argument('-a',
                         '--app',
-                        default='testapp',
-                        help='Spinnaker Application name')
+                        help='Spinnaker Application name',
+                        required=True)
 
 
 def add_properties(parser):

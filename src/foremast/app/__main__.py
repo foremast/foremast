@@ -4,7 +4,7 @@ import logging
 
 import gogoutils
 
-from ..args import add_debug
+from ..args import add_app, add_debug
 from ..consts import LOGGING_FORMAT
 from .create_app import SpinnakerApp
 
@@ -14,9 +14,7 @@ def main():
     # Setup parser
     parser = argparse.ArgumentParser()
     add_debug(parser)
-    parser.add_argument('--app',
-                        help='The application name to create',
-                        required=True)
+    add_app(parser)
     parser.add_argument('--email',
                         help='Email address to associate with application',
                         default='PS-DevOpsTooling@example.com')

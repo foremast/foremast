@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_debug
+from ..args import add_app, add_debug
 from ..consts import LOGGING_FORMAT
 from .create_archaius import init_properties
 
@@ -15,15 +15,12 @@ def main():
     parser = argparse.ArgumentParser(description=main.__doc__)
 
     add_debug(parser)
+    add_app(parser)
     parser.add_argument('-e',
                         '--env',
                         choices=('build', 'dev', 'stage', 'prod', 'prods', 'prodp'),
                         default='dev',
                         help='Deploy environment')
-    parser.add_argument('-a',
-                        '--app',
-                        default='unnecessary',
-                        help='Application name, e.g. forrestcore')
     args = parser.parse_args()
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
