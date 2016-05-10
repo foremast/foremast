@@ -7,7 +7,7 @@ from base64 import b64decode
 
 import gitlab
 
-from ..utils import get_configs
+from ..consts import GIT_URL
 
 ENVS = ('dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods', 'stagesox')
 LOG = logging.getLogger(__name__)
@@ -30,8 +30,7 @@ def process_git_configs(git_short='', token_file=''):
     with open(token_file, 'rt') as token_handle:
         token = token_handle.read().strip()
 
-    configs = get_configs(file_name='gitlab.conf')
-    server = gitlab.Gitlab(configs['gitlab']['url'], token=token)
+    server = gitlab.Gitlab(GIT_URL, token=token)
 
     project_id = server.getproject(git_short)['id']
 
