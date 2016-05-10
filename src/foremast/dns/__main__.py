@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_env
+from ..args import add_app, add_debug, add_env, add_region
 from ..consts import LOGGING_FORMAT
 from .create_dns import SpinnakerDns
 
@@ -16,9 +16,7 @@ def main():
     add_debug(parser)
     add_app(parser)
     add_env(parser)
-    parser.add_argument("--region",
-                        help="The region to create the security group",
-                        required=True)
+    add_region(parser)
     parser.add_argument("--elb-subnet",
                         help="Subnetnet type, e.g. external, internal",
                         required=True)
