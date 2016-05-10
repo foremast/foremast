@@ -30,6 +30,14 @@ def add_app(parser):
                         required=True)
 
 
+def add_gitlab_token(parser):
+    """Add a `token-file` flag to the _parser_."""
+    parser.add_argument('-t',
+                        '--token-file',
+                        help='File with GitLab API private token',
+                        default='~/.aws/git.token')
+
+
 def add_properties(parser):
     """Add a `settings` flag to the _parser_."""
     parser.add_argument(
