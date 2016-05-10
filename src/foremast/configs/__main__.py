@@ -4,7 +4,7 @@ import logging
 
 import gogoutils
 
-from ..args import add_debug
+from ..args import add_debug, add_gitlab_token
 from ..consts import LOGGING_FORMAT
 from .outputs import write_variables
 from .prepare_configs import process_git_configs, process_runway_configs
@@ -18,14 +18,11 @@ def main():
 
     parser = argparse.ArgumentParser(description=main.__doc__)
     add_debug(parser)
+    add_gitlab_token(parser)
     parser.add_argument('-o',
                         '--output',
                         required=True,
                         help='Name of environment file to append to')
-    parser.add_argument(
-        '-t',
-        '--token-file',
-        help='File with GitLab API private token, required for --git-short')
     parser.add_argument(
         '-g',
         '--git-short',
