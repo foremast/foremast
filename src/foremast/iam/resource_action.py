@@ -6,7 +6,11 @@ from boto3.exceptions import botocore
 LOG = logging.getLogger(__name__)
 
 
-def resource_action(client, action='', log_format='item: %(key)s', **kwargs):
+def resource_action(client,
+                    action='',
+                    log_format='item: %(key)s',
+                    prefix='Added',
+                    **kwargs):
     """Call _action_ using boto3 _client_ with _kwargs_.
 
     This is meant for _action_ methods that will create or implicitely prove a
@@ -19,14 +23,17 @@ def resource_action(client, action='', log_format='item: %(key)s', **kwargs):
         action (str): Client method to call.
         log_format (str): Generic log message format, 'Added' or 'Found' will
             be prepended depending on the scenario.
+        prefix (str): Prefix word to use in successful INFO message.
         **kwargs: Keyword arguments to pass to _action_ method.
 
     Returns:
-        True upon successful completion.
+        dict: boto3 response.
     """
+    result = None
+
     try:
-        getattr(client, action)(**kwargs)
-        LOG.info(' '.join(('Added', log_format)), kwargs)
+        result = getattr(client, action)(**kwargs)
+        LOG.info(' '.join((prefix, log_format)), kwargs)
     except botocore.exceptions.ClientError as error:
         error_code = error.response['Error']['Code']
 
@@ -38,4 +45,4 @@ def resource_action(client, action='', log_format='item: %(key)s', **kwargs):
         else:
             LOG.fatal(error)
 
-    return True
+    return result
