@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_properties
+from ..args import add_app, add_debug, add_env, add_properties
 from ..consts import LOGGING_FORMAT
 from .create_elb import SpinnakerELB
 
@@ -40,8 +40,8 @@ def main():
 
     add_debug(parser)
     add_app(parser)
+    add_env(parser)
     add_properties(parser)
-    parser.add_argument('--env', action="store", help="environment: dev, stage, prod", required=True)
     parser.add_argument('--health-timeout', action="store", help="health check timeout in seconds", default=10)
     parser.add_argument('--health-interval', action="store", help="health check interval in seconds", default=20)
     parser.add_argument('--healthy-threshold', action="store", help="healthy threshold", default=2)

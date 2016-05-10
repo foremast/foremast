@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_properties
+from ..args import add_app, add_debug, add_env, add_properties
 from ..consts import LOGGING_FORMAT
 from .create_securitygroup import SpinnakerSecurityGroup
 
@@ -15,12 +15,10 @@ def main():
     parser = argparse.ArgumentParser()
     add_debug(parser)
     add_app(parser)
+    add_env(parser)
     add_properties(parser)
     parser.add_argument("--region",
                         help="The region to create the security group",
-                        required=True)
-    parser.add_argument("--env",
-                        help="The environment to create the security group",
                         required=True)
     args = parser.parse_args()
 
