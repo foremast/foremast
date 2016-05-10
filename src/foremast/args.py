@@ -1,6 +1,15 @@
 """Common _argparse_ arguments."""
 import logging
+
 from .consts import ENVS
+
+
+def add_app(parser):
+    """Add an `app` flag to the _parser_."""
+    parser.add_argument('-a',
+                        '--app',
+                        help='Spinnaker Application name',
+                        required=True)
 
 
 def add_debug(parser):
@@ -20,14 +29,6 @@ def add_env(parser):
                         choices=ENVS,
                         default='dev',
                         help='Deploy environment')
-
-
-def add_app(parser):
-    """Add an `app` flag to the _parser_."""
-    parser.add_argument('-a',
-                        '--app',
-                        help='Spinnaker Application name',
-                        required=True)
 
 
 def add_gitlab_token(parser):
