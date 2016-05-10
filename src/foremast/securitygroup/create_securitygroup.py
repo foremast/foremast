@@ -10,7 +10,7 @@ from ..exceptions import (SpinnakerSecurityGroupCreationFailed,
 from ..utils import check_task, get_template, get_vpc_id, get_properties
 
 
-class SpinnakerSecurityGroup:
+class SpinnakerSecurityGroup(object):
     """Manipulate Spinnaker Security Groups.
 
     Args:
@@ -27,7 +27,8 @@ class SpinnakerSecurityGroup:
             properties_file=self.args.properties,
             env=self.args.env)
 
-    def _validate_cidr(self, rule):
+    @staticmethod
+    def _validate_cidr(rule):
         """Validate the cidr block in a rule"""
 
         # valid cidr
@@ -53,7 +54,7 @@ class SpinnakerSecurityGroup:
         for rule in rules:
             self.log.debug(rule)
 
-            if ('.') in rule['app']:
+            if '.' in rule['app']:
                 self._validate_cidr(rule)
                 cidr.append(rule)
             else:
