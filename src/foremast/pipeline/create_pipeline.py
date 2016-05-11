@@ -96,7 +96,6 @@ class SpinnakerPipeline:
         data = {'app': {
             'ami_id': ami_id,
             'appname': self.app_name,
-            'groupname': self.group_name,
             'base': base,
             'environment': 'packaging',
             'region': region,
@@ -105,7 +104,7 @@ class SpinnakerPipeline:
             'slack': slack
         }}
 
-        self.log.info('Wrapper app data:\n%s', pformat(data))
+        self.log.debug('Wrapper app data:\n%s', pformat(data))
 
         wrapper = get_template(
             template_file='pipeline-templates/pipeline_wrapper.json',
