@@ -74,6 +74,8 @@ class SpinnakerDns:
         for zone_id in zone_ids:
             self.log.debug('zone_id: %s', zone_id)
 
+            # TODO: boto3 call can fail with botocore.exceptions.ClientError,
+            # need to retry
             response = self.r53client.change_resource_record_sets(
                 HostedZoneId=zone_id,
                 ChangeBatch=json.loads(dns_json), )
