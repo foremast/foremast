@@ -96,6 +96,7 @@ class SpinnakerPipeline:
         data = {'app': {
             'ami_id': ami_id,
             'appname': self.app_name,
+            'groupname': self.group_name,
             'base': base,
             'environment': 'packaging',
             'region': region,
