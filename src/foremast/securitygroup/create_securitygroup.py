@@ -66,14 +66,16 @@ class SpinnakerSecurityGroup(object):
         non_cidr = []
 
         for rule in rules:
-            self.log.debug(rule)
-
             if '.' in rule['app']:
+                self.log.debug('Custom CIDR rule: %s', rule)
                 self._validate_cidr(rule)
                 cidr.append(rule)
             else:
+                self.log.debug('SG reference rule: %s', rule)
                 non_cidr.append(rule)
 
+        self.log.debug('Custom CIDR rules: %s', cidr)
+        self.log.debug('SG reference rules: %s', non_cidr)
         return non_cidr, cidr
 
     def add_cidr_rules(self, rules):
@@ -109,8 +111,8 @@ class SpinnakerSecurityGroup(object):
                     }
                 ]
             }
+            self.log.debug('Security Group rule: %s', data)
 
-            self.log.debug(data)
             try:
                 client.authorize_security_group_ingress(**data)
             except botocore.exceptions.ClientError as error:
@@ -120,6 +122,7 @@ class SpinnakerSecurityGroup(object):
                     msg = 'Unable to add cidr rules to {}'.format(rules['app'])
                     self.log.error(msg)
                     raise SpinnakerSecurityGroupError(msg)
+
         return True
 
     def create_security_group(self):
