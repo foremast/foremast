@@ -38,6 +38,7 @@ setup(name='foremast',
               'create-s3=foremast.s3.__main__:main',
               'create-sg=foremast.securitygroup.__main__:main',
               'destroy-iam=foremast.iam.destroy_iam.__main__:main',
-              'destroy-s3=foremast.s3.destroy_s3.__main__:main'
+              'destroy-s3=foremast.s3.destroy_s3.__main__:main',
+              'destroy-sg=foremast.securitygroup.destroy_sg.__main__:main'
           ]
       }, )

@@ -1,0 +1,17 @@
+{
+    "job": [
+        {
+            "cloudProvider": "aws",
+            "vpcId": "{{ vpc }}",
+            "type": "deleteSecurityGroup",
+            "securityGroupName": "{{ app }}",
+            "regions": [
+                "{{ region }}"
+            ],
+            "credentials": "{{ env }}",
+            "user": "Spinnaker Destroyer"
+        }
+    ],
+    "application": "{{ app }}",
+    "description": "Delete security group: {{ app }} in {{ env }}:{{ region }}"
+}
