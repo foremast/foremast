@@ -13,6 +13,7 @@ def format_listeners(elb_settings=None):
 
             # old
             {
+                "certificate": null,
                 "i_port": 8080,
                 "lb_port": 80,
                 "subnet_purpose": "internal",
