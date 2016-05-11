@@ -115,7 +115,7 @@ class SpinnakerSecurityGroup(object):
             try:
                 client.authorize_security_group_ingress(**data)
             except botocore.exceptions.ClientError as error:
-                if 'InvalidPermission.Duplicate' in error:
+                if 'InvalidPermission.Duplicate' in str(error):
                     self.log.debug('Duplicate rule exist, that is OK.')
                 else:
                     msg = 'Unable to add cidr rules to {}'.format(rules['app'])
