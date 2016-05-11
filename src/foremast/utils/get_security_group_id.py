@@ -6,14 +6,12 @@ from tryagain import retries
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerSecurityGroupError
-from .get_vpc_id import *
+from .get_vpc_id import get_vpc_id
 
 LOG = logging.getLogger(__name__)
 
 
-@retries(max_attempts=5,
-         wait=2,
-         exceptions=(SpinnakerSecurityGroupError))
+@retries(max_attempts=5, wait=2, exceptions=(SpinnakerSecurityGroupError))
 def get_security_group_id(name='', env='', region=''):
     """Get a security group ID.
 
