@@ -3,6 +3,7 @@ from .check_managed_pipeline import *
 from .check_task import *
 from .deep_chain_map import DeepChainMap
 from .find_elb import *
+from .gate import *
 from .generate_encoded_user_data import *
 from .get_all_pipelines import *
 from .get_app_details import *
