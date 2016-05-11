@@ -47,6 +47,7 @@ def construct_pipeline_block(env='',
     data = settings
     data['app'].update({
         'appname': generated.app,
+        'group_name': generated.project,
         'environment': env,
         'region': region,
         'az_dict': json.dumps(region_subnets),

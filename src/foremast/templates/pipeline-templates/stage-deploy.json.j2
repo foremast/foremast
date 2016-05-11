@@ -33,7 +33,7 @@
             "{{ data.app.appname }}"
           ],
           "tags": {
-            "app_group": "TEST",
+            "app_group": "{{ data.app.group_name }}",
             "Name": "{{ data.app.appname }}"
           },
           "subnetType": "internal",
