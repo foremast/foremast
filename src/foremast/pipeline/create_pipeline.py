@@ -105,7 +105,7 @@ class SpinnakerPipeline:
             'slack': slack
         }}
 
-        self.log.debug('Wrapper app data:\n%s', pformat(data))
+        self.log.info('Wrapper app data:\n%s', pformat(data))
 
         wrapper = get_template(
             template_file='pipeline-templates/pipeline_wrapper.json',
