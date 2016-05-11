@@ -46,7 +46,7 @@ class SpinnakerSecurityGroup(object):
             raise SpinnakerSecurityGroupCreationFailed(error)
 
         if network.prefixlen < 13:
-            msg = 'The network range ({}) specified is too open.'.format(rule[
+            msg = 'The network range ({0}) specified is too open.'.format(rule[
                 'app'])
             raise SpinnakerSecurityGroupCreationFailed(msg)
 
