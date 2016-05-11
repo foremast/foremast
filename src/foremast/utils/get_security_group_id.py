@@ -15,7 +15,21 @@ LOG = logging.getLogger(__name__)
          wait=2,
          exceptions=(SpinnakerSecurityGroupError))
 def get_security_group_id(name='', env='', region=''):
-    """Get an security group ID"""
+    """Get a security group ID.
+
+    Args:
+        name (str): Security Group name to find.
+        env (str): Deployment environment to search.
+        region (str): AWS Region to search.
+
+    Returns:
+        str: ID of Security Group, e.g. sg-xxxx.
+
+    Raises:
+        AssertionError: Call to Gate API was not successful.
+        SpinnakerSecurityGroupError: Security Group _name_ was not found for
+            _env_ in _region_.
+    """
     vpc_id = get_vpc_id(env, region)
 
     LOG.info('Find %s sg in %s [%s] in %s', name, env, region, vpc_id)
