@@ -26,9 +26,8 @@ class SpinnakerSecurityGroup(object):
 
         self.app_name = self.args.app
 
-        self.properties = get_properties(
-            properties_file=self.args.properties,
-            env=self.args.env)
+        self.properties = get_properties(properties_file=self.args.properties,
+                                         env=self.args.env)
 
     @staticmethod
     def _validate_cidr(rule):
@@ -47,8 +46,8 @@ class SpinnakerSecurityGroup(object):
             raise SpinnakerSecurityGroupCreationFailed(error)
 
         if network.prefixlen < 13:
-            msg = 'The network range ({}) specified is too open.'.format(
-                rule['app'])
+            msg = 'The network range ({}) specified is too open.'.format(rule[
+                'app'])
             raise SpinnakerSecurityGroupCreationFailed(msg)
 
         return True
@@ -91,8 +90,8 @@ class SpinnakerSecurityGroup(object):
         session = boto3.session.Session(profile_name=self.args.env)
         client = session.client('ec2')
 
-        group_id = get_security_group_id(
-            self.app_name, self.args.env, self.args.region)
+        group_id = get_security_group_id(self.app_name, self.args.env,
+                                         self.args.region)
 
         for rule in rules:
             data = {
@@ -155,7 +154,7 @@ class SpinnakerSecurityGroup(object):
                     'start_port': start_port,
                     'end_port': end_port,
                     'protocol': protocol,
-                    })
+                })
 
         ingress_rules_no_cidr, ingress_rules_cidr = self._process_rules(
             ingress_rules)
