@@ -32,25 +32,36 @@ class SpinnakerSecurityGroup(object):
 
     @staticmethod
     def _validate_cidr(rule):
-        """Validate the cidr block in a rule"""
+        """Validate the cidr block in a rule.
 
-        # valid cidr
+        Returns:
+            True: Upon successful completion.
+
+        Raises:
+            SpinnakerSecurityGroupCreationFailed: CIDR definition is invalid or
+                the network range is too wide.
+        """
         try:
             network = ipaddress.IPv4Network(rule['app'])
         except (ipaddress.NetmaskValueError, ValueError) as error:
             raise SpinnakerSecurityGroupCreationFailed(error)
 
-        # ensure netmask is not wide open
         if network.prefixlen < 13:
             msg = 'The network range ({}) specified is too open.'.format(
                 rule['app'])
             raise SpinnakerSecurityGroupCreationFailed(msg)
 
-        return
+        return True
 
     def _process_rules(self, rules):
-        """Process rules into cidr and non-cidr lists"""
+        """Process rules into cidr and non-cidr lists.
 
+        Args:
+            rules (list): Allowed Security Group ports and protocols.
+
+        Returns:
+            (list, list): Security Group reference rules and custom CIDR rules.
+        """
         cidr = []
         non_cidr = []
 
@@ -66,8 +77,15 @@ class SpinnakerSecurityGroup(object):
         return non_cidr, cidr
 
     def add_cidr_rules(self, rules):
-        """Add cidr rules to security group via boto"""
+        """Add cidr rules to security group via boto.
 
+        Returns:
+            True: Upon successful completion.
+
+        Raises:
+            SpinnakerSecurityGroupError: boto3 call failed to add CIDR block to
+                Security Group.
+        """
         session = boto3.session.Session(profile_name=self.args.env)
         client = session.client('ec2')
 
