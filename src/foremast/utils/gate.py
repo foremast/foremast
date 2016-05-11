@@ -6,7 +6,6 @@ Examples:
     Gate().tasks.post({'all': 'data'})
 """
 import json
-import functools
 import logging
 
 import murl
@@ -27,7 +26,7 @@ class Gate(object):
             path (str): URL path or full URL.
         """
         self.path = path
-        LOG.debug('path: %s', self.path)
+        self.verb = ''
 
     def __getattr__(self, attr):
         """Use attributes to construct URL path for request.
@@ -35,20 +34,22 @@ class Gate(object):
         Args:
             attr (str): URL path directory segment, e.g. applications, tasks.
         """
-        LOG.debug('attr=%(attr)s\nkwargs=%(kwargs)s', locals())
+        LOG.debug('attr=%s', attr)
 
-        if attr.lower() in ('delete', 'get', 'patch', 'post', 'put'):
-            return functools.partial(self, verb=attr)
+        attr_lower = attr.lower()
+        if attr_lower in set(['delete', 'get', 'patch', 'post', 'put']):
+            self.verb = attr_lower
+        else:
+            self.path = '/'.join([self.path, attr])
 
-        return Gate(path='/'.join([self.path, attr]))
+        return self
 
-    def __call__(self, json_data='', verb='get', **kwargs):
+    def __call__(self, json_data='', **kwargs):
         """Issue request to Gate API.
 
         Args:
             json_data (str): JSON content to send in request.
             path (str): URL path to reqest from Gate API.
-            verb (str): HTTP verb to use, e.g. delete, get, patch, post, put.
 
         Returns:
             dict: JSON response body returned by Gate API.
@@ -56,18 +57,15 @@ class Gate(object):
         Raises:
             AssertionError: Gate API did not return a 200 status code.
         """
-        LOG.debug('json_data=%(json_data)s\n'
-                  'verb=%(verb)s\n'
-                  'kwargs=%(kwargs)s', locals())
+        LOG.debug('json_data=%(json_data)s\nkwargs=%(kwargs)s', locals())
 
-        verb = verb.lower()
         url = self.normalize_url()
-        request_kwargs = self.assemble_request_kwargs(json_data, kwargs, verb)
+        request_kwargs = self.assemble_request_kwargs(json_data, kwargs)
 
-        response = getattr(requests, verb)(url.url, **request_kwargs)
+        response = getattr(requests, self.verb)(url.url, **request_kwargs)
 
         assert response.ok, 'Gate API {0} request to {1} failed: {2}'.format(
-            verb.upper(), self.path, response.text)
+            self.verb.upper(), self.path, response.text)
 
         try:
             response_dict = response.json()
@@ -76,13 +74,12 @@ class Gate(object):
         LOG.debug('Gate API response: %s', response_dict)
         return response_dict
 
-    def assemble_request_kwargs(self, json_data, kwargs, verb):
+    def assemble_request_kwargs(self, json_data, kwargs):
         """Construct kwargs for final request.
 
         Args:
             json_data (str): JSON content to send in request.
             path (str): URL path to reqest from Gate API.
-            verb (str): HTTP verb to use, e.g. delete, get, patch, post, put.
 
         Returns:
             dict: Assembled kwargs.
@@ -95,9 +92,9 @@ class Gate(object):
         """
         request_kwargs = {'headers': HEADERS}
 
-        if verb in set(['get']):
+        if self.verb in set(['get']):
             request_kwargs.update({'params': kwargs})
-        elif verb in set(['patch', 'post', 'put']):
+        elif self.verb in set(['patch', 'post', 'put']):
             try:
                 request_json = json.loads(json_data)
             except (json.decoder.JSONDecodeError, TypeError):
