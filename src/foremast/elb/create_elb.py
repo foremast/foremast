@@ -63,7 +63,7 @@ class SpinnakerELB:
             'listeners': json.dumps(listeners),
             'region_zones': json.dumps(region_subnets[region]),
             'region': region,
-            'security_groups': json.dumps([self.args.security_groups]),
+            'security_groups': json.dumps(['sg_apps', self.args.app]),
             'subnet_type': subnet_purpose,
             'unhealthy_threshold': self.args.unhealthy_threshold,
             'vpc_id': get_vpc_id(env, region),
