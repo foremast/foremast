@@ -1,4 +1,29 @@
-"""Create Security Groups for Spinnaker Pipelines."""
+"""Create Security Groups for Spinnaker Pipelines.
+
+Security Group port specifications will be sourced from the `application.json`
+files for each environment.
+
+Examples:
+    application-master.json:
+
+        {
+            "security_group": {
+                "description": "Security Group description",
+                "ingress": {
+                    "eureka": [
+                        {"start_port": 80, "end_port": 8080, "protocol": "http"}
+                    ],
+                    "coreforrest": [
+                        8080,
+                        8443
+                    ],
+                    "0.0.0.0/0": [
+                        8080
+                    ]
+                }
+            }
+        }
+"""
 import ipaddress
 import logging
 
