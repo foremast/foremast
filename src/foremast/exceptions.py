@@ -68,6 +68,11 @@ class SpinnakerSecurityGroupCreationFailed(SpinnakerError):
     pass
 
 
+class SpinnakerSecurityGroupError(SpinnakerError):
+    """Could not create Security Group."""
+    pass
+
+
 class SpinnakerSubnetError(SpinnakerError):
     """Unavailable environment or region."""
 
