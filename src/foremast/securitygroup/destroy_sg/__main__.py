@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ...args import add_app, add_debug, add_env, add_properties, add_region
+from ...args import add_app, add_debug, add_env, add_region
 from ...consts import LOGGING_FORMAT
 from .destroy_sg import destroy_sg
 
@@ -15,7 +15,6 @@ def main():
     add_debug(parser)
     add_app(parser)
     add_env(parser)
-    add_properties(parser)
     add_region(parser)
     args = parser.parse_args()
 
