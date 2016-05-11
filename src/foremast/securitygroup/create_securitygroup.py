@@ -11,7 +11,7 @@ Examples:
                 "description": "Security Group description",
                 "ingress": {
                     "eureka": [
-                        {"start_port": 80, "end_port": 8080, "protocol": "http"}
+                        {"start_port": 80, "end_port": 8080, "protocol": "tcp"}
                     ],
                     "coreforrest": [
                         8080,
