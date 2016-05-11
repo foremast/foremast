@@ -35,7 +35,7 @@ from ..consts import API_URL, HEADERS
 from ..exceptions import (SpinnakerSecurityGroupCreationFailed,
                           SpinnakerTaskError, SpinnakerSecurityGroupError)
 from ..utils import (check_task, get_template, get_vpc_id, get_properties,
-                     get_security_group_id)
+                     get_security_group_id, warn_user)
 
 
 class SpinnakerSecurityGroup(object):
@@ -160,6 +160,12 @@ class SpinnakerSecurityGroup(object):
 
         for app in ingress:
             rules = ingress[app]
+
+            if app in ('app_a', 'app_b'):
+                msg = 'Defining %s in your security group will be ignored.' % app
+                warn_user(msg)
+                continue
+
             # Essentially we have two formats: simple, advanced
             # - simple: is just a list of ports
             # - advanced: selects ports ranges and protocols
