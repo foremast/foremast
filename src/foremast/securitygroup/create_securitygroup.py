@@ -112,7 +112,8 @@ class SpinnakerSecurityGroup(object):
             SpinnakerSecurityGroupError: boto3 call failed to add CIDR block to
                 Security Group.
         """
-        session = boto3.session.Session(profile_name=self.args.env)
+        session = boto3.session.Session(profile_name=self.args.env,
+                                        region_name=self.args.region)
         client = session.client('ec2')
 
         group_id = get_security_group_id(self.app_name, self.args.env,
