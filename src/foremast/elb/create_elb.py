@@ -48,6 +48,8 @@ class SpinnakerELB:
 
         listeners = format_listeners(elb_settings=elb_settings)
 
+        security_groups = ['sg_apps', self.args.app] + self.properties['security_group']['elb_extras']
+
         template_kwargs = {
             'app_name': self.args.app,
             'availability_zones': json.dumps(region_subnets),
@@ -63,7 +65,7 @@ class SpinnakerELB:
             'listeners': json.dumps(listeners),
             'region_zones': json.dumps(region_subnets[region]),
             'region': region,
-            'security_groups': json.dumps(['sg_apps', self.args.app]),
+            'security_groups': json.dumps(security_groups),
             'subnet_type': subnet_purpose,
             'unhealthy_threshold': self.args.unhealthy_threshold,
             'vpc_id': get_vpc_id(env, region),
