@@ -157,7 +157,8 @@ class SpinnakerSecurityGroup(object):
                     'protocol': protocol,
                     })
 
-        ingress_rules, ingress_rules_cidr = self._process_rules(ingress_rules)
+        ingress_rules_no_cidr, ingress_rules_cidr = self._process_rules(
+            ingress_rules)
 
         template_kwargs = {
             'app': self.args.app,
@@ -165,7 +166,7 @@ class SpinnakerSecurityGroup(object):
             'region': self.args.region,
             'vpc': get_vpc_id(self.args.env, self.args.region),
             'description': self.properties['security_group']['description'],
-            'ingress': ingress_rules,
+            'ingress': ingress_rules_no_cidr,
         }
 
         secgroup_json = get_template(
