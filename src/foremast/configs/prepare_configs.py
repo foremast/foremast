@@ -9,7 +9,7 @@ import gitlab
 
 from ..consts import GIT_URL
 
-ENVS = ('dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods', 'stagesox')
+ENVS = ('build', 'dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods', 'stagesox')
 LOG = logging.getLogger(__name__)
 
 
