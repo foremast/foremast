@@ -46,7 +46,6 @@ def main():
     parser.add_argument('--health-interval', action="store", help="health check interval in seconds", default=20)
     parser.add_argument('--healthy-threshold', action="store", help="healthy threshold", default=2)
     parser.add_argument('--unhealthy-threshold', action="store", help="unhealthy threshold", default=5)
-    # parser.add_argument('--elb-name', action="store", help="elb name", required=True)
 
     args = parser.parse_args()
 
