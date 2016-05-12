@@ -5,7 +5,7 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-def get_properties(properties_file='raw.properties.json', env=''):
+def get_properties(properties_file='raw.properties.json', env=None):
     """Get contents of _properties_file_ for the _env_.
 
     Args:
@@ -18,6 +18,6 @@ def get_properties(properties_file='raw.properties.json', env=''):
     with open(properties_file, 'rt') as file_handle:
         properties = json.load(file_handle)
 
-    env_properties = properties.get(env, None)
+    env_properties = properties.get(env, properties)
     LOG.debug('Found properties for %s:\n%s', env, env_properties)
     return env_properties
