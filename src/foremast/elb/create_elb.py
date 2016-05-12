@@ -43,8 +43,11 @@ class SpinnakerELB(object):
         listeners = format_listeners(elb_settings=elb_settings,
                                      env=self.args.env)
 
-        security_groups = ['sg_apps', self.args.app
-                           ] + self.properties['security_group']['elb_extras']
+        security_groups = [
+            'sg_apps',
+            self.args.app,
+        ]
+        security_groups.extend(self.properties['security_group']['elb_extras'])
 
         template_kwargs = {
             'app_name': self.args.app,
