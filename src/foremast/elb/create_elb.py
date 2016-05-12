@@ -5,7 +5,8 @@ import logging
 import requests
 
 from ..consts import API_URL, HEADERS
-from ..utils import check_task, get_subnets, get_template, get_vpc_id
+from ..utils import (check_task, get_subnets, get_template, get_vpc_id,
+                     get_properties)
 from .format_listeners import format_listeners
 from .splay_health import splay_health
 
@@ -17,16 +18,9 @@ class SpinnakerELB:
 
     def __init__(self, args=None):
         self.args = args
-        self.properties = self.get_properties(
+        self.properties = get_properties(
             properties_file=self.args.properties,
             env=self.args.env)
-
-    @staticmethod
-    def get_properties(properties_file='', env=''):
-        """Get contents of _properties_file_ for the _env_."""
-        with open(properties_file, 'rt') as file_handle:
-            properties = json.load(file_handle)
-        return properties[env]
 
     def make_elb_json(self):
         """Render the JSON template with arguments.
