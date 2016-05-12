@@ -39,6 +39,7 @@ from ..utils import (check_task, get_template, get_vpc_id, get_properties,
 
 
 class SpinnakerSecurityGroup(object):
+
     """Manipulate Spinnaker Security Groups.
 
     Args:
@@ -163,8 +164,11 @@ class SpinnakerSecurityGroup(object):
             rules = ingress[app]
 
             if app in ('app_a', 'app_b'):
-                msg = 'Defining %s in your security group will be ignored.' % app
-                warn_user(msg)
+                msg = (
+                    'Using "%s" in your security group will be ignored.' % app,
+                    'Please remove them to supress this warning.',
+                )
+                warn_user(' '.join(msg))
                 continue
 
             # Essentially we have two formats: simple, advanced
