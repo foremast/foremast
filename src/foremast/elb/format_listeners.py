@@ -90,9 +90,9 @@ def format_listeners(elb_settings=None, env='dev'):
         }]
 
     for listener in listeners:
-        LOG.info('ELB Listener: '
-                 'loadbalancer %(externalProtocol)s:%(externalPort)d\t'
-                 'instance %(internalProtocol)s:%(internalPort)d\t'
+        LOG.info('ELB Listener:\n'
+                 'loadbalancer %(externalProtocol)s:%(externalPort)d\n'
+                 'instance %(internalProtocol)s:%(internalPort)d\n'
                  'certificate: %(sslCertificateId)s', listener)
     return listeners
 
