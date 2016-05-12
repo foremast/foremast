@@ -15,6 +15,12 @@
     },
     "elb": {
         "certificate": null,
+        "health": {
+            "interval": 20,
+            "threshold": 2,
+            "timeout": 10,
+            "unhealthy_threshold": 5
+        },
         "i_port": 8080,
         "i_proto": "HTTP",
         "lb_port": 80,
@@ -28,13 +34,21 @@
         "us-east-1"
     ],
     "security_group": {
-        "elb_extras": [],
         "description": "Auto-Gen SG for {{ app }}",
         "egress": "0.0.0.0/0",
+        "elb_extras": [],
         "ingress": {
             "sg_apps": [
-                { "start_port": "80", "end_port": "80", "protocol": "tcp" },
-                { "start_port": "8080", "end_port": "8080", "protocol": "tcp" }
+                {
+                    "end_port": "80",
+                    "protocol": "tcp",
+                    "start_port": "80"
+                },
+                {
+                    "end_port": "8080",
+                    "protocol": "tcp",
+                    "start_port": "8080"
+                }
             ]
         },
         "instance_extras": []

@@ -42,10 +42,6 @@ def main():
     add_env(parser)
     add_region(parser)
     add_properties(parser)
-    parser.add_argument('--health-timeout', action="store", help="health check timeout in seconds", default=10)
-    parser.add_argument('--health-interval', action="store", help="health check interval in seconds", default=20)
-    parser.add_argument('--healthy-threshold', action="store", help="healthy threshold", default=2)
-    parser.add_argument('--unhealthy-threshold', action="store", help="unhealthy threshold", default=5)
 
     args = parser.parse_args()
 

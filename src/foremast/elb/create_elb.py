@@ -31,6 +31,7 @@ class SpinnakerELB(object):
         env = self.args.env
         region = self.args.region
         elb_settings = self.properties['elb']
+        health_settings = elb_settings['health']
 
         region_subnets = get_subnets(target='elb', env=env, region=region)
 
@@ -54,19 +55,19 @@ class SpinnakerELB(object):
             'availability_zones': json.dumps(region_subnets),
             'env': env,
             'hc_string': target,
-            'health_interval': self.args.health_interval,
+            'health_interval': health_settings['interval'],
             'health_path': health.path,
             'health_port': health.port,
             'health_protocol': health.proto,
-            'health_timeout': self.args.health_timeout,
-            'healthy_threshold': self.args.healthy_threshold,
+            'health_timeout': health_settings['timeout'],
+            'healthy_threshold': health_settings['threshold'],
             'isInternal': elb_facing,
             'listeners': json.dumps(listeners),
             'region_zones': json.dumps(region_subnets[region]),
             'region': region,
             'security_groups': json.dumps(security_groups),
             'subnet_type': subnet_purpose,
-            'unhealthy_threshold': self.args.unhealthy_threshold,
+            'unhealthy_threshold': health_settings['unhealthy_threshold'],
             'vpc_id': get_vpc_id(env, region),
         }
 
