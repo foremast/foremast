@@ -44,6 +44,15 @@ def construct_pipeline_block(env='',
                                            group_name=generated.project)
 
     # Use different variable to keep template simple
+    instance_security_groups = [
+        'sg_apps',
+        'sg_offices',
+        generated.app,
+    ]
+    instance_security_groups.extend(
+        settings['security_group']['instance_extras'])
+
+    LOG.info(instance_security_groups)
     data = settings
     data['app'].update({
         'appname': generated.app,
@@ -53,6 +62,7 @@ def construct_pipeline_block(env='',
         'az_dict': json.dumps(region_subnets),
         'previous_env': previous_env,
         'encoded_user_data': user_data,
+        'instance_security_groups': json.dumps(instance_security_groups),
     })
 
     LOG.debug('Block data:\n%s', pformat(data))
