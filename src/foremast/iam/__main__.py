@@ -10,7 +10,14 @@ LOG = logging.getLogger(__name__)
 
 
 def main():
-    """Command to create IAM Instance Profiles, Roles, Users, and Groups."""
+    """Command to create IAM Instance Profiles, Roles, Users, and Groups.
+
+    IAM Roles will retain any attached Managed Policies. Inline Policies that do
+    not match the name *iam-project_repo_policy* will also be left untouched.
+
+    **WARNING**: Inline Policies named *iam-project_repo_policy* will be
+    rewritten.
+    """
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)
