@@ -11,7 +11,7 @@ from .format_listeners import format_listeners
 from .splay_health import splay_health
 
 
-class SpinnakerELB:
+class SpinnakerELB(object):
     """Create ELBs for Spinnaker."""
 
     log = logging.getLogger(__name__)
