@@ -1,0 +1,17 @@
+{
+    "application": "{{ app }}",
+    "description": "Delete load balancer: {{ app }} in {{ env }}:{{ region }}",
+    "job": [
+        {
+            "cloudProvider": "aws",
+            "credentials": "{{ env }}",
+            "loadBalancerName": "{{ app }}",
+            "regions": [
+                "{{ region }}"
+            ],
+            "type": "deleteLoadBalancer",
+            "user": "Spinnaker Destroyer",
+            "vpcId": "{{ vpc }}"
+        }
+    ]
+}
