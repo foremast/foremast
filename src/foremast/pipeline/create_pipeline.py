@@ -9,7 +9,8 @@ import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import ami_lookup, get_app_details, get_subnets, get_template
+from ..utils import (ami_lookup, get_app_details, get_subnets,
+                     get_template, get_properties)
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block import construct_pipeline_block
 from .renumerate_stages import renumerate_stages
@@ -33,19 +34,7 @@ class SpinnakerPipeline:
         self.app_name = self.generated.app_name()
         self.group_name = self.generated.project
 
-        self.settings = self.get_settings(self.app_info['properties'])
-
-    @staticmethod
-    def get_settings(property_file=''):
-        """Get the specified Application configurations.
-
-        Args:
-            property_file (str): Name of JSON property file, e.g.
-                raw.properties.json.
-        """
-        with open(property_file, 'rt') as data_file:
-            data = json.load(data_file)
-        return data
+        self.settings = get_properties(self.app_info['properties'])
 
     def post_pipeline(self, pipeline):
         """Send Pipeline JSON to Spinnaker."""
@@ -86,7 +75,7 @@ class SpinnakerPipeline:
 
         if self.app_info.get('base'):
             base = self.app_info['base']
-        
+
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
         ami_id = ami_lookup(name=base,
