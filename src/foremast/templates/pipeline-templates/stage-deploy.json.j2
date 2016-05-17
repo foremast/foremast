@@ -17,7 +17,7 @@
           "blockDevices": [],
           "targetHealthyDeployPercentage": 100,
           "cooldown": 10,
-          "healthCheckType": "ELB",
+          "healthCheckType": "{{ data.asg.hc_type }}",
           "healthCheckGracePeriod": "600",
           "instanceMonitoring": false,
           "ebsOptimized": false,
