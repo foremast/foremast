@@ -64,6 +64,9 @@ def construct_pipeline_block(env='',
         'encoded_user_data': user_data,
         'instance_security_groups': json.dumps(instance_security_groups),
     })
+    data['asg'].update({
+        'hc_type': data['asg'].get('hc_type').upper()
+    })
 
     LOG.debug('Block data:\n%s', pformat(data))
 
