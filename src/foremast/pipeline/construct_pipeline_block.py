@@ -52,7 +52,14 @@ def construct_pipeline_block(env='',
     instance_security_groups.extend(
         settings['security_group']['instance_extras'])
 
-    LOG.info(instance_security_groups)
+    LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
+
+    if settings['app']['eureka_enabled']:
+        elb = []
+    else:
+        elb = ['{0}'.format(generated.app)]
+    LOG.info('Attaching the following ELB: {0}'.format(elb))
+
     data = settings
     data['app'].update({
         'appname': generated.app,
@@ -63,6 +70,7 @@ def construct_pipeline_block(env='',
         'previous_env': previous_env,
         'encoded_user_data': user_data,
         'instance_security_groups': json.dumps(instance_security_groups),
+        'elb': json.dumps(elb),
     })
     data['asg'].update({
         'hc_type': data['asg'].get('hc_type').upper()

@@ -35,7 +35,7 @@
           },
           "subnetType": "{{ data.asg.subnet_purpose }}",
           "virtualizationType": null,
-          "loadBalancers": [ "{{ data.app.appname }}" ],
+          "loadBalancers": {{ data.app.elb }},
           "instanceType": "{{ data.app.instance_type }}",
           "useSourceCapacity": false,
           "associatePublicIpAddress": null,
