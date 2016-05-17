@@ -9,4 +9,5 @@ HEADERS = {
 LOGGING_FORMAT = ('%(asctime)s [%(levelname)s] %(name)s:%(funcName)s:'
                   '%(lineno)d - %(message)s')
 
+DOMAIN = 'example.com'
 ENVS = set(('build', 'dev', 'stage', 'prod', 'prods', 'prodp'))

@@ -7,6 +7,7 @@ from .gate import *
 from .generate_encoded_user_data import *
 from .get_all_pipelines import *
 from .get_app_details import *
+from .get_dns_zone_ids import *
 from .get_env_credential import *
 from .get_pipeline_id import *
 from .get_properties import *
