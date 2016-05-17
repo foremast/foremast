@@ -33,7 +33,7 @@
             "app_group": "{{ data.app.group_name }}",
             "Name": "{{ data.app.appname }}"
           },
-          "subnetType": "internal",
+          "subnetType": "{{ data.asg.subnet_purpose }}",
           "virtualizationType": null,
           "loadBalancers": [ "{{ data.app.appname }}" ],
           "instanceType": "{{ data.app.instance_type }}",
