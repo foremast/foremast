@@ -41,7 +41,8 @@
           "associatePublicIpAddress": null,
           "provider": "aws",
           "cloudProvider": "aws",
-          "account": "{{ data.app.environment }}"
+          "account": "{{ data.app.environment }}",
+          "interestingHealthProviderNames": {{ data.asg.provider_healthcheck }}
         }
       ],
       "comments": "",
