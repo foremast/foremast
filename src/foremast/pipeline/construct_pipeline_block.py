@@ -60,6 +60,12 @@ def construct_pipeline_block(env='',
         elb = ['{0}'.format(generated.app)]
     LOG.info('Attaching the following ELB: {0}'.format(elb))
 
+    provider_healthcheck = []
+    for provider, active in settings['asg']['provider_healthcheck'].items():
+        if active:
+            provider_healthcheck.append(provider.capitalize())
+    LOG.info('Provider healthchecks: {0}'.format(provider_healthcheck))
+
     data = settings
     data['app'].update({
         'appname': generated.app,
@@ -73,7 +79,8 @@ def construct_pipeline_block(env='',
         'elb': json.dumps(elb),
     })
     data['asg'].update({
-        'hc_type': data['asg'].get('hc_type').upper()
+        'hc_type': data['asg'].get('hc_type').upper(),
+        'provider_healthcheck': json.dumps(provider_healthcheck),
     })
 
     LOG.debug('Block data:\n%s', pformat(data))
