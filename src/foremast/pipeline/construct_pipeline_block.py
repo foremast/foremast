@@ -61,6 +61,19 @@ def construct_pipeline_block(env='',
     LOG.info('Attaching the following ELB: {0}'.format(elb))
 
     data = settings
+
+    # Read the apps white list
+    with open('../configs/dev_asg_whitelist') as f:
+        dev_asg_whitelist = f.read().splitlines()
+
+    LOG.info('White listed dev asg apps: {0}'.format(dev_asg_whitelist))
+    if env == 'dev' and generated.app not in dev_asg_whitelist:
+        data['asg'].update({
+            'max_inst': '1'
+            'min_inst': '1'
+        })
+        LOG.info('App {0} is not white listed, using default dev ASG settings'.format(generated.app))
+
     data['app'].update({
         'appname': generated.app,
         'group_name': generated.project,
@@ -72,6 +85,7 @@ def construct_pipeline_block(env='',
         'instance_security_groups': json.dumps(instance_security_groups),
         'elb': json.dumps(elb),
     })
+
     data['asg'].update({
         'hc_type': data['asg'].get('hc_type').upper()
     })
