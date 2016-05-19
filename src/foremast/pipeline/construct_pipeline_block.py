@@ -62,6 +62,13 @@ def construct_pipeline_block(env='',
 
     data = settings
 
+    # Default HC type in DEV to EC2
+    if env == 'dev':
+        data['asg'].update({
+            'hc_type': 'EC2'
+        })
+        LOG.info('Switching health check type to: EC2')
+
     # Read the apps white list
     with open('../configs/dev_asg_whitelist') as f:
         dev_asg_whitelist = f.read().splitlines()
