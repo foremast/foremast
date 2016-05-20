@@ -76,7 +76,7 @@ def construct_pipeline_block(env='',
     LOG.info('White listed dev asg apps: {0}'.format(dev_asg_whitelist))
     if env == 'dev' and generated.app not in dev_asg_whitelist:
         data['asg'].update({
-            'max_inst': '1'
+            'max_inst': '1',
             'min_inst': '1'
         })
         LOG.info('App {0} is not white listed, using default dev ASG settings'.format(generated.app))
