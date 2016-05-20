@@ -1,6 +1,7 @@
 """Construct a block section of Stages in a Spinnaker Pipeline."""
 import json
 import logging
+import os
 from pprint import pformat
 
 from ..utils import generate_encoded_user_data, get_template
