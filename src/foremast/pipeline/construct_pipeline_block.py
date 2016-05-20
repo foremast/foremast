@@ -1,6 +1,7 @@
 """Construct a block section of Stages in a Spinnaker Pipeline."""
 import json
 import logging
+import os
 from pprint import pformat
 
 from ..utils import generate_encoded_user_data, get_template
@@ -67,6 +68,26 @@ def construct_pipeline_block(env='',
     LOG.info('Provider healthchecks: {0}'.format(provider_healthcheck))
 
     data = settings
+
+    # Default HC type in DEV to EC2
+    if env == 'dev':
+        data['asg'].update({
+            'hc_type': 'EC2'
+        })
+        LOG.info('Switching health check type to: EC2')
+
+    # Read the apps white list
+    with open('src/foremast/configs/dev_asg_whitelist') as f:
+        dev_asg_whitelist = f.read().splitlines()
+
+    LOG.info('White listed dev asg apps: {0}'.format(dev_asg_whitelist))
+    if env == 'dev' and generated.app not in dev_asg_whitelist:
+        data['asg'].update({
+            'max_inst': '1',
+            'min_inst': '1'
+        })
+        LOG.info('App {0} is not white listed, using default dev ASG settings'.format(generated.app))
+
     data['app'].update({
         'appname': generated.app,
         'group_name': generated.project,
@@ -78,6 +99,7 @@ def construct_pipeline_block(env='',
         'instance_security_groups': json.dumps(instance_security_groups),
         'elb': json.dumps(elb),
     })
+
     data['asg'].update({
         'hc_type': data['asg'].get('hc_type').upper(),
         'provider_healthcheck': json.dumps(provider_healthcheck),
