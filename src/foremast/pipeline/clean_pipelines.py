@@ -5,6 +5,7 @@ import murl
 import requests
 
 from ..consts import API_URL
+from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import check_managed_pipeline, get_all_pipelines
 
 LOG = logging.getLogger(__name__)
@@ -19,6 +20,10 @@ def clean_pipelines(app='', settings=None):
 
     Returns:
         True: Upon successful completion.
+
+    Raises:
+        SpinnakerPipelineCreationFailed: Missing application.json file from
+        `create-configs`.
     """
     url = murl.Url(API_URL)
     pipelines = get_all_pipelines(app=app)
@@ -28,7 +33,11 @@ def clean_pipelines(app='', settings=None):
 
     regions = set()
     for env in envs:
-        regions.update(settings[env]['regions'])
+        try:
+            regions.update(settings[env]['regions'])
+        except KeyError:
+            raise SpinnakerPipelineCreationFailed(
+                'Missing "runway/application-master-{0}.json".'.format(env))
     LOG.debug('Regions defined: %s', regions)
 
     for pipeline in pipelines:
