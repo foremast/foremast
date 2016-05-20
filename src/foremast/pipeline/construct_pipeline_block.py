@@ -72,7 +72,7 @@ def construct_pipeline_block(env='',
 
     # Read the apps white list
     here = os.path.dirname(os.path.realpath(__file__))
-    white_list_file = '{0}/../configs/'.format(here)
+    white_list_file = '{0}/../configs/dev_asg_whitelist'.format(here)
     with open(white_list_file) as f:
         dev_asg_whitelist = f.read().splitlines()
 
