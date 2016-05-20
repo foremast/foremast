@@ -71,7 +71,7 @@ def construct_pipeline_block(env='',
         LOG.info('Switching health check type to: EC2')
 
     # Read the apps white list
-    with open('src/configs/dev_asg_whitelist') as f:
+    with open('src/foremast/configs/dev_asg_whitelist') as f:
         dev_asg_whitelist = f.read().splitlines()
 
     LOG.info('White listed dev asg apps: {0}'.format(dev_asg_whitelist))
