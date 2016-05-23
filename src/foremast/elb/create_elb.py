@@ -35,8 +35,15 @@ class SpinnakerELB(object):
 
         region_subnets = get_subnets(target='elb', env=env, region=region)
 
-        subnet_purpose = self.properties.get('subnet_purpose', 'internal')
-        elb_facing = 'true' if subnet_purpose == 'internal' else 'false'
+        # CAVEAT: Setting the ELB to public, you must use a public subnet, otherwise
+        #         AWS complains about missing IGW on subnet.
+
+        elb_subnet_purpose = elb_settings.get('subnet_purpose', 'internal')
+
+        if elb_subnet_purpose == 'internal':
+            is_internal = 'true'
+        else:
+            is_internal = 'false'
 
         target = elb_settings.get('target', 'HTTP:80/health')
         health = splay_health(target)
@@ -61,12 +68,12 @@ class SpinnakerELB(object):
             'health_protocol': health.proto,
             'health_timeout': health_settings['timeout'],
             'healthy_threshold': health_settings['threshold'],
-            'isInternal': elb_facing,
+            'isInternal': is_internal,
             'listeners': json.dumps(listeners),
             'region_zones': json.dumps(region_subnets[region]),
             'region': region,
             'security_groups': json.dumps(security_groups),
-            'subnet_type': subnet_purpose,
+            'subnet_type': elb_subnet_purpose,
             'unhealthy_threshold': health_settings['unhealthy_threshold'],
             'vpc_id': get_vpc_id(env, region),
         }
