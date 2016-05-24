@@ -12,6 +12,7 @@
       "parameters": {
         "EXECUTION_ID": "${execution.id}",
         "FUNCTION": "audit_approval",
-        "ACCOUNT": "{{ data.app.environment }}"
+        "ACCOUNT": "{{ data.app.environment }}",
+        "USER_CHECK_TYPE": "{{ data.app.promote_restrict }}"
         }
     }

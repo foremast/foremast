@@ -136,7 +136,8 @@ class SpinnakerPipeline:
                                                  previous_env=previous_env,
                                                  region=region,
                                                  region_subnets=region_subnets,
-                                                 settings=self.settings[env])
+                                                 settings=self.settings[env],
+                                                 pipeline_data=self.settings['pipeline'])
 
                 pipelines[region]['stages'].extend(json.loads(block))
 
