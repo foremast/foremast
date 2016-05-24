@@ -15,7 +15,8 @@ def construct_pipeline_block(env='',
                              previous_env=None,
                              region='us-east-1',
                              region_subnets=None,
-                             settings=None):
+                             settings=None,
+                             pipeline_data=None):
     """Create the Pipeline JSON from template.
 
     Args:
@@ -99,6 +100,7 @@ def construct_pipeline_block(env='',
         'encoded_user_data': user_data,
         'instance_security_groups': json.dumps(instance_security_groups),
         'elb': json.dumps(elb),
+        'promote_restrict': pipeline_data['promote_restrict'],
     })
 
     data['asg'].update({
