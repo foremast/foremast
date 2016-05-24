@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+import copy
 from pprint import pformat
 
 from ..utils import generate_encoded_user_data, get_template
@@ -67,7 +68,7 @@ def construct_pipeline_block(env='',
             provider_healthcheck.append(provider.capitalize())
     LOG.info('Provider healthchecks: {0}'.format(provider_healthcheck))
 
-    data = settings
+    data = copy.deepcopy(settings)
 
     # Default HC type in DEV to EC2
     if env == 'dev':
