@@ -35,11 +35,7 @@ class SpinnakerPipeline:
         self.group_name = self.generated.project
 
         self.settings = get_properties(self.app_info['properties'])
-
-        if self.app_info['env']:
-            self.environments = [self.app_info['env']]
-        else:
-            self.environments = self.settings['pipeline']['env']
+        self.environments = self.settings['pipeline']['env']
 
     def post_pipeline(self, pipeline):
         """Send Pipeline JSON to Spinnaker."""
