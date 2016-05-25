@@ -5,6 +5,7 @@ import logging
 from ..args import add_app, add_debug, add_gitlab_token, add_properties, add_env
 from ..consts import LOGGING_FORMAT
 from .create_pipeline import SpinnakerPipeline
+from .create_pipeline_manual import SpinnakerPipelineManual
 
 
 def main():
@@ -25,6 +26,11 @@ def main():
         "--triggerjob",
         help="The jenkins job to monitor for pipeline triggering",
         required=True)
+    parser.add_argument(
+        "--manual",
+        help="Environment to specifically build.",
+        required=False,
+        action='store_true')
     args = parser.parse_args()
 
     if args.base and '"' in args.base:
@@ -34,8 +40,12 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    spinnakerapps = SpinnakerPipeline(app_info=vars(args))
-    spinnakerapps.create_pipeline()
+    if args.manual:
+        spinnakerapps = SpinnakerPipelineManual(app_info=vars(args))
+        spinnakerapps.create_pipeline()
+    else:
+        spinnakerapps = SpinnakerPipeline(app_info=vars(args))
+        spinnakerapps.create_pipeline()
 
 
 if __name__ == "__main__":
