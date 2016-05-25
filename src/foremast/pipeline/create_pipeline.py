@@ -36,6 +36,11 @@ class SpinnakerPipeline:
 
         self.settings = get_properties(self.app_info['properties'])
 
+        if self.app_info['env']:
+            self.environments = [self.app_info['env']]
+        else:
+            self.environments = self.settings['pipeline']['env']
+
     def post_pipeline(self, pipeline):
         """Send Pipeline JSON to Spinnaker."""
         url = "{0}/pipelines".format(API_URL)
@@ -105,7 +110,7 @@ class SpinnakerPipeline:
         """Send a POST to spinnaker to create a new security group."""
         clean_pipelines(app=self.app_name, settings=self.settings)
 
-        pipeline_envs = self.settings['pipeline']['env']
+        pipeline_envs = self.environments
         self.log.debug('Envs from pipeline.json: %s', pipeline_envs)
 
         regions_envs = collections.defaultdict(list)
