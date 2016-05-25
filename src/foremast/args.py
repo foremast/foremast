@@ -22,12 +22,12 @@ def add_debug(parser):
                         help='Set DEBUG output')
 
 
-def add_env(parser, env_default='dev'):
+def add_env(parser):
     """Add an `env` flag to the _parser_."""
     parser.add_argument('-e',
                         '--env',
                         choices=ENVS,
-                        default=env_default,
+                        default='dev',
                         help='Deploy environment')
 
 
