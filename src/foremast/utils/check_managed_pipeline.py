@@ -22,6 +22,10 @@ def check_managed_pipeline(name='', app_name=''):
 
     not_managed_message = '"{0}" is not managed.'.format(name)
 
+    if 'onetime' in region:
+        LOG.info('"%s" is a onetime, marked for cleaning.', name)
+        return region
+
     if not all([bracket_region.startswith('['), bracket_region.endswith(']')]):
         LOG.debug('"%s" does not end with "[region]".', name)
         raise ValueError(not_managed_message)
