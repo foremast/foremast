@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_gitlab_token, add_properties, add_env
+from ..args import add_app, add_debug, add_gitlab_token, add_properties
 from ..consts import LOGGING_FORMAT, ENVS
 from .create_pipeline import SpinnakerPipeline
 from .create_pipeline_onetime import SpinnakerPipelineOnetime
@@ -31,7 +31,6 @@ def main():
         choices=ENVS,
         help='Onetime deployment environment')
     args = parser.parse_args()
-    print(args)
 
     if args.base and '"' in args.base:
         args.base = args.base.strip('"')
