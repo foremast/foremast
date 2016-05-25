@@ -22,7 +22,8 @@ def main():
 
 
     info = { 'env': args.env,
-             'app': args.app 
+             'app': args.app ,
+             'properties', args.properties
            }
 
     if "prod" not in info['env']:
