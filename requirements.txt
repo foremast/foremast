@@ -6,3 +6,4 @@ murl
 pyapi-gitlab
 requests
 tryagain
+slacker

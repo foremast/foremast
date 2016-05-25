@@ -50,6 +50,9 @@ def process_git_configs(git_short='', token_file=''):
             file_contents = b64decode(file_blob['content'])
             app_configs[env] = json.loads(file_contents.decode())
 
+    config_commit = server.getbranch(project_id, 'master')['commit']['id']
+    app_configs['pipeline']['config_commit'] = config_commit
+
     LOG.info('Processing pipeline.json from GitLab.')
     pipeline_blob = server.getfile(project_id,
                                    'runway/pipeline.json',
