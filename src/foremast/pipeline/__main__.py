@@ -18,7 +18,7 @@ def main():
     add_app(parser)
     add_properties(parser)
     add_gitlab_token(parser)
-    add_env(parser, '')
+    add_env(parser)
     parser.add_argument('-b',
                         '--base',
                         help='Base AMI name to use, e.g. fedora, tomcat')
