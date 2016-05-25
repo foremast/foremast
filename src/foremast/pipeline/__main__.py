@@ -3,7 +3,7 @@ import argparse
 import logging
 
 from ..args import add_app, add_debug, add_gitlab_token, add_properties, add_env
-from ..consts import LOGGING_FORMAT
+from ..consts import LOGGING_FORMAT, ENVS
 from .create_pipeline import SpinnakerPipeline
 from .create_pipeline_manual import SpinnakerPipelineManual
 
@@ -18,7 +18,6 @@ def main():
     add_app(parser)
     add_properties(parser)
     add_gitlab_token(parser)
-    add_env(parser)
     parser.add_argument('-b',
                         '--base',
                         help='Base AMI name to use, e.g. fedora, tomcat')
@@ -27,11 +26,12 @@ def main():
         help="The jenkins job to monitor for pipeline triggering",
         required=True)
     parser.add_argument(
-        "--manual",
-        help="Environment to specifically build.",
+        "--onetime",
         required=False,
-        action='store_true')
+        choices=ENVS,
+        help='Onetime deployment environment')
     args = parser.parse_args()
+    print(args)
 
     if args.base and '"' in args.base:
         args.base = args.base.strip('"')
@@ -40,7 +40,7 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    if args.manual:
+    if args.onetime:
         spinnakerapps = SpinnakerPipelineManual(app_info=vars(args))
         spinnakerapps.create_pipeline()
     else:

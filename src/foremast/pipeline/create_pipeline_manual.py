@@ -13,7 +13,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
     def __init__(self, app_info):
         super().__init__(app_info)
-        self.environments = [self.app_info['env']]
+        self.environments = [self.app_info['onetime']]
 
     def post_pipeline(self, pipeline):
         """Send Pipeline JSON to Spinnaker."""
