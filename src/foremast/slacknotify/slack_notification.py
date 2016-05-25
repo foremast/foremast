@@ -13,7 +13,7 @@ class SlackNotification:
         self.settings = get_properties(self.info['properties'])
         self.info['config_commit_short'] = self.settings['pipeline']['config_commit'][0:11] 
 
-    def post_message():
+    def post_message(self):
         message = get_template(
                   template_file='slack-templates/pipeline-prepare-ran.j2',
                   info=self.info)
