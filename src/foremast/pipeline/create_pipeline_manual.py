@@ -1,20 +1,8 @@
 """Create Pipelines for Spinnaker."""
-import collections
 import json
-import logging
-import os
-from pprint import pformat
 
-import requests
-
-from ..consts import API_URL
-from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import (ami_lookup, get_app_details, get_subnets,
-                     get_template, get_properties)
-from .clean_pipelines import clean_pipelines
-from .construct_pipeline_block import construct_pipeline_block
-from .renumerate_stages import renumerate_stages
 from .create_pipeline import SpinnakerPipeline
+
 
 class SpinnakerPipelineManual(SpinnakerPipeline):
     """Manipulate Spinnaker Pipelines.
