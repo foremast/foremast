@@ -6,7 +6,7 @@ from .args import add_app, add_debug
 from .consts import ENVS, LOGGING_FORMAT, REGIONS
 from .dns.destroy_dns.destroy_dns import destroy_dns
 from .elb.destroy_elb.destroy_elb import destroy_elb
-from .exceptions import SpinnakerVPCIDNotFound
+from .exceptions import SpinnakerError
 from .iam.destroy_iam.destroy_iam import destroy_iam
 from .s3.destroy_s3.destroy_s3 import destroy_s3
 from .securitygroup.destroy_sg.destroy_sg import destroy_sg
@@ -30,7 +30,7 @@ def main():
             destroy_dns(app=args.app, env=env)
             try:
                 destroy_elb(app=args.app, env=env, region=region)
-            except SpinnakerVPCIDNotFound:
+            except SpinnakerError:
                 pass
             destroy_iam(app=args.app, env=env)
             destroy_s3(app=args.app, env=env)
