@@ -52,14 +52,19 @@ def construct_policy(app='coreforrest',
         else:
             items = value
 
-        statement = json.loads(get_template('iam/{0}.json.j2'.format(service),
-                                            account_number=account_number,
-                                            app=app,
-                                            env=env,
-                                            group=group,
-                                            region=region,
-                                            items=items))
-        statements.append(statement)
+        try:
+            statement_block = get_template('iam/{0}.json.j2'.format(service),
+                                           account_number=account_number,
+                                           app=app,
+                                           env=env,
+                                           group=group,
+                                           region=region,
+                                           items=items)
+            statement = json.loads(statement_block)
+            statements.append(statement)
+        except json.decoder.JSONDecodeError:
+            statement_block_list = json.loads('[{0}]'.format(statement_block))
+            statements.extend(statement_block_list)
 
     if statements:
         policy_json = get_template('iam/wrapper.json.j2',
