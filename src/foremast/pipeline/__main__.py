@@ -5,7 +5,7 @@ import logging
 from ..args import add_app, add_debug, add_gitlab_token, add_properties, add_env
 from ..consts import LOGGING_FORMAT, ENVS
 from .create_pipeline import SpinnakerPipeline
-from .create_pipeline_manual import SpinnakerPipelineManual
+from .create_pipeline_onetime import SpinnakerPipelineOnetime
 
 
 def main():
@@ -41,7 +41,7 @@ def main():
     log.debug('Parsed arguments: %s', args)
 
     if args.onetime:
-        spinnakerapps = SpinnakerPipelineManual(app_info=vars(args))
+        spinnakerapps = SpinnakerPipelineOnetime(app_info=vars(args))
         spinnakerapps.create_pipeline()
     else:
         spinnakerapps = SpinnakerPipeline(app_info=vars(args))

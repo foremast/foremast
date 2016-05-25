@@ -4,7 +4,7 @@ import json
 from .create_pipeline import SpinnakerPipeline
 
 
-class SpinnakerPipelineManual(SpinnakerPipeline):
+class SpinnakerPipelineOnetime(SpinnakerPipeline):
     """Manipulate Spinnaker Pipelines.
 
     Args:
