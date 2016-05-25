@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_gitlab_token, add_properties
+from ..args import add_app, add_debug, add_gitlab_token, add_properties, add_env
 from ..consts import LOGGING_FORMAT
 from .create_pipeline import SpinnakerPipeline
 
@@ -17,6 +17,7 @@ def main():
     add_app(parser)
     add_properties(parser)
     add_gitlab_token(parser)
+    add_env(parser, '')
     parser.add_argument('-b',
                         '--base',
                         help='Base AMI name to use, e.g. fedora, tomcat')
