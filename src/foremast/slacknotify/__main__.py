@@ -31,7 +31,7 @@ def main():
     else:
         log.info("Sending slack message, production environment")
         slacknotify = SlackNotification(info=info)
-
+        slacknotify.post_message()
 
 if __name__ == "__main__":
     main()
