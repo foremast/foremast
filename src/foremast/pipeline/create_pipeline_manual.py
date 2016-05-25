@@ -24,11 +24,8 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
     """
 
     def __init__(self, app_info):
-        print(app_info)
         super().__init__(app_info)
         self.environments = [self.app_info['env']]
-        print('Manual*'*55)
-        print(self.environments)
 
     def post_pipeline(self, pipeline):
         """Send Pipeline JSON to Spinnaker."""
