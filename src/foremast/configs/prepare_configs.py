@@ -50,8 +50,6 @@ def process_git_configs(git_short='', token_file=''):
             file_contents = b64decode(file_blob['content'])
             app_configs[env] = json.loads(file_contents.decode())
 
-    config_commit = server.getbranch(project_id, 'master')['commit']['id']
-    app_configs['pipeline']['config_commit'] = config_commit
 
     LOG.info('Processing pipeline.json from GitLab.')
     pipeline_blob = server.getfile(project_id,
@@ -69,6 +67,10 @@ def process_git_configs(git_short='', token_file=''):
         if 'env' not in app_configs['pipeline']:
             app_configs['pipeline']['env'] = ['stage', 'prod']
 
+    config_commit = server.getbranch(project_id, 'master')['commit']['id']
+    LOG.info('setting commit {}'.format(config_commit))
+    app_configs['pipeline']['config_commit'] = config_commit
+    
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
 
