@@ -143,11 +143,15 @@ class Gate(object):
         assert response.ok, 'Gate API {0} request to {1} failed: {2}'.format(
             self.verb.upper(), self.path, response.text)
 
-        try:
-            LOG.debug('Gate response: %s', response.text)
-            response_dict = response.json()
-        except json.decoder.JSONDecodeError:
+        LOG.debug('Gate response: %s', response.text)
+
+        if not response.text:
             response_dict = {}
+        else:
+            try:
+                response_dict = response.json()
+            except json.decoder.JSONDecodeError:
+                response_dict = {}
         LOG.debug('Gate API response: %s', response_dict)
         return response_dict
 
