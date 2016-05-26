@@ -49,6 +49,10 @@ def main():
             except SpinnakerError:
                 pass
 
+            LOG.info('Destroyed %s:%s', env, region)
+
+    LOG.info('Destruction complete.')
+
 
 if __name__ == '__main__':
     main()
