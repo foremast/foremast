@@ -25,7 +25,10 @@ def main():
     add_app(parser)
     args = parser.parse_args()
 
-    logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
+    if args.debug == logging.DEBUG:
+        logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
+    else:
+        LOG.setLevel(args.debug)
 
     for env in ENVS:
         for region in REGIONS:
