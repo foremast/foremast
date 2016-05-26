@@ -28,13 +28,19 @@ def main():
     for env in ENVS:
         for region in REGIONS:
             destroy_dns(app=args.app, env=env)
+
             try:
                 destroy_elb(app=args.app, env=env, region=region)
             except SpinnakerError:
                 pass
+
             destroy_iam(app=args.app, env=env)
             destroy_s3(app=args.app, env=env)
-            destroy_sg(app=args.app, env=env, region=region)
+
+            try:
+                destroy_sg(app=args.app, env=env, region=region)
+            except SpinnakerError:
+                pass
 
 
 if __name__ == '__main__':
