@@ -1,7 +1,7 @@
 """Posts a message to slack"""
 import logging
 
-from slacker import Slacker 
+import slacker
 
 LOG = logging.getLogger(__name__)
 
@@ -11,6 +11,9 @@ def post_slack_message(message, channel):
     slack_token = 'xoxb-xxxxxxxxx'
 
     LOG.debug('Slack Channel: {}\nSlack Message: {}'.format(channel, message)) 
-    slack = Slacker(slack_token)
-    slack.chat.post_message(channel, message)
-    LOG.info('Message posted to {}'.format(channel))
+    slack = slacker.Slacker(slack_token)
+    try:
+        slack.chat.post_message(channel, message)
+        LOG.info('Message posted to {}'.format(channel))
+    except slacker.Error:
+        LOG.info("error posted message to  {}".format(channel))
