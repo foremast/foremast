@@ -10,8 +10,8 @@
       "master": "JenkinsCI",
       "job": "pipes-pipeline-prepare-new",
       "parameters": {
-        "PROJECT": "{{ data.app.repo_name }}",
-        "GIT_REPO": "{{ data.app.group_name }}",
+        "PROJECT": "{{ data.app.group_name }}",
+        "GIT_REPO": "{{ data.app.repo_name }}",
         "ENV": "{{ data.app.environment }}",
         "REGION": "{{ data.app.region }}"
         }
