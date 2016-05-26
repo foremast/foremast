@@ -144,6 +144,7 @@ class Gate(object):
             self.verb.upper(), self.path, response.text)
 
         try:
+            LOG.debug('Gate response: %s', response.text)
             response_dict = response.json()
         except json.decoder.JSONDecodeError:
             response_dict = {}
