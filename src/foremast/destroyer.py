@@ -46,7 +46,10 @@ def main():
             except botocore.exceptions.ClientError as error:
                 LOG.warning('IAM issue for %s in %s: %s', env, region, error)
 
-            destroy_s3(app=args.app, env=env)
+            try:
+                destroy_s3(app=args.app, env=env)
+            except botocore.exceptions.ClientError as error:
+                LOG.warning('S3 issue for %s in %s: %s', env, region, error)
 
             try:
                 destroy_sg(app=args.app, env=env, region=region)
