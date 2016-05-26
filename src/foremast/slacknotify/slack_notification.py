@@ -21,8 +21,5 @@ class SlackNotification:
         post_slack_message(message, channel)
         #also posts message to defined slack channel
         if self.settings['pipeline']['notifications']['slack']:
-            try:
                 post_slack_message(message, self.settings['pipeline']['notifications']['slack'])
-            except slacker.Error:
-                pass
 
