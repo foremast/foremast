@@ -30,19 +30,18 @@ def destroy_sg(app='', env='', region='', **_):
 
     if not security_group:
         LOG.info('Nothing to delete.')
-        raise SystemExit
     else:
         LOG.info('Found Security Group in %(region)s: %(name)s',
                  security_group)
 
-    destroy_request = get_template('destroy/destroy_sg.json.j2',
-                                   app=app,
-                                   env=env,
-                                   region=region,
-                                   vpc=vpc)
+        destroy_request = get_template('destroy/destroy_sg.json.j2',
+                                       app=app,
+                                       env=env,
+                                       region=region,
+                                       vpc=vpc)
 
-    response = Gate().tasks.post(destroy_request)
+        response = Gate().tasks.post(destroy_request)
 
-    check_task(response, app)
+        check_task(response, app)
 
     return True
