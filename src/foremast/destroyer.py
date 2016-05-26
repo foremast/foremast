@@ -17,7 +17,7 @@ LOG = logging.getLogger(__name__)
 
 
 def main():
-    """MAIN."""
+    """Attempt to fully destroy AWS Resources for a Spinnaker Application."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)
