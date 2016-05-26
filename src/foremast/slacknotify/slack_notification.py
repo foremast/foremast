@@ -20,6 +20,5 @@ class SlackNotification:
         channel = '#deployments-{}'.format(self.info['env'].lower())
         post_slack_message(message, channel)
         #also posts message to defined slack channel
-#        if self.settings['pipeline']['notifications']['slack']:
-#                post_slack_message(message, self.settings['pipeline']['notifications']['slack'])
-
+        #if self.settings['pipeline']['notifications']['slack']:
+        #    post_slack_message(message, self.settings['pipeline']['notifications']['slack'])
