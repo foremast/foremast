@@ -1,4 +1,7 @@
-"""Create Pipelines for Spinnaker."""
+"""Create onetime Pipelines for Spinnaker.
+
+These are circumventions for redployments to a specific Environment in a Region.
+"""
 import json
 
 from .create_pipeline import SpinnakerPipeline
@@ -8,16 +11,18 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
     """Manipulate Spinnaker Pipelines.
 
     Args:
-        app_name: Str of application name.
+        app_info (dict): Application settings.
     """
-
     def __init__(self, app_info):
         super().__init__(app_info)
         self.environments = [self.app_info['onetime']]
 
     def post_pipeline(self, pipeline):
-        """Send Pipeline JSON to Spinnaker."""
+        """Send Pipeline JSON to Spinnaker.
 
+        Args:
+            pipeline (dict, str): New Pipeline to create.
+        """
         if isinstance(pipeline, str):
             pipeline_str = pipeline
         else:
