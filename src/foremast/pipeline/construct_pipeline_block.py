@@ -92,6 +92,7 @@ def construct_pipeline_block(env='',
 
     data['app'].update({
         'appname': generated.app,
+        'repo_name': generated.repo,
         'group_name': generated.project,
         'environment': env,
         'region': region,
