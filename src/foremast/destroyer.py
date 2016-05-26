@@ -29,6 +29,8 @@ def main():
 
     for env in ENVS:
         for region in REGIONS:
+            LOG.info('DESTROY %s:%s', env, region)
+
             try:
                 destroy_dns(app=args.app, env=env)
             except botocore.exceptions.ClientError as error:
