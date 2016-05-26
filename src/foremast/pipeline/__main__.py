@@ -3,7 +3,7 @@ import argparse
 import logging
 
 from ..args import add_app, add_debug, add_gitlab_token, add_properties
-from ..consts import LOGGING_FORMAT, ENVS
+from ..consts import ENVS, LOGGING_FORMAT
 from .create_pipeline import SpinnakerPipeline
 from .create_pipeline_onetime import SpinnakerPipelineOnetime
 
@@ -25,11 +25,10 @@ def main():
         "--triggerjob",
         help="The jenkins job to monitor for pipeline triggering",
         required=True)
-    parser.add_argument(
-        "--onetime",
-        required=False,
-        choices=ENVS,
-        help='Onetime deployment environment')
+    parser.add_argument('--onetime',
+                        required=False,
+                        choices=ENVS,
+                        help='Onetime deployment environment')
     args = parser.parse_args()
 
     if args.base and '"' in args.base:

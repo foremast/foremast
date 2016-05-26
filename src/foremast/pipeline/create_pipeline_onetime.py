@@ -13,6 +13,7 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
     Args:
         app_info (dict): Application settings.
     """
+
     def __init__(self, app_info):
         super().__init__(app_info)
         self.environments = [self.app_info['onetime']]
@@ -31,7 +32,8 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
         pipeline_json = json.loads(pipeline_str)
 
         # Note pipeline name is manual
-        name = '{0} (onetime-{1})'.format(pipeline_json['name'], self.environments[0])
+        name = '{0} (onetime-{1})'.format(pipeline_json['name'],
+                                          self.environments[0])
         pipeline_json['name'] = name
 
         # disable trigger as not to accidently kick off multiple deployments
