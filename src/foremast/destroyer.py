@@ -2,6 +2,8 @@
 import argparse
 import logging
 
+from boto3.exceptions import botocore
+
 from .args import add_app, add_debug
 from .consts import ENVS, LOGGING_FORMAT, REGIONS
 from .dns.destroy_dns.destroy_dns import destroy_dns
@@ -27,7 +29,10 @@ def main():
 
     for env in ENVS:
         for region in REGIONS:
-            destroy_dns(app=args.app, env=env)
+            try:
+                destroy_dns(app=args.app, env=env)
+            except botocore.exceptions.ClientError as error:
+                LOG.warning('DNS issue for %s in %s: %s', env, region, error)
 
             try:
                 destroy_elb(app=args.app, env=env, region=region)
