@@ -1,9 +1,8 @@
 """Destroy Security Group Resources."""
 import logging
-import requests
 
-from ...consts import API_URL, HEADERS
-from ...utils import get_template, get_vpc_id, check_task, Gate
+from ...consts import API_URL
+from ...utils import Gate, check_task, get_template, get_vpc_id
 
 LOG = logging.getLogger(__name__)
 
