@@ -62,7 +62,8 @@ def construct_policy(app='coreforrest',
                                            items=items)
             statement = json.loads(statement_block)
             statements.append(statement)
-        except json.decoder.JSONDecodeError:
+        except ValueError:
+            LOG.debug('Need to make %s template into list.', service)
             statement_block_list = json.loads('[{0}]'.format(statement_block))
             statements.extend(statement_block_list)
 
