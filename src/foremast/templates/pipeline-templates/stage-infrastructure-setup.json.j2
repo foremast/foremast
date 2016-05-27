@@ -8,7 +8,7 @@
       "name": "Infrastructure Setup [{{ data.app.environment }}]",
       "failPipeline": true,
       "master": "JenkinsCI",
-      "job": "pipes-pipeline-prepare-new",
+      "job": "pipes-pipeline-prepare",
       "parameters": {
         "PROJECT": "{{ data.app.group_name }}",
         "GIT_REPO": "{{ data.app.repo_name }}",
