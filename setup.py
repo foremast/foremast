@@ -44,5 +44,8 @@ setup(name='foremast',
               'destroy-s3=foremast.s3.destroy_s3.__main__:main',
               'destroy-sg=foremast.securitygroup.destroy_sg.__main__:main',
               'full-destroy=foremast.destroyer:main',
+#              'prepare-infrastructure=foremast.runner:prepare_infrastructure',
+              'prepare-app-pipeline=foremast.runner:prepare_app_pipeline',
+              'prepare-onetime-pipeline=foremast.runner:prepare_onetime_pipeline'
           ]
       }, )
