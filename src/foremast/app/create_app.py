@@ -14,11 +14,13 @@ from ..utils import get_template
 class SpinnakerApp:
     """Spinnaker Application creation."""
 
-    def __init__(self, appinfo=None):
+    def __init__(self, app=None, email=None, project=None, repo=None):
         self.log = logging.getLogger(__name__)
 
-        self.appinfo = appinfo
-        self.appname = self.appinfo['app']
+         
+        self.appinfo = {'app': app, 'email': email,
+                        'project': project, 'repo': repo }
+        self.appname = app
 
     def get_accounts(self, provider='aws'):
         """Get Accounts added to Spinnaker.
