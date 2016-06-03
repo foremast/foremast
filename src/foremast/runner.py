@@ -1,10 +1,14 @@
 #!/usr/bin/env python
+""" A runner for all of the spinnaker pipe modules
+    Looks for environment variables from Jenkins and then
+    runs specific prepare jobs
+"""
 import logging
 import os
 
-from foremast import (configs, consts, iam, s3, securitygroup, elb, dns,
-                      slacknotify, app, pipeline)
 import gogoutils
+from foremast import (configs, consts, iam, s3, securitygroup, elb, dns,
+                      slacknotify, app, pipeline, utils)
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(format=consts.LOGGING_FORMAT)
@@ -12,6 +16,7 @@ logging.getLogger("foremast").setLevel(logging.INFO)
 
 
 class ForemastRunner:
+    """ Wraps each pipes module in a way that is easy to invoke """
     def __init__(self):
         """ Setups the Runner for all Foremast modules
 
@@ -39,7 +44,8 @@ class ForemastRunner:
         self.configs = None
 
     def write_configs(self):
-        self.banner("Generating Configs")
+        """ Generates the configurations need for pipes """
+        utils.banner("Generating Configs")
         if not self.gitlab_token_path:
             raise SystemExit('Must provide private token file as well.')
         self.configs = configs.process_git_configs(
@@ -51,7 +57,8 @@ class ForemastRunner:
                                 git_short=self.git_short)
 
     def create_app(self):
-        self.banner("Creating Spinnaker App")
+        """ Creates the spinnaker application """
+        utils.banner("Creating Spinnaker App")
         spinnakerapp = app.SpinnakerApp(app=self.app,
                                         email=self.email,
                                         project=self.group,
@@ -59,7 +66,8 @@ class ForemastRunner:
         spinnakerapp.create_app()
 
     def create_pipeline(self, onetime=None):
-        self.banner("Creating Pipeline")
+        """ Creates the spinnaker pipeline """
+        utils.banner("Creating Pipeline")
         if not onetime:
             spinnakerpipeline = pipeline.SpinnakerPipeline(
                 app=self.app,
@@ -79,15 +87,18 @@ class ForemastRunner:
         spinnakerpipeline.create_pipeline()
 
     def create_iam(self):
-        self.banner("Creating IAM")
+        """ Creates IAM user for app """
+        utils.banner("Creating IAM")
         iam.create_iam_resources(env=self.env, app=self.app)
 
     def create_s3(self):
-        self.banner("Creating S3")
+        """ Creates S3 bucket for Archaius """
+        utils.banner("Creating S3")
         s3.init_properties(env=self.env, app=self.app)
 
     def create_secgroups(self):
-        self.banner("Creating Security Group")
+        """ Creates security groups as defined in the configs """
+        utils.banner("Creating Security Group")
         sgobj = securitygroup.SpinnakerSecurityGroup(app=self.app,
                                                      env=self.env,
                                                      region=self.region,
@@ -95,7 +106,8 @@ class ForemastRunner:
         sgobj.create_security_group()
 
     def create_elb(self):
-        self.banner("Creating ELB")
+        """ Creates the ELB for the defined environment """
+        utils.banner("Creating ELB")
         elbobj = elb.SpinnakerELB(app=self.app,
                                   env=self.env,
                                   region=self.region,
@@ -103,8 +115,9 @@ class ForemastRunner:
         elbobj.create_elb()
 
     def create_dns(self):
-        self.banner("Creating DNS")
-        elb_type = self.configs[self.env]['elb']['subnet_purpose']
+        """ Creates DNS for the defined app and environment """
+        utils.banner("Creating DNS")
+        elb_subnet = self.configs[self.env]['elb']['subnet_purpose']
         dnsobj = dns.SpinnakerDns(app=self.app,
                                   env=self.env,
                                   region=self.region,
@@ -112,7 +125,8 @@ class ForemastRunner:
         dnsobj.create_elb_dns()
 
     def slack_notify(self):
-        self.banner("Sending slack notification")
+        """ Sends out a slack notification """
+        utils.banner("Sending slack notification")
         if self.env.startswith("prod"):
             notify = slacknotify.SlackNotification(app=self.app,
                                                    env=self.env,
@@ -121,13 +135,8 @@ class ForemastRunner:
         else:
             LOG.info("No slack message sent, not production environment")
 
-    def banner(self, notice):
-        """ Prints a banner for seperating tasks """
-        print("\n===============================")
-        print(notice)
-        print("===============================\n")
-
     def cleanup(self):
+        """ Cleans up genereated files """
         os.remove(self.raw_path)
 
     def prepare_infrastructure(self):
@@ -146,18 +155,19 @@ class ForemastRunner:
         self.cleanup()
 
     def prepare_app_pipeline(self):
+        """ This setup the application and intial pipeline in Spinnaker """
         self.create_app()
         self.write_configs()
         self.create_pipeline()
-        self.cleanup
+        self.cleanup()
 
     def prepare_onetime_pipeline(self, onetime=None):
+        """ This setup a single use pipeline in the defined app """
         self.write_configs()
         self.create_pipeline(onetime=onetime)
         self.cleanup()
 
 # entry points for jenkins job
-
 
 def prepare_infrastructure():
     """ This runs everything necessary to prepare the infrastructure in a specific env """
@@ -174,5 +184,5 @@ def prepare_app_pipeline():
 def prepare_onetime_pipeline():
     """ This setup a single use pipeline in the defined app """
     runner = ForemastRunner()
-    runner.prepare_onetime_piepline(onetime=os.getenv('ENV'))
+    runner.prepare_onetime_pipeline(onetime=os.getenv('ENV'))
 
