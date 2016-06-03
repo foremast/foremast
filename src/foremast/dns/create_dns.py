@@ -15,7 +15,7 @@ class SpinnakerDns:
         app_name: Str of application name add Security Group to.
     """
 
-    def __init__(self, app=None, env=None, region=None, elb_subnet=None:
+    def __init__(self, app=None, env=None, region=None, elb_subnet=None):
         self.log = logging.getLogger(__name__)
 
         self.generated = get_app_details.get_details(app,
