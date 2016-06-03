@@ -20,7 +20,11 @@ class SpinnakerPipeline:
     """Manipulate Spinnaker Pipelines.
 
     Args:
-        app_name: Str of application name.
+        app: Str of application name.
+        trigger_job: Str of jenkins trigger job.
+        base: Str of base image name (i.e: fedora).
+        prop_path: Str of the path to the raw.properties.json.
+        token_file: Str of path to gitlab token file.
     """
 
     def __init__(self, app=None, trigger_job=None, prop_path=None, 
