@@ -6,8 +6,9 @@ from ..utils import get_template, get_properties, post_slack_message
 
 class SlackNotification:
     """ Posts slack notification with information about infrastructure changes to prod* accounts """
-    def __init__(self, info=None):
-        self.info = info
+    def __init__(self, app=None, env=None, prop_path=None):
+
+        self.info = {'app': app, 'env': env, 'properties': prop_path}
         timestamp = time.strftime("%B %d, %Y %H:%M:%S %Z", time.gmtime())
         self.info['timestamp'] = timestamp
         self.settings = get_properties(self.info['properties'])

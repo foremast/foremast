@@ -30,7 +30,8 @@ def main():
         log.info('No slack message sent, not a production environment')
     else:
         log.info("Sending slack message, production environment")
-        slacknotify = SlackNotification(info=info)
+        slacknotify = SlackNotification(app=args.app, env=args.env,
+                                        prop_path=args.properties)
         slacknotify.post_message()
 
 if __name__ == "__main__":
