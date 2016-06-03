@@ -9,7 +9,7 @@ import gogoutils
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(format=consts.LOGGING_FORMAT)
-logging.getLogger("foremast").setLevel(logging.DEBUG)
+logging.getLogger("foremast").setLevel(logging.INFO)
 
 class ForemastRunner:
     def __init__(self, group=None, repo=None, env=None,
@@ -40,9 +40,7 @@ class ForemastRunner:
 
 
     def write_configs(self):
-        print('===========================')
-        print('Read application.json')
-        print('===========================')
+        self.banner("Generating Configs")
         if not self.gitlab_token_path:
             raise SystemExit('Must provide private token file as well.')
         self.configs = configs.process_git_configs(git_short=self.git_short,
@@ -54,9 +52,7 @@ class ForemastRunner:
 
 
     def create_app(self):
-        print('===========================')
-        print('Creating Spinnaker App')
-        print('===========================')
+        self.banner("Creating Spinnaker App")
         spinnakerapp = app.SpinnakerApp(app=self.app,
                                         email=self.email,
                                         project=self.group,
@@ -64,32 +60,36 @@ class ForemastRunner:
         spinnakerapp.create_app()
 
 
-    def create_pipeline(self):
-        spinnakerpipeline = pipeline.SpinnakerPipeline(app=self.app,
+    def create_pipeline(self, onetime=None):
+        self.banner("Creating Pipeline")
+        if not onetime:
+            spinnakerpipeline = pipeline.SpinnakerPipeline(app=self.app,
                                                        trigger_job=self.trigger_job,
                                                        prop_path=self.json_path,
                                                        base=None,
                                                        token_file=self.gitlab_token_path)
+        else:
+             spinnakerpipeline = pipeline.SpinnakerPipelineOnetime(app=self.app,
+                                                       trigger_job=self.trigger_job,
+                                                       prop_path=self.json_path,
+                                                       base=None,
+                                                       token_file=self.gitlab_token_path,
+                                                       onetime=onetime)
+
         spinnakerpipeline.create_pipeline()
 
     def create_iam(self):
-        print('===========================')
-        print('Create IAM')
-        print('===========================')
+        self.banner("Creating IAM")
         iam.create_iam_resources(env=self.env, app=self.app)
 
     
     def create_s3(self):
-        print('===========================')
-        print('Create S3')
-        print('===========================')
+        self.banner("Creating S3")
         s3.init_properties(env=self.env, app=self.app)
 
     
     def create_secgroups(self):
-        print('===========================')
-        print('Create Security Group')
-        print('===========================')
+        self.banner("Creating Security Group")
         sgobj = securitygroup.SpinnakerSecurityGroup(app=self.app,
                                                     env=self.env,
                                                     region=self.region,
@@ -98,9 +98,7 @@ class ForemastRunner:
 
    
     def create_elb(self):
-        print('===========================')
-        print('Create ELB')
-        print('===========================')
+        self.banner("Creating ELB")
         elbobj = elb.SpinnakerELB(app=self.app,
                                 env=self.env,
                                 region=self.region,
@@ -109,9 +107,7 @@ class ForemastRunner:
 
 
     def create_dns(self):
-        print('===========================')
-        print('Create DNS')
-        print('===========================')
+        self.banner("Creating DNS")
         elb_type = self.configs[self.env]['elb']['subnet_purpose']
         dnsobj = dns.SpinnakerDns(app=self.app,
                                      env=self.env,
@@ -120,9 +116,7 @@ class ForemastRunner:
         dnsobj.create_elb_dns()
 
     def slack_notify(self):
-        print('===========================')
-        print('Sending slack notification')
-        print('===========================')
+        self.banner("Sending slack notification")
         if self.env.startswith("prod"):
             notify = slacknotify.SlackNotification(app=self.app,
                                                   env=self.env,
@@ -130,6 +124,12 @@ class ForemastRunner:
             notify.post_message()
         else:
             LOG.info("No slack message sent, not production environment")
+
+    def banner(self, notice):
+        """ Prints a banner for seperating tasks """
+        print("\n===============================")
+        print(notice)
+        print("===============================\n")
 
 
     def cleanup(self):
@@ -157,13 +157,15 @@ class ForemastRunner:
         self.create_pipeline()
         self.cleanup
 
-    def prepare_onetime_pipeline(self):
-        return
+    def prepare_onetime_pipeline(self, onetime=None):
+        self.write_configs()
+        self.create_pipeline(onetime=onetime)
+        self.cleanup()
 
 if __name__ == "__main__":
     #foremastrunner = ForemastRunner(group="forrest", repo="edge", env='dev')
     foremastrunner = ForemastRunner(group="forrest", repo="edge")
-    foremastrunner.prepare_app_pipeline()
+    foremastrunner.prepare_onetime_pipeline(onetime='dev')
     
 
     
