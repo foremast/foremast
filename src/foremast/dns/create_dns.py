@@ -15,20 +15,22 @@ class SpinnakerDns:
         app_name: Str of application name add Security Group to.
     """
 
-    def __init__(self, app_info):
+    def __init__(self, app=None, env=None, region=None, elb_subnet=None:
         self.log = logging.getLogger(__name__)
 
-        self.generated = get_app_details.get_details(app_info['app'],
-                                                     env=app_info['env'])
+        self.generated = get_app_details.get_details(app,
+                                                     env=env)
         self.app_name = self.generated.app_name()
 
         # Add domain
-        app_info.update({'domain': 'example.com'})
-        self.app_info = app_info
+        self.domain = 'example.com'
+        self.env = env
+        self.region = region
+        self.elb_subnet = elb_subnet
 
         self.header = {'content-type': 'application/json'}
 
-        env = boto3.session.Session(profile_name=self.app_info['env'])
+        env = boto3.session.Session(profile_name=self.env)
         self.r53client = env.client('route53')
 
     def create_elb_dns(self):
@@ -40,12 +42,12 @@ class SpinnakerDns:
         Returns:
             Auto-generated DNS name for the Elastic Load Balancer.
         """
-        dns_zone = '{env}.{domain}'.format(**self.app_info)
+        dns_zone = '{}.{}'.format(self.env, self.domain)
 
         dns_elb = self.generated.dns()['elb']
         dns_elb_aws = find_elb(name=self.app_name,
-                               env=self.app_info['env'],
-                               region=self.app_info['region'])
+                               env=self.env,
+                               region=self.region)
 
         # get correct hosted zone
         zones = self.r53client.list_hosted_zones_by_name(DNSName=dns_zone)
@@ -56,8 +58,7 @@ class SpinnakerDns:
             for zone in zones['HostedZones']:
                 # We will always add a private record. The elb subnet must be
                 # specified as 'external' to get added publicly.
-                if any([zone['Config']['PrivateZone'], self.app_info[
-                        'elb_subnet'] in ('external')]):
+                if any([zone['Config']['PrivateZone'], self.elb_subnet in ('external')]):
                     self.log.info('Adding DNS record to %s zone', zone['Id'])
                     zone_ids.append(zone['Id'])
 

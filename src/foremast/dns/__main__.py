@@ -26,15 +26,11 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    # Dictionary containing application info. This is passed to the class for processing
-    appinfo = {
-        'app': args.app,
-        'region': args.region,
-        'env': args.env,
-        'elb_subnet': args.elb_subnet
-    }
 
-    spinnakerapps = SpinnakerDns(app_info=appinfo)
+    spinnakerapps = SpinnakerDns(app=args.app,
+                                 env=args.env,
+                                 region=args.region,
+                                 elb_subnet=args.elb_subnet)
     spinnakerapps.create_elb_dns()
 
 
