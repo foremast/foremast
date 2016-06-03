@@ -14,9 +14,12 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
         app_info (dict): Application settings.
     """
 
-    def __init__(self, app_info):
-        super().__init__(app_info)
-        self.environments = [self.app_info['onetime']]
+    def __init__(self, app=None, trigger_job=None, prop_path=None, 
+            base=None, token_file=None, onetime=None ):
+        super().__init__(app=app, trigger_job=trigger_job, 
+                    prop_path=prop_path, 
+                    base=base, token_file=token_file)
+        self.environments = [onetime]
 
     def post_pipeline(self, pipeline):
         """Send Pipeline JSON to Spinnaker.
