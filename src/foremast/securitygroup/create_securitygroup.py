@@ -38,7 +38,7 @@ from ..utils import (check_task, get_template, get_vpc_id, get_properties,
                      get_security_group_id, warn_user)
 
 
-class SpinnakerSecurityGroup(object):
+class SpinnakerSecurityGroup:
 
     """Manipulate Spinnaker Security Groups.
 
@@ -46,14 +46,15 @@ class SpinnakerSecurityGroup(object):
         app_name: Str of application name add Security Group to.
     """
 
-    def __init__(self, args):
+    def __init__(self, app=None, env=None, region=None, prop_path=None):
         self.log = logging.getLogger(__name__)
-        self.args = args
 
-        self.app_name = self.args.app
+        self.app_name = app
+        self.env = env
+        self.region = region
 
-        self.properties = get_properties(properties_file=self.args.properties,
-                                         env=self.args.env)
+        self.properties = get_properties(properties_file=prop_path,
+                                         env=env)
 
     @staticmethod
     def _validate_cidr(rule):
@@ -113,12 +114,12 @@ class SpinnakerSecurityGroup(object):
             SpinnakerSecurityGroupError: boto3 call failed to add CIDR block to
                 Security Group.
         """
-        session = boto3.session.Session(profile_name=self.args.env,
-                                        region_name=self.args.region)
+        session = boto3.session.Session(profile_name=self.env,
+                                        region_name=self.region)
         client = session.client('ec2')
 
-        group_id = get_security_group_id(self.app_name, self.args.env,
-                                         self.args.region)
+        group_id = get_security_group_id(self.app_name, self.env,
+                                         self.region)
 
         for rule in rules:
             data = {
@@ -154,8 +155,6 @@ class SpinnakerSecurityGroup(object):
     def create_security_group(self):
         """Send a POST to spinnaker to create a new security group."""
         url = "{0}/applications/{1}/tasks".format(API_URL, self.app_name)
-
-        self.args.vpc = get_vpc_id(self.args.env, self.args.region)
 
         ingress = self.properties['security_group']['ingress']
         ingress_rules = []
@@ -196,10 +195,10 @@ class SpinnakerSecurityGroup(object):
             ingress_rules)
 
         template_kwargs = {
-            'app': self.args.app,
-            'env': self.args.env,
-            'region': self.args.region,
-            'vpc': get_vpc_id(self.args.env, self.args.region),
+            'app': self.app_name,
+            'env': self.env,
+            'region': self.region,
+            'vpc': get_vpc_id(self.env, self.region),
             'description': self.properties['security_group']['description'],
             'ingress': ingress_rules_no_cidr,
         }

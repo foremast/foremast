@@ -24,7 +24,10 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    spinnakerapps = SpinnakerSecurityGroup(args)
+    spinnakerapps = SpinnakerSecurityGroup(app=args.app, 
+                                           env=args.env,
+                                           region=args.region,
+                                           prop_path=args.properties)
     spinnakerapps.create_security_group()
 
 
