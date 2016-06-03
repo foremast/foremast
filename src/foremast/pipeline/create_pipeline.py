@@ -23,18 +23,21 @@ class SpinnakerPipeline:
         app_name: Str of application name.
     """
 
-    def __init__(self, app_info):
+    def __init__(self, app=None, trigger_job=None, prop_path=None, 
+            base=None, token_file=None ):
         self.log = logging.getLogger(__name__)
 
         self.header = {'content-type': 'application/json'}
         self.here = os.path.dirname(os.path.realpath(__file__))
 
-        self.app_info = app_info
-        self.generated = get_app_details.get_details(app=self.app_info['app'])
+        self.token_file = token_file
+        self.base = base
+        self.trigger_job = trigger_job
+        self.generated = get_app_details.get_details(app=app)
         self.app_name = self.generated.app_name()
         self.group_name = self.generated.project
 
-        self.settings = get_properties(self.app_info['properties'])
+        self.settings = get_properties(prop_path)
         self.environments = self.settings['pipeline']['env']
 
     def post_pipeline(self, pipeline):
@@ -74,14 +77,14 @@ class SpinnakerPipeline:
         """
         base = self.settings['pipeline']['base']
 
-        if self.app_info.get('base'):
-            base = self.app_info['base']
+        if self.base:
+            base = self.base
 
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
         ami_id = ami_lookup(name=base,
                             region=region,
-                            token_file=self.app_info['token_file'])
+                            token_file=self.token_file)
 
         data = {'app': {
             'ami_id': ami_id,
@@ -89,7 +92,7 @@ class SpinnakerPipeline:
             'base': base,
             'environment': 'packaging',
             'region': region,
-            'triggerjob': self.app_info['triggerjob'],
+            'triggerjob': self.trigger_job,
             'email': email,
             'slack': slack
         }}
