@@ -14,22 +14,7 @@ def main():
 
     python create_elb.py \
         --app testapp \
-        --stack teststack \
-        --elb-type internal \
         --env dev \
-        --health-protocol HTTP \
-        --health-port 80 \
-        --health-path /health \
-        --int-listener-port 80 \
-        --int-listener-protocol HTTP \
-        --ext-listener-port 8080 \
-        --ext-listener-protocol HTTP \
-        --elb-name dougtestapp-teststack \
-        --elb-subnet internal \
-        --health-timeout=10 \
-        --health-interval 2 \
-        --healthy-threshold 4 \
-        --unhealthy-threshold 6 \
         --region us-east-1
     """
     logging.basicConfig(format=LOGGING_FORMAT)
@@ -47,7 +32,8 @@ def main():
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
-    elb = SpinnakerELB(args)
+    elb = SpinnakerELB(app=args.app, env=args.env, region=args.region,
+                       prop_path=args.properties)
     elb.create_elb()
 
 

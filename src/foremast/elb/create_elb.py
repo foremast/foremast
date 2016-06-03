@@ -11,16 +11,18 @@ from .format_listeners import format_listeners
 from .splay_health import splay_health
 
 
-class SpinnakerELB(object):
+class SpinnakerELB:
     """Create ELBs for Spinnaker."""
 
     log = logging.getLogger(__name__)
 
-    def __init__(self, args=None):
-        self.args = args
+    def __init__(self, app=None, env=None, region=None, prop_path=None):
+        self.app = app
+        self.env = env
+        self.region = region
         self.properties = get_properties(
-            properties_file=self.args.properties,
-            env=self.args.env)
+            properties_file=prop_path,
+            env=self.env)
 
     def make_elb_json(self):
         """Render the JSON template with arguments.
@@ -28,8 +30,8 @@ class SpinnakerELB(object):
         Returns:
             str: Rendered ELB template.
         """
-        env = self.args.env
-        region = self.args.region
+        env = self.env
+        region = self.region
         elb_settings = self.properties['elb']
         health_settings = elb_settings['health']
 
@@ -49,16 +51,16 @@ class SpinnakerELB(object):
         health = splay_health(target)
 
         listeners = format_listeners(elb_settings=elb_settings,
-                                     env=self.args.env)
+                                     env=self.env)
 
         security_groups = [
             'sg_apps',
-            self.args.app,
+            self.app,
         ]
         security_groups.extend(self.properties['security_group']['elb_extras'])
 
         template_kwargs = {
-            'app_name': self.args.app,
+            'app_name': self.app,
             'availability_zones': json.dumps(region_subnets),
             'env': env,
             'hc_string': target,
@@ -94,7 +96,7 @@ class SpinnakerELB(object):
         Returns:
             task id to track the elb creation status.
         """
-        app = self.args.app
+        app = self.app
         json_data = self.make_elb_json()
 
         url = API_URL + '/applications/%s/tasks' % app
