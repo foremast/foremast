@@ -27,7 +27,7 @@ class ForemastRunner:
         self.env = os.getenv("ENV")
         self.region = os.getenv("REGION")
         self.email = os.getenv("EMAIL")
-        self.git_project = "{}/{}".format(group, repo)
+        self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
         generated = gogoutils.Generator(*parsed.parse_url())
         self.app = generated.app
@@ -175,3 +175,4 @@ def prepare_onetime_pipeline():
     """ This setup a single use pipeline in the defined app """
     runner = ForemastRunner()
     runner.prepare_onetime_piepline(onetime=os.getenv('ENV'))
+
