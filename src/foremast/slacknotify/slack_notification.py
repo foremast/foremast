@@ -13,14 +13,15 @@ class SlackNotification:
     def __init__(self, app=None, env=None, prop_path=None):
         timestamp = time.strftime("%B %d, %Y %H:%M:%S %Z", time.gmtime())
 
-        self.info = {'app': app,
-                     'env': env,
-                     'properties': prop_path,
-                     'timestamp': timestamp}
+        self.settings = get_properties(prop_path)
+        short_commit_sha = self.settings['pipeline']['config_commit'][0:11]
 
-        self.settings = get_properties(self.info['properties'])
-        self.info['config_commit_short'] = self.settings['pipeline'][
-            'config_commit'][0:11]
+        self.info = {
+            'app': app,
+            'env': env,
+            'config_commit_short': short_commit_sha,
+            'timestamp': timestamp,
+        }
 
     def post_message(self):
         """Send templated message to **#deployments-{env}**."""
