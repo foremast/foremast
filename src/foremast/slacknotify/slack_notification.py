@@ -28,6 +28,10 @@ class SlackNotification:
 
     def notify_slack_channel(self):
         """Post message to a defined Slack channel."""
+        message = get_template(
+            template_file='slack-templates/pipeline-prepare-ran.j2',
+            info=self.info)
+
         if self.settings['pipeline']['notifications']['slack']:
             post_slack_message(
                 message, self.settings['pipeline']['notifications']['slack'])
