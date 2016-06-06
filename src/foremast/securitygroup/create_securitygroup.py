@@ -38,7 +38,7 @@ from ..utils import (check_task, get_template, get_vpc_id, get_properties,
                      get_security_group_id, warn_user)
 
 
-class SpinnakerSecurityGroup:
+class SpinnakerSecurityGroup(object):
 
     """Manipulate Spinnaker Security Groups.
 
