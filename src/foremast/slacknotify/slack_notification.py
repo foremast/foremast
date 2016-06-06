@@ -12,7 +12,7 @@ class SlackNotification:
         timestamp = time.strftime("%B %d, %Y %H:%M:%S %Z", time.gmtime())
         self.info['timestamp'] = timestamp
         self.settings = get_properties(self.info['properties'])
-        self.info['config_commit_short'] = self.settings['pipeline']['config_commit'][0:11] 
+        self.info['config_commit_short'] = self.settings['pipeline']['config_commit'][0:11]
 
     def post_message(self):
         message = get_template(
@@ -20,6 +20,6 @@ class SlackNotification:
                   info=self.info)
         channel = '#deployments-{}'.format(self.info['env'].lower())
         post_slack_message(message, channel)
-        #also posts message to defined slack channel
-        #if self.settings['pipeline']['notifications']['slack']:
+        # also posts message to defined slack channel
+        # if self.settings['pipeline']['notifications']['slack']:
         #    post_slack_message(message, self.settings['pipeline']['notifications']['slack'])
