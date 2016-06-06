@@ -36,7 +36,6 @@ class ForemastRunner(object):
             env (str): Deployment environment, dev/stage/prod etc.
             region (str): AWS region (us-east-1).
         """
-        # get environment variables. Defaults to None of none found
         self.group = os.getenv("PROJECT")
         self.repo = os.getenv("GIT_REPO")
         self.env = os.getenv("ENV")
