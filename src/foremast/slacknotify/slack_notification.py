@@ -1,7 +1,7 @@
 import logging
 import time
 
-from ..utils import get_template, get_properties, post_slack_message
+from ..utils import get_properties, get_template, post_slack_message
 
 
 class SlackNotification:
