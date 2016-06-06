@@ -190,4 +190,3 @@ def prepare_onetime_pipeline():
     """ This setup a single use pipeline in the defined app """
     runner = ForemastRunner()
     runner.prepare_onetime_pipeline(onetime=os.getenv('ENV'))
-
