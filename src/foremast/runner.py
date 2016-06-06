@@ -145,7 +145,7 @@ class ForemastRunner:
         self.create_iam()
         self.create_s3()
         self.create_secgroups()
-        if not self.configs[self.env]['app']['eureka']['enabled']:
+        if not self.configs[self.env]['app']['eureka_enabled']:
             LOG.info("No Eureka, running ELB and DNS setup")
             self.create_elb()
             self.create_dns()
