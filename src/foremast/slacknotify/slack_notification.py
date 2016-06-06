@@ -11,9 +11,13 @@ class SlackNotification:
     """
 
     def __init__(self, app=None, env=None, prop_path=None):
-        self.info = {'app': app, 'env': env, 'properties': prop_path}
         timestamp = time.strftime("%B %d, %Y %H:%M:%S %Z", time.gmtime())
-        self.info['timestamp'] = timestamp
+
+        self.info = {'app': app,
+                     'env': env,
+                     'properties': prop_path,
+                     'timestamp': timestamp}
+
         self.settings = get_properties(self.info['properties'])
         self.info['config_commit_short'] = self.settings['pipeline'][
             'config_commit'][0:11]
