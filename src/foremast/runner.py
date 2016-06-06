@@ -34,12 +34,15 @@ class ForemastRunner(object):
         self.env = os.getenv("ENV")
         self.region = os.getenv("REGION")
         self.email = os.getenv("EMAIL")
+
         self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
         generated = gogoutils.Generator(*parsed.parse_url())
+
         self.app = generated.app
         self.trigger_job = generated.jenkins()['name']
         self.git_short = generated.gitlab()['main']
+
         self.gitlab_token_path = os.environ["HOME"] + "/.aws/git.token"
         self.raw_path = "./raw.properties"
         self.json_path = self.raw_path + ".json"
@@ -48,8 +51,10 @@ class ForemastRunner(object):
     def write_configs(self):
         """Generate the configurations needed for pipes."""
         utils.banner("Generating Configs")
+
         if not self.gitlab_token_path:
             raise SystemExit('Must provide private token file as well.')
+
         self.configs = configs.process_git_configs(
             git_short=self.git_short,
             token_file=self.gitlab_token_path)
@@ -70,6 +75,7 @@ class ForemastRunner(object):
     def create_pipeline(self, onetime=None):
         """Create the spinnaker pipeline(s)."""
         utils.banner("Creating Pipeline")
+
         if not onetime:
             spinnakerpipeline = pipeline.SpinnakerPipeline(
                 app=self.app,
@@ -129,6 +135,7 @@ class ForemastRunner(object):
     def slack_notify(self):
         """Send out a slack notification."""
         utils.banner("Sending slack notification")
+
         if self.env.startswith("prod"):
             notify = slacknotify.SlackNotification(app=self.app,
                                                    env=self.env,
@@ -147,10 +154,12 @@ class ForemastRunner(object):
         self.create_iam()
         self.create_s3()
         self.create_secgroups()
+
         try:
             eureka = self.configs[self.env]['app']['eureka_enabled']
         except KeyError:
             eureka = False
+
         if eureka:
             LOG.info("Eureka Enabled, skipping ELB and DNS setup")
         else:
@@ -158,6 +167,7 @@ class ForemastRunner(object):
             self.create_elb()
             self.create_dns()
             LOG.info("Eureka Enabled, skipping ELB and DNS setup")
+
         self.slack_notify()
         self.cleanup()
 
