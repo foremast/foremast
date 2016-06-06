@@ -1,9 +1,10 @@
 import argparse
 import logging
 
+from ..args import add_app, add_debug, add_env, add_properties
 from ..consts import LOGGING_FORMAT
-from ..args import add_app, add_debug, add_properties, add_env
 from .slack_notification import SlackNotification
+
 
 def main():
     logging.basicConfig(format=LOGGING_FORMAT)
