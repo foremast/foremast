@@ -1,3 +1,4 @@
+"""Notify Slack channel."""
 import logging
 import time
 
@@ -5,7 +6,10 @@ from ..utils import get_properties, get_template, post_slack_message
 
 
 class SlackNotification:
-    """ Posts slack notification with information about infrastructure changes to prod* accounts """
+    """Post slack notification.
+
+    Inform users about infrastructure changes to prod* accounts.
+    """
 
     def __init__(self, app=None, env=None, prop_path=None):
         self.info = {'app': app, 'env': env, 'properties': prop_path}
@@ -16,6 +20,7 @@ class SlackNotification:
             'config_commit'][0:11]
 
     def post_message(self):
+        """Send templated message to Slack channel."""
         message = get_template(
             template_file='slack-templates/pipeline-prepare-ran.j2',
             info=self.info)
