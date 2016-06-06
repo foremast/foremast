@@ -7,8 +7,9 @@ import logging
 import os
 
 import gogoutils
-from foremast import (configs, consts, iam, s3, securitygroup, elb, dns,
-                      slacknotify, app, pipeline, utils)
+
+from foremast import (app, configs, consts, dns, elb, iam, pipeline, s3,
+                      securitygroup, slacknotify, utils)
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(format=consts.LOGGING_FORMAT)
@@ -17,6 +18,7 @@ logging.getLogger("foremast").setLevel(logging.INFO)
 
 class ForemastRunner:
     """ Wraps each pipes module in a way that is easy to invoke """
+
     def __init__(self):
         """ Setups the Runner for all Foremast modules
 
@@ -173,6 +175,7 @@ class ForemastRunner:
         self.cleanup()
 
 # entry points for jenkins job
+
 
 def prepare_infrastructure():
     """ This runs everything necessary to prepare the infrastructure in a specific env """
