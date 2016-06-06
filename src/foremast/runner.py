@@ -1,7 +1,15 @@
 #!/usr/bin/env python
-""" A runner for all of the spinnaker pipe modules
-    Looks for environment variables from Jenkins and then
-    runs specific prepare jobs
+"""A runner for all of the spinnaker pipe modules.
+
+Read environment variables from Jenkins:
+
+    * EMAIL
+    * ENV
+    * GIT_REPO
+    * PROJECT
+    * REGION
+
+Then run specific prepare jobs.
 """
 import logging
 import os
@@ -145,7 +153,7 @@ class ForemastRunner(object):
             LOG.info("No slack message sent, not production environment")
 
     def cleanup(self):
-        """ Cleans up genereated files """
+        """Clean up generated files."""
         os.remove(self.raw_path)
 
     def prepare_infrastructure(self):
