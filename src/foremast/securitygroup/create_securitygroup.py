@@ -28,18 +28,17 @@ import ipaddress
 import logging
 
 import boto3
-from boto3.exceptions import botocore
 import requests
+from boto3.exceptions import botocore
 
 from ..consts import API_URL, HEADERS
 from ..exceptions import (SpinnakerSecurityGroupCreationFailed,
-                          SpinnakerTaskError, SpinnakerSecurityGroupError)
-from ..utils import (check_task, get_template, get_vpc_id, get_properties,
-                     get_security_group_id, warn_user)
+                          SpinnakerSecurityGroupError, SpinnakerTaskError)
+from ..utils import (check_task, get_properties, get_security_group_id,
+                     get_template, get_vpc_id, warn_user)
 
 
 class SpinnakerSecurityGroup(object):
-
     """Manipulate Spinnaker Security Groups.
 
     Args:
@@ -53,8 +52,7 @@ class SpinnakerSecurityGroup(object):
         self.env = env
         self.region = region
 
-        self.properties = get_properties(properties_file=prop_path,
-                                         env=env)
+        self.properties = get_properties(properties_file=prop_path, env=env)
 
     @staticmethod
     def _validate_cidr(rule):
@@ -118,8 +116,7 @@ class SpinnakerSecurityGroup(object):
                                         region_name=self.region)
         client = session.client('ec2')
 
-        group_id = get_security_group_id(self.app_name, self.env,
-                                         self.region)
+        group_id = get_security_group_id(self.app_name, self.env, self.region)
 
         for rule in rules:
             data = {
@@ -163,10 +160,9 @@ class SpinnakerSecurityGroup(object):
             rules = ingress[app]
 
             if app in ('app_a', 'app_b'):
-                msg = (
-                    'Using "%s" in your security group will be ignored.' % app,
-                    'Please remove them to supress this warning.',
-                )
+                msg = ('Using "%s" in your security group will be ignored.' %
+                       app,
+                       'Please remove them to supress this warning.', )
                 warn_user(' '.join(msg))
                 continue
 
