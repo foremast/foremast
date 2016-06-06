@@ -39,11 +39,7 @@ from ..utils import (check_task, get_properties, get_security_group_id,
 
 
 class SpinnakerSecurityGroup(object):
-    """Manipulate Spinnaker Security Groups.
-
-    Args:
-        app_name: Str of application name add Security Group to.
-    """
+    """Manipulate Spinnaker Security Groups."""
 
     def __init__(self, app=None, env=None, region=None, prop_path=None):
         self.log = logging.getLogger(__name__)
