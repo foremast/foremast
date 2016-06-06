@@ -21,19 +21,17 @@ def main():
     logging.getLogger(__package__.split(".")[0]).setLevel(args.debug)
     log.debug('Parsed arguements: %s', args)
 
-
-    info = { 'env': args.env,
-             'app': args.app ,
-             'properties': args.properties
-           }
+    info = {'env': args.env, 'app': args.app, 'properties': args.properties}
 
     if "prod" not in info['env']:
         log.info('No slack message sent, not a production environment')
     else:
         log.info("Sending slack message, production environment")
-        slacknotify = SlackNotification(app=args.app, env=args.env,
+        slacknotify = SlackNotification(app=args.app,
+                                        env=args.env,
                                         prop_path=args.properties)
         slacknotify.post_message()
+
 
 if __name__ == "__main__":
     main()
