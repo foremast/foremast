@@ -1,3 +1,4 @@
+"""Send Slack notifications."""
 import argparse
 import logging
 
@@ -7,6 +8,7 @@ from .slack_notification import SlackNotification
 
 
 def main():
+    """Send Slack notification to a configured channel."""
     logging.basicConfig(format=LOGGING_FORMAT)
     log = logging.getLogger(__name__)
 
