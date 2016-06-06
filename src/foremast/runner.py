@@ -16,7 +16,7 @@ logging.basicConfig(format=consts.LOGGING_FORMAT)
 logging.getLogger("foremast").setLevel(logging.INFO)
 
 
-class ForemastRunner:
+class ForemastRunner(object):
     """Wrap each pipes module in a way that is easy to invoke."""
 
     def __init__(self):
