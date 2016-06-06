@@ -28,14 +28,7 @@ class ForemastRunner(object):
     """Wrap each pipes module in a way that is easy to invoke."""
 
     def __init__(self):
-        """Setup the Runner for all Foremast modules.
-
-        Args:
-            group (str): Gitlab group of the application.
-            repo (str): The application repository name.
-            env (str): Deployment environment, dev/stage/prod etc.
-            region (str): AWS region (us-east-1).
-        """
+        """Setup the Runner for all Foremast modules."""
         self.email = os.getenv("EMAIL")
         self.env = os.getenv("ENV")
         self.group = os.getenv("PROJECT")
