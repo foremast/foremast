@@ -43,7 +43,7 @@ class ForemastRunner(object):
         self.trigger_job = generated.jenkins()['name']
         self.git_short = generated.gitlab()['main']
 
-        self.gitlab_token_path = os.environ["HOME"] + "/.aws/git.token"
+        self.gitlab_token_path = os.path.expanduser('~/.aws/git.token')
         self.raw_path = "./raw.properties"
         self.json_path = self.raw_path + ".json"
         self.configs = None
