@@ -36,11 +36,11 @@ class ForemastRunner(object):
             env (str): Deployment environment, dev/stage/prod etc.
             region (str): AWS region (us-east-1).
         """
-        self.group = os.getenv("PROJECT")
-        self.repo = os.getenv("GIT_REPO")
-        self.env = os.getenv("ENV")
-        self.region = os.getenv("REGION")
         self.email = os.getenv("EMAIL")
+        self.env = os.getenv("ENV")
+        self.group = os.getenv("PROJECT")
+        self.region = os.getenv("REGION")
+        self.repo = os.getenv("GIT_REPO")
 
         self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
