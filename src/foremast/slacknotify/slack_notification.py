@@ -19,7 +19,7 @@ class SlackNotification:
             'config_commit'][0:11]
 
     def post_message(self):
-        """Send templated message to Slack channel."""
+        """Send templated message to **#deployments-{env}**."""
         message = get_template(
             template_file='slack-templates/pipeline-prepare-ran.j2',
             info=self.info)
