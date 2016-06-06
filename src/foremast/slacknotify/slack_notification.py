@@ -1,5 +1,4 @@
 """Notify Slack channel."""
-import logging
 import time
 
 from ..utils import get_properties, get_template, post_slack_message
