@@ -72,7 +72,7 @@ def process_git_configs(git_short='', token_file=''):
             app_configs['pipeline']['env'] = ['stage', 'prod']
 
     config_commit = server.getbranch(project_id, 'master')['commit']['id']
-    LOG.info('setting commit {}'.format(config_commit))
+    LOG.info('Commit ID used: %s', config_commit)
     app_configs['pipeline']['config_commit'] = config_commit
 
     LOG.debug('Application configs:\n%s', app_configs)
