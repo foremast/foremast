@@ -39,13 +39,6 @@ def main():
         project = args.project
         repo = args.repo
 
-    appinfo = {
-        'app': args.app,
-        'email': args.email,
-        'project': project,
-        'repo': repo
-    }
-
     spinnakerapps = SpinnakerApp(app=args.app,
                                  email=args.email,
                                  project=project,
