@@ -26,7 +26,6 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-
     spinnakerapps = SpinnakerDns(app=args.app,
                                  env=args.env,
                                  region=args.region,
