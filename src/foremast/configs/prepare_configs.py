@@ -27,8 +27,12 @@ def process_git_configs(git_short='', token_file=''):
     """
     LOG.info('Processing application.json files from GitLab.')
 
-    with open(token_file, 'rt') as token_handle:
-        token = token_handle.read().strip()
+    try:
+        with open(token_file, 'rt') as token_handle:
+            token = token_handle.read().strip()
+    except FileNotFoundError:
+        raise SystemExit('GitLab private token file missing: {0}'.format(
+            token_file))
 
     server = gitlab.Gitlab(GIT_URL, token=token)
 

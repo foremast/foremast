@@ -52,10 +52,6 @@ class ForemastRunner(object):
         """Generate the configurations needed for pipes."""
         utils.banner("Generating Configs")
 
-        if not os.path.isfile(self.gitlab_token_path):
-            raise SystemExit('GitLab private token file missing: {0}'.format(
-                self.gitlab_token_path))
-
         self.configs = configs.process_git_configs(
             git_short=self.git_short,
             token_file=self.gitlab_token_path)
