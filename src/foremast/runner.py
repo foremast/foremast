@@ -141,56 +141,45 @@ class ForemastRunner(object):
         """Clean up generated files."""
         os.remove(self.raw_path)
 
-    def prepare_infrastructure(self):
-        """Prepare the infrastructure in a specific env."""
-        self.write_configs()
-        self.create_iam()
-        self.create_s3()
-        self.create_secgroups()
-
-        try:
-            eureka = self.configs[self.env]['app']['eureka_enabled']
-        except KeyError:
-            eureka = False
-
-        if eureka:
-            LOG.info("Eureka Enabled, skipping ELB and DNS setup")
-        else:
-            LOG.info("No Eureka, running ELB and DNS setup")
-            self.create_elb()
-            self.create_dns()
-            LOG.info("Eureka Enabled, skipping ELB and DNS setup")
-
-        self.slack_notify()
-        self.cleanup()
-
-    def prepare_app_pipeline(self):
-        """Setup the application and initial pipeline in Spinnaker."""
-        self.create_app()
-        self.write_configs()
-        self.create_pipeline()
-        self.cleanup()
-
-    def prepare_onetime_pipeline(self, onetime=None):
-        """Setup a single use pipeline in the defined app."""
-        self.write_configs()
-        self.create_pipeline(onetime=onetime)
-        self.cleanup()
-
 
 def prepare_infrastructure():
     """Entry point for preparing the infrastructure in a specific env."""
     runner = ForemastRunner()
-    runner.prepare_infrastructure()
+
+    runner.write_configs()
+    runner.create_iam()
+    runner.create_s3()
+    runner.create_secgroups()
+
+    try:
+        eureka = runner.configs[runner.env]['app']['eureka_enabled']
+    except KeyError:
+        eureka = False
+
+    if eureka:
+        LOG.info("Eureka Enabled, skipping ELB and DNS setup")
+    else:
+        LOG.info("No Eureka, running ELB and DNS setup")
+        runner.create_elb()
+        runner.create_dns()
+        LOG.info("Eureka Enabled, skipping ELB and DNS setup")
+
+    runner.slack_notify()
+    runner.cleanup()
 
 
 def prepare_app_pipeline():
     """Entry point for application setup and initial pipeline in Spinnaker."""
     runner = ForemastRunner()
-    runner.prepare_app_pipeline()
+    runner.create_app()
+    runner.write_configs()
+    runner.create_pipeline()
+    runner.cleanup()
 
 
 def prepare_onetime_pipeline():
     """Entry point for single use pipeline setup in the defined app."""
     runner = ForemastRunner()
-    runner.prepare_onetime_pipeline(onetime=os.getenv('ENV'))
+    runner.write_configs()
+    runner.create_pipeline(onetime=os.getenv('ENV'))
+    runner.cleanup()
