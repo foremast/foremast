@@ -1,4 +1,4 @@
-"""Posts a message to slack"""
+"""Post a message to slack."""
 import logging
 
 import slacker
@@ -6,11 +6,11 @@ import slacker
 LOG = logging.getLogger(__name__)
 
 def post_slack_message(message, channel):
-    """ formats the message and posts to the appropriate slack channel """
+    """Format the message and post to the appropriate slack channel."""
 
     slack_token = 'xoxb-xxxxxxxxx'
 
-    LOG.debug('Slack Channel: {}\nSlack Message: {}'.format(channel, message)) 
+    LOG.debug('Slack Channel: {}\nSlack Message: {}'.format(channel, message))
     slack = slacker.Slacker(slack_token)
     try:
         slack.chat.post_message(channel, message)
