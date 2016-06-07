@@ -18,8 +18,7 @@ class SpinnakerDns:
     def __init__(self, app=None, env=None, region=None, elb_subnet=None):
         self.log = logging.getLogger(__name__)
 
-        self.generated = get_app_details.get_details(app,
-                                                     env=env)
+        self.generated = get_app_details.get_details(app, env=env)
         self.app_name = self.generated.app_name()
 
         # Add domain
@@ -58,7 +57,8 @@ class SpinnakerDns:
             for zone in zones['HostedZones']:
                 # We will always add a private record. The elb subnet must be
                 # specified as 'external' to get added publicly.
-                if any([zone['Config']['PrivateZone'], self.elb_subnet in ('external')]):
+                if any([zone['Config']['PrivateZone'], self.elb_subnet in (
+                        'external')]):
                     self.log.info('Adding DNS record to %s zone', zone['Id'])
                     zone_ids.append(zone['Id'])
 
