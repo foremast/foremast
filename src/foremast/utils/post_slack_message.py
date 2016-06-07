@@ -5,6 +5,7 @@ import slacker
 
 LOG = logging.getLogger(__name__)
 
+
 def post_slack_message(message, channel):
     """Format the message and post to the appropriate slack channel."""
 
