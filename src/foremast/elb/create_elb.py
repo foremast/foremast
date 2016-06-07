@@ -5,8 +5,8 @@ import logging
 import requests
 
 from ..consts import API_URL, HEADERS
-from ..utils import (check_task, get_subnets, get_template, get_vpc_id,
-                     get_properties)
+from ..utils import (check_task, get_properties, get_subnets, get_template,
+                     get_vpc_id)
 from .format_listeners import format_listeners
 from .splay_health import splay_health
 
