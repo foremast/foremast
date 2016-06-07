@@ -12,7 +12,14 @@ from .splay_health import splay_health
 
 
 class SpinnakerELB:
-    """Create ELBs for Spinnaker."""
+    """Create ELBs for Spinnaker.
+
+    Args:
+        app (str): Application name.
+        env (str): Deployment environment.
+        prop_path (str): Path to the raw.properties.json.
+        region (str): AWS Region.
+    """
 
     log = logging.getLogger(__name__)
 
