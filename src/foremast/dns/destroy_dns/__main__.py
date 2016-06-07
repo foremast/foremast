@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ...args import add_app, add_debug, add_env, add_region
+from ...args import add_app, add_debug, add_env
 from ...consts import LOGGING_FORMAT
 from .destroy_dns import destroy_dns
 
