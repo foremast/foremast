@@ -37,8 +37,8 @@ class SpinnakerELB:
 
         region_subnets = get_subnets(target='elb', env=env, region=region)
 
-        # CAVEAT: Setting the ELB to public, you must use a public subnet, otherwise
-        #         AWS complains about missing IGW on subnet.
+        # CAVEAT: Setting the ELB to public, you must use a public subnet,
+        #         otherwise AWS complains about missing IGW on subnet.
 
         elb_subnet_purpose = elb_settings.get('subnet_purpose', 'internal')
 
