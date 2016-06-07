@@ -39,7 +39,14 @@ from ..utils import (check_task, get_properties, get_security_group_id,
 
 
 class SpinnakerSecurityGroup(object):
-    """Manipulate Spinnaker Security Groups."""
+    """Manipulate Spinnaker Security Groups.
+
+    Args:
+        app (str): Application name.
+        env (str): Deployment environment.
+        prop_path (str): Path to the raw.properties.json.
+        region (str): AWS Region.
+    """
 
     def __init__(self, app=None, env=None, region=None, prop_path=None):
         self.log = logging.getLogger(__name__)
