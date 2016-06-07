@@ -36,11 +36,11 @@ class SpinnakerApp:
             AssertionError: Failure getting accounts from Spinnaker.
         """
         url = '{gate}/credentials'.format(gate=API_URL)
-        r = requests.get(url)
+        response = requests.get(url)
 
-        assert r.ok, 'Failed to get accounts: {0}'.format(r.text)
+        assert response.ok, 'Failed to get accounts: {0}'.format(response.text)
 
-        all_accounts = r.json()
+        all_accounts = response.json()
         filtered_accounts = []
         for account in all_accounts:
             if account['type'] == provider:
