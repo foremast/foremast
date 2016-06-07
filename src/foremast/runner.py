@@ -51,11 +51,9 @@ class ForemastRunner(object):
     def write_configs(self):
         """Generate the configurations needed for pipes."""
         utils.banner("Generating Configs")
-
         self.configs = configs.process_git_configs(
             git_short=self.git_short,
             token_file=self.gitlab_token_path)
-
         configs.write_variables(app_configs=self.configs,
                                 out_file=self.raw_path,
                                 git_short=self.git_short)
