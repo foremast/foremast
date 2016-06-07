@@ -10,10 +10,10 @@ def post_slack_message(message, channel):
 
     slack_token = 'xoxb-xxxxxxxxx'
 
-    LOG.debug('Slack Channel: {}\nSlack Message: {}'.format(channel, message))
+    LOG.debug('Slack Channel: %s\nSlack Message: %s', channel, message)
     slack = slacker.Slacker(slack_token)
     try:
         slack.chat.post_message(channel, message)
-        LOG.info('Message posted to {}'.format(channel))
+        LOG.info('Message posted to %s', channel)
     except slacker.Error:
-        LOG.info("error posted message to  {}".format(channel))
+        LOG.info("error posted message to %s", channel)
