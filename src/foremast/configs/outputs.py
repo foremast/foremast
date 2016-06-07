@@ -64,7 +64,7 @@ def write_variables(app_configs=None, out_file='', git_short=''):
         git_short (str): Short name of Git repository, e.g. forrest/core.
 
     Returns:
-        True upon successful completion.
+        dict: Configuration equivalent to the JSON output.
     """
     generated = gogoutils.Generator(*gogoutils.Parser(git_short).parse_url())
 
@@ -102,4 +102,4 @@ def write_variables(app_configs=None, out_file='', git_short=''):
         LOG.debug('Total JSON dict:\n%s', json_configs)
         json.dump(json_configs, json_handle)
 
-    return True
+    return json_configs
