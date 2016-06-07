@@ -27,9 +27,8 @@ class SpinnakerELB:
         self.app = app
         self.env = env
         self.region = region
-        self.properties = get_properties(
-            properties_file=prop_path,
-            env=self.env)
+        self.properties = get_properties(properties_file=prop_path,
+                                         env=self.env)
 
     def make_elb_json(self):
         """Render the JSON template with arguments.
@@ -57,8 +56,7 @@ class SpinnakerELB:
         target = elb_settings.get('target', 'HTTP:80/health')
         health = splay_health(target)
 
-        listeners = format_listeners(elb_settings=elb_settings,
-                                     env=self.env)
+        listeners = format_listeners(elb_settings=elb_settings, env=self.env)
 
         security_groups = [
             'sg_apps',
