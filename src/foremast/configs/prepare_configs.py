@@ -9,7 +9,8 @@ import gitlab
 
 from ..consts import GIT_URL
 
-ENVS = ('build', 'dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods', 'stagesox')
+ENVS = ('build', 'dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods',
+        'stagesox')
 LOG = logging.getLogger(__name__)
 
 
@@ -54,7 +55,6 @@ def process_git_configs(git_short='', token_file=''):
             file_contents = b64decode(file_blob['content'])
             app_configs[env] = json.loads(file_contents.decode())
 
-
     LOG.info('Processing pipeline.json from GitLab.')
     pipeline_blob = server.getfile(project_id,
                                    'runway/pipeline.json',
@@ -74,7 +74,7 @@ def process_git_configs(git_short='', token_file=''):
     config_commit = server.getbranch(project_id, 'master')['commit']['id']
     LOG.info('setting commit {}'.format(config_commit))
     app_configs['pipeline']['config_commit'] = config_commit
-    
+
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
 
