@@ -11,8 +11,7 @@ import logging
 from foremast import consts
 
 LOG = logging.getLogger(__name__)
-logging.basicConfig(format=consts.LOGGING_FORMAT)
-logging.getLogger("foremast").setLevel(logging.INFO)
+LOG.setLevel(logging.INFO)
 
 
 def banner(text, border='=', width=80):
