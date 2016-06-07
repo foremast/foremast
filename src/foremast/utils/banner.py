@@ -8,8 +8,6 @@ Example:
 """
 import logging
 
-from foremast import consts
-
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
 
