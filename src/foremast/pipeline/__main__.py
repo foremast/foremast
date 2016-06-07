@@ -39,19 +39,19 @@ def main():
     log.debug('Parsed arguments: %s', args)
 
     if args.onetime:
-        spinnakerapps = SpinnakerPipelineOnetime(app=args.app
-                                         onetime=args.onetime,
-                                         trigger_job=args.triggerjob,
-                                         prop_path=args.properties,
-                                         base=args.base,
-                                         token_file=args.token_file)
+        spinnakerapps = SpinnakerPipelineOnetime(app=args.app,
+                                                 onetime=args.onetime,
+                                                 trigger_job=args.triggerjob,
+                                                 prop_path=args.properties,
+                                                 base=args.base,
+                                                 token_file=args.token_file)
         spinnakerapps.create_pipeline()
     else:
         spinnakerapps = SpinnakerPipeline(app=args.app,
-                                         trigger_job=args.triggerjob,
-                                         prop_path=args.properties,
-                                         base=args.base,
-                                         token_file=args.token_file)
+                                          trigger_job=args.triggerjob,
+                                          prop_path=args.properties,
+                                          base=args.base,
+                                          token_file=args.token_file)
         spinnakerapps.create_pipeline()
 
 
