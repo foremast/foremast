@@ -45,8 +45,6 @@ def main():
     if args.runway_dir:
         configs = process_runway_configs(runway_dir=args.runway_dir)
     else:
-        if not args.token_file:
-            raise SystemExit('Must provide private token file as well.')
         configs = process_git_configs(git_short=git_short,
                                       token_file=args.token_file)
 
