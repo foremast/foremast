@@ -156,10 +156,10 @@ class SpinnakerSecurityGroup(object):
             rules = ingress[app]
 
             if app in ('app_a', 'app_b'):
-                msg = ('Using "%s" in your security group will be ignored.' %
-                       app,
-                       'Please remove them to supress this warning.', )
-                warn_user(' '.join(msg))
+                msg = (
+                    'Using "{0}" in your security group will be ignored. '
+                    'Please remove them to supress this warning.').format(app)
+                warn_user(msg)
                 continue
 
             # Essentially we have two formats: simple, advanced
