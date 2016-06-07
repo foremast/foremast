@@ -10,13 +10,7 @@ LOG = logging.getLogger(__name__)
 
 
 def main():
-    """Create ELBs.
-
-    python create_elb.py \
-        --app testapp \
-        --env dev \
-        --region us-east-1
-    """
+    """Create ELBs."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(
