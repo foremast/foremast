@@ -9,8 +9,8 @@ import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import (ami_lookup, get_app_details, get_subnets,
-                     get_template, get_properties)
+from ..utils import (ami_lookup, get_app_details, get_properties, get_subnets,
+                     get_template)
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block import construct_pipeline_block
 from .renumerate_stages import renumerate_stages
@@ -27,8 +27,12 @@ class SpinnakerPipeline:
         token_file: Str of path to gitlab token file.
     """
 
-    def __init__(self, app=None, trigger_job=None, prop_path=None, 
-            base=None, token_file=None ):
+    def __init__(self,
+                 app=None,
+                 trigger_job=None,
+                 prop_path=None,
+                 base=None,
+                 token_file=None):
         self.log = logging.getLogger(__name__)
 
         self.header = {'content-type': 'application/json'}
@@ -139,13 +143,14 @@ class SpinnakerPipeline:
                     self.log.info('%s is not available for %s.', env, region)
                     continue
 
-                block = construct_pipeline_block(env=env,
-                                                 generated=self.generated,
-                                                 previous_env=previous_env,
-                                                 region=region,
-                                                 region_subnets=region_subnets,
-                                                 settings=self.settings[env],
-                                                 pipeline_data=self.settings['pipeline'])
+                block = construct_pipeline_block(
+                    env=env,
+                    generated=self.generated,
+                    previous_env=previous_env,
+                    region=region,
+                    region_subnets=region_subnets,
+                    settings=self.settings[env],
+                    pipeline_data=self.settings['pipeline'])
 
                 pipelines[region]['stages'].extend(json.loads(block))
 
