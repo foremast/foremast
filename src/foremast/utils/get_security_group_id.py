@@ -42,7 +42,7 @@ def get_security_group_id(name='', env='', region=''):
     try:
         security_group_id = result['id']
     except KeyError:
-        msg = 'Security group (%s) not found'.format(name)
+        msg = 'Security group ({0}) not found'.format(name)
         raise SpinnakerSecurityGroupError(msg)
 
     LOG.info('Found: %s', security_group_id)
