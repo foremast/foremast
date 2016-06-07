@@ -71,21 +71,19 @@ class ForemastRunner(object):
         """Create the spinnaker pipeline(s)."""
         utils.banner("Creating Pipeline")
 
+        kwargs = {
+            'app': self.app,
+            'trigger_job': self.trigger_job,
+            'prop_path': self.json_path,
+            'base': None,
+            'token_file': self.gitlab_token_path,
+        }
+
         if not onetime:
-            spinnakerpipeline = pipeline.SpinnakerPipeline(
-                app=self.app,
-                trigger_job=self.trigger_job,
-                prop_path=self.json_path,
-                base=None,
-                token_file=self.gitlab_token_path)
+            spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
         else:
             spinnakerpipeline = pipeline.SpinnakerPipelineOnetime(
-                app=self.app,
-                trigger_job=self.trigger_job,
-                prop_path=self.json_path,
-                base=None,
-                token_file=self.gitlab_token_path,
-                onetime=onetime)
+                onetime=onetime, **kwargs)
 
         spinnakerpipeline.create_pipeline()
 
