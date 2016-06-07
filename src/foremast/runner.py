@@ -151,10 +151,7 @@ def prepare_infrastructure():
     runner.create_s3()
     runner.create_secgroups()
 
-    try:
-        eureka = runner.configs[runner.env]['app']['eureka_enabled']
-    except KeyError:
-        eureka = False
+    eureka = runner.configs[runner.env]['app']['eureka_enabled']
 
     if eureka:
         LOG.info("Eureka Enabled, skipping ELB and DNS setup")
