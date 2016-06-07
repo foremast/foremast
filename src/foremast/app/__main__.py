@@ -46,8 +46,10 @@ def main():
         'repo': repo
     }
 
-    spinnakerapps = SpinnakerApp(app=args.app, email=args.email,
-                                project=project, repo=repo)
+    spinnakerapps = SpinnakerApp(app=args.app,
+                                 email=args.email,
+                                 project=project,
+                                 repo=repo)
     spinnakerapps.create_app()
 
 
