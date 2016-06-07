@@ -17,9 +17,10 @@ class SpinnakerApp:
     def __init__(self, app=None, email=None, project=None, repo=None):
         self.log = logging.getLogger(__name__)
 
-         
-        self.appinfo = {'app': app, 'email': email,
-                        'project': project, 'repo': repo }
+        self.appinfo = {'app': app,
+                        'email': email,
+                        'project': project,
+                        'repo': repo}
         self.appname = app
 
     def get_accounts(self, provider='aws'):
