@@ -11,21 +11,21 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
     """Manipulate Spinnaker Pipelines.
 
     Args:
-        app: Str of application name.
-        trigger_job: Str of jenkins trigger job.
-        base: Str of base image name (i.e: fedora).
-        prop_path: Str of the path to the raw.properties.json.
-        token_file: Str of path to gitlab token file.
-        onetime: Str of the environment to build onetime pipeline for
+        app (str): Application name.
+        trigger_job (str): Jenkins trigger job.
+        base (str): Base image name (i.e: fedora).
+        prop_path (str): Path to the raw.properties.json.
+        token_file (str): Path to gitlab token file.
+        onetime (str): Environment to build onetime pipeline for.
     """
 
     def __init__(self,
-                 app=None,
-                 trigger_job=None,
-                 prop_path=None,
-                 base=None,
-                 token_file=None,
-                 onetime=None):
+                 app='',
+                 trigger_job='',
+                 prop_path='',
+                 base='',
+                 token_file='',
+                 onetime=''):
         super().__init__(app=app,
                          trigger_job=trigger_job,
                          prop_path=prop_path,
