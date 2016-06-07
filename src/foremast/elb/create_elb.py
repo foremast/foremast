@@ -23,7 +23,7 @@ class SpinnakerELB:
 
     log = logging.getLogger(__name__)
 
-    def __init__(self, app=None, env=None, region=None, prop_path=None):
+    def __init__(self, app='', env='', region='', prop_path=''):
         self.app = app
         self.env = env
         self.region = region
