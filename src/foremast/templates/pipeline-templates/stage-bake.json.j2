@@ -7,7 +7,8 @@
       "cloudProviderType": "aws",
       "extendedAttributes": {
         "app_group": "${ trigger.properties.GROUP_NAME }",
-        "app_name": "${ trigger.properties.APP_NAME }"
+        "app_name": "${ trigger.properties.APP_NAME }",
+        "appversion": "${ trigger.properties.APP_VERSION }"
       },
       "regions": ["{{ data.app.region }}"],
       "user": "[anonymous]",
