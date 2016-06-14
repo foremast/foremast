@@ -5,7 +5,7 @@
             "Effect": "Allow",
             "Resource": [
             {%- for table in items %}
-                "arn:aws:dynamodb:{{ region }}:{{ account_number }}:table/{{ table }}/",
+                "arn:aws:dynamodb:{{ region }}:{{ account_number }}:table/{{ table }}",
                 "arn:aws:dynamodb:{{ region }}:{{ account_number }}:table/{{ table }}/index/*"
                 {%- if not loop.last -%}
                 ,
