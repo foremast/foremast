@@ -24,11 +24,14 @@ class SlackNotification:
         }
 
     def post_message(self):
-        """Send templated message to **#deployments-{env}**."""
+        """Send templated message to **#deployments-{env}**.
+
+        Primarily for production deployments.
+        """
         message = get_template(
             template_file='slack-templates/pipeline-prepare-ran.j2',
             info=self.info)
-        channel = '#deployments-{}'.format(self.info['env'].lower())
+        channel = '#deployments-prod'
         post_slack_message(message, channel)
 
     def notify_slack_channel(self):
