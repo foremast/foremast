@@ -19,7 +19,10 @@
           "targetHealthyDeployPercentage": 100,
           "cooldown": 10,
           "healthCheckType": "{{ data.asg.hc_type }}",
-          "healthCheckGracePeriod": "600",
+          "healthCheckGracePeriod": "120",
+          {% if data.asg.provider_healthcheck|length > 0 %}
+          "interestingHealthProviderNames": {{ data.asg.provider_healthcheck }},
+          {% endif %}
           "instanceMonitoring": false,
           "ebsOptimized": false,
           "iamRole": "{{ data.app.instance_profile }}",
@@ -41,11 +44,8 @@
           "useSourceCapacity": false,
           "associatePublicIpAddress": null,
           "provider": "aws",
-          "cloudProvider": "aws",
-          "account": "{{ data.app.environment }}",
-          {% if data.asg.provider_healthcheck|length > 0 -%}
-          "interestingHealthProviderNames": {{ data.asg.provider_healthcheck }}
-          {%- endif %}
+          "cloudProvider": "aws"
+          "account": "{{ data.app.environment }}"
         }
       ],
       "comments": "",
