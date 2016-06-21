@@ -69,6 +69,10 @@ def construct_pipeline_block(env='',
             provider_healthcheck.append(provider.capitalize())
     LOG.info('Provider healthchecks: {0}'.format(provider_healthcheck))
 
+    has_provider_healthcheck = False
+    if len(provider_healthcheck) > 0:
+        has_provider_healthcheck = True
+
     data = copy.deepcopy(settings)
 
     # Default HC type in DEV to EC2
@@ -107,6 +111,7 @@ def construct_pipeline_block(env='',
     data['asg'].update({
         'hc_type': data['asg'].get('hc_type').upper(),
         'provider_healthcheck': json.dumps(provider_healthcheck),
+        "has_provider_healthcheck": has_provider_healthcheck,
     })
 
     LOG.debug('Block data:\n%s', pformat(data))
