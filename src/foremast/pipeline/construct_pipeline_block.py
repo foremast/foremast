@@ -106,6 +106,7 @@ def construct_pipeline_block(env='',
         'instance_security_groups': json.dumps(instance_security_groups),
         'elb': json.dumps(elb),
         'promote_restrict': pipeline_data['promote_restrict'],
+        'owner_email': pipeline_data['owner_email'],
     })
 
     data['asg'].update({
