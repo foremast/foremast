@@ -80,9 +80,6 @@ def process_git_configs(git_short='', token_file=''):
             msg = JSON_ERROR_MSG.format(pipeline_json)
             raise SystemExit(msg)
 
-        if 'env' not in app_configs['pipeline']:
-            app_configs['pipeline']['env'] = ['stage', 'prod']
-
     config_commit = server.getbranch(project_id, 'master')['commit']['id']
     LOG.info('Commit ID used: %s', config_commit)
     app_configs['pipeline']['config_commit'] = config_commit
@@ -127,9 +124,6 @@ def process_runway_configs(runway_dir=''):
         LOG.debug('Reading pipeline.json from %s', pipeline_file)
         with open(pipeline_file) as pipeline:
             app_configs['pipeline'] = json.load(pipeline)
-
-        if 'env' not in app_configs['pipeline']:
-            app_configs['pipeline']['env'] = ['stage', 'prod']
     except FileNotFoundError:
         LOG.warning('Unable to process pipeline.json. Using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
