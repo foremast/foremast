@@ -12,6 +12,7 @@ from ..consts import GIT_URL
 ENVS = ('build', 'dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods',
         'stagesox')
 LOG = logging.getLogger(__name__)
+JSON_ERROR_MSG = '"{0}" appears to be invalid json. Please validate it with http://jsonlint.com.'
 
 
 def process_git_configs(git_short='', token_file=''):
@@ -41,9 +42,10 @@ def process_git_configs(git_short='', token_file=''):
 
     app_configs = collections.defaultdict(dict)
     for env in ENVS:
+        app_json = 'runway/application-master-{env}.json'.format(env=env)
         file_blob = server.getfile(
             project_id,
-            'runway/application-master-{env}.json'.format(env=env),
+            app_json,
             'master')
         LOG.debug('GitLab file response:\n%s', file_blob)
 
@@ -53,11 +55,16 @@ def process_git_configs(git_short='', token_file=''):
             continue
         else:
             file_contents = b64decode(file_blob['content'])
-            app_configs[env] = json.loads(file_contents.decode())
+            try:
+                app_configs[env] = json.loads(file_contents.decode())
+            except ValueError:
+                msg = JSON_ERROR_MSG.format(app_json)
+                raise SystemExit(msg)
 
     LOG.info('Processing pipeline.json from GitLab.')
+    pipeline_json = 'runway/pipeline.json'
     pipeline_blob = server.getfile(project_id,
-                                   'runway/pipeline.json',
+                                   pipeline_json,
                                    'master', )
 
     if not pipeline_blob:
@@ -66,8 +73,13 @@ def process_git_configs(git_short='', token_file=''):
     else:
         LOG.info('Pipeline configuration found.')
         pipeline_contents = b64decode(pipeline_blob['content'])
-        LOG.info(pipeline_contents.decode())
-        app_configs['pipeline'] = json.loads(pipeline_contents.decode())
+        try:
+            LOG.info(pipeline_contents.decode())
+            app_configs['pipeline'] = json.loads(pipeline_contents.decode())
+        except ValueError:
+            msg = JSON_ERROR_MSG.format(pipeline_json)
+            raise SystemExit(msg)
+
         if 'env' not in app_configs['pipeline']:
             app_configs['pipeline']['env'] = ['stage', 'prod']
 
@@ -93,9 +105,10 @@ def process_runway_configs(runway_dir=''):
 
     app_configs = collections.defaultdict(dict)
     for env in ENVS:
+        file_json = 'application-master-{env}.json'.format(
+            env=env)
         file_name = os.path.join(runway_dir,
-                                 'application-master-{env}.json'.format(
-                                     env=env))
+                                 file_json)
         LOG.debug('File to read: %s', file_name)
 
         try:
@@ -104,6 +117,9 @@ def process_runway_configs(runway_dir=''):
                 app_configs[env] = json.load(json_file)
         except FileNotFoundError:
             continue
+        except ValueError:
+            msg = JSON_ERROR_MSG.format(file_json)
+            raise SystemExit(msg)
 
     LOG.info('Processing pipeline.json from local directory')
     try:
@@ -117,6 +133,9 @@ def process_runway_configs(runway_dir=''):
     except FileNotFoundError:
         LOG.warning('Unable to process pipeline.json. Using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
+    except ValueError:
+        msg = JSON_ERROR_MSG.format(pipeline_file)
+        raise SystemExit(msg)
 
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
