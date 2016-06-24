@@ -90,6 +90,12 @@ class SpinnakerPipeline:
 
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
+        root_volume_size = self.settings['pipeline']['image']['root_volume_size']
+        if root_volume_size > 50:
+            raise SpinnakerPipelineCreationFailed(
+                'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
+                    root_volume_size))
+
         ami_id = ami_lookup(name=base,
                             region=region,
                             token_file=self.token_file)
@@ -102,7 +108,8 @@ class SpinnakerPipeline:
             'region': region,
             'triggerjob': self.trigger_job,
             'email': email,
-            'slack': slack
+            'slack': slack,
+            'root_volume_size': root_volume_size,
         }}
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
