@@ -19,6 +19,9 @@ def construct_pipeline_block(env='',
                              pipeline_data=None):
     """Create the Pipeline JSON from template.
 
+    This handles the common repeatable patterns in a pipeline, such as
+    judgement, infrastructure, tagger and qe.
+
     Args:
         env (str): Deploy environment name, e.g. dev, stage, prod.
         generated (gogoutils.Generator): Gogo Application name generator.
