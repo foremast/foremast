@@ -19,7 +19,7 @@
           "targetHealthyDeployPercentage": 100,
           "cooldown": 10,
           "healthCheckType": "{{ data.asg.hc_type }}",
-          "healthCheckGracePeriod": "120",
+          "healthCheckGracePeriod": "180",
           {% if data.asg.has_provider_healthcheck -%}
           "interestingHealthProviderNames": {{ data.asg.provider_healthcheck }},
           {%- endif %}
