@@ -6,7 +6,7 @@ with open('requirements.txt', 'rt') as reqs_file:
 
 setup(
     name='foremast',
-    version='2.6',
+    version='2.7',
     description='Tools for creating infrastructure and Spinnaker Pipelines.',
     long_description=open('README.md').read(),
     author='Gogo DevOps',
