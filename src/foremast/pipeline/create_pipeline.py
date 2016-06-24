@@ -77,6 +77,8 @@ class SpinnakerPipeline:
     def render_wrapper(self, region='us-east-1'):
         """Generate the base Pipeline wrapper.
 
+        This renders the non-repeatable stages in a pipeline, like jenkins, baking, tagging and notifications.
+
         Args:
             region (str): AWS Region.
 
