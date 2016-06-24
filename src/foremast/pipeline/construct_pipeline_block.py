@@ -107,6 +107,7 @@ def construct_pipeline_block(env='',
         'elb': json.dumps(elb),
         'promote_restrict': pipeline_data['promote_restrict'],
         'owner_email': pipeline_data['owner_email'],
+        'root_volume_size': settings['app']['root_volume_size'],
     })
 
     data['asg'].update({
