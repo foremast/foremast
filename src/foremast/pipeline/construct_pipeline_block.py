@@ -80,7 +80,7 @@ def construct_pipeline_block(env='',
     data = copy.deepcopy(settings)
 
     # Default HC type in DEV to EC2, default to EC2 if eureka enabled
-    if env == 'dev' or settings['app']['eureka_enabled']:
+    if env == 'dev':
         data['asg'].update({
             'hc_type': 'EC2'
         })
