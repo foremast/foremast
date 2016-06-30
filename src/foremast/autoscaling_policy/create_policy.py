@@ -18,11 +18,7 @@ class AutoScalingPolicy:
         region: Str of region for policy
     """
 
-    def __init__(self,
-                 app='',
-                 prop_path='',
-                 env='',
-                 region='' ):
+    def __init__(self, app='', prop_path='', env='', region=''):
 
         self.log = logging.getLogger(__name__)
 
@@ -34,7 +30,6 @@ class AutoScalingPolicy:
 
         self.settings = get_properties(properties_file=prop_path, env=self.env)
 
-
     def create_policy(self):
         """ Renders the template and creates the police """
 
@@ -43,37 +38,61 @@ class AutoScalingPolicy:
             return
 
         server_group = self.get_server_group()
+        policy_name, policy_arn = self.get_existing_policy()
 
         template_kwargs = {
-                'app': self.app,
-                'env': self.env,
-                'region': self.region,
-                'server_group': server_group,
-                'scaling_policy': self.settings['asg']['scaling_policy']
-            }
-        self.log.info('Rendering Scaling Policy Template: {0}'.format(template_kwargs))
+            'app': self.app,
+            'env': self.env,
+            'region': self.region,
+            'server_group': server_group,
+            'policy_name': policy_name,
+            'policy_arn': policy_arn,
+            'scaling_policy': self.settings['asg']['scaling_policy']
+        }
+        self.log.info('Rendering Scaling Policy Template: {0}'.format(
+            template_kwargs))
         rendered_template = get_template(
-                    template_file='scaling_policy_template.json',
-                    **template_kwargs)
+            template_file='autoscaling_policy_template.json',
+            **template_kwargs)
 
         self.post_task(rendered_template)
-        self.log.info('Successfully created scaling policy in {0}'.format(self.env))
+        self.log.info('Successfully created scaling policy in {0}'.format(
+            self.env))
 
-
-    def post_task(self,  payload):
+    def post_task(self, payload):
         """ Posts the rendered template to correct endpoint """
         """Sends the POST to the correct endpoint and reports results"""
         url = "{0}/applications/{1}/tasks".format(API_URL, self.app)
-        response = requests.post(url,
-                                 data=payload,
-                                 headers=self.header)
-        assert response.ok, "Error creating {0} Autoscaling Policy: {1}".format(self.app,
-                                                                                response.text)
+        response = requests.post(url, data=payload, headers=self.header)
+        assert response.ok, "Error creating {0} Autoscaling Policy: {1}".format(
+            self.app, response.text)
 
     def get_server_group(self):
         """ Gets the current server group """
-        response = requests.get("{0}/applications/{1}".format(API_URL, self.app))
-        print(response)
+        response = requests.get("{0}/applications/{1}".format(API_URL,
+                                                              self.app))
         for server_group in response.json()['clusters'][self.env]:
             return server_group['serverGroups'][-1]
 
+    def get_existing_policy(self):
+        """Checks if scaling policy already exists and returns name"""
+        self.log.info("Checking for existing scaling policy")
+        url = "{0}/applications/{1}/clusters/{2}/{1}/serverGroups".format(
+            API_URL, self.app, self.env)
+        response = requests.get(url)
+        assert response.ok, "Error looking for existing Autoscaling Policy for {0}: {1}".format(
+            self.app, response.text)
+        policy_name = None
+        policy_arn = None
+        for servergroup in response.json():
+            if servergroup['scalingPolicies']:
+                policy_name = servergroup['scalingPolicies'][0]['policyName']
+                policy_arn = servergroup['scalingPolicies'][0]['policyARN']
+                break
+
+        if policy_name:
+            self.log.info("Found existing policy: {0}".format(policy_name))
+        else:
+            self.log.info("No existing policy found")
+
+        return policy_name, policy_arn
