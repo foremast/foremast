@@ -1,5 +1,5 @@
 {
-   "application":"{{ app_name }}",
+   "application":"{{ app }}",
    "description":"Upsert scaling policy",
    "job":[
       {

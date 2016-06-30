@@ -24,7 +24,7 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    asgpolicy = AutoScalingPolicy(app_name=args.app,
+    asgpolicy = AutoScalingPolicy(app=args.app,
                                   prop_path=args.properties,
                                   env=args.env,
                                   region=args.region)
