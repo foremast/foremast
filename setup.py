@@ -47,6 +47,7 @@ setup(
             'prepare-app-pipeline=foremast.runner:prepare_app_pipeline',
             'prepare-infrastructure=foremast.runner:prepare_infrastructure',
             'prepare-onetime-pipeline=foremast.runner:prepare_onetime_pipeline',
+            'create-scaling-policy=foremast.runner:create_scaling_policy',
             'slack-notify=foremast.slacknotify.__main__:main',
         ]
     }, )
