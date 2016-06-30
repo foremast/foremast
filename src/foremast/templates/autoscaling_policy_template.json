@@ -3,14 +3,14 @@
    "description":"Upsert scaling policy",
    "job":[
       {
-         "name":"{{ policy_name }}",
+         "name":"{{ server_group }}",
          "serverGroupName":"{{ server_group }}",
          "credentials":"{{ env }}",
          "region":"{{ region }}",
          "provider":"aws",
          "adjustmentType":"ChangeInCapacity",
          "alarm":{
-            "name":"{{ policy_name }}",
+            "name":"{{ server_group }}",
             "region":"{{ region }}",
             "actionsEnabled":true,
             "comparisonOperator":"GreaterThanThreshold",
