@@ -86,7 +86,7 @@ def construct_pipeline_block(env='',
         })
         LOG.info('Switching health check type to: EC2')
 
-    LOG.info('White listed dev asg apps: {0}'.format(dev_asg_whitelist))
+    LOG.info('White listed dev asg apps: {0}'.format(ASG_WHITELIST))
     if env == 'dev' and generated.app not in ASG_WHITELIST:
         data['asg'].update({
             'max_inst': '1',
