@@ -21,6 +21,8 @@ def generate_encoded_user_data(env='dev',
 
             #!/bin/bash
             export CLOUD_ENVIRONMENT=dev
+            export CLOUD_ENVIRONMENT_P=dev
+            export CLOUD_ENVIRONMENT_S=dev
             export CLOUD_APP=coreforrest
             export CLOUD_APP_GROUP=forrest
             export CLOUD_STACK=forrest
@@ -28,8 +30,15 @@ def generate_encoded_user_data(env='dev',
             export CLOUD_DOMAIN=dev.example.com
             printenv | grep 'CLOUD\|EC2' | awk '$0="export "$0'>> /etc/gogo/cloud_env
     """
+    # We need to handle the case of prodp and prods for different URL generation
+    if env == "prod":
+        env_p, env_s = "prodp", "prods"
+    else:
+        env_p, env_s = env, env
     user_data = get_template(template_file='user_data.sh.j2',
                              env=env,
+                             env_p=env_p,
+                             env_s=env_s,
                              region=region,
                              app_name=app_name,
                              group_name=group_name, )
