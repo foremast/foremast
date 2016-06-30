@@ -129,7 +129,7 @@ class ForemastRunner(object):
         """Create Scaling Policy for app in environment"""
         utils.banner("Creating Scaling Policy")
         policyobj = autoscaling_policy.AutoScalingPolicy(
-                                            app_name=self.app,
+                                            app=self.app,
                                             env=self.env,
                                             region=self.region,
                                             prop_path=self.json_path)
