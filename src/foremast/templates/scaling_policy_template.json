@@ -19,11 +19,11 @@
                }
             ],
             "evaluationPeriods":1,
-            "period":60,
+            "period":{{ scaling_policy.period | default(60) }},
             "threshold": {{ scaling_policy.threshold }} ,
             "namespace":"AWS/EC2",
-            "metricName":"{{ scaling_policy.metric }}",
-            "statistic":"Average"
+            "metricName":"{{ scaling_policy.metric | default("CPUUtilization") }}",
+            "statistic":"{{ scaling_policy.statistic |default("Average") }}"
          },
          "step":{
             "estimatedInstanceWarmup":600,
@@ -36,7 +36,7 @@
             ]
          },
          "type":"upsertScalingPolicy",
-         "user":"Pipes Scripts"
+         "user":"pipes-autoscaling-policy"
       }
    ]
 }
