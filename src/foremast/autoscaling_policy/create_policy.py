@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 
 import requests
 
@@ -35,7 +36,7 @@ class AutoScalingPolicy:
 
     def create_policy(self):
         """ Renders the template and creates the police """
-        server_group = get_server_group(self.app_name, self.env)
+        server_group = self.get_server_group()
 
         template_kwargs = {
                 'app_name': self.app_name,
