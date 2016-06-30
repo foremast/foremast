@@ -17,7 +17,7 @@ import os
 import gogoutils
 
 from foremast import (app, configs, consts, dns, elb, iam, pipeline, s3,
-                      securitygroup, slacknotify, utils, autscaling_policy)
+                      securitygroup, slacknotify, utils, autoscaling_policy)
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(format=consts.LOGGING_FORMAT)
