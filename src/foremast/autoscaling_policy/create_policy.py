@@ -40,6 +40,10 @@ class AutoScalingPolicy:
         server_group = self.get_server_group()
         policy_name, policy_arn = self.get_existing_policy()
 
+        if self.settings['asg']['scaling_policy']['period_minutes']:
+            period_sec = self.settings['asg']['scaling_policy']['period_minutes']*60
+        else:
+            period_sec = 1800
         template_kwargs = {
             'app': self.app,
             'env': self.env,
@@ -47,6 +51,7 @@ class AutoScalingPolicy:
             'server_group': server_group,
             'policy_name': policy_name,
             'policy_arn': policy_arn,
+            'period_sec': period_sec,
             'scaling_policy': self.settings['asg']['scaling_policy']
         }
         self.log.info('Rendering Scaling Policy Template: {0}'.format(
