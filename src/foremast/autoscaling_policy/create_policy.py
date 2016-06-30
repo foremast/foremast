@@ -38,11 +38,11 @@ class AutoScalingPolicy:
         server_group = get_server_group(self.app_name, self.env)
 
         template_kwargs = {
-            'app_name' = self.app_name,
-            'env' = self.env,
-            'region' = self.region,
-            'server_group' = server_group,
-            'scaling_policy' = self.settings['scaling_policy']
+                'app_name': self.app_name,
+                'env': self.env,
+                'region': self.region,
+                'server_group': server_group,
+                'scaling_policy': self.settings['scaling_policy']
             }
         self.log.info('Rendering Scaling Policy Template')
         rendered_template = get_template(
