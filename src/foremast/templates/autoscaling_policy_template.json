@@ -21,7 +21,7 @@
                }
             ],
             "evaluationPeriods":1,
-            "period":{{ scaling_policy.period | default(60) }},
+            "period":{{ period_sec }},
             "threshold":{{ scaling_policy.threshold }},
             "namespace":"AWS/EC2",
             "metricName":"{{ scaling_policy.metric | default("CPUUtilization") }}",
