@@ -21,7 +21,8 @@ class AutoScalingPolicy:
                  app_name='',
                  prop_path='',
                  env='',
-                 region='')
+                 region='' ):
+
         self.log = logging.getLogger(__name__)
 
         self.header = {'content-type': 'application/json'}
