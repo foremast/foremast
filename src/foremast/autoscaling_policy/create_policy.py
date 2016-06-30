@@ -65,7 +65,8 @@ class AutoScalingPolicy:
 
     def get_server_group(self):
         """ Gets the current server group """
-        response = requests.get("{0}/applications/{1}".format(API_URL, self.app_name)
-        for server_group in response.json['clusters'][self.env]:
+        response = requests.get("{0}/applications/{1}".format(API_URL, self.app_name))
+        print(response)
+        for server_group in response.json()['clusters'][self.env]:
             return server_group['serverGroups'][-1]
 
