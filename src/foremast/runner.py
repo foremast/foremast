@@ -17,7 +17,7 @@ import os
 import gogoutils
 
 from foremast import (app, configs, consts, dns, elb, iam, pipeline, s3,
-                      securitygroup, slacknotify, utils)
+                      securitygroup, slacknotify, utils, autscaling_policy)
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(format=consts.LOGGING_FORMAT)
@@ -125,6 +125,16 @@ class ForemastRunner(object):
                                   elb_subnet=elb_subnet)
         dnsobj.create_elb_dns()
 
+    def create_autoscaling_policy(self):
+        """Create Scaling Policy for app in environment"""
+        utils.banner("Creating Scaling Policy")
+        policyobj = autoscaling_policy.AutoScalingPolicy(
+                                            app_name=self.app,
+                                            env=self.env,
+                                            region=self.region,
+                                            prop_path=self.json_path)
+        policyobj.create_policy()
+
     def slack_notify(self):
         """Send out a slack notification."""
         utils.banner("Sending slack notification")
@@ -179,4 +189,10 @@ def prepare_onetime_pipeline():
     runner = ForemastRunner()
     runner.write_configs()
     runner.create_pipeline(onetime=os.getenv('ENV'))
+    runner.cleanup()
+
+def create_scaling_policy():
+    runner = ForemastRunner()
+    runner.write_configs()
+    runner.create_autoscaling_policy()
     runner.cleanup()
