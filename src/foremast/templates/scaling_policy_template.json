@@ -1,0 +1,42 @@
+{
+   "application":"{{ app_name }}",
+   "description":"Upsert scaling policy",
+   "job":[
+      {
+         "serverGroupName":"{{ server_group }}",
+         "credentials":"{{ env }}",
+         "region":"{{ region }}",
+         "provider":"aws",
+         "adjustmentType":"ChangeInCapacity",
+         "alarm":{
+            "region":"{{ region }}",
+            "actionsEnabled":true,
+            "comparisonOperator":"GreaterThanThreshold",
+            "dimensions":[
+               {
+                  "name":"AutoScalingGroupName",
+                  "value":"{{ server_group }}"
+               }
+            ],
+            "evaluationPeriods":1,
+            "period":60,
+            "threshold": {{ scaling_policy.threshold }} ,
+            "namespace":"AWS/EC2",
+            "metricName":"{{ scaling_policy.metric }}",
+            "statistic":"Average"
+         },
+         "step":{
+            "estimatedInstanceWarmup":600,
+            "metricAggregationType":"Average",
+            "stepAdjustments":[
+               {
+                  "scalingAdjustment":3,
+                  "metricIntervalLowerBound":0
+               }
+            ]
+         },
+         "type":"upsertScalingPolicy",
+         "user":"Pipes Scripts"
+      }
+   ]
+}
