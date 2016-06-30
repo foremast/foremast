@@ -51,7 +51,7 @@ class AutoScalingPolicy:
                 'server_group': server_group,
                 'scaling_policy': self.settings['asg']['scaling_policy']
             }
-        self.log.info('Rendering Scaling Policy Template')
+        self.log.info('Rendering Scaling Policy Template: {0}'.format(template_kwargs))
         rendered_template = get_template(
                     template_file='scaling_policy_template.json',
                     **template_kwargs)
@@ -66,7 +66,7 @@ class AutoScalingPolicy:
         url = "{0}/applications/{1}/tasks".format(API_URL, self.app)
         response = requests.post(url,
                                  data=payload,
-                                 headers=self.headers)
+                                 headers=self.header)
         assert response.ok, "Error creating {0} Autoscaling Policy: {1}".format(self.app,
                                                                                 response.text)
 
