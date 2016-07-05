@@ -61,9 +61,12 @@ def construct_pipeline_block(env='',
     LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
 
     # check if scaling policy exists
-    scalingpolicy = False
     if settings['asg']['scaling_policy']:
         scalingpolicy = True
+        LOG.info('Found scaling policy')
+    else:
+        scalingpolicy = False
+        LOG.info('No scaling policy found')
 
     if settings['app']['eureka_enabled']:
         elb = []
