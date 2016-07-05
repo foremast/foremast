@@ -4,6 +4,9 @@
     {% endif %}
     {% include "pipeline-templates/stage-infrastructure-setup.json.j2" %},
     {% include "pipeline-templates/stage-deploy.json.j2" %},
+    {% if data.app.scalingpolicy %}
+    {% include "pipeline-templates/stage-scaling-policy.json.j2" %}
+    {% endif %}
     {% include "pipeline-templates/stage-tagger.json.j2" %},
     {% include "pipeline-templates/stage-qe.json.j2" %}
 ]
