@@ -20,6 +20,8 @@ def renumerate_stages(pipeline):
     +---------+------------------------+------------+
     | 3       | QE dev                 | 2          |
     +---------+------------------------+------------+
+    | 202     | Attach Scaling Policy  | 2          |
+    +---------+------------------------+------------+
     | 200     | git tagger dev         | 2          |
     +---------+------------------------+------------+
     | 4       | judgement              | 3          |
@@ -44,6 +46,9 @@ def renumerate_stages(pipeline):
         if stage['name'].startswith('Git Tag'):
             stage['requisiteStageRefIds'] = [str(main_index)]
             stage['refId'] = str(main_index * 100)
+        elif stage['name'].startswith('Attach Scaling'):
+            stage['requisiteStageRefIds'] = [str(main_index)]
+            stage['refId'] = str(main_index * 101)
         elif stage['type'] == 'bake':
             stage['requisiteStageRefIds'] = []
             stage['refId'] = str(main_index)
