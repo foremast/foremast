@@ -29,8 +29,6 @@
       "enhancedNetworking": true,
       "comments": "Baking",
       "package": "${ trigger.properties.ARTIFACT_RPM }",
-      {% if data.app.region == 'us-west-2' %}
-      "templateFileName": "aws-ebs-west-2.json",
-      {% endif %}
+      "templateFileName": "{{ data.app.ami_template_file }}",
       "baseAmi": "{{ data.app.ami_id }}"
     }
