@@ -60,6 +60,11 @@ def construct_pipeline_block(env='',
 
     LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
 
+    # check if scaling policy exists
+    scalingpolicy = False
+    if settings['asg']['scaling_policy']:
+        scalingpolicy = True
+
     if settings['app']['eureka_enabled']:
         elb = []
     else:
@@ -110,6 +115,7 @@ def construct_pipeline_block(env='',
         'elb': json.dumps(elb),
         'promote_restrict': pipeline_data['promote_restrict'],
         'owner_email': pipeline_data['owner_email'],
+        'scalingpolicy': scalingpolicy
     })
 
     data['asg'].update({
