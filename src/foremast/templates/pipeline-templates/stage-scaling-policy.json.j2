@@ -2,10 +2,10 @@
       "requisiteStageRefIds": [
         "6"
       ],
-      "refId": "600",
+      "refId": "800",
       "type": "jenkins",
       "comments": "This stage will apply a scaling policy if provided in <b>{{ data.app.environment }}</b>.",
-      "name": "Update Scaling Policy [{{ data.app.environment }}]",
+      "name": "Attach Scaling Policy [{{ data.app.environment }}]",
       "failPipeline": true,
       "master": "JenkinsCI",
       "job": "pipes-scaling-policy",
