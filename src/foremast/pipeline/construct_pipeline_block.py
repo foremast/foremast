@@ -6,6 +6,7 @@ import copy
 from pprint import pformat
 
 from ..utils import generate_encoded_user_data, get_template
+from ..consts import ASG_WHITELIST
 
 LOG = logging.getLogger(__name__)
 
@@ -87,18 +88,14 @@ def construct_pipeline_block(env='',
     data = copy.deepcopy(settings)
 
     # Default HC type in DEV to EC2, default to EC2 if eureka enabled
-    if env == 'dev' or settings['app']['eureka_enabled']:
+    if env == 'dev':
         data['asg'].update({
             'hc_type': 'EC2'
         })
         LOG.info('Switching health check type to: EC2')
 
-    # Read the apps white list
-    with open('src/foremast/configs/dev_asg_whitelist') as f:
-        dev_asg_whitelist = f.read().splitlines()
-
-    LOG.info('White listed dev asg apps: {0}'.format(dev_asg_whitelist))
-    if env == 'dev' and generated.app not in dev_asg_whitelist:
+    LOG.info('White listed dev asg apps: {0}'.format(ASG_WHITELIST))
+    if env == 'dev' and generated.app not in ASG_WHITELIST:
         data['asg'].update({
             'max_inst': '1',
             'min_inst': '1'

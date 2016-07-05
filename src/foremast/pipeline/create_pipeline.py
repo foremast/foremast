@@ -102,6 +102,11 @@ class SpinnakerPipeline:
                             region=region,
                             token_file=self.token_file)
 
+        ami_templates_mapping = {
+            'us-east-1': 'aws-ebs.json',
+            'us-west-2': 'aws-ebs-west-2.json',
+        }
+
         data = {'app': {
             'ami_id': ami_id,
             'appname': self.app_name,
@@ -112,6 +117,7 @@ class SpinnakerPipeline:
             'email': email,
             'slack': slack,
             'root_volume_size': root_volume_size,
+            'ami_template_file': ami_templates_mapping.get(region, ami_templates_mapping.get('us-east-1')),
         }}
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
