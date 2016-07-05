@@ -3,7 +3,7 @@
    "description":"Upsert scaling policy",
    "job":[
       {
-         "name":"{{ server_group }}",
+         "name":"{{ policy_name }}",
          "serverGroupName":"{{ server_group }}",
          "credentials":"{{ env }}",
          "region":"{{ region }}",
