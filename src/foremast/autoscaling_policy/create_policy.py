@@ -38,7 +38,13 @@ class AutoScalingPolicy:
             return
 
         server_group = self.get_server_group()
-        policy_name, policy_arn = self.get_existing_policy()
+
+        # Find all existing and remove them
+        scaling_policies = self.get_all_existing()
+        for policy in scaling_policies:
+            for subpolicy in policy:
+                self.delete_existing_policy(subpolicy, server_group)
+
 
         if self.settings['asg']['scaling_policy']['period_minutes']:
             period_sec = self.settings['asg']['scaling_policy']['period_minutes']*60
@@ -49,8 +55,6 @@ class AutoScalingPolicy:
             'env': self.env,
             'region': self.region,
             'server_group': server_group,
-            'policy_name': policy_name,
-            'policy_arn': policy_arn,
             'period_sec': period_sec,
             'scaling_policy': self.settings['asg']['scaling_policy']
         }
@@ -79,25 +83,36 @@ class AutoScalingPolicy:
         for server_group in response.json()['clusters'][self.env]:
             return server_group['serverGroups'][-1]
 
-    def get_existing_policy(self):
-        """Checks if scaling policy already exists and returns name"""
+    def delete_existing_policy(self, scaling_policy, server_group):
+        self.log.info("Deleting policy {}".format(scaling_policy['policyName']))
+        delete_dict = {
+               "application":self.app,
+               "description":"Delete scaling policy",
+               "job":[
+                  {
+                     "policyName":scaling_policy['policyName'],
+                     "serverGroupName": server_group,
+                     "credentials":self.env,
+                     "region":self.region,
+                     "provider":"aws",
+                     "type":"deleteScalingPolicy",
+                     "user":"pipes-autoscaling-policy"
+                  }]}
+        self.post_task(json.dumps(delete_dict))
+
+    def get_all_existing(self):
+        """ Returns list of all existing policies """
         self.log.info("Checking for existing scaling policy")
         url = "{0}/applications/{1}/clusters/{2}/{1}/serverGroups".format(
             API_URL, self.app, self.env)
         response = requests.get(url)
         assert response.ok, "Error looking for existing Autoscaling Policy for {0}: {1}".format(
             self.app, response.text)
-        policy_name = None
-        policy_arn = None
+
+        scalingpolicies = []
         for servergroup in response.json():
             if servergroup['scalingPolicies']:
-                policy_name = servergroup['scalingPolicies'][0]['policyName']
-                policy_arn = servergroup['scalingPolicies'][0]['policyARN']
-                break
+                scalingpolicies.append(servergroup['scalingPolicies'])
+        return scalingpolicies
 
-        if policy_name:
-            self.log.info("Found existing policy: {0}".format(policy_name))
-        else:
-            self.log.info("No existing policy found")
 
-        return policy_name, policy_arn
