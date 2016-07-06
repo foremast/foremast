@@ -5,7 +5,7 @@ import os
 import requests
 
 from ..consts import API_URL
-from ..utils import (get_properties, get_template)
+from ..utils import (get_properties, get_template, check_task)
 
 
 class AutoScalingPolicy:
@@ -75,6 +75,7 @@ class AutoScalingPolicy:
         response = requests.post(url, data=payload, headers=self.header)
         assert response.ok, "Error creating {0} Autoscaling Policy: {1}".format(
             self.app, response.text)
+        check_task(response.json()['ref'], self.app)
 
     def get_server_group(self):
         """ Gets the current server group """
