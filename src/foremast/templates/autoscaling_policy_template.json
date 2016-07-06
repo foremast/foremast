@@ -26,16 +26,8 @@
             "namespace":"AWS/EC2",
             "metricName":"{{ scaling_policy.metric | default("CPUUtilization") }}",
             "statistic":"{{ scaling_policy.statistic | default("Average") }}",
-            {% if policy_arn is not none %}
-            "alarmActionArns":[
-               "{{ policy_arn }}"
-            ],
-            {% else %}
             "alarmActionArns":[],
-            {% endif %}
-            "insufficientDataActionArns":[
-
-            ]
+            "insufficientDataActionArns":[]
          },
          "step":{
             "estimatedInstanceWarmup":600,
