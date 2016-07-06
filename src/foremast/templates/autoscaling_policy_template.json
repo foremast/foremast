@@ -3,14 +3,14 @@
    "description":"Upsert scaling policy",
    "job":[
       {
-         "name":"{{ policy_name }}",
+         "name":"{{ server_group }}",
          "serverGroupName":"{{ server_group }}",
          "credentials":"{{ env }}",
          "region":"{{ region }}",
          "provider":"aws",
          "adjustmentType":"ChangeInCapacity",
          "alarm":{
-            "name":"{{ server_group }}",
+            "name":"{{ policy_name }}",
             "region":"{{ region }}",
             "actionsEnabled":true,
             "comparisonOperator":"GreaterThanThreshold",
@@ -26,6 +26,11 @@
             "namespace":"AWS/EC2",
             "metricName":"{{ scaling_policy.metric | default("CPUUtilization") }}",
             "statistic":"{{ scaling_policy.statistic | default("Average") }}",
+            {% if policy_arn is not none %}
+            "alarmActionArns":[
+               "{{ policy_arn }}"
+            ],
+            {% endif %}
             "insufficientDataActionArns":[
 
             ]
