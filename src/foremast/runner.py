@@ -204,7 +204,10 @@ def rebuild_pipelines():
     all_apps = utils.get_all_apps()
     rebuild_project = os.getenv("REBUILD_PROJECT")
     if rebuild_project is None:
-        LOG.fatal('No REBUILD_PROJECT variable found')
+        msg = 'No REBUILD_PROJECT variable found'
+        LOG.fatal(msg)
+        raise SystemExit('Error: {0}'.format(msg))
+
     for app in all_apps:
         if not 'repoProjectKey' in app:
             LOG.info("Skipping {}. No project key found".format(app['name']))
