@@ -197,3 +197,25 @@ def create_scaling_policy():
     runner.write_configs()
     runner.create_autoscaling_policy()
     runner.cleanup()
+
+def rebuild_pipelines():
+    """ Entry point for rebuilding pipelines. Can be used to rebuild all pipelines
+        or a specific group """
+    all_apps = utils.get_all_apps()
+    rebuild_project = os.getenv("REBUILD_PROJECT")
+    if rebuild_project is None:
+        LOG.fatal('No REBUILD_PROJECT variable found')
+    for app in all_apps:
+        if not 'repoProjectKey' in app:
+            LOG.info("Skipping {}. No project key found".format(app['name']))
+            continue
+        if (app['repoProjectKey'].lower() == rebuild_project.lower() or
+                rebuild_project == 'ALL' ):
+            os.environ["PROJECT"] = app['repoProjectKey']
+            os.environ["GIT_REPO"] = app['repoSlug']
+            LOG.info('Rebuilding pipelines for {}/{}'.format(
+                    app['repoProjectKey'], app['repoSlug']))
+            runner = ForemastRunner()
+            runner.write_configs()
+            runner.create_pipeline()
+            runner.cleanup()
