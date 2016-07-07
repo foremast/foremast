@@ -30,7 +30,7 @@ class AutoScalingPolicy:
 
         self.settings = get_properties(properties_file=prop_path, env=self.env)
 
-    def prepare_policy_template(self, scaling_type):
+    def prepare_policy_template(self, scaling_type, period_sec, server_group):
         template_kwargs = {}
         if scaling_type == 'scale_up':
             template_kwargs = {
@@ -94,8 +94,8 @@ class AutoScalingPolicy:
             period_sec = self.settings['asg']['scaling_policy']['period_minutes'] * 60
         else:
             period_sec = 1800
-        prepare_policy_template('scale_up')
-        prepare_policy_template('scale_down')
+        self.prepare_policy_template('scale_up', period_sec, server_group)
+        self.prepare_policy_template('scale_down', period_sec, server_group)
 
     def post_task(self, payload):
         """ Posts the rendered template to correct endpoint """
