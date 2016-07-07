@@ -81,7 +81,7 @@ class AutoScalingPolicy:
         if not self.settings['asg']['scaling_policy']:
             self.log.info("No scaling policy found, skipping...")
             return
-Z
+
         server_group = self.get_server_group()
 
         # Find all existing and remove them
