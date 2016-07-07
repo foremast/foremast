@@ -54,6 +54,8 @@ class AutoScalingPolicy:
             self.log.info('Successfully created scaling policy in {0}'.format(
                 self.env))
         elif scaling_type == 'scale_down':
+            self.settings['asg']['scaling_policy']['threshold'] = self.settings[
+                'asg']['scaling_policy']['threshold'] * 0.5
             template_kwargs = {
                 'app': self.app,
                 'env': self.env,
