@@ -3,17 +3,17 @@
    "description":"Upsert scaling policy",
    "job":[
       {
-         "name":"{{ app }}-{{ scaling_policy.metric }}-increase",
+         "name":"{{ app }}-{{ scaling_policy.metric }}-{{ operation }}",
          "serverGroupName":"{{ server_group }}",
          "credentials":"{{ env }}",
          "region":"{{ region }}",
          "provider":"aws",
          "adjustmentType":"ChangeInCapacity",
          "alarm":{
-            "name":"{{ app }}-{{ scaling_policy.metric }}-increase",
+            "name":"{{ app }}-{{ scaling_policy.metric }}-{{ operation }}",
             "region":"{{ region }}",
             "actionsEnabled":true,
-            "comparisonOperator":"GreaterThanThreshold",
+            "comparisonOperator":"{{ comparisonOperator }}",
             "dimensions":[
                {
                   "name":"AutoScalingGroupName",
@@ -34,7 +34,7 @@
             "metricAggregationType":"{{ scaling_policy.statistic | default("Average") }}",
             "stepAdjustments":[
                {
-                  "scalingAdjustment":2,
+                  "scalingAdjustment":{{ scalingAdjustment }},
                   "metricIntervalLowerBound":0
                }
             ]

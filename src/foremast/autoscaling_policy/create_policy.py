@@ -30,13 +30,58 @@ class AutoScalingPolicy:
 
         self.settings = get_properties(properties_file=prop_path, env=self.env)
 
+    def prepare_policy_template(self, scaling_type):
+        template_kwargs = {}
+        if scaling_type == 'scale_up':
+            template_kwargs = {
+                'app': self.app,
+                'env': self.env,
+                'region': self.region,
+                'server_group': server_group,
+                'period_sec': period_sec,
+                'scaling_policy': self.settings['asg']['scaling_policy'],
+                'operation': 'increase',
+                'comparisonOperator': 'GreaterThanThreshold',
+                'scalingAdjustment': 1
+            }
+            self.log.info('Rendering Scaling Policy Template: {0}'.format(
+                template_kwargs))
+            rendered_template = get_template(
+                template_file='autoscaling_policy_template.json',
+                **template_kwargs)
+
+            self.post_task(rendered_template)
+            self.log.info('Successfully created scaling policy in {0}'.format(
+                self.env))
+        elif scaling_type == 'scale_down':
+            template_kwargs = {
+                'app': self.app,
+                'env': self.env,
+                'region': self.region,
+                'server_group': server_group,
+                'period_sec': period_sec,
+                'scaling_policy': self.settings['asg']['scaling_policy'],
+                'operation': 'decrease',
+                'comparisonOperator': 'LessThanThreshold',
+                'scalingAdjustment': -1
+            }
+            self.log.info('Rendering Scaling Policy Template: {0}'.format(
+                template_kwargs))
+            rendered_template = get_template(
+                template_file='autoscaling_policy_template.json',
+                **template_kwargs)
+
+            self.post_task(rendered_template)
+            self.log.info('Successfully created scaling policy in {0}'.format(
+                self.env))
+
     def create_policy(self):
         """ Renders the template and creates the police """
 
         if not self.settings['asg']['scaling_policy']:
             self.log.info("No scaling policy found, skipping...")
             return
-
+Z
         server_group = self.get_server_group()
 
         # Find all existing and remove them
@@ -45,28 +90,12 @@ class AutoScalingPolicy:
             for subpolicy in policy:
                 self.delete_existing_policy(subpolicy, server_group)
 
-
         if self.settings['asg']['scaling_policy']['period_minutes']:
-            period_sec = self.settings['asg']['scaling_policy']['period_minutes']*60
+            period_sec = self.settings['asg']['scaling_policy']['period_minutes'] * 60
         else:
             period_sec = 1800
-        template_kwargs = {
-            'app': self.app,
-            'env': self.env,
-            'region': self.region,
-            'server_group': server_group,
-            'period_sec': period_sec,
-            'scaling_policy': self.settings['asg']['scaling_policy']
-        }
-        self.log.info('Rendering Scaling Policy Template: {0}'.format(
-            template_kwargs))
-        rendered_template = get_template(
-            template_file='autoscaling_policy_template.json',
-            **template_kwargs)
-
-        self.post_task(rendered_template)
-        self.log.info('Successfully created scaling policy in {0}'.format(
-            self.env))
+        prepare_policy_template('scale_up')
+        prepare_policy_template('scale_down')
 
     def post_task(self, payload):
         """ Posts the rendered template to correct endpoint """
@@ -87,18 +116,18 @@ class AutoScalingPolicy:
     def delete_existing_policy(self, scaling_policy, server_group):
         self.log.info("Deleting policy {}".format(scaling_policy['policyName']))
         delete_dict = {
-               "application":self.app,
-               "description":"Delete scaling policy",
-               "job":[
-                  {
-                     "policyName":scaling_policy['policyName'],
-                     "serverGroupName": server_group,
-                     "credentials":self.env,
-                     "region":self.region,
-                     "provider":"aws",
-                     "type":"deleteScalingPolicy",
-                     "user":"pipes-autoscaling-policy"
-                  }]}
+            "application": self.app,
+            "description": "Delete scaling policy",
+            "job": [
+                {
+                    "policyName": scaling_policy['policyName'],
+                    "serverGroupName": server_group,
+                    "credentials":self.env,
+                    "region":self.region,
+                    "provider":"aws",
+                    "type":"deleteScalingPolicy",
+                    "user":"pipes-autoscaling-policy"
+                }]}
         self.post_task(json.dumps(delete_dict))
 
     def get_all_existing(self):
@@ -115,5 +144,3 @@ class AutoScalingPolicy:
             if servergroup['scalingPolicies']:
                 scalingpolicies.append(servergroup['scalingPolicies'])
         return scalingpolicies
-
-
