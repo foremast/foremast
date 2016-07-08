@@ -6,7 +6,7 @@
             "ResourceRecordSet": {
                 "Name": "{{ dns_elb }}",
                 "Type": "CNAME",
-                "TTL": 60,
+                "TTL": {{ dns_ttl }},
                 "ResourceRecords": [
                     {
                         "Value": "{{ dns_elb_aws }}"

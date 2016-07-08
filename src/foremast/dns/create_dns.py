@@ -5,7 +5,7 @@ from pprint import pformat
 
 import boto3.session
 
-from ..utils import find_elb, get_app_details, get_template
+from ..utils import find_elb, get_app_details, get_template, get_properties
 
 
 class SpinnakerDns:
@@ -15,7 +15,7 @@ class SpinnakerDns:
         app_name: Str of application name add Security Group to.
     """
 
-    def __init__(self, app=None, env=None, region=None, elb_subnet=None):
+    def __init__(self, app=None, env=None, region=None, elb_subnet=None, prop_path=None):
         self.log = logging.getLogger(__name__)
 
         self.generated = get_app_details.get_details(app, env=env)
@@ -26,9 +26,8 @@ class SpinnakerDns:
         self.env = env
         self.region = region
         self.elb_subnet = elb_subnet
-
+        self.properties = get_properties(properties_file=prop_path, env=env)
         self.header = {'content-type': 'application/json'}
-
         env = boto3.session.Session(profile_name=self.env)
         self.r53client = env.client('route53')
 
@@ -47,6 +46,7 @@ class SpinnakerDns:
         dns_elb_aws = find_elb(name=self.app_name,
                                env=self.env,
                                region=self.region)
+        dns_ttl = self.properties['dns']['ttl']
 
         # get correct hosted zone
         zones = self.r53client.list_hosted_zones_by_name(DNSName=dns_zone)
@@ -67,7 +67,8 @@ class SpinnakerDns:
         # This is what will be added to DNS
         dns_json = get_template(template_file='dns_upsert_template.json',
                                 dns_elb=dns_elb,
-                                dns_elb_aws=dns_elb_aws)
+                                dns_elb_aws=dns_elb_aws,
+                                dns_ttl=dns_ttl)
 
         # TODO: Verify zone_id matches the domain we are updating There are
         # cases where more than 2 zones are in the account and we need to

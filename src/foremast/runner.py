@@ -122,6 +122,7 @@ class ForemastRunner(object):
         dnsobj = dns.SpinnakerDns(app=self.app,
                                   env=self.env,
                                   region=self.region,
+                                  prop_path=self.json_path,
                                   elb_subnet=elb_subnet)
         dnsobj.create_elb_dns()
 
