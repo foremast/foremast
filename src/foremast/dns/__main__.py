@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_env, add_region
+from ..args import add_app, add_debug, add_env, add_region, add_properties
 from ..consts import LOGGING_FORMAT
 from .create_dns import SpinnakerDns
 
@@ -17,6 +17,7 @@ def main():
     add_app(parser)
     add_env(parser)
     add_region(parser)
+    add_properties(parser)
     parser.add_argument("--elb-subnet",
                         help="Subnetnet type, e.g. external, internal",
                         required=True)
@@ -29,6 +30,7 @@ def main():
     spinnakerapps = SpinnakerDns(app=args.app,
                                  env=args.env,
                                  region=args.region,
+                                 prop_path=args.properties,
                                  elb_subnet=args.elb_subnet)
     spinnakerapps.create_elb_dns()
 
