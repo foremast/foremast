@@ -10,8 +10,10 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
+   getting_started
+   configuration_files
 
 
 Indices and tables
