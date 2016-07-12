@@ -7,39 +7,39 @@ This configuration file is used for defining pipeline settings that affect the p
 
 Example Configuration
 ---------------------
-::
 
-    {
-    "owner_email": "",
-    "documentation": "",
-    "notifications": {
-        "email": "",
-        "slack": ""
-        },
-    "promote_restrict": "none",
-    "base": "tomcat8",
-    "env": ["stage", "prod"],
-    "image": {
-        "root_volume_size": 6
-        }
-    }
+.. literalinclude:: ../src/foremast/templates/pipeline.json.j2
 
-
-Configuration Elements
+Configuration Details
 ----------------------
-+-------------------+------------------------------+------------------------+
-| Config Key        | Purpose                      | Example                |
-+===================+==============================+========================+
-| "owner_email"     | Identify who owns an app     | "owner@example.com"    |
-+-------------------+------------------------------+------------------------+
-| "documentation"   | Link to app documentation    | ""                     |
-+-------------------+------------------------------+------------------------+
-| "notifications"   | Where pipeline notifications |                        |
-+-------------------+ should be sent to (email,    +------------------------+
-|    "email"        | or slack)                    | "team@example.com"     |
-+-------------------+                              +------------------------+
-|    "slack"        |                              | "#team-channel"        |
-+-------------------+------------------------------+------------------------+
 
+``owner_email`` : The application owners email address. This is not used directly in the pipeline but can be consumed by other tools
 
+``documentation`` : Link to the applications documentation. This is not used directly in the pipeline but can be consumed by other tools
+
+``notifications`` : Where to send pipeline failure notifications 
+
+    ``email`` : Email address to send pipeline failures (email must be configured in Spinnaker Echo)
+        
+        | *Default*: Null
+
+    ``slack`` : Slack channel to send pipeline failures (Slack must be configured in Spinnaker Echo)
+
+        | *Default*: Null
+
+``promote_restrict`` :
+
+``base`` : The base AMI to use for baking the application
+
+``envs`` : List of accounts that the application will be deployed to. Order matters as it defines the order of the pipeline. The accounts should be named the same as you have them in Spinnaker Clouddriver
+
+    | *Type*: List of strings
+    | *Default*: ["stage", "prod"]
+
+``image`` : Holds settings for the baked image
+
+    ``root_volume_size`` : Defines the root volume size of the resulting AMI in GB
+
+        | *Type*: int
+        | *Default*: 6
 
