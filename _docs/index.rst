@@ -11,9 +11,11 @@ Contents
 
 .. toctree::
    :maxdepth: 2
+   :titlesonly:
 
    getting_started
    configuration_files
+   foremast
 
 
 Indices and tables
