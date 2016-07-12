@@ -7,136 +7,147 @@ This configuration file holds infrastruction information for $account. Each AWS 
 
 Example Configuration
 ----------------------
-::
 
-    {
-        "app": {
-            "app_description": null,
-            "app_ssh_key": "key_name",
-            "email": null,
-            "eureka_enabled": false,
-            "instance_profile": "instance_profile_name",
-            "instance_type": "t2.micro"
-        },
-        "asg": {
-            "hc_type": "ELB",
-            "max_inst": 3,
-            "min_inst": 1,
-            "subnet_purpose": "internal",
-            "scaling_policy": {}
-        },
-        "elb": {
-            "certificate": null,
-            "health": {
-                "interval": 20,
-                "threshold": 2,
-                "timeout": 10,
-                "unhealthy_threshold": 5
-            },
-            "i_port": 8080,
-            "i_proto": "HTTP",
-            "lb_port": 80,
-            "lb_proto": "HTTP",
-            "subnet_purpose": "internal",
-            "target": "TCP:8080"
-        },
-        "qe": {
-        },
-        "regions": [
-            "us-east-1"
-        ],
-        "deploy_strategy": "highlander",
-        "security_group": {
-            "description": "Auto-Gen SG for {{ app }}",
-            "egress": "0.0.0.0/0",
-            "elb_extras": [],
-            "ingress": {
-                "sg_apps": [
-                    {
-                        "end_port": "80",
-                        "protocol": "tcp",
-                        "start_port": "80"
-                    },
-                    {
-                        "end_port": "8080",
-                        "protocol": "tcp",
-                        "start_port": "8080"
-                    }
-                ]
-            },
-            "instance_extras": []
-        },
-        "dns": {
-            "ttl": 60
-        }
-    }
+.. literalinclude:: ../src/foremast/templates/configs.json.j2
 
-Configuration Detail
---------------------
+Configuration Details
+----------------------
 
-:code:`app` : This top level key contains information on the application and EC2 details
+``app`` : Top level key that contains information on the application and EC2 details
 
-    :code:`app_description` : Describe your application. Not directly used in pipelines
+    ``app_description`` : Describes the application.
 
-    :code:`app_ssh_key` : The SSH key that your EC2 instances will use. Must alreaady be created in AWS.
-    *default*: "{{ account }}_access"
+        | *Default*: Null
 
-    :code:`eureka_enabled` : Setting this value to true will notify the build pipeline to not create an ELB, DNS record, and set the ASG health check to EC2.
-    *default*: false
+    ``app_ssh_key`` : The SSH key that your EC2 instances will use. Must already be created in AWS.
 
-    :code:`instance_profile` : The instance profile to start instances with.
-    *default*: "${stack}_${app}_profile"
+        | *Default*: "{{ account }}_access" (account being the AWS account in the configuration name)
 
-    :code:`instance_type` : The size of the EC2 instance.
-    *default*: "t2.micro"
+    ``eureka_enabled`` : Setting this value to true will notify the build pipeline to not create an ELB, DNS record, and set the ASG health check to EC2.
 
+        | *Type*: Boolean
+        | *Default*: false
 
-:code:`asg`: Top level key containing information regarding the ASGs
+    ``instance_profile`` : The instance profile to start EC2 instances with.
 
-    :code:`hc_type` : Health check type (EC2 or ELB)
-    *default*: "ELB"
+        | *Default*: "${stack}_${app}_profile" - Profile with this name will be created by default. Other profiles need to be created before usage
 
-    :code:`max_inst` : Maximum number of instances you will scale to. This only occurs once load is high enough to require additional instances above min_inst setting.
+    ``instance_type`` : The size/type of the EC2 instance.
 
-    :code:`min_inst` : Minimum number of instances your auto-scaling group should have at all times
+        | *Default*: "t2.micro" - Standard AWS instance names. https://aws.amazon.com/ec2/instance-types/
 
-    :code:`subnet_purpose` : Determines if the instances should be public (external) or non-public (internal), you likely want internal.
+``asg``: Top level key containing information regarding application ASGs
 
-    :code:`scaling_policy` : *to do*
+    ``hc_type`` : ASG Health check type (EC2 or ELB)
 
-:code:`elb` : Top level key for ELB configuration
+        | *Default*: "ELB"
+        | *Options*: ("ELB", "EC2")
 
-    :code:`certificate` : Name of SSL certification for ELB
+    ``max_inst`` : Maximum number of instances ASG will scale to.
 
-    :code:`health` : section for health check details
+        | *Type*: int
+        | *Default*: 3
 
-        :code:`interval` : ELB health check interval in seconds
+    ``min_inst`` : Minimum number of instances your auto-scaling group should have at all times. This is also the default number of instances
 
-        :code:`threshold` : Number of consecutive health check succeses before declaring EC2 instance healthy
+        | *Type*: int
+        | *Default*: 1
 
-        :code:`timeout` : Health check response timeout, seconds
+    ``subnet_purpose`` : Determines if the instances should be public (external) or non-public (internal).
 
-        :code:`unhealthy_threshold` : number of consecutive health check failures before declaring EC2 instance unhealthy
+        | *Default*: "internal"
+        | *Options*: ("internal", "external")
 
-    :code:`ports` : *to do*
+    ``scaling_policy`` : If this block exists, a scaling policy will be attached to the ASG.
+        
+        ``metrics`` : The metrics to use for auto-scaling. (*Default*: "CPUUtilization", *Options*: ("CPUUtilization", "NetworkIn", "NetworkOut", "DiskReadBytes"))
 
-    :code:`subnet_purpose` : Determines if the load balancer should be public (external) or non-public (internal), you likely want internal
+        ``threshold`` : Metrics number for scaling up (*Type*: int)
 
-    :code:`target` : The check ELB will use to validate your application is online.
+        ``period_minutes``: period to look across for determining if threshold was met
 
-:code:`regions` : List of AWS regions that application will be deployed to.
+        ``statistic``: Stastic to look at the period (*Default*: "Average", *Options*: ("Average", "Maximum", "Minimum", "Sum")
 
-:code:`deploy_strategy` : Spinnaker strategy to use for deployments. 
-    
-        *Options*: "highlander" - destroys old server group
-                   "redblack" - Disables old server group but does not destroy
+        *Scaling Policy Example*::
 
-:code:`security_group` : *to-do*
+          "scaling_policy": {
+              "metric": "CPUUtilization",
+              "threshold": 90,
+              "period_minutes": 10,
+              "statistic": "Average"
+              }
 
-:code:`dns` : Top level key for dns settings
+``elb`` : Top level key for ELB configuration
 
-    :code:`ttl` : sets DNS TTL in seconds
+    ``certificate`` : Name of SSL certification for ELB. SSL certificate must be uploaded to AWS first
 
+        | *Default*: Null
+
+    ``health`` : section for health check details
+
+        ``interval`` : ELB health check interval in seconds. (*Default*: 20)
+
+        ``threshold`` : Number of consecutive health check succeses before declaring EC2 instance healthy. (*Default*: 2)
+
+        ``timeout`` : Health check response timeout in seconds (*Default*: 10)
+
+        ``unhealthy_threshold`` : number of consecutive health check failures before declaring EC2 instance unhealthy (*Default*: 5)
+
+    ``ports`` : Defines ELB listeners. List of listeners with the below keys.
+
+        ``instance`` : The protocol:port of the instance
+
+            | *Default*: "HTTP:8080"
+
+        ``loadbalanacer`` : the protocol:port of the load balancer
+
+            | *Default*: "HTTP:80"
+
+        ``certificate`` : The name of the certificate to use if required
+
+            | *Default*: Null
+
+        *Ports Example*::
+ 
+            "ports": [
+                {
+                  "instance": "HTTP:8080",
+                  "loadbalancer": "HTTP:80"
+                },
+                {
+                  "certificate": "my_cert",
+                  "instance": "HTTP:8443",
+                  "loadbalancer": "HTTPS:443"
+                }
+              ]
+
+    ``subnet_purpose`` : Determines if the load balancer should be public (external) or non-public (internal).
+
+        | *Default*: "internal"
+        | *Options*: ("internal", "external")
+
+    ``target`` : The check the ELB will use to validate application is online.
+
+        | *Default*: "TCP:8080"
+
+``regions`` : List of AWS regions that application will be deployed to.
+
+        | *Type*: List of strings
+        | *Default*: [ "us-east-1" ]
+
+``deploy_strategy`` : Spinnaker strategy to use for deployments.
+
+        | *Default*: "highlander"
+        | *Options*: "highlander" (destroy old server group) or "redblack" (disables old server group but do not destroy)
+
+``security_group`` : *to-do*
+
+``dns`` : Top level key for dns settings
+
+    ``ttl`` : sets DNS TTL in seconds
+
+        | *Type*: int
+        | *Default*: 60
 
 
 
