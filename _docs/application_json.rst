@@ -104,10 +104,10 @@ Configuration Detail
 
     :code:`scaling_policy` : *to do*
 
-:code:`elb` : Top loevel key for ELB configuration
+:code:`elb` : Top level key for ELB configuration
 
     :code:`certificate` : Name of SSL certification for ELB
-    
+
     :code:`health` : section for health check details
 
         :code:`interval` : ELB health check interval in seconds
@@ -123,6 +123,21 @@ Configuration Detail
     :code:`subnet_purpose` : Determines if the load balancer should be public (external) or non-public (internal), you likely want internal
 
     :code:`target` : The check ELB will use to validate your application is online.
+
+:code:`regions` : List of AWS regions that application will be deployed to.
+
+:code:`deploy_strategy` : Spinnaker strategy to use for deployments. 
+    
+        *Options*: "highlander" - destroys old server group
+                   "redblack" - Disables old server group but does not destroy
+
+:code:`security_group` : *to-do*
+
+:code:`dns` : Top level key for dns settings
+
+    :code:`ttl` : sets DNS TTL in seconds
+
+
 
 
 
