@@ -347,7 +347,7 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 autodoc_mock_imports = [
         "requests",
-        "gogo-utils",
+        "gogoutils",
         "boto3",
         "jinja2",
         "jira",
