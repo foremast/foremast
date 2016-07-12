@@ -12,7 +12,7 @@ pages:
   script:
     - pip3 install . --no-deps
     - cd _docs
-    - pip3 install requirements-docs.txt
+    - pip3 install -r requirements-docs.txt
     - make html
     - cp -r _build/html/ ../public
   artifacts:
