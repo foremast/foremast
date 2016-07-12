@@ -18,6 +18,6 @@ pages:
     paths:
       - public
   only:
-    - master
+    - docs
   tags:
     - general
