@@ -354,5 +354,6 @@ autodoc_mock_imports = [
         "murl",
         "pyapi-gitlab",
         "tryagain",
+        "gitlab",
         "slacker"
         ]
