@@ -10,8 +10,8 @@ before_script:
 pages:
   stage: deploy
   script:
-    - pip3 install -U -r requirements-dev.txt .
     - cd _docs
+    - pip3 install -U -r requirements-docs.txt .
     - make html
     - cp -r _build/html/ ../public
   artifacts:
