@@ -15,7 +15,8 @@ Contents
 
    getting_started
    configuration_files
-   foremast
+   forming_pipelines
+   modules
 
 
 Indices and tables
