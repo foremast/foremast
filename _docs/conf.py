@@ -349,6 +349,8 @@ autodoc_mock_imports = [
         "requests",
         "gogoutils",
         "boto3",
+        "boto3.session",
+        "boto3.exceptions",
         "jinja2",
         "jira",
         "murl",
