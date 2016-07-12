@@ -2,3 +2,5 @@
 
 pytest-cov
 pytest-pep8
+sphinx
+sphinx_rtd_theme

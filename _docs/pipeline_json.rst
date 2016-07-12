@@ -27,7 +27,10 @@ Configuration Details
 
         | *Default*: Null
 
-``promote_restrict`` :
+``promote_restrict`` : Restriction setting for promotions to prod* accounts.
+
+        | *Default*: "none"
+        | *Options*: ("masters-only" (only masters/owners on a repository can approve deployments), "members-only" (Any member of a repository can approve deployments), "none" (No restrictions)) 
 
 ``base`` : The base AMI to use for baking the application
 
