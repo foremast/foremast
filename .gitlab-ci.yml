@@ -5,14 +5,12 @@ image: ubuntu:xenial
 before_script:
   - export LC_ALL=C.UTF-8
   - apt update
-  - apt install -y python3-pip awscli
+  - apt install -y python3-pip
 
 pages:
   stage: deploy
   script:
-    - mkdir -p ~/.config/pip/
-    - aws s3 cp s3://creds/pip.conf ~/.config/pip/pip.conf
-    - pip3 install -U -r requirements-docs.txt .
+    - pip3 install -U -r _docs/requirements-docs.txt .
     - cd _docs
     - make html
     - cp -r _build/html/ ../public
