@@ -18,26 +18,26 @@ Example Configuration
 Configuration Details
 ----------------------
 
-``app`` Block Settings
-~~~~~~~~~~~~~~~~~~~~~~~
+``app`` Block
+~~~~~~~~~~~~~
 
 Top level key that contains information on the application and EC2 details
 
-``app_description`` Key
+``app.app_description``
 ************************
 
 Describes the application.
 
     | *Default*: ``null``
 
-``app_ssh_key`` Key
+``app.app_ssh_key``
 *******************
 
 SSH key that your EC2 instances will use. Must already be created in AWS.
 
     | *Default*: ``"{{ account }}_access"`` - {{ account }} being the AWS account in the configuration name
 
-``eureka_enabled`` Key
+``app.eureka_enabled``
 ***********************
 
 Setting this value to true will not create an ELB, DNS record, and set the ASG health check to EC2.
@@ -45,14 +45,14 @@ Setting this value to true will not create an ELB, DNS record, and set the ASG h
     | *Type*: Boolean
     | *Default*: ``false``
 
-``instance_profile`` Key
+``app.instance_profile``
 **************************
 
 The instance profile to start EC2 instances with.
 
     | *Default*: ``"${stack}_${app}_profile"`` - Profile with this name will be created by default. Other profiles need to be created before usage
 
-``instance_type`` Key
+``app.instance_type``
 **********************
 
 The size/type of the EC2 instance. Uses Standard AWS instance names. See https://aws.amazon.com/ec2/instance-types/ for details
