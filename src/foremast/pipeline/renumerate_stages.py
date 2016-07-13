@@ -49,6 +49,9 @@ def renumerate_stages(pipeline):
         elif stage['name'].startswith('Attach Scaling'):
             stage['requisiteStageRefIds'] = [str(main_index)]
             stage['refId'] = str(main_index * 101)
+        elif stage['name'].startswith('ServiceNow'):
+            stage['requisiteStageRefIds'] = [str(main_index)]
+            stage['refId'] = str(main_index * 102)
         elif stage['type'] == 'bake':
             stage['requisiteStageRefIds'] = []
             stage['refId'] = str(main_index)
