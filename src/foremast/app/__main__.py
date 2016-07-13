@@ -10,7 +10,7 @@ from .create_app import SpinnakerApp
 
 
 def main():
-    """Create Spinnaker Application."""
+    """CLI entry point for creating a Spinnaker application."""
     # Setup parser
     parser = argparse.ArgumentParser()
     add_debug(parser)
