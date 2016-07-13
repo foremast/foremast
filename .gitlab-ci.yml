@@ -20,6 +20,6 @@ pages:
     paths:
       - public
   only:
-    - docs
+    - master
   tags:
     - general
