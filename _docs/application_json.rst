@@ -23,21 +23,21 @@ Configuration Details
 
 Top level key that contains information on the application and EC2 details
 
-``app.app_description``
+``app_description``
 ************************
 
 Describes the application.
 
     | *Default*: ``null``
 
-``app.app_ssh_key``
+``app_ssh_key``
 *******************
 
 SSH key that your EC2 instances will use. Must already be created in AWS.
 
     | *Default*: ``"{{ account }}_access"`` - {{ account }} being the AWS account in the configuration name
 
-``app.eureka_enabled``
+``eureka_enabled``
 ***********************
 
 Setting this value to true will not create an ELB, DNS record, and set the ASG health check to EC2.
@@ -45,27 +45,27 @@ Setting this value to true will not create an ELB, DNS record, and set the ASG h
     | *Type*: Boolean
     | *Default*: ``false``
 
-``app.instance_profile``
+``instance_profile``
 **************************
 
 The instance profile to start EC2 instances with.
 
     | *Default*: ``"${stack}_${app}_profile"`` - Profile with this name will be created by default. Other profiles need to be created before usage
 
-``app.instance_type``
+``instance_type``
 **********************
 
 The size/type of the EC2 instance. Uses Standard AWS instance names. See https://aws.amazon.com/ec2/instance-types/ for details
 
     | *Default*: ``"t2.micro"``
 
-``asg`` Block Settings
-~~~~~~~~~~~~~~~~~~~~~~~~
+``asg`` Block
+~~~~~~~~~~~~~
 
 Top level key containing information regarding application ASGs
 
-``hc_type`` Key
-****************
+``hc_type``
+************
 
 ASG Health check type (EC2 or ELB)
 
@@ -75,24 +75,24 @@ ASG Health check type (EC2 or ELB)
        - ``"ELB"``
        - ``"EC2"``
 
-``max_inst`` Key
-*****************
+``max_inst``
+*************
 
 Maximum number of instances ASG will scale to.
 
     | *Type*: int
     | *Default*: ``3``
 
-``min_inst`` Key
-*****************
+``min_inst``
+************
 
 Minimum number of instances your auto-scaling group should have at all times. This is also the default number of instances
 
     | *Type*: int
     | *Default*: ``1``
 
-``subnet_purpose`` Key
-***********************
+``subnet_purpose``
+******************
 
 Determines if the instances should be public (external) or non-public (internal).
 
@@ -102,12 +102,12 @@ Determines if the instances should be public (external) or non-public (internal)
        - ``"internal"``
        -  ``"external"``
 
-``scaling_policy`` Key
-***********************
+``scaling_policy``
+******************
 
 Defines scaling policy to attach to ASG. If this block does not exist, no scaling policy will be attached
 
-``scaling_policy`` *Subkeys*
+``scaling_policy`` *Keys*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         ``metrics`` : The metrics to use for auto-scaling.
 
@@ -149,24 +149,24 @@ Defines scaling policy to attach to ASG. If this block does not exist, no scalin
           "statistic": "Average"
           }
 
-``elb`` Block Settings
-~~~~~~~~~~~~~~~~~~~~~~~~
+``elb`` Block
+~~~~~~~~~~~~~~
 
 Top level key for ELB configuration
 
-``certificate`` Key
-*******************
+``certificate``
+***************
 
 Name of SSL certification for ELB. SSL certificate must be uploaded to AWS first
 
     | *Default*: Null
 
-``health`` Key
-**************
+``health``
+**********
 
 Health check configuration block
 
-``health`` *Subkeys*
+``health`` *Keys*
 ^^^^^^^^^^^^^^^^^^^^^
 
     ``interval`` : ELB health check interval
@@ -189,12 +189,12 @@ Health check configuration block
 
         | *Default*: ``5``
 
-``ports`` Key
-**************
+``ports``
+*********
 
 Defines ELB listeners. Expects a list of listeners.
 
-``ports`` *Subkeys*
+``ports`` *Keys*
 ^^^^^^^^^^^^^^^^^^^^
 
     ``instance`` : The protocol:port of the instance
@@ -226,8 +226,8 @@ Defines ELB listeners. Expects a list of listeners.
         }
       ]
 
-``subnet_purpose`` Key
-**********************
+``subnet_purpose``
+******************
 
 Determines if the load balancer should be public (external) or non-public (internal).
 
@@ -237,23 +237,23 @@ Determines if the load balancer should be public (external) or non-public (inter
        - ``"internal"``
        - ``"external"``
 
-``target`` Key
-**************
+``target``
+***********
 
 The check the ELB will use to validate application is online.
 
     | *Default*: ``"TCP:8080"``
 
-``regions`` Top Level Key
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``regions`` Key
+~~~~~~~~~~~~~~~~
 
 List of AWS regions that application will be deployed to.
 
     | *Type*: List of strings
     | *Default*: ``[ "us-east-1" ]``
 
-``deploy_strategy`` Top Level Key
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``deploy_strategy`` Key
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Spinnaker strategy to use for deployments.
 
@@ -263,18 +263,18 @@ Spinnaker strategy to use for deployments.
        - ``"highlander"`` - destroy old server group
        - ``"redblack"`` - disables old server group but do not destroy
 
-``security_group`` Block Settings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``security_group`` Block
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 *to-do*
 
-``dns`` Block Settings
-~~~~~~~~~~~~~~~~~~~~~~~
+``dns`` Block
+~~~~~~~~~~~~~~
 
 Top level key for dns settings
 
-``ttl`` Key
-************
+``ttl``
+********
 
 Defines DNS TTL for generated DNS records
 
