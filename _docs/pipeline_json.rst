@@ -6,6 +6,7 @@ pipeline.json
 
     pipeline_json
 
+=======
 Purpose
 -------
 This configuration file is used for defining pipeline settings that affect the pipeline as a whole, not a specific account/environment.
@@ -91,4 +92,5 @@ Defines the root volume size of the resulting AMI in GB
         | *Type*: int
         | *Units*: Gigabyte
         | *Default*: `6`
+=======
 
