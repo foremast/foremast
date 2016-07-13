@@ -1,0 +1,19 @@
+  {
+      "requisiteStageRefIds": [
+        "6"
+      ],
+      "refId": "900",
+      "type": "jenkins",
+      "comments": "This stage will create a ServiceNow ticket after completion",
+      "name": "ServiceNow",
+      "failPipeline": false,
+      "continuePipeline": true,
+      "master": "JenkinsCI",
+      "job": "servicenow-spinnaker",
+      "parameters": {
+        "EXECUTION_ID": "${execution.id}",
+        "GIT_REPO": "${triggers.properties.GIT_PROJECT}",
+        "GIT_COMMIT": "${triggers.properties.BUILD_TRIGGER_GIT_COMMIT}",
+        "SERVICE": "${triggers.properties.ARTIFACT_RPM}"
+        }
+    }
