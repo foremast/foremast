@@ -13,6 +13,7 @@ pages:
     - pip3 install . --no-deps
     - cd _docs
     - pip3 install -r requirements-docs.txt
+    - sphinx-apidoc -f -P -o . ../src/foremast
     - make html
     - cp -r _build/html/ ../public
   artifacts:
