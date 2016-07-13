@@ -266,7 +266,44 @@ Spinnaker strategy to use for deployments.
 ``security_group`` Block
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-*to-do*
+Hold configuration for creating application specific security group
+
+``description``
+***************
+
+Description of the security group. Used in AWS for creation
+
+    | *Default*: ``"Auto-Gen SG for {{ app }}"``
+
+``elb_extras``
+***************
+
+A list of extra security groups to assign to ELB
+
+    | *Type*: List of strings
+    | *Default*: ``[]``
+    | *Example*: ``["all_access", "test_sg"]```
+
+``instance_extras``
+*******************
+
+A list of extra security groups to assign to each instance
+
+    | *Type*: List of strings
+    | *Default*: ``[]``
+    | *Example*: ``["all_access", "test_sg"]```
+
+``ingress``
+***********
+
+Provides a list of other security groups and ports to allow inbound access to application
+
+``egress``
+***********
+
+Provides info about outbound access from application
+
+    | *Default*: ``"0.0.0.0/0"```
 
 ``dns`` Block
 ~~~~~~~~~~~~~~
