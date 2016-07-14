@@ -19,6 +19,10 @@ class SpinnakerApp:
         email (str): Email associated with application.
         project (str): Git namespace or project group
         repo (str): Repository name
+
+    Attributes:
+        appinfo (dict): A dictionary containing the provided arguments
+        appname (str): The name of the application.
     """
 
     def __init__(self, app=None, email=None, project=None, repo=None):

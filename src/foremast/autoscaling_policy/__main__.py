@@ -1,4 +1,8 @@
-"""Create Autoscaling Policy"""
+"""Deletes existing scaling policy on application and then creates
+new Autoscaling Policy based on provided configurations
+
+Help: ```python -m src.foremast.autoscaling_policy -h```
+"""
 import argparse
 import logging
 
@@ -8,7 +12,7 @@ from .create_policy import AutoScalingPolicy
 
 
 def main():
-    """Run newer stuffs."""
+    """CLI entrypoint for scaling policy creation"""
     logging.basicConfig(format=LOGGING_FORMAT)
     log = logging.getLogger(__name__)
 
