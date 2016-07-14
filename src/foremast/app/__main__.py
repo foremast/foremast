@@ -1,4 +1,7 @@
-"""Create Spinnaker Application."""
+"""CLI entry point for creating a Spinnaker application.
+
+Help: ``python -m src.foremast.app -h``
+"""
 import argparse
 import logging
 
@@ -10,7 +13,7 @@ from .create_app import SpinnakerApp
 
 
 def main():
-    """CLI entry point for creating a Spinnaker application."""
+    """Entry point for creating a Spinnaker application."""
     # Setup parser
     parser = argparse.ArgumentParser()
     add_debug(parser)

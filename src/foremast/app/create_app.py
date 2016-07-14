@@ -1,6 +1,6 @@
-"""A script for creating an application in spinnaker.
+"""Module for creating an application in spinnaker.
 
-Simply looks to see if the application already exists, if not, creates.
+Looks to see if the application exists, and if not creates the application.
 """
 import logging
 from pprint import pformat
@@ -12,7 +12,14 @@ from ..utils import get_template
 
 
 class SpinnakerApp:
-    """Spinnaker Application creation."""
+    """Class to manage and create Spinnaker applications
+
+    Args:
+        app (str): Application name.
+        email (str): Email associated with application.
+        project (str): Git namespace or project group
+        repo (str): Repository name
+    """
 
     def __init__(self, app=None, email=None, project=None, repo=None):
         self.log = logging.getLogger(__name__)
@@ -30,7 +37,7 @@ class SpinnakerApp:
             provider (str): What provider to find accounts for.
 
         Returns:
-            list: Dicts of Spinnaker credentials matching _provider_.
+            list: list of dicts of Spinnaker credentials matching _provider_.
 
         Raises:
             AssertionError: Failure getting accounts from Spinnaker.
@@ -49,7 +56,7 @@ class SpinnakerApp:
         return filtered_accounts
 
     def create_app(self):
-        """Send a POST to spinnaker to create a new application.
+        """Send a POST to spinnaker to create a new application with class variables.
 
         Raises:
             AssertionError: Application creation failed.
