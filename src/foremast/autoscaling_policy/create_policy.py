@@ -1,28 +1,34 @@
+"""Manages AWS scaling policies in Spinnaker. Can find, create, and delete.
+
+This module also creates an inverse policy for scaling down
+"""
 import json
 import logging
 import os
 
 import requests
 
-from ..consts import API_URL
+from ..consts import API_URL, HEADERS
 from ..utils import (get_properties, get_template, check_task)
 
 
 class AutoScalingPolicy:
-    """Creates scaling policies for Spinnaker
+    """Manages scaling policies in Spinnaker
 
     Args:
-        app: Str of the application name
-        prop_path: Str of the path to property files
-        env: Str of env to add policy
-        region: Str of region for policy
-    """
+        app (str): Application name
+        prop_path (str): Path of rendered property files
+        env (str): Environment/Account to add policy to
+        region (str): AWS region for policy
 
+    Attributes:
+        log (str): Logger name
+        settings (dict): Properties imported from prop_path
+    """
     def __init__(self, app='', prop_path='', env='', region=''):
 
         self.log = logging.getLogger(__name__)
 
-        self.header = {'content-type': 'application/json'}
         self.here = os.path.dirname(os.path.realpath(__file__))
         self.env = env
         self.region = region
@@ -31,6 +37,14 @@ class AutoScalingPolicy:
         self.settings = get_properties(properties_file=prop_path, env=self.env)
 
     def prepare_policy_template(self, scaling_type, period_sec, server_group):
+        """Renders scaling policy templates based on configs and variables.
+        After rendering, POSTs the json to Spinnaker for creation.
+
+        Args:
+            scaling_type (str): ``scale_up`` or ``scaling_down``. Type of policy
+            period_sec (int): Period of time to look at metrics for determining scale
+            server_group (str): The name of the server group to render template for
+        """
         template_kwargs = {}
         if scaling_type == 'scale_up':
             template_kwargs = {
@@ -78,8 +92,11 @@ class AutoScalingPolicy:
                 self.env))
 
     def create_policy(self):
-        """ Renders the template and creates the police """
-
+        """Wrapper function. Gets the server group, sets sane defaults,
+        deletes existing policies, and then runs self.prepare_policy_template
+        for scaling up and scaling down policies.
+        This function acts as the main driver for the scaling policy creationprocess
+        """
         if not self.settings['asg']['scaling_policy']:
             self.log.info("No scaling policy found, skipping...")
             return
@@ -100,22 +117,38 @@ class AutoScalingPolicy:
         self.prepare_policy_template('scale_down', period_sec, server_group)
 
     def post_task(self, payload):
-        """ Posts the rendered template to correct endpoint """
-        """Sends the POST to the correct endpoint and reports results"""
+        """Takes the rendered JSON and POSTs as a task to Spinnaker.
+        Checks task response until complete.
+
+        Args:
+            payload (json): The rendered data of the scaling policy to be created/deleted
+        """
         url = "{0}/applications/{1}/tasks".format(API_URL, self.app)
-        response = requests.post(url, data=payload, headers=self.header)
+        response = requests.post(url, data=payload, headers=HEADERS)
         assert response.ok, "Error creating {0} Autoscaling Policy: {1}".format(
             self.app, response.text)
         check_task(response.json()['ref'], self.app)
 
     def get_server_group(self):
-        """ Gets the current server group """
+        """Finds the most recently deployed server group for the application.
+        This is the server group that the scaling policy will be applied to.
+
+        Returns:
+            server_group (str): Name of the newest server group
+        """
         response = requests.get("{0}/applications/{1}".format(API_URL,
                                                               self.app))
         for server_group in response.json()['clusters'][self.env]:
             return server_group['serverGroups'][-1]
 
     def delete_existing_policy(self, scaling_policy, server_group):
+        """Given a scaling_policy and server_group, deletes the existing scaling_policy.
+        Scaling policies need to be deleted instead of upserted for consistency.
+
+        Args:
+            scaling_policy (json): the scaling_policy json from Spinnaker that should be deleted
+            server_group (str): the affected server_group
+        """
         self.log.info("Deleting policy {}".format(scaling_policy['policyName']))
         delete_dict = {
             "application": self.app,
@@ -133,7 +166,11 @@ class AutoScalingPolicy:
         self.post_task(json.dumps(delete_dict))
 
     def get_all_existing(self):
-        """ Returns list of all existing policies """
+        """Finds all existing scaling policies for an application
+
+        Returns:
+            scalingpolicies (list): List of all existing scaling policies for the application
+        """
         self.log.info("Checking for existing scaling policy")
         url = "{0}/applications/{1}/clusters/{2}/{1}/serverGroups".format(
             API_URL, self.app, self.env)
