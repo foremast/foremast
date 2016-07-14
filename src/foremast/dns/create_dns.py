@@ -1,4 +1,4 @@
-"""DNS functions for deployment."""
+"""Module to create dynamically generated DNS record in route53"""
 import json
 import logging
 from pprint import pformat
@@ -9,10 +9,14 @@ from ..utils import find_elb, get_app_details, get_template, get_properties
 
 
 class SpinnakerDns:
-    """Manipulate Spinnaker Dns.
+    """Manipulate and create generated DNS record in Route53.
 
     Args:
-        app_name: Str of application name add Security Group to.
+        app_name (str): application name for DNS record
+        env (str): Environment/Account for DNS record creation
+        region (str): AWS Region for DNS record
+        elb_subnet (str): Wether the DNS record is in a public or private zone
+        prop_path (str): Path to the generated property files
     """
 
     def __init__(self, app=None, env=None, region=None, elb_subnet=None, prop_path=None):
@@ -33,9 +37,6 @@ class SpinnakerDns:
 
     def create_elb_dns(self):
         """Create dns entries in route53.
-
-        Args:
-            app_catalog: A dictionary containing all parameters.
 
         Returns:
             Auto-generated DNS name for the Elastic Load Balancer.
