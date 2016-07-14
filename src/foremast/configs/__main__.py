@@ -1,4 +1,7 @@
-"""Entrypoint to Application Configuration preparer."""
+"""CLI entrypoint to Application Configuration preparer.
+
+Help: ``python -m src.foremast.configs -h``
+"""
 import argparse
 import logging
 
@@ -13,7 +16,7 @@ LOG = logging.getLogger(__name__)
 
 
 def main():
-    """Append Application Configurations to a given file in INI format."""
+    """Append Application Configurations to a given file in multiple formats."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)

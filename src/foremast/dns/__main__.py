@@ -1,4 +1,7 @@
-"""Create DNS record."""
+"""CLI entry point for creating DNS record.
+
+Help: ``python -m src.foremast.dns -h``
+"""
 import argparse
 import logging
 

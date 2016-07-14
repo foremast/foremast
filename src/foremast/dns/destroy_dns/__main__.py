@@ -1,4 +1,4 @@
-"""DNS cleanup."""
+"""CLI entry point for DNS cleanup."""
 import argparse
 import logging
 
@@ -8,7 +8,7 @@ from .destroy_dns import destroy_dns
 
 
 def main():
-    """Destroy any DNS related Resources.
+    """Destroy any DNS related resources of an application
 
     Records in any Hosted Zone for an Environment will be deleted.
     """
