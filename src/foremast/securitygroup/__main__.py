@@ -1,4 +1,7 @@
-"""Create Security Group."""
+"""CLI entry point for security group creaation
+
+Help: ``python -m src.foremast.securitygroup -h``
+"""
 import argparse
 import logging
 
@@ -8,7 +11,7 @@ from .create_securitygroup import SpinnakerSecurityGroup
 
 
 def main():
-    """Run newer stuffs."""
+    """Entry point for creating an application specific security group"""
     logging.basicConfig(format=LOGGING_FORMAT)
     log = logging.getLogger(__name__)
 

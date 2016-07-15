@@ -108,6 +108,9 @@ class SpinnakerSecurityGroup(object):
     def add_cidr_rules(self, rules):
         """Add cidr rules to security group via boto.
 
+        Args:
+            rules (list): Allowed Security Group ports and protocols.
+
         Returns:
             True: Upon successful completion.
 
@@ -153,7 +156,11 @@ class SpinnakerSecurityGroup(object):
         return True
 
     def create_security_group(self):
-        """Send a POST to spinnaker to create a new security group."""
+        """Send a POST to spinnaker to create a new security group.
+
+        Returns:
+            boolean: True if created successfully
+        """
         url = "{0}/applications/{1}/tasks".format(API_URL, self.app_name)
 
         ingress = self.properties['security_group']['ingress']

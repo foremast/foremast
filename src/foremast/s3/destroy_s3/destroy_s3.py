@@ -9,7 +9,15 @@ LOG = logging.getLogger(__name__)
 
 
 def destroy_s3(app='', env='dev', **_):
-    """Destroy S3 Resources for _app_ in _env_."""
+    """Destroy S3 Resources for _app_ in _env_.
+
+    Args:
+        app (str): Application name
+        env (str): Deployment environment/account name
+
+    Returns:
+        boolean: True if destroyed sucessfully
+    """
     session = boto3.Session(profile_name=env)
     client = session.resource('s3')
 

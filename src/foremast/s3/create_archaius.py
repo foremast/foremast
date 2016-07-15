@@ -15,7 +15,7 @@ def init_properties(env='dev', app='unnecessary', **_):
     cloud environment variable points to.
 
     Args:
-        env (str): Deployment environment, i.e. dev, stage, prod.
+        env (str): Deployment environment/account, i.e. dev, stage, prod.
         app (str): GitLab Project name.
 
     Returns:
