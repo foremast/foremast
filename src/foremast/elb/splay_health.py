@@ -8,6 +8,8 @@ LOG = logging.getLogger(__name__)
 def splay_health(health_target):
     """Set Health Check path, port, and protocol.
 
+    Args:
+        health_target (str): The health target. ie ``HTTP:80``
     Returns:
         HealthCheck: A **collections.namedtuple** class with *path*, *port*,
         *proto*, and *target* attributes.

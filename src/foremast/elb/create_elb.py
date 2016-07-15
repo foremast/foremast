@@ -92,14 +92,8 @@ class SpinnakerELB:
         return rendered_template
 
     def create_elb(self):
-        """Create/Update ELB.
-
-        Args:
-            json_data: elb json payload.
-            app: application name related to this ELB.
-
-        Returns:
-            task id to track the elb creation status.
+        """Create or Update the ELB after rendering JSON data from configs.
+        Asserts that the ELB task was successful.
         """
         app = self.app
         json_data = self.make_elb_json()

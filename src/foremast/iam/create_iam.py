@@ -15,7 +15,7 @@ def create_iam_resources(env='dev', app='', **_):
     """Create the IAM Resources for the application.
 
     Args:
-        env (str): Deployment environment, i.e. dev, stage, prod.
+        env (str): Deployment environment/account, i.e. dev, stage, prod.
         app (str): Spinnaker Application name.
 
     Returns:

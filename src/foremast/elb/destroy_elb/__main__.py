@@ -1,4 +1,4 @@
-"""ELB cleanup."""
+"""CLI Entry point for ELB cleanup."""
 import argparse
 import logging
 
