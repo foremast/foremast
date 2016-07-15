@@ -31,6 +31,7 @@ def format_listeners(elb_settings=None, env='dev'):
                     },
                     {
                         "certificate": "cert_name",
+                        "policies": ["policy_name"],
                         "instance": "HTTP:8443",
                         "loadbalancer": "HTTPS:443"
                     }
@@ -50,7 +51,8 @@ def format_listeners(elb_settings=None, env='dev'):
                     'externalProtocol': 'HTTP',
                     'internalPort': 8080,
                     'internalProtocol': 'HTTP',
-                    'sslCertificateId': None
+                    'sslCertificateId': None,
+                    'listenerPolicies': None
                 },
                 ...
             ]
@@ -64,12 +66,13 @@ def format_listeners(elb_settings=None, env='dev'):
 
     if 'ports' in elb_settings:
         for listener in elb_settings['ports']:
-            cert_name = format_cert_name(
-                account=account,
-                certificate=listener.get('certificate', None))
+            cert_name = format_cert_name(account=account,
+                                         certificate=listener.get(
+                                             'certificate', None))
 
             lb_proto, lb_port = listener['loadbalancer'].split(':')
             i_proto, i_port = listener['instance'].split(':')
+            listener_policies = listener['policies']
 
             elb_data = {
                 'externalPort': int(lb_port),
@@ -77,6 +80,7 @@ def format_listeners(elb_settings=None, env='dev'):
                 'internalPort': int(i_port),
                 'internalProtocol': i_proto.upper(),
                 'sslCertificateId': cert_name,
+                'listenerPolicies': listener_policies,
             }
 
             listeners.append(elb_data)
@@ -87,13 +91,15 @@ def format_listeners(elb_settings=None, env='dev'):
             'internalPort': int(elb_settings['i_port']),
             'internalProtocol': elb_settings['i_proto'],
             'sslCertificateId': elb_settings['certificate'],
+            'listenerPolicies': elb_settings['policies'],
         }]
 
     for listener in listeners:
         LOG.info('ELB Listener:\n'
                  'loadbalancer %(externalProtocol)s:%(externalPort)d\n'
                  'instance %(internalProtocol)s:%(internalPort)d\n'
-                 'certificate: %(sslCertificateId)s', listener)
+                 'certificate: %(sslCertificateId)s\n'
+                 'listenerpolicies: %(listenerPolicies)s', listener)
     return listeners
 
 
