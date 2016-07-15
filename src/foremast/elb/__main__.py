@@ -1,4 +1,7 @@
-"""ELB creation."""
+"""CLI entry point for ELB creation.
+
+Help: ``python -m src.foremast.elb -h``
+"""
 import argparse
 import logging
 
@@ -10,7 +13,7 @@ LOG = logging.getLogger(__name__)
 
 
 def main():
-    """Create ELBs."""
+    """Entry point for ELB creation"""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(

@@ -30,10 +30,13 @@ def construct_policy(app='coreforrest',
 
     Args:
         app (str): Name of Spinnaker Application.
+        env (str): Environment/Account in AWS
+        group (str):A Application group/namespace
+        region (str): AWS region
         pipeline_settings (dict): Settings from *pipeline.json*.
 
     Returns:
-        str: Custom IAM Policy for _app_.
+        json: Custom IAM Policy for _app_.
         None: When no *services* have been defined in *pipeline.json*.
     """
     LOG.info('Create custom IAM Policy for %s.', app)

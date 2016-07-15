@@ -1,4 +1,7 @@
-"""Create IAM Instance Profiles, Roles, Users, and Groups."""
+"""CLI entry point to create IAM Instance Profiles, Roles, Users, and Groups.
+
+Help: ``python -m src.foremast.iam -h``
+"""
 import argparse
 import logging
 
