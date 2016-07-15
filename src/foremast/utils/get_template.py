@@ -11,6 +11,7 @@ def get_template(template_file='', **kwargs):
     """Get the Jinja2 template and renders with dict _kwargs_.
 
     Args:
+        template_file (str): name of the template file
         kwargs: Keywords to use for rendering the Jinja2 template.
 
     Returns:

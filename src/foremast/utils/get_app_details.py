@@ -14,6 +14,10 @@ LOG = logging.getLogger(__name__)
 def get_details(app='groupproject', env='dev'):
     """Extract details for Application.
 
+    Args:
+        app (str): Application Name
+        env (str): Environment/account to get details from
+
     Returns:
         collections.namedtuple with _group_, _policy_, _profile_, _role_,
             _user_.

@@ -6,10 +6,15 @@ import slacker
 LOG = logging.getLogger(__name__)
 
 
-def post_slack_message(message, channel):
-    """Format the message and post to the appropriate slack channel."""
+def post_slack_message(message, channel,
+        slack_token='xoxb-xxxxxxxxx'):
+    """Format the message and post to the appropriate slack channel.
 
-    slack_token = 'xoxb-xxxxxxxxx'
+    Args:
+        message (str): Message to post to slack
+        channel (str): Desired channel. Must start with #
+        slack_token (str): Slack API token
+    """
 
     LOG.debug('Slack Channel: %s\nSlack Message: %s', channel, message)
     slack = slacker.Slacker(slack_token)

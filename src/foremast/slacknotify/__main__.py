@@ -1,4 +1,7 @@
-"""Send Slack notifications."""
+"""CLI entry point for sending Slack notifications.
+
+Help: ``python -m src.foremast.slacknotify -h``
+"""
 import argparse
 import logging
 

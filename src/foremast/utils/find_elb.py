@@ -14,7 +14,16 @@ LOG = logging.getLogger(__name__)
          wait=2,
          exceptions=(AssertionError, SpinnakerElbNotFound))
 def find_elb(name='', env='', region=''):
-    """Get an application's AWS elb dns name."""
+    """Get an application's AWS elb dns name.
+
+    Args:
+        name (str): ELB name
+        env (str): Environment/account of ELB
+        region (str): AWS Region
+
+    Returns:
+        str: elb DNS record
+    """
     LOG.info('Find %s ELB in %s [%s].', name, env, region)
 
     url = '{0}/applications/{1}/loadBalancers'.format(API_URL, name)
