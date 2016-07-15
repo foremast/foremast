@@ -93,14 +93,13 @@ LOG = logging.getLogger(__name__)
 
 
 class Gate(object):
-    """Dynamic Gate API interface."""
+    """Dynamic Gate API interface.
+
+    Args:
+        path (str): URL path or full URL.
+    """
 
     def __init__(self, path=''):
-        """Gate API object.
-
-        Args:
-            path (str): URL path or full URL.
-        """
         self.path = path
         self.verb = ''
 

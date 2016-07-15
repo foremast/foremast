@@ -21,7 +21,7 @@ def get_subnets(gate_url=API_URL,
                 sample_file_name=''):
     """Get all availability zones for a given target.
 
-    Params:
+    Args:
         gate_url (str): Gate API url.
         target (str): Type of subnets to look up (ec2 or elb).
         env (str): Environment to look up.

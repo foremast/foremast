@@ -24,7 +24,11 @@ class DeepChainMap(collections.ChainMap):
     """
 
     def __getitem__(self, key):
-        """Recursively retrieve value for _key_ in dict."""
+        """Recursively retrieve value for _key_ in dict.
+
+        Args:
+            key (str): dict key to get all items for
+        """
         for mapping in self.maps:
             try:
                 value = mapping[key]

@@ -1,3 +1,4 @@
+"""Package for foremast supporting utilities"""
 from .ami_lookup import *
 from .banner import *
 from .check_managed_pipeline import *

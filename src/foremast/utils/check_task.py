@@ -15,8 +15,8 @@ def check_task(taskid, app_name):
     """Check task status.
 
     Args:
-        taskid: the task id returned from create_elb.
-        app_name: application name related to this task.
+        taskid (str): the task id returned from create_elb.
+        app_name (str): application name related to this task.
 
     Returns:
         polls for task status.

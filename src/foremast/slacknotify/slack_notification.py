@@ -6,8 +6,12 @@ from ..utils import get_properties, get_template, post_slack_message
 
 class SlackNotification:
     """Post slack notification.
-
     Inform users about infrastructure changes to prod* accounts.
+
+    Args:
+        app (str): Application name
+        env (str): Environment/account name of changed infrastructure
+        prop_path (str): Path to the rendered configuration files
     """
 
     def __init__(self, app=None, env=None, prop_path=None):
