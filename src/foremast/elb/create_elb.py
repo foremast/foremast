@@ -2,6 +2,7 @@
 import json
 import logging
 
+import boto3
 import requests
 
 from ..consts import API_URL, HEADERS
@@ -106,3 +107,12 @@ class SpinnakerELB:
 
         taskid = response.json()
         assert check_task(taskid, app)
+
+        env = boto3.session.Session(profile_name=self.env)
+        elbclient = env.client('elb')
+        for each_listener in json.loads(json_data)[0]['listeners']:
+            if each_listener['listenerPolicies']:
+                elbclient.set_load_balancer_policies_of_listener(
+                    LoadBalancerName=app,
+                    LoadBalancerPort=each_listener['externalPort'],
+                    PolicyNames=each_listener['listenerPolicies'])
