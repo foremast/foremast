@@ -1,4 +1,7 @@
-"""Create Spinnaker Pipeline."""
+"""CLI entry point to create Spinnaker Pipelines.
+
+Help: ``python -m src.foremast.pipeline -h``
+"""
 import argparse
 import logging
 
@@ -9,7 +12,7 @@ from .create_pipeline_onetime import SpinnakerPipelineOnetime
 
 
 def main():
-    """Run newer stuffs."""
+    """Creates a pipeline in Spinnaker"""
     logging.basicConfig(format=LOGGING_FORMAT)
     log = logging.getLogger(__name__)
 

@@ -18,6 +18,10 @@ def clean_pipelines(app='', settings=None):
     in at least one application.json file. All other names are assumed
     unamanaged.
 
+    Args:
+        app (str): Application name
+        settings (dict): imported configuration settings
+
     Returns:
         True: Upon successful completion.
 

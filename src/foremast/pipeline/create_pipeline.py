@@ -49,7 +49,11 @@ class SpinnakerPipeline:
         self.environments = self.settings['pipeline']['env']
 
     def post_pipeline(self, pipeline):
-        """Send Pipeline JSON to Spinnaker."""
+        """Send Pipeline JSON to Spinnaker.
+
+        Args:
+            pipeline (json): json of the pipeline to be created in Spinnaker
+        """
         url = "{0}/pipelines".format(API_URL)
 
         if isinstance(pipeline, str):
@@ -129,7 +133,13 @@ class SpinnakerPipeline:
         return json.loads(wrapper)
 
     def create_pipeline(self):
-        """Send a POST to spinnaker to create a new security group."""
+        """Main wrapper for pipeline creation.
+        1. Runs clean_pipelines to clean up existing ones
+        2. determines which environments the pipeline needs
+        3. gets all subnets for template rendering
+        4. Renders all of the pipeline blocks as defined in configs
+        5. Runs post_pipeline to create pipeline
+        """
         clean_pipelines(app=self.app_name, settings=self.settings)
 
         pipeline_envs = self.environments
