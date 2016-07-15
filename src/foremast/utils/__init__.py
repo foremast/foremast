@@ -1,6 +1,7 @@
 """Package for foremast supporting utilities"""
 from .ami_lookup import *
 from .banner import *
+from .config_loader import *
 from .check_managed_pipeline import *
 from .check_task import *
 from .deep_chain_map import DeepChainMap
@@ -21,3 +22,4 @@ from .get_template import *
 from .get_vpc_id import *
 from .post_slack_message import *
 from .warn_user import *
+
