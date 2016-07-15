@@ -1,4 +1,8 @@
-"""Add application.properties to Application's S3 Bucket directory."""
+"""Add application.properties to Application's S3 Bucket directory.
+
+Help: ``python -m src.foremast.s3 -h``
+"""
+
 import argparse
 import logging
 
