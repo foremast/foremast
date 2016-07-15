@@ -3,7 +3,6 @@ import json
 import logging
 
 import boto3
-import pprint
 import requests
 
 from ..consts import API_URL, HEADERS
