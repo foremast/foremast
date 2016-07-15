@@ -52,7 +52,7 @@ def format_listeners(elb_settings=None, env='dev'):
                     'internalPort': 8080,
                     'internalProtocol': 'HTTP',
                     'sslCertificateId': None,
-                    'listenerPolicies': None
+                    'listenerPolicies': []
                 },
                 ...
             ]
@@ -72,7 +72,7 @@ def format_listeners(elb_settings=None, env='dev'):
 
             lb_proto, lb_port = listener['loadbalancer'].split(':')
             i_proto, i_port = listener['instance'].split(':')
-            listener_policies = listener['policies']
+            listener_policies = listener.get('policies', [])
 
             elb_data = {
                 'externalPort': int(lb_port),
