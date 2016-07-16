@@ -111,7 +111,7 @@ class SpinnakerELB:
         self.add_listener_policy(json_data)
 
     def add_listener_policy(self, json_data):
-        env = boto3.session.Session(profile_name=self.env)
+        env = boto3.session.Session(profile_name=self.env, region_name=self.region)
         elbclient = env.client('elb')
 
         for each_job in json.loads(json_data)['job']:
