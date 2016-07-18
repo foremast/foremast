@@ -6,6 +6,9 @@ descending order. First found wins.
 * ``./.foremast/foremast.cfg``
 * ``~/.foremast/foremast.cfg``
 * ``/etc/foremast/foremast.cfg``
+
+.. literalinclude:: .foremast/foremast.cfg
+   :language: ini
 """
 import logging
 from configparser import ConfigParser
