@@ -2,9 +2,7 @@
 foremast.cfg
 ================================
 
-.. toctree::
-
-   foremast_config
+.. contents::
 
 Purpose
 -------
