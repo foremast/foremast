@@ -27,37 +27,17 @@ def find_config():
 
     return config
 
-
-def get_configs(config, section=''):
-    """Get information for a given config _section_.
-
-    Example:
-        >>> from utils import config_loader
-        >>> config = config_loader.get_config(section='section')
-        >>> config['key']
-        'value'
-
-    Args:
-        section (str): Configuration to find.
-
-    Returns:
-        dict: Configuration information for *section*.
-
-    Raises:
-        KeyError: _section_ missing from configuration file.
-    """
-    if config[section]:
-        return dict(config[section])
-    else:
-        raise KeyError('Section "{0}" missing from configuraton file.'.format(section))
-
-
 #Load in consts from config
 config = find_config()
-API_URL = config['urls']['gate_api_url']
-GIT_URL = config['urls']['git_url']
+API_URL = config['base']['gate_api_url']
+GIT_URL = config['base']['git_url']
 GITLAB_TOKEN = config['credentials']['gitlab_token']
-SLACK_TOKEN = get_configs(config, section='credentials')['slack_token']
+SLACK_TOKEN = config['credentials']['slack_token']
+DOMAIN = config['base']['domain']
+ENVS = set(config['base']['envs'].split(','))
+REGIONS = set(config['base']['regions'].split(','))
+
+ASG_WHITELIST = set(config['whitelists']['asg_whitelist'].split(','))
 
 HEADERS = {
     'accept': '*/*',
@@ -66,13 +46,5 @@ HEADERS = {
 }
 LOGGING_FORMAT = ('%(asctime)s [%(levelname)s] %(name)s:%(funcName)s:'
                   '%(lineno)d - %(message)s')
-
-DOMAIN = 'example.com'
-ENVS = set(('build', 'dev', 'stage', 'prod', 'prods', 'prodp'))
-REGIONS = set(('us-east-1', 'us-west-2'))
-
-ASG_WHITELIST = [
-    'profileservicecoreapis'
-]
 
 
