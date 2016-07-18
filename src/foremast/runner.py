@@ -34,6 +34,7 @@ class ForemastRunner(object):
         self.group = os.getenv("PROJECT")
         self.region = os.getenv("REGION")
         self.repo = os.getenv("GIT_REPO")
+        self.runway_dir = os.getenv("RUNWAY_DIR")
 
         self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
@@ -52,6 +53,14 @@ class ForemastRunner(object):
         utils.banner("Generating Configs")
         app_configs = configs.process_git_configs(
             git_short=self.git_short)
+        if self.runway_dir is None:
+            app_configs = configs.process_git_configs(
+                git_short=self.git_short,
+                token_file=self.gitlab_token_path)
+        else:
+            app_configs = configs.process_runway_configs(
+                    runway_dir=self.runway_dir)
+
         self.configs = configs.write_variables(app_configs=app_configs,
                                                out_file=self.raw_path,
                                                git_short=self.git_short)
