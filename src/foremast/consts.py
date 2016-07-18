@@ -5,6 +5,8 @@ from os.path import expanduser
 
 LOG = logging.getLogger(__name__)
 
+MISSING_KEY_MSG_FMT = 'Missing {key} from [{section}]'
+
 
 def find_config():
     """Look for **foremast.cfg** in config_locations.
@@ -32,15 +34,33 @@ def find_config():
 
 
 config = find_config()
-API_URL = config['base']['gate_api_url']
-GIT_URL = config['base']['git_url']
-GITLAB_TOKEN = config['credentials']['gitlab_token']
-SLACK_TOKEN = config['credentials']['slack_token']
-DOMAIN = config['base']['domain']
-ENVS = set(config['base']['envs'].split(','))
-REGIONS = set(config['base']['regions'].split(','))
 
-ASG_WHITELIST = set(config['whitelists']['asg_whitelist'].split(','))
+try:
+    BASE_SECTION = config['base']
+    CREDENTIALS_SECTION = config['credentials']
+    WHITELISTS_SECTION = config['whitelists']
+except KeyError as missing_section:
+    raise SystemExit('Section missing from configurations: [{0}]'.format(missing_section))
+
+try:
+    API_URL = BASE_SECTION['gate_api_url']
+    GIT_URL = BASE_SECTION['git_url']
+    DOMAIN = BASE_SECTION['domain']
+    ENVS = set(BASE_SECTION['envs'].split(','))
+    REGIONS = set(BASE_SECTION['regions'].split(','))
+except KeyError as missing_base_key:
+    raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_base_key, section=BASE_SECTION.name))
+
+try:
+    GITLAB_TOKEN = CREDENTIALS_SECTION['gitlab_token']
+    SLACK_TOKEN = CREDENTIALS_SECTION['slack_token']
+except KeyError as missing_credentials_key:
+    raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_credentials_key, section=CREDENTIALS_SECTION.name))
+
+try:
+    ASG_WHITELIST = set(WHITELISTS_SECTION['asg_whitelist'].split(','))
+except KeyError as missing_whitelists_key:
+    raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_whitelists_key, section=WHITELISTS_SECTION.name))
 
 HEADERS = {
     'accept': '*/*',
