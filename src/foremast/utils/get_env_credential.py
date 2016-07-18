@@ -16,7 +16,7 @@ def get_env_credential(env='dev'):
         env (str): Environment name to find credentials for.
 
     Returns:
-        dict: Complete credentials for _env_.
+        dict: Complete credentials for _env_::
 
             {
                 'accountId': '123098123',
