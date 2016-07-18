@@ -6,7 +6,6 @@ pipeline.json
 
     pipeline_json
 
-=======
 Purpose
 -------
 This configuration file is used for defining pipeline settings that affect the pipeline as a whole, not a specific account/environment.
@@ -36,7 +35,7 @@ Link to the applications documentation. This is not used directly in the pipelin
 ``notifications`` Block
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Where to send pipeline failure notifications 
+Where to send pipeline failure notifications
 
 ``email``
 **********
@@ -92,4 +91,3 @@ Defines the root volume size of the resulting AMI in GB
     | *Type*: int
     | *Units*: Gigabyte
     | *Default*: `6`
-
