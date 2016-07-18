@@ -5,44 +5,44 @@ keeping close track of _self.path_. Reusing an Instance will have adverse
 affects as _self.path_ will not be cleared automatically.
 
 Examples:
-    Typical imports.
+    Typical imports::
 
         from foremast.utils import Gate
         from .utils import Gate
 
-    Responses will be a *dict* type.
+    Responses will be a *dict* type::
 
         response = Gate().credentials.dev.get()
         response = Gate('credentials/dev').get()
         type(response) == dict
 
     The first arguments is expected to be a JSON *str* or *dict* representation
-    and will be passed to the **json** argument of the _requests_ call.
+    and will be passed to the **json** argument of the _requests_ call::
 
         response = Gate().tasks.post({'json': 'data'})
         # requests.post(json={'json': 'data'})
 
     Keyword arguments besides _json_dict_ will be passed to **data** or
-    **params** of the _requests_ call.
+    **params** of the _requests_ call::
 
         response = Gate().tasks.post({'json': 'data'}, custom='param')
         # requests.post(json={'json': 'data'}, data={'custom': 'param'})
 
     What is happening? The normal instantiation initializes the request path to
-    an empty string.
+    an empty string::
 
         a = Gate()
         a.path == ''
 
     Accessing attributes will append the accessed attribute to the end of the
-    path.
+    path::
 
         b = Gate().applications
         # __getattr__() appends 'applications' to self.path and returns self
         b.path == '/applications'
 
     This continues recursively because each attribute access will return a
-    reference to the current Instance.
+    reference to the current Instance::
 
         c = Gate().applications.coreforrest
         # __getattr__() appends 'applications' to self.path and returns self
@@ -50,7 +50,7 @@ Examples:
         c.path == '/applications/coreforrest'
 
     Once an HTTP method matches, the Instance's **verb** attribute will be set
-    in preparation for the _requests_ call.
+    in preparation for the _requests_ call::
 
         d = Gate().applications.coreforrest.get
         # __getattr__() appends 'applications' to self.path and returns self
@@ -60,7 +60,7 @@ Examples:
         d.verb == 'get'
 
     Finally ending with *()* will trigger the _requests_ call. The following are
-    all equivalent calls based on the previous examples.
+    all equivalent calls based on the previous examples::
 
         d() == c.get()
         d() == b.coreforrest.get()
@@ -73,7 +73,7 @@ Examples:
         # requests.get() is used because d.verb == 'get'
         # requests.get(API_URL + '/applications/coreforrest')
 
-    Reusing an Instance is discouraged due to stored Instance attributes.
+    Reusing an Instance is discouraged due to stored Instance attributes::
 
         e = Gate().applications
         e.coreforrest.get()
@@ -162,7 +162,7 @@ class Gate(object):
             path (str): URL path to reqest from Gate API.
 
         Returns:
-            dict: Assembled kwargs.
+            dict: Assembled kwargs::
 
                 {
                     'headers': {'accept': '*/*', ...},
