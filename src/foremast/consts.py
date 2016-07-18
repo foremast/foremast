@@ -23,7 +23,7 @@ def find_config():
     cfg_file = config.read(config_locations)
 
     if not cfg_file:
-        LOG.error('No config found in the following locations: {0}\n'.format(config_locations))
+        LOG.error('No config found in the following locations: %s\n', config_locations)
 
     return config
 
