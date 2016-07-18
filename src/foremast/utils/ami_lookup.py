@@ -33,5 +33,3 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
     ami_dict = json.loads(ami_contents)
 
     return ami_dict[name]
-
-print(ami_lookup())
