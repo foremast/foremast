@@ -3,7 +3,7 @@ import logging
 
 import slacker
 
-from .config_loader import get_configs
+from ..consts import SLACK_TOKEN
 
 LOG = logging.getLogger(__name__)
 
@@ -16,10 +16,8 @@ def post_slack_message(message, channel):
         channel (str): Desired channel. Must start with #
     """
 
-    slack_token = get_configs(section='credentials')['slack_token']
-    print(slack_token)
     LOG.debug('Slack Channel: %s\nSlack Message: %s', channel, message)
-    slack = slacker.Slacker(slack_token)
+    slack = slacker.Slacker(SLACK_TOKEN)
     try:
         slack.chat.post_message(channel, message)
         LOG.info('Message posted to %s', channel)
