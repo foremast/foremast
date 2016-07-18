@@ -18,14 +18,14 @@ def find_config():
         expanduser('~/.foremast/foremast.cfg'),
         '/etc/foremast/foremast.cfg',
         ]
-    config = ConfigParser()
+    configurations = ConfigParser()
 
-    cfg_file = config.read(config_locations)
+    cfg_file = configurations.read(config_locations)
 
     if not cfg_file:
         LOG.error('No config found in the following locations: %s\n', config_locations)
 
-    return config
+    return configurations
 
 #Load in consts from config
 config = find_config()
