@@ -47,7 +47,7 @@ def destroy_record(client=None, found_record=None, record='', zone_id=''):
 
     Args:
         client (botocore.client.Route53): Route 53 boto3 client.
-        found_record (dict): Route 53 record set.
+        found_record (dict): Route 53 record set::
 
             {'Name': 'unicorn.forrest.dev.example.com.',
              'ResourceRecords':
