@@ -23,7 +23,7 @@ def find_config():
     cfg_file = config.read(config_locations)
 
     if not cfg_file:
-        LOG.error('No config found in the following locations: {0}\n'.format(CONFIG_LOCATIONS))
+        LOG.error('No config found in the following locations: {0}\n'.format(config_locations))
 
     return config
 
@@ -46,5 +46,3 @@ HEADERS = {
 }
 LOGGING_FORMAT = ('%(asctime)s [%(levelname)s] %(name)s:%(funcName)s:'
                   '%(lineno)d - %(message)s')
-
-
