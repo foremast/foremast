@@ -4,7 +4,7 @@ Security Group port specifications will be sourced from the `application.json`
 files for each environment.
 
 Examples:
-    application-master.json:
+    application-master.json::
 
         {
             "security_group": {
