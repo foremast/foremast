@@ -3,6 +3,7 @@ application-master-$account.json
 ================================
 
 .. contents::
+   :local:
 
 Purpose
 -------

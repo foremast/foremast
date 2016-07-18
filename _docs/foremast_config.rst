@@ -3,6 +3,7 @@ foremast.cfg
 ================================
 
 .. contents::
+   :local:
 
 Purpose
 -------

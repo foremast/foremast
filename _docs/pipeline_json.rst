@@ -3,6 +3,7 @@ pipeline.json
 =============
 
 .. contents::
+   :local:
 
 Purpose
 -------
