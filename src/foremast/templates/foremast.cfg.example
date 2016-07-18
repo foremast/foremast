@@ -1,0 +1,13 @@
+[base]
+domain = example.com
+envs = dev,stage,prod
+regions = us-east-1,us-west-2
+git_url = https://git.example.com
+gate_api_url = http://gate-api.example.com:8084
+
+[credentials]
+gitlab_token = 123token23423343
+slack_token = 123slack3203120312
+
+[whitelists]
+asg_whitelist = application1,application2
