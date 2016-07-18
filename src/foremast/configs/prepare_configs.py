@@ -8,6 +8,7 @@ from base64 import b64decode
 import gitlab
 
 from ..consts import GIT_URL
+from ..utils import get_configs
 
 ENVS = ('build', 'dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods',
         'stagesox')
@@ -15,13 +16,12 @@ LOG = logging.getLogger(__name__)
 JSON_ERROR_MSG = '"{0}" appears to be invalid json. Please validate it with http://jsonlint.com.'
 
 
-def process_git_configs(git_short='', token_file=''):
+def process_git_configs(git_short=''):
     """Retrieve _application.json_ files from GitLab.
 
     Args:
         git_short (str): Short Git representation of repository, e.g.
             forrest/core.
-        token_file (str): Name of file with GitLab private token.
 
     Returns:
         collections.defaultdict: Configurations stored for each environment
@@ -29,12 +29,7 @@ def process_git_configs(git_short='', token_file=''):
     """
     LOG.info('Processing application.json files from GitLab.')
 
-    try:
-        with open(token_file, 'rt') as token_handle:
-            token = token_handle.read().strip()
-    except FileNotFoundError:
-        raise SystemExit('GitLab private token file missing: {0}'.format(
-            token_file))
+    token = get_configs(section='credentials')['gitlab_token']
 
     server = gitlab.Gitlab(GIT_URL, token=token)
 

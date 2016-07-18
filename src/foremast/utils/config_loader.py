@@ -7,8 +7,8 @@ from os.path import expanduser
 LOG = logging.getLogger(__name__)
 
 CONFIG_LOCATIONS = [
-    './.foremast.cfg',
-    expanduser('~/.foremast.cfg'),
+    './.foremast/foremast.cfg',
+    expanduser('~/.foremast/foremast.cfg'),
     '/etc/foremast/foremast.cfg',
 ]
 

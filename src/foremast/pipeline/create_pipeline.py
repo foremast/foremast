@@ -24,21 +24,18 @@ class SpinnakerPipeline:
         trigger_job (str): Jenkins trigger job.
         base (str): Base image name (i.e: fedora).
         prop_path (str): Path to the raw.properties.json.
-        token_file (str): Path to gitlab token file.
     """
 
     def __init__(self,
                  app='',
                  trigger_job='',
                  prop_path='',
-                 base='',
-                 token_file=''):
+                 base=''):
         self.log = logging.getLogger(__name__)
 
         self.header = {'content-type': 'application/json'}
         self.here = os.path.dirname(os.path.realpath(__file__))
 
-        self.token_file = token_file
         self.base = base
         self.trigger_job = trigger_job
         self.generated = get_app_details.get_details(app=app)
@@ -103,8 +100,7 @@ class SpinnakerPipeline:
                     root_volume_size))
 
         ami_id = ami_lookup(name=base,
-                            region=region,
-                            token_file=self.token_file)
+                            region=region)
 
         ami_templates_mapping = {
             'us-east-1': 'aws-ebs.json',

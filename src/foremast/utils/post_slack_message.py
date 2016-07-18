@@ -3,7 +3,7 @@ import logging
 
 import slacker
 
-from config_loader import get_configs
+from .config_loader import get_configs
 
 LOG = logging.getLogger(__name__)
 
@@ -26,4 +26,3 @@ def post_slack_message(message, channel):
     except slacker.Error:
         LOG.info("error posted message to %s", channel)
 
-post_slack_message("test", "@dcampbell")
