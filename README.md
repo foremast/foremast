@@ -1,7 +1,6 @@
-# Spinnaker Pipes
+# Spinnaker Foremast
 
-This repository will contain scripts for all of the "pipes" tasks for Spinnaker
-deployments.
+This project contains different modules for managing applications, pipelines, and AWS infrastructure through Spinnaker
 
 ## Basic Task Overview
 
@@ -10,13 +9,24 @@ update this README as the project grows.
 
 ## Usage
 
-### Run Full Job
+### Run Jobs
 
-Commands can be run in the same way that Jenkins will execute using the helper
-Bash script.
+Commands can be run in the same way that Jenkins will execute using the below entry points.
+
+#### Entry Points
+
+- `prepare-app-pipeline` - Creates an application and pipeline Spinnaker
+- `prepare-infrastructure` - Sets up AWS infrastructure like s3, iam, elb, and security groups
+- `prepare-onetime-pipeline` - Generates a pipeline for deploying to one specific account
+- `create-scaling-policy` - Creates and attaches a scaling policy to an application server group.
+- `rebuild_pipelines` - rebuild pipelines after changes have been made
+- `slack-notify` - sends a slack notification to the proper channels
+
+
+You can run any of these entries points from the command line. They rely on environment variables and are ideal for running in a Jenkins job
 
 ```bash
-PROJECT=forrest GIT_REPO=core ./foremast.bash
+PROJECT=forrest GIT_REPO=core EMAIL=test@example.com prepare-app-pipeline
 ```
 
 ### Individual Packages
@@ -80,18 +90,20 @@ configuration.
 1. Create logical Spinnaker app (triggered by Git Hook)
 1. Call downstream Job to manage infrastructure
 1. Read configurations from `application-master-{env}.json` and `pipeline.json`
-1. Create/modify IAM Profile and Role
-1. Create/skip S3 Archaius application.properties file
-1. Create/modify Security Groups
-1. Create/modify ELB
-1. Create DNS record to ELB
-1. Create/modify application pipeline
+1. Generates an application and a pipeline in Spinnaker
+
+1. An infrastructure stage is created in the pipeline which does the following when ran: 
+    1. Create/modify IAM Profile and Role
+    1. Create/skip S3 Archaius application.properties file
+    1. Create/modify Security Groups
+    1. Create/modify ELB
+    1. Create DNS record to ELB
+    1. Create/modify application pipeline
 
 ### Not Used
 
-1. Create/modify server group/ASG
-
-    * Part of the Pipeline creation
+- Create/modify server group/ASG
+    - This is part of Spinnaker "deploy" stages and is handled completely by Spinnaker
 
 ## Technology Used
 
@@ -103,32 +115,14 @@ See [requirements](requirements.txt) for package listing.
 1. Argparse for arguments
 1. Boto3 (direct AWS access to parts not exposed by Spinnaker, e.g. S3)
 
-## Runway Updates
+## Runway Configuration Files
 
-To begin using the Spinnaker deployment system, a few changes will be needed to
-the `runway` directory to trigger the tooling.
+To begin using Foremast, you must have a few JSON configuration files defined for each application
 
-### runway/dsl.groovy
+### pipeline.json
 
-Remove any downstream Jobs as Spinnaker will poll for the main Job for
-completion.
-
-```groovy
-job("$SRC_JOB") {
-    publishers {
-        archiveArtifacts('runway/FS_ROOT/etc/gogo/jenkins_vars, RPMS/x86_64/*.rpm')
-        downstreamParameterized {
-            // Delete
-        }
-    }
-}
-```
-
-### runway/pipeline.json
-
-A new file, `pipeline.json`, will be needed in the `runway` directory to trigger
-the creation of the Spinnaker Application and Pipelines for each deployment
-environment.
+`pipeline.json`, will be needed in some direct of your application. We use the `runway` directory.
+We have a lot of defaults in place for `pipeline.json`, take a look at the docs for all options.
 
 #### Minimum
 
@@ -142,7 +136,7 @@ environment.
 
 Custom deployment environment order and selection can be provided in the `env`
 key. When missing, the default provided is `{"env": ["stage", "prod"]}`. Here,
-the order matters and Pipelines will be triggered in the given order.
+the order matters and Pipeline will be generated in the given order.
 
 ```json
 {
@@ -171,35 +165,60 @@ Pipeline view.
 }
 ```
 
+
+### application-master-{env}.json
+
 Each deployment environment specified in the `pipeline.json` file will need an
-accompanying `application-master-{env}.json` file.
+accompanying `application-master-{env}.json` file in the same directory.
 
-### runway/application-master-{env}.json
+The `application-master-{env} files have a lot of exposed values with sane defaults.
+Please take a look at the docs for all options.
 
-To determine which regions to deploy to, a new `regions` key can be used to
-override the default of `us-east-1`.
+#### application-master-{env}.json example
 
 ```json
 {
-    "regions": [
-        "us-east-1",
-        "us-west-2"
+  "security_group": {
+    "description": "something useful",
+    "elb_extras": ["sg_offices"],
+    "ingress": {
+    },
+    "egress": "0.0.0.0/0"
+  },
+  "app": {
+    "instance_type": "t2.small",
+    "app_description": "Edge Forrest Demo application",
+    "instance_profile": "forrest_edge_profile"
+  },
+  "elb": {
+    "subnet_purpose": "internal",
+    "target": "TCP:8080",
+    "ports": [
+      {"loadbalancer": "HTTP:80", "instance": "HTTP:8080"}
     ]
+  },
+  "asg": {
+    "subnet_purpose": "internal",
+    "min_inst": 1,
+    "max_inst": 1,
+    "scaling_policy": {
+        "metric": "CPUUtilization",
+        "threshold": 90,
+        "period_minutes": 10,
+        "statistic": "Average"
+        }
+  },
+  "regions": ["us-east-1"],
+  "dns" : {
+    "ttl": 120
+    }
 }
 ```
 
-## Migration with FIG TODOs
+## TODOs
 
-- [ ] Update Pipeline templates to include `gitlab-tagger`
-- [ ] Pipeline JSON template did not pick up Jenkins Job
-- Update gogo-sauce credentials
-  - [x] sox
-  - [ ] pci
-- [ ] DSL should make Job names lower cased
-- [x] S3 Bucket name for sox
-- [ ] Have Developers delete current Jenkins Job so Job can be recreated with
-  lower casing
-- [x] Fix hard coded `desired` ASG
-- [x] Manual Judgement: Do you want to proceed and promote the deployment to
-  {env}?
-- For customers of FIG, dependant services will need access to SOX throug public
+- [] Abstract Gogoutils or make public
+- [] Make prop_path implied, or handle it better
+- [] Open Source!
+- [] Add github support
+
