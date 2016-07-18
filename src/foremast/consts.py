@@ -27,7 +27,6 @@ def find_config():
 
     return configurations
 
-#Load in consts from config
 config = find_config()
 API_URL = config['base']['gate_api_url']
 GIT_URL = config['base']['git_url']
