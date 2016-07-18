@@ -7,8 +7,7 @@ from base64 import b64decode
 
 import gitlab
 
-from ..consts import GIT_URL
-from ..utils import get_configs
+from ..consts import GIT_URL, GITLAB_TOKEN
 
 ENVS = ('build', 'dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods',
         'stagesox')
@@ -29,9 +28,7 @@ def process_git_configs(git_short=''):
     """
     LOG.info('Processing application.json files from GitLab.')
 
-    token = get_configs(section='credentials')['gitlab_token']
-
-    server = gitlab.Gitlab(GIT_URL, token=token)
+    server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
 
     project_id = server.getproject(git_short)['id']
 

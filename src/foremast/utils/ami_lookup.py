@@ -6,9 +6,7 @@ from base64 import b64decode
 
 import gitlab
 
-from ..consts import GIT_URL
-from .config_loader import get_configs
-
+from ..consts import GIT_URL, GITLAB_TOKEN
 
 LOG = logging.getLogger(__name__)
 
@@ -24,9 +22,7 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
         str: AMI ID for _name_ in _region_.
     """
 
-    token = get_configs(section='credentials')['gitlab_token']
-
-    server = gitlab.Gitlab(GIT_URL, token=token)
+    server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
     project_id = server.getproject('devops/ansible')['id']
 
     ami_blob = server.getfile(project_id, 'scripts/{0}.json'.format(region),
