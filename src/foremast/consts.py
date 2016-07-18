@@ -1,4 +1,4 @@
-"""Loads base config and exports package constants."""
+"""Load base config and export package constants."""
 import logging
 from configparser import ConfigParser
 from os.path import expanduser
@@ -7,7 +7,7 @@ LOG = logging.getLogger(__name__)
 
 
 def find_config():
-    """Looks for config in config_locations. If not found, gives a fatal error
+    """Look for config in config_locations. If not found, give a fatal error
 
     Returns:
         ConfigParser: found configuration file
