@@ -10,13 +10,13 @@ LOG = logging.getLogger(__name__)
 
 
 def get_env_credential(env='dev'):
-    """Get Account Credential from Spinnaker for _env_.
+    """Get Account Credential from Spinnaker for *env*.
 
     Args:
         env (str): Environment name to find credentials for.
 
     Returns:
-        dict: Complete credentials for _env_::
+        dict: Complete credentials for *env*::
 
             {
                 'accountId': '123098123',
