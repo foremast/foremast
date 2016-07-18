@@ -2,9 +2,7 @@
 application-master-$account.json
 ================================
 
-.. toctree::
-
-   application_json
+.. contents::
 
 Purpose
 -------
@@ -97,7 +95,7 @@ Minimum number of instances your auto-scaling group should have at all times. Th
 Determines if the instances should be public (external) or non-public (internal).
 
     | *Default*: ``"internal"``
-    | *Options* 
+    | *Options*
 
        - ``"internal"``
        -  ``"external"``
@@ -128,7 +126,7 @@ Defines scaling policy to attach to ASG. If this block does not exist, no scalin
             | *Type*: int
             | *Units*: Minutes
 
-        ``statistic``: Statistic to calculate at the period to determine if threshold was met 
+        ``statistic``: Statistic to calculate at the period to determine if threshold was met
 
             | *Default*: ``"Average"``
             | *Options*:
@@ -175,7 +173,7 @@ Health check configuration block
         | *Units*: seconds
         | *Default*: ``20``
 
-    ``threshold`` : Number of consecutive health check succeses before declaring EC2 instance healthy. 
+    ``threshold`` : Number of consecutive health check succeses before declaring EC2 instance healthy.
 
         | *Default*: ``2``
 
@@ -318,4 +316,3 @@ Defines DNS TTL for generated DNS records
     | *Type*: int
     | *Units*: seconds
     | *Default*: ``60``
-

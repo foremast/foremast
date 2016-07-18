@@ -2,9 +2,7 @@
 pipeline.json
 =============
 
-.. toctree::
-
-    pipeline_json
+.. contents::
 
 Purpose
 -------
