@@ -43,7 +43,6 @@ class ForemastRunner(object):
         self.trigger_job = generated.jenkins()['name']
         self.git_short = generated.gitlab()['main']
 
-        self.gitlab_token_path = os.path.expanduser('~/.aws/git.token')
         self.raw_path = "./raw.properties"
         self.json_path = self.raw_path + ".json"
         self.configs = None
@@ -52,8 +51,7 @@ class ForemastRunner(object):
         """Generate the configurations needed for pipes."""
         utils.banner("Generating Configs")
         app_configs = configs.process_git_configs(
-            git_short=self.git_short,
-            token_file=self.gitlab_token_path)
+            git_short=self.git_short)
         self.configs = configs.write_variables(app_configs=app_configs,
                                                out_file=self.raw_path,
                                                git_short=self.git_short)
@@ -76,7 +74,6 @@ class ForemastRunner(object):
             'trigger_job': self.trigger_job,
             'prop_path': self.json_path,
             'base': None,
-            'token_file': self.gitlab_token_path,
         }
 
         if not onetime:
