@@ -1,10 +1,9 @@
 """Loads base config and exports package constants."""
-from configparser import ConfigParser
 import logging
+from configparser import ConfigParser
 from os.path import expanduser
 
 LOG = logging.getLogger(__name__)
-
 
 
 def find_config():
@@ -17,7 +16,7 @@ def find_config():
         './.foremast/foremast.cfg',
         expanduser('~/.foremast/foremast.cfg'),
         '/etc/foremast/foremast.cfg',
-        ]
+    ]
     configurations = ConfigParser()
 
     cfg_file = configurations.read(config_locations)
@@ -26,6 +25,7 @@ def find_config():
         LOG.error('No config found in the following locations: %s\n', config_locations)
 
     return configurations
+
 
 config = find_config()
 API_URL = config['base']['gate_api_url']
@@ -43,5 +43,4 @@ HEADERS = {
     'content-type': 'application/json',
     'user-agent': 'foremast',
 }
-LOGGING_FORMAT = ('%(asctime)s [%(levelname)s] %(name)s:%(funcName)s:'
-                  '%(lineno)d - %(message)s')
+LOGGING_FORMAT = ('%(asctime)s [%(levelname)s] %(name)s:%(funcName)s:' '%(lineno)d - %(message)s')
