@@ -7,7 +7,9 @@ LOG = logging.getLogger(__name__)
 
 
 def find_config():
-    """Look for config in config_locations. If not found, give a fatal error.
+    """Look for **foremast.cfg** in config_locations.
+
+    If not found, give a fatal error.
 
     Returns:
         ConfigParser: found configuration file
