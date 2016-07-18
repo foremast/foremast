@@ -25,7 +25,8 @@ def find_config():
     cfg_file = configurations.read(config_locations)
 
     if not cfg_file:
-        raise SystemExit('No configuration found in the following locations:\n\n{0}\n'.format('\n'.join(config_locations)))
+        raise SystemExit('No configuration found in the following locations:\n\n'
+                         '{0}\n'.format('\n'.join(config_locations)))
 
     return configurations
 
