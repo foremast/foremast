@@ -1,7 +1,7 @@
 """Construct an IAM Policy from templates.
 
 Examples:
-    pipeline.json:
+    pipeline.json::
 
         {
             "services": {
