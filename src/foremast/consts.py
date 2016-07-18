@@ -1,4 +1,12 @@
-"""Load base config and export package constants."""
+"""Load base config and export package constants.
+
+The ``foremast`` configuration file is read from the following locations in
+descending order. First found wins.
+
+* ``./.foremast/foremast.cfg``
+* ``~/.foremast/foremast.cfg``
+* ``/etc/foremast/foremast.cfg``
+"""
 import logging
 from configparser import ConfigParser
 from os.path import expanduser
