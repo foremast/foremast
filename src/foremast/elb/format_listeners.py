@@ -11,39 +11,38 @@ def format_listeners(elb_settings=None, env='dev'):
 
     Args:
         elb_settings (dict): ELB settings including ELB Listeners to add,
-            e.g.
+            e.g.::
 
-            # old
-            {
-                "certificate": null,
-                "i_port": 8080,
-                "lb_port": 80,
-                "subnet_purpose": "internal",
-                "target": "HTTP:8080/health"
-            }
+                # old
+                {
+                    "certificate": null,
+                    "i_port": 8080,
+                    "lb_port": 80,
+                    "subnet_purpose": "internal",
+                    "target": "HTTP:8080/health"
+                }
 
-            # new
-            {
-                "ports": [
-                    {
-                        "instance": "HTTP:8080",
-                        "loadbalancer": "HTTP:80"
-                    },
-                    {
-                        "certificate": "cert_name",
-                        "policies": ["policy_name"],
-                        "instance": "HTTP:8443",
-                        "loadbalancer": "HTTPS:443"
-                    }
-                ],
-                "subnet_purpose": "internal",
-                "target": "HTTP:8080/health"
-            }
+                # new
+                {
+                    "ports": [
+                        {
+                            "instance": "HTTP:8080",
+                            "loadbalancer": "HTTP:80"
+                        },
+                        {
+                            "certificate": "cert_name",
+                            "instance": "HTTP:8443",
+                            "loadbalancer": "HTTPS:443"
+                        }
+                    ],
+                    "subnet_purpose": "internal",
+                    "target": "HTTP:8080/health"
+                }
 
         env (str): Environment to find the Account Number for.
 
     Returns:
-        list: ELB Listeners formatted into dicts for Spinnaker.
+        list: ELB Listeners formatted into dicts for Spinnaker::
 
             [
                 {
