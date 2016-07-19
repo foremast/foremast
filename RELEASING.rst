@@ -6,7 +6,7 @@ Setup
 
 Add the following to ``~/.pypirc`` file
 
-::
+.. code-block:: ini
 
     [distutils]
     index-servers =
@@ -27,6 +27,6 @@ When releasing a new version, the following needs to occur
 
 Once that is taken care of, execute the following:
 
-::
+.. code-block:: bash
 
     $ python setup.py sdist upload -r gogo
