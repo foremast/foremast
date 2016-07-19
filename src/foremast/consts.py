@@ -54,22 +54,22 @@ except KeyError as missing_section:
     raise SystemExit('Section missing from configurations: [{0}]'.format(missing_section))
 
 try:
-    API_URL = BASE_SECTION['gate_api_url']
-    GIT_URL = BASE_SECTION['git_url']
-    DOMAIN = BASE_SECTION['domain']
-    ENVS = set(BASE_SECTION['envs'].split(','))
-    REGIONS = set(BASE_SECTION['regions'].split(','))
+    API_URL = BASE_SECTION.get('gate_api_url')
+    GIT_URL = BASE_SECTION.get('git_url')
+    DOMAIN = BASE_SECTION.get('domain')
+    ENVS = set(BASE_SECTION.get('envs').split(','))
+    REGIONS = set(BASE_SECTION.get('regions').split(','))
 except KeyError as missing_base_key:
     raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_base_key, section=BASE_SECTION.name))
 
 try:
-    GITLAB_TOKEN = CREDENTIALS_SECTION['gitlab_token']
-    SLACK_TOKEN = CREDENTIALS_SECTION['slack_token']
+    GITLAB_TOKEN = CREDENTIALS_SECTION.get('gitlab_token')
+    SLACK_TOKEN = CREDENTIALS_SECTION.get('slack_token')
 except KeyError as missing_credentials_key:
     raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_credentials_key, section=CREDENTIALS_SECTION.name))
 
 try:
-    ASG_WHITELIST = set(WHITELISTS_SECTION['asg_whitelist'].split(','))
+    ASG_WHITELIST = set(WHITELISTS_SECTION.get('asg_whitelist').split(','))
 except KeyError as missing_whitelists_key:
     raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_whitelists_key, section=WHITELISTS_SECTION.name))
 
