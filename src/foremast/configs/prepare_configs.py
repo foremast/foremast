@@ -116,6 +116,7 @@ def process_runway_configs(runway_dir=''):
         LOG.debug('Reading pipeline.json from %s', pipeline_file)
         with open(pipeline_file) as pipeline:
             app_configs['pipeline'] = json.load(pipeline)
+            LOG.info(app_configs['pipeline'])
     except FileNotFoundError:
         LOG.warning('Unable to process pipeline.json. Using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
