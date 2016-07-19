@@ -16,9 +16,12 @@
                     "name": "{{ rule.app }}",
                     "type": "{{ rule.protocol }}",
                     "startPort": {{ rule.start_port }},
-                    "endPort": {{ rule.end_port }},
-                    "vpcId": {{ rule.cross_account_vpc_id}},
-                    "crossAccountEnabled": {{ rule.cross_account_enabled}}
+                    "endPort": {{ rule.end_port }}
+                    {% if rule.cross_account_enabled %}
+                      ,
+                      "accountName": "{{ rule.cross_account_name }}",
+                      "vpcId": "{{ rule.cross_account_vpc_id }}"
+                    {% endif %}
                 }{% if not loop.last %},{% endif %}
                 {% endfor %}
             ],
