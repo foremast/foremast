@@ -98,7 +98,7 @@ Run any unit tests available in ``./tests/``.
 Implementation
 --------------
 
-See ``pipes-pipeline-prepare`` in `dsl.groovy <runway/dsl.groovy>`__ for Jenkins
+See ``pipes-pipeline-prepare`` in `dsl.groovy <runway/dsl.groovy>`_ for Jenkins
 Job configuration.
 
 #. Create logical Spinnaker app (triggered by Git Hook)
@@ -127,7 +127,7 @@ Not Used
 Technology Used
 ---------------
 
-See `requirements <requirements.txt>`__ for package listing.
+See `requirements <requirements.txt>`_ for package listing.
 
 #. Python3
 #. Jinja2 templating
