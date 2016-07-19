@@ -24,7 +24,7 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
         str: AMI ID for _name_ in _region_.
     """
 
-    if AMI_BASE_URL is not None:
+    if AMI_JSON_URL is not None:
         LOG.info("Getting AMI from %s" % AMI_JSON_URL)
         response = requests.get(AMI_JSON_URL)
         assert response.ok, "Error getting ami info from {}".format(
