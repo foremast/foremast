@@ -27,7 +27,6 @@ def get_vpc_id(account, region):
 
     vpcs = response.json()
 
-    vpc_id = ''
     for vpc in vpcs:
         LOG.debug('VPC: %(name)s, %(account)s, %(region)s => %(id)s', vpc)
         if all([

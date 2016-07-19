@@ -172,7 +172,7 @@ class SpinnakerSecurityGroup(object):
             if app in ('app_a', 'app_b'):
                 msg = (
                     'Using "{0}" in your security group will be ignored. '
-                    'Please remove them to supress this warning.').format(app)
+                    'Please remove them to suppress this warning.').format(app)
                 warn_user(msg)
                 continue
 
@@ -185,16 +185,28 @@ class SpinnakerSecurityGroup(object):
                     start_port = rule.get('start_port')
                     end_port = rule.get('end_port')
                     protocol = rule.get('protocol', 'tcp')
+                    account_name = rule.get('account', None)
+                    cross_account_enabled = False
+                    cross_account_vpc_id = None
                 except AttributeError:
                     start_port = rule
                     end_port = rule
                     protocol = 'tcp'
+                    account_name = None
+                    cross_account_enabled = False
+                    cross_account_vpc_id = None
+
+                if account_name:
+                    cross_account_vpc_id = get_vpc_id(account_name, self.region)
+                    cross_account_enabled = True
 
                 ingress_rules.append({
                     'app': app,
                     'start_port': start_port,
                     'end_port': end_port,
                     'protocol': protocol,
+                    'cross_account_vpc_id': cross_account_vpc_id,
+                    'cross_account_enabled': cross_account_enabled
                 })
 
         ingress_rules_no_cidr, ingress_rules_cidr = self._process_rules(
