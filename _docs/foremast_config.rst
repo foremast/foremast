@@ -12,7 +12,7 @@ This configuration holds information necessary for running foremast such as auth
 Example Configuration
 ----------------------
 
-.. literalinclude:: ../src/foremast/templates/foremast.cfg.example
+.. literalinclude:: .foremast/foremast.cfg
 
 Configuration Locations
 ------------------------
