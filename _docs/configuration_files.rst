@@ -6,5 +6,6 @@ Configuration Files
 
    foremast_config
    aws_creds
+   ami_json
    pipeline_json
    application_json
