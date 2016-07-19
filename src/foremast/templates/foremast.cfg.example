@@ -4,6 +4,7 @@ envs = dev,stage,prod
 regions = us-east-1,us-west-2
 git_url = https://git.example.com
 gate_api_url = http://gate-api.example.com:8084
+ami_base_url = http://s3.bucketname.com
 
 [credentials]
 gitlab_token = 123token23423343
