@@ -7,7 +7,7 @@ from base64 import b64decode
 import gitlab
 import requests
 
-from ..consts import GIT_URL, GITLAB_TOKEN, AMI_JSON_URL
+from ..consts import GIT_URL, GITLAB_TOKEN, AMI_BASE_URL
 
 LOG = logging.getLogger(__name__)
 
@@ -24,11 +24,12 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
         str: AMI ID for _name_ in _region_.
     """
 
-    if AMI_JSON_URL is not None:
-        LOG.info("Getting AMI from %s" % AMI_JSON_URL)
-        response = requests.get(AMI_JSON_URL)
+    if AMI_BASE_URL is not None:
+        full_ami_url = "{}/ami-xxxx{}.json".format(AMI_BASE_URL, region)
+        LOG.info("Getting AMI from %s" % full_ami_url)
+        response = requests.get(full_ami_url)
         assert response.ok, "Error getting ami info from {}".format(
-                AMI_JSON_URL)
+                full_ami_url)
 
         ami_dict = response.json()
         ami_id = ami_dict[region][name]
