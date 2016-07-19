@@ -59,6 +59,7 @@ try:
     DOMAIN = BASE_SECTION.get('domain')
     ENVS = set(BASE_SECTION.get('envs').split(','))
     REGIONS = set(BASE_SECTION.get('regions').split(','))
+    AMI_JSON_URL = BASE_SECTION.get('ami_json_url')
 except KeyError as missing_base_key:
     raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_base_key, section=BASE_SECTION.name))
 
@@ -72,6 +73,7 @@ try:
     ASG_WHITELIST = set(WHITELISTS_SECTION.get('asg_whitelist').split(','))
 except KeyError as missing_whitelists_key:
     raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_whitelists_key, section=WHITELISTS_SECTION.name))
+
 
 HEADERS = {
     'accept': '*/*',
