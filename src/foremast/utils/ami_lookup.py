@@ -5,8 +5,9 @@ import os
 from base64 import b64decode
 
 import gitlab
+import requests
 
-from ..consts import GIT_URL, GITLAB_TOKEN
+from ..consts import GIT_URL, GITLAB_TOKEN, AMI_JSON_URL
 
 LOG = logging.getLogger(__name__)
 
@@ -22,14 +23,23 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
         str: AMI ID for _name_ in _region_.
     """
 
-    server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
-    project_id = server.getproject('devops/ansible')['id']
+    if AMI_JSON_URL is not None:
+        LOG.info("Getting AMI from %s" % AMI_JSON_URL)
+        response = requests.get(AMI_JSON_URL)
+        assert response.ok, "Error getting ami info from {}".format(
+                AMI_JSON_URL)
 
-    ami_blob = server.getfile(project_id, 'scripts/{0}.json'.format(region),
-                              'master')
-    ami_contents = b64decode(ami_blob['content']).decode()
-    LOG.debug('AMI table: %s', ami_contents)
+        ami_dict = response.json()
+    else:
+        LOG.info("Getting AMI from Gitlab")
+        server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
+        project_id = server.getproject('devops/ansible')['id']
 
-    ami_dict = json.loads(ami_contents)
+        ami_blob = server.getfile(project_id, 'scripts/{0}.json'.format(region),
+                                  'master')
+        ami_contents = b64decode(ami_blob['content']).decode()
+        ami_dict = json.loads(ami_contents)
+
+    LOG.debug('AMI table: %s', ami_dict)
 
     return ami_dict[name]
