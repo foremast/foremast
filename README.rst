@@ -35,7 +35,7 @@ Entry Points
 You can run any of these entries points from the command line. They rely on
 environment variables and are ideal for running in a Jenkins job
 
-.. code:: bash
+.. code-block:: bash
 
     PROJECT=forrest GIT_REPO=core EMAIL=test@example.com prepare-app-pipeline
 
@@ -44,7 +44,7 @@ Individual Packages
 
 Run code directly without installing the ``foremast`` package.
 
-.. code:: bash
+.. code-block:: bash
 
     virtualenv venv
     source ./venv/bin/activate
@@ -65,7 +65,7 @@ Install
 
 Installing the package will provide CLI commands for convenience.
 
-.. code:: bash
+.. code-block:: bash
 
     virutalenv venv
     source ./venv/bin/activate
@@ -85,7 +85,7 @@ Testing
 
 Run any unit tests available in ``./tests/``.
 
-.. code:: bash
+.. code-block:: bash
 
     virtualenv venv
     source ./venv/bin/activate
@@ -151,7 +151,7 @@ take a look at the docs for all options.
 Minimum
 ^^^^^^^
 
-.. code:: json
+.. code-block:: json
 
     {
         "deployment": "spinnaker"
@@ -164,7 +164,7 @@ Custom deployment environment order and selection can be provided in the ``env``
 key. When missing, the default provided is ``{"env": ["stage", "prod"]}``. Here,
 the order matters and Pipeline will be generated in the given order.
 
-.. code:: json
+.. code-block:: json
 
     {
         "deployment": "spinnaker",
@@ -204,7 +204,7 @@ defaults. Please take a look at the docs for all options.
 application-master-{env}.json example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code:: json
+.. code-block:: json
 
     {
       "security_group": {
