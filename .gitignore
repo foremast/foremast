@@ -1,3 +1,6 @@
+*.exports
+*.json
+*.properties
 
 # Created by https://www.gitignore.io/api/python,linux,vim,osx
 
