@@ -13,7 +13,8 @@ LOG = logging.getLogger(__name__)
 
 
 def ami_lookup(region='us-east-1', name='tomcat8'):
-    """Use _name_ to find AMI ID.
+    """Use _name_ to find AMI ID. If no ami_base_url or gitlab_token is provided,
+    _name_ is returned as the ami id
 
     Args:
         region (str): AWS Region to find AMI ID.
@@ -31,7 +32,7 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
 
         ami_dict = response.json()
         ami_id = ami_dict[region][name]
-    else:
+    else if GITLAB_TOKEN is not None:
         LOG.info("Getting AMI from Gitlab")
         server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
         project_id = server.getproject('devops/ansible')['id']
@@ -41,6 +42,8 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
         ami_contents = b64decode(ami_blob['content']).decode()
         ami_dict = json.loads(ami_contents)
         ami_id = ami_dict[name]
+    else:
+        ami_id = name
 
     LOG.debug('AMI table: %s', ami_dict)
 
