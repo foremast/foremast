@@ -65,7 +65,7 @@ Restriction setting for promotions to prod* accounts.
 ``base``
 ~~~~~~~~
 
-The base AMI to use for baking the application
+The base AMI to use for baking the application. This can be an alias defined in :doc:`ami_json` or an AMI Id.
 
     | *Default*: ``"tomcat8"``
 
