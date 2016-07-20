@@ -185,17 +185,17 @@ class SpinnakerSecurityGroup(object):
                     start_port = rule.get('start_port')
                     end_port = rule.get('end_port')
                     protocol = rule.get('protocol', 'tcp')
-                    cross_account_name = rule.get('account', None)
+                    cross_account_env = rule.get('env', None)
                     cross_account_vpc_id = None
                 except AttributeError:
                     start_port = rule
                     end_port = rule
                     protocol = 'tcp'
-                    cross_account_name = None
+                    cross_account_env = None
                     cross_account_vpc_id = None
 
-                if cross_account_name:
-                    cross_account_vpc_id = get_vpc_id(cross_account_name,
+                if cross_account_env:
+                    cross_account_vpc_id = get_vpc_id(cross_account_env,
                                                       self.region)
 
                 ingress_rules.append({
@@ -203,7 +203,7 @@ class SpinnakerSecurityGroup(object):
                     'start_port': start_port,
                     'end_port': end_port,
                     'protocol': protocol,
-                    'cross_account_name': cross_account_name,
+                    'cross_account_env': cross_account_env,
                     'cross_account_vpc_id': cross_account_vpc_id
                 })
 
