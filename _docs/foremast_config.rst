@@ -35,12 +35,15 @@ Sections for base information such as urls and general configurations
 
 The base domain of your applications. Used for generating DNS
 
+    | *Required*: Yes
+
 ``envs``
 *********
 
 Comma delimiated list of environments/applications that will be managed with Foremast
 
     | *Example*: ``dev,stage,prod``
+    | *Required*: Yes
 
 ``regions``
 ***********
@@ -48,17 +51,29 @@ Comma delimiated list of environments/applications that will be managed with For
 Comma delimiated list of AWS regions managed by Foremast
 
     | *Example*: ``us-east-1,us-west-2``
+    | *Required*: Yes
 
-``git_url``
-***********
+``ami_json_url``
+*****************
+
+FQDN of where to query for AMI ID look ups. See :doc:`ami_json` for more details
+
+    | *Required*: No
+
+
+``gitlab_url``
+***************
 
 FQDN of gitlab. Will be used for handling API calls to Gitlab
+
+    | *Required*: No
 
 ``gate_api_url``
 *****************
 
 FQDN Of your spinnaker Gate instance. This is where all API calls to Spinnaker will go
 
+    | *Required*: Yes
 
 ``[credentials]``
 ~~~~~~~~~~~~~~~~~
@@ -70,10 +85,14 @@ Section for handling credential configurations such as tokens, usernames, and pa
 
 Gitlab token used for authentication in Foremast
 
+    | *Required*: No
+
 ``slack_token``
 ****************
 
 Slack token used for authentication when sending Slack messages from Foremast
+
+    | *Required*: No
 
 
 ``[whitelists]``
@@ -85,3 +104,5 @@ Sections for configuring whitelist info
 *****************
 
 Comma delimiated list of applications to whitelist from ASG rules
+
+    | *Required*: No
