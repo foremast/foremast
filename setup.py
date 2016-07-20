@@ -8,7 +8,7 @@ setup(
     name='foremast',
     version='2.7',
     description='Tools for creating infrastructure and Spinnaker Pipelines.',
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
     author='Gogo DevOps',
     author_email='ps-devops-tooling@example.com',
     packages=find_packages(where='src'),
