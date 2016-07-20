@@ -6,7 +6,6 @@ ami_json_url = http://s3.bucketname.com/ami_lookup.json
 
 git_url = https://git.example.com
 gate_api_url = http://gate-api.example.com:8084
-ami_base_url = http://s3.bucketname.com
 
 [credentials]
 gitlab_token = 123token23423343
