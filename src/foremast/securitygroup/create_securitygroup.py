@@ -186,21 +186,17 @@ class SpinnakerSecurityGroup(object):
                     end_port = rule.get('end_port')
                     protocol = rule.get('protocol', 'tcp')
                     cross_account_name = rule.get('account', None)
-                    cross_account_enabled = False
                     cross_account_vpc_id = None
                 except AttributeError:
                     start_port = rule
                     end_port = rule
                     protocol = 'tcp'
                     cross_account_name = None
-                    cross_account_enabled = False
                     cross_account_vpc_id = None
 
                 if cross_account_name:
-                    print(cross_account_name)
                     cross_account_vpc_id = get_vpc_id(cross_account_name,
                                                       self.region)
-                    cross_account_enabled = True
 
                 ingress_rules.append({
                     'app': app,
@@ -208,8 +204,7 @@ class SpinnakerSecurityGroup(object):
                     'end_port': end_port,
                     'protocol': protocol,
                     'cross_account_name': cross_account_name,
-                    'cross_account_vpc_id': cross_account_vpc_id,
-                    'cross_account_enabled': cross_account_enabled
+                    'cross_account_vpc_id': cross_account_vpc_id
                 })
 
         ingress_rules_no_cidr, ingress_rules_cidr = self._process_rules(
@@ -227,9 +222,7 @@ class SpinnakerSecurityGroup(object):
         secgroup_json = get_template(
             template_file='securitygroup_template.json',
             **template_kwargs)
-        import json
-        print(secgroup_json)
-        print(json.dumps(json.loads(secgroup_json), indent=2))
+
         response = requests.post(url, data=secgroup_json, headers=HEADERS)
 
         assert response.ok, ('Failed Security Group request for {0}: '
