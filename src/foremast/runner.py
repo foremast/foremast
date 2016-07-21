@@ -51,7 +51,7 @@ class ForemastRunner(object):
     def write_configs(self):
         """Generate the configurations needed for pipes."""
         utils.banner("Generating Configs")
-        if self.runway_dir is None:
+        if not self.runway_dir:
             app_configs = configs.process_git_configs(
                 git_short=self.git_short)
         else:
