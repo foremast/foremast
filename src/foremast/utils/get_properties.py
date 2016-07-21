@@ -10,6 +10,7 @@ def get_properties(properties_file='raw.properties.json', env=None):
 
     Args:
         properties_file (str): File name of `create-configs` JSON output.
+        env (str): Environment to read optionally
 
     Returns:
         dict: JSON loaded Application properties for _env_.
