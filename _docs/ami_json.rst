@@ -12,7 +12,7 @@ This json file is used as an AMI ID look up table for each region. It is used du
 Example Json
 ----------------------
 
-::
+.. code-block:: json
 
     {
         "us-east-1": {
