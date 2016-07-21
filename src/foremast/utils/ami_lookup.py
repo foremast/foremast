@@ -24,15 +24,16 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
         str: AMI ID for _name_ in _region_.
     """
 
-    if AMI_BASE_URL is not None:
-        LOG.info("Getting AMI from %s" % AMI_JSON_URL)
+    if AMI_JSON_URL:
+        LOG.info("Getting AMI from %s", AMI_JSON_URL)
         response = requests.get(AMI_JSON_URL)
         assert response.ok, "Error getting ami info from {}".format(
                 AMI_JSON_URL)
 
         ami_dict = response.json()
+        LOG.debug('Lookup AMI table: %s', ami_dict)
         ami_id = ami_dict[region][name]
-    else if GITLAB_TOKEN is not None:
+    elif GITLAB_TOKEN:
         LOG.info("Getting AMI from Gitlab")
         server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
         project_id = server.getproject('devops/ansible')['id']
@@ -41,10 +42,11 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
                                   'master')
         ami_contents = b64decode(ami_blob['content']).decode()
         ami_dict = json.loads(ami_contents)
+        LOG.debug('Lookup AMI table: %s', ami_dict)
         ami_id = ami_dict[name]
     else:
         ami_id = name
 
-    LOG.debug('AMI table: %s', ami_dict)
+    LOG.info('Using AMI: %s', ami_id)
 
     return ami_id
