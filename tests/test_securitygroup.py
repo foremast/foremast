@@ -19,10 +19,16 @@ SAMPLE_JSON = """{"security_group": {
                   }}"""
 
 
+@patch('foremast.securitygroup.create_securitygroup.check_task')
+@patch('requests.post')
 @patch("foremast.securitygroup.create_securitygroup.get_properties")
-def test_create_crossaccount_securitygroup(pipeline_config):
+def test_create_crossaccount_securitygroup(pipeline_config,
+                                           requests, check_task_mock):
     """Should create SG with cross account true"""
+    check_task_mock.return_value = True
+    requests.return_value.ok.return_value = True
     pipeline_config.return_value = json.loads(SAMPLE_JSON)
+
     x = SpinnakerSecurityGroup(app='edgeforrest',
                                env='dev',
                                region='us-east-1')
