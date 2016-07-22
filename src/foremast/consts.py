@@ -11,12 +11,39 @@ descending order. First found wins.
    :language: ini
 """
 import logging
-from configparser import ConfigParser
+from configparser import ConfigParser, DuplicateSectionError
 from os.path import expanduser
 
 LOG = logging.getLogger(__name__)
 
-MISSING_KEY_MSG_FMT = 'Missing {key} from [{section}]'
+
+def validate_key_values(config_handle, section, key, default=None):
+    """Warn when *key* is missing from configuration *section*.
+
+    Args:
+        config_handle (configparser.ConfigParser): Instance of configurations.
+        section (str): Name of configuration section to retrieve.
+        key (str): Configuration key to look up.
+        default (object): Default object to use when *key* is not found.
+
+    Returns:
+        object: ``str`` when *key* exists, otherwise *default* object.
+    """
+    try:
+        config_handle.add_section(section)
+        LOG.warning('Section missing from configurations: [%s]', section)
+    except DuplicateSectionError:
+        pass
+
+    section_handle = config[section]
+
+    try:
+        value = section_handle[key]
+    except KeyError:
+        LOG.warning('[%s] missing key "%s", using %r.', section_handle.name, key, default)
+        value = default
+
+    return value
 
 
 def find_config():
@@ -38,42 +65,24 @@ def find_config():
     cfg_file = configurations.read(config_locations)
 
     if not cfg_file:
-        raise SystemExit('No configuration found in the following locations:\n\n'
-                         '{0}\n'.format('\n'.join(config_locations)))
+        LOG.warning('No configuration found in the following locations:\n\n%s\n', '\n'.join(config_locations))
 
     return configurations
 
 
 config = find_config()
 
-try:
-    BASE_SECTION = config['base']
-    CREDENTIALS_SECTION = config['credentials']
-    WHITELISTS_SECTION = config['whitelists']
-except KeyError as missing_section:
-    raise SystemExit('Section missing from configurations: [{0}]'.format(missing_section))
+API_URL = validate_key_values(config, 'base', 'gate_api_url')
+GIT_URL = validate_key_values(config, 'base', 'git_url')
+DOMAIN = validate_key_values(config, 'base', 'domain')
+ENVS = set(validate_key_values(config, 'base', 'envs', default='').split(','))
+REGIONS = set(validate_key_values(config, 'base', 'regions', default='').split(','))
+AMI_JSON_URL = validate_key_values(config, 'base', 'ami_json_url')
 
-try:
-    API_URL = BASE_SECTION.get('gate_api_url')
-    GIT_URL = BASE_SECTION.get('git_url')
-    DOMAIN = BASE_SECTION.get('domain')
-    ENVS = set(BASE_SECTION.get('envs', '').split(','))
-    REGIONS = set(BASE_SECTION.get('regions', '').split(','))
-    AMI_JSON_URL = BASE_SECTION.get('ami_json_url')
-except KeyError as missing_base_key:
-    raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_base_key, section=BASE_SECTION.name))
+GITLAB_TOKEN = validate_key_values(config, 'credentials', 'gitlab_token')
+SLACK_TOKEN = validate_key_values(config, 'credentials', 'slack_token')
 
-try:
-    GITLAB_TOKEN = CREDENTIALS_SECTION.get('gitlab_token')
-    SLACK_TOKEN = CREDENTIALS_SECTION.get('slack_token')
-except KeyError as missing_credentials_key:
-    raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_credentials_key, section=CREDENTIALS_SECTION.name))
-
-try:
-    ASG_WHITELIST = set(WHITELISTS_SECTION.get('asg_whitelist', '').split(','))
-except KeyError as missing_whitelists_key:
-    raise SystemExit(MISSING_KEY_MSG_FMT.format(key=missing_whitelists_key, section=WHITELISTS_SECTION.name))
-
+ASG_WHITELIST = set(validate_key_values(config, 'whitelists', 'asg_whitelist', default='').split(','))
 
 HEADERS = {
     'accept': '*/*',
