@@ -10,7 +10,7 @@ import requests
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import (ami_lookup, get_app_details, get_properties, get_subnets,
-                     get_template)
+                     get_template, generate_packer_filename)
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block import construct_pipeline_block
 from .renumerate_stages import renumerate_stages
@@ -93,7 +93,10 @@ class SpinnakerPipeline:
 
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
+        baking_process = self.settings['pipeline']['image']['builder']
+        provider = 'aws'
         root_volume_size = self.settings['pipeline']['image']['root_volume_size']
+
         if root_volume_size > 50:
             raise SpinnakerPipelineCreationFailed(
                 'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
@@ -102,10 +105,7 @@ class SpinnakerPipeline:
         ami_id = ami_lookup(name=base,
                             region=region)
 
-        ami_templates_mapping = {
-            'us-east-1': 'aws-ebs.json',
-            'us-west-2': 'aws-ebs-west-2.json',
-        }
+        ami_template_file = generate_packer_filename(provider, region, baking_process)
 
         data = {'app': {
             'ami_id': ami_id,
@@ -117,7 +117,7 @@ class SpinnakerPipeline:
             'email': email,
             'slack': slack,
             'root_volume_size': root_volume_size,
-            'ami_template_file': ami_templates_mapping.get(region, ami_templates_mapping.get('us-east-1')),
+            'ami_template_file': ami_template_file,
         }}
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))

@@ -21,7 +21,7 @@ ANSWER1 = {
 }
 
 
-def test_main():
+def test_iam_construct_policy():
     """Check general assemblage."""
     settings = {}
 
