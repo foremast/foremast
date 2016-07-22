@@ -20,7 +20,6 @@ def main():
     add_debug(parser)
     add_app(parser)
     add_properties(parser)
-    add_gitlab_token(parser)
     parser.add_argument('-b',
                         '--base',
                         help='Base AMI name to use, e.g. fedora, tomcat')
@@ -46,15 +45,13 @@ def main():
                                                  onetime=args.onetime,
                                                  trigger_job=args.triggerjob,
                                                  prop_path=args.properties,
-                                                 base=args.base,
-                                                 token_file=args.token_file)
+                                                 base=args.base)
         spinnakerapps.create_pipeline()
     else:
         spinnakerapps = SpinnakerPipeline(app=args.app,
                                           trigger_job=args.triggerjob,
                                           prop_path=args.properties,
-                                          base=args.base,
-                                          token_file=args.token_file)
+                                          base=args.base)
         spinnakerapps.create_pipeline()
 
 
