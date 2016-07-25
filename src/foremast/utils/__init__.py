@@ -1,5 +1,4 @@
 """Package for foremast supporting utilities"""
-from ._ami_lookup import *
 from .banner import *
 from .check_managed_pipeline import *
 from .check_task import *
@@ -20,5 +19,6 @@ from .get_security_group_id import *
 from .get_subnets import *
 from .get_template import *
 from .get_vpc_id import *
+from .lookups import *
 from .post_slack_message import *
 from .warn_user import *
