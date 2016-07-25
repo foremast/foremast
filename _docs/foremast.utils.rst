@@ -4,14 +4,6 @@ foremast.utils package
 Submodules
 ----------
 
-foremast.utils.ami_lookup module
---------------------------------
-
-.. automodule:: foremast.utils.ami_lookup
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 foremast.utils.banner module
 ----------------------------
 
@@ -64,6 +56,14 @@ foremast.utils.generate_encoded_user_data module
 ------------------------------------------------
 
 .. automodule:: foremast.utils.generate_encoded_user_data
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.generate_filename module
+---------------------------------------
+
+.. automodule:: foremast.utils.generate_filename
     :members:
     :undoc-members:
     :show-inheritance:
@@ -152,6 +152,14 @@ foremast.utils.get_vpc_id module
 --------------------------------
 
 .. automodule:: foremast.utils.get_vpc_id
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.lookups module
+-----------------------------
+
+.. automodule:: foremast.utils.lookups
     :members:
     :undoc-members:
     :show-inheritance:
