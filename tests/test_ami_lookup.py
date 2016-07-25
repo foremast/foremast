@@ -6,10 +6,10 @@ from unittest import mock
 from foremast.utils import ami_lookup
 
 
-@mock.patch('foremast.utils._ami_lookup.GITLAB_TOKEN')
-@mock.patch('foremast.utils._ami_lookup.gitlab.Gitlab')
-def test_lookup(gitlab, token):
-    """Lookup should contact GitLab for JSON table and resolve."""
+@mock.patch('foremast.utils.lookups.GITLAB_TOKEN')
+@mock.patch('foremast.utils.lookups.gitlab.Gitlab')
+def test_ami_lookup(gitlab, token):
+    """AMI lookup should contact GitLab for JSON table and resolve."""
     sample_dict = {
         'base_fedora': 'ami-xxxx',
         'tomcat8': 'ami-xxxx',
