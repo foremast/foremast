@@ -56,9 +56,9 @@ def find_config():
         ConfigParser: found configuration file
     """
     config_locations = [
-        './.foremast/foremast.cfg',
-        expanduser('~/.foremast/foremast.cfg'),
         '/etc/foremast/foremast.cfg',
+        expanduser('~/.foremast/foremast.cfg'),
+        './.foremast/foremast.cfg',
     ]
     configurations = ConfigParser()
 
