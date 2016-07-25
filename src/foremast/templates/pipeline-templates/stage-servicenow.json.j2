@@ -12,8 +12,8 @@
       "job": "servicenow-spinnaker",
       "parameters": {
         "EXECUTION_ID": "${execution.id}",
-        "GIT_REPO": "${triggers.properties.GIT_PROJECT}",
-        "GIT_COMMIT": "${triggers.properties.BUILD_TRIGGER_GIT_COMMIT}",
-        "SERVICE": "${triggers.properties.ARTIFACT_RPM}"
+        "GIT_REPO": "${trigger.properties.GIT_PROJECT}",
+        "GIT_COMMIT": "${trigger.properties.BUILD_TRIGGER_GIT_COMMIT}",
+        "SERVICE": "${trigger.properties.ARTIFACT_RPM}"
         }
     }
