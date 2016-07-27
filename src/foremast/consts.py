@@ -46,7 +46,16 @@ def validate_key_values(config_handle, section, key, default=None):
     return value
 
 def extract_formats(config_handle):
+    """Get application formats.
 
+    Args:
+        config_handle (configparser.ConfigParser): Instance of configurations.
+
+    Returns:
+        object: ``str`` when *key* exists, otherwise *default* object.
+        dict: of formats in {$format_type: $format_pattern}.
+        See (gogoutils.Formats) for available options.
+    """
     formats = {}
 
     if config_handle.has_section('formats'):
