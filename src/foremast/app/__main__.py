@@ -8,7 +8,7 @@ import logging
 import gogoutils
 
 from ..args import add_app, add_debug
-from ..consts import LOGGING_FORMAT, UTIL_FORMATS
+from ..consts import LOGGING_FORMAT, APP_FORMATS
 from .create_app import SpinnakerApp
 
 
@@ -35,7 +35,7 @@ def main():
 
     if args.git and args.git != 'None':
         parsed = gogoutils.Parser(args.git).parse_url()
-        generated = gogoutils.Generator(*parsed, formats=UTIL_FORMATS)
+        generated = gogoutils.Generator(*parsed, formats=APP_FORMATS)
         project = generated.project
         repo = generated.repo
     else:
