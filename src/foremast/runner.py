@@ -38,7 +38,8 @@ class ForemastRunner(object):
 
         self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
-        generated = gogoutils.Generator(*parsed.parse_url())
+        generated = gogoutils.Generator(*parsed.parse_url(),
+                                        formats=consts.UTIL_FORMATS)
 
         self.app = generated.app
         self.trigger_job = generated.jenkins()['name']
