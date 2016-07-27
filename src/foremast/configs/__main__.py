@@ -8,7 +8,7 @@ import logging
 import gogoutils
 
 from ..args import add_debug, add_gitlab_token
-from ..consts import LOGGING_FORMAT
+from ..consts import LOGGING_FORMAT, UTIL_FORMATS
 from .outputs import write_variables
 from .prepare_configs import process_git_configs, process_runway_configs
 
@@ -42,7 +42,7 @@ def main():
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     generated = gogoutils.Generator(
-        *gogoutils.Parser(args.git_short).parse_url())
+        *gogoutils.Parser(args.git_short).parse_url(), formats=UTIL_FORMATS)
     git_short = generated.gitlab()['main']
 
     if args.runway_dir:

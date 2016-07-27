@@ -45,6 +45,14 @@ def validate_key_values(config_handle, section, key, default=None):
 
     return value
 
+def extract_formats(config_handle):
+
+    formats = {}
+
+    if config_handle.has_section('formats'):
+        formats = dict(config_handle['formats'])
+
+    return formats
 
 def find_config():
     """Look for **foremast.cfg** in config_locations.
@@ -83,6 +91,7 @@ GITLAB_TOKEN = validate_key_values(config, 'credentials', 'gitlab_token')
 SLACK_TOKEN = validate_key_values(config, 'credentials', 'slack_token')
 
 ASG_WHITELIST = set(validate_key_values(config, 'whitelists', 'asg_whitelist', default='').split(','))
+UTIL_FORMATS = extract_formats(config)
 
 HEADERS = {
     'accept': '*/*',

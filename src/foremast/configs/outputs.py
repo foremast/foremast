@@ -6,6 +6,7 @@ from pprint import pformat
 import gogoutils
 
 from ..utils import DeepChainMap, get_template
+from ..consts import UTIL_FORMATS
 
 LOG = logging.getLogger(__name__)
 
@@ -66,7 +67,8 @@ def write_variables(app_configs=None, out_file='', git_short=''):
     Returns:
         dict: Configuration equivalent to the JSON output.
     """
-    generated = gogoutils.Generator(*gogoutils.Parser(git_short).parse_url())
+    generated = gogoutils.Generator(*gogoutils.Parser(git_short).parse_url(),
+                                    formats=UTIL_FORMATS)
 
     json_configs = {}
     for env, configs in app_configs.items():

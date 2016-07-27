@@ -5,7 +5,7 @@ import gogoutils
 import murl
 import requests
 
-from ..consts import API_URL
+from ..consts import API_URL, UTIL_FORMATS
 from ..exceptions import SpinnakerAppNotFound
 
 LOG = logging.getLogger(__name__)
@@ -35,7 +35,8 @@ def get_details(app='groupproject', env='dev'):
     LOG.debug('App details: %s', app_details)
     group = app_details['attributes'].get('repoProjectKey')
     project = app_details['attributes'].get('repoSlug')
-    generated = gogoutils.Generator(group, project, env=env)
+    generated = gogoutils.Generator(group, project, env=env,
+                                    formats=UTIL_FORMATS)
 
     LOG.debug('Application details: %s', generated)
     return generated
