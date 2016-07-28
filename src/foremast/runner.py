@@ -222,6 +222,9 @@ def rebuild_pipelines():
             LOG.info('Rebuilding pipelines for {}/{}'.format(
                     app['repoProjectKey'], app['repoSlug']))
             runner = ForemastRunner()
-            runner.write_configs()
-            runner.create_pipeline()
+            try:
+                runner.write_configs()
+                runner.create_pipeline()
+            except exception as e:
+                print(e)
             runner.cleanup()
