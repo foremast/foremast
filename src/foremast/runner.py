@@ -225,6 +225,6 @@ def rebuild_pipelines():
             try:
                 runner.write_configs()
                 runner.create_pipeline()
-            except exception as e:
+            except Exception as e:
                 print(e)
             runner.cleanup()
