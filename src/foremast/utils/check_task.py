@@ -30,7 +30,7 @@ def check_task(taskid, app_name):
 
     LOG.info('Checking taskid %s', taskid)
 
-    url = '{0}/applications/{1}/tasks/{2}'.format(API_URL, app_name, taskid)
+    url = '{}/tasks/{}'.format(API_URL, taskid)
     task_response = requests.get(url, headers=HEADERS)
 
     LOG.debug(task_response.json())
