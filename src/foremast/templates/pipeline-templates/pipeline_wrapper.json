@@ -1,5 +1,6 @@
 {
   "name": "{{ data.app.appname }} [{{ data.app.region }}]",
+  "id": "{{ data.id }}",
   "application": "{{ data.app.appname }}",
   "triggers": [
     {% include "pipeline-templates/trigger-jenkins.json.j2" %}
