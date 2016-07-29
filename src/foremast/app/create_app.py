@@ -8,7 +8,7 @@ from pprint import pformat
 import requests
 
 from ..consts import API_URL, HEADERS
-from ..utils import get_template, check_task
+from ..utils import get_template, check_task, post_task
 
 
 class SpinnakerApp:
@@ -71,11 +71,8 @@ class SpinnakerApp:
         jsondata = get_template(template_file='app_data_template.json',
                                 appinfo=self.appinfo)
 
-        url = "{}/tasks".format(API_URL)
-        r = requests.post(url, data=jsondata, headers=HEADERS)
-
-        assert r.ok, 'Failed to create "{0}": {1}'.format(self.appname, r.text)
-        check_task(r.json()['ref'], self.appname)
+        taskid = post_task(jsondata)
+        check_task(taskid, self.appname)
 
         self.log.info("Successfully created %s application", self.appname)
         return
