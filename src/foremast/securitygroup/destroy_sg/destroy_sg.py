@@ -41,6 +41,6 @@ def destroy_sg(app='', env='', region='', **_):
 
         response = Gate().tasks.post(destroy_request)
 
-        check_task(response, app)
+        check_task(response)
 
     return True
