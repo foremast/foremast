@@ -72,7 +72,7 @@ class SpinnakerApp:
                                 appinfo=self.appinfo)
 
         taskid = post_task(jsondata)
-        check_task(taskid, self.appname)
+        check_task(taskid)
 
         self.log.info("Successfully created %s application", self.appname)
         return

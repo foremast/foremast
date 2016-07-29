@@ -9,7 +9,7 @@ import os
 import requests
 
 from ..consts import API_URL, HEADERS
-from ..utils import (get_properties, get_template, check_task)
+from ..utils import (get_properties, get_template, check_task, post_task)
 
 
 class AutoScalingPolicy:
@@ -116,18 +116,6 @@ class AutoScalingPolicy:
         self.prepare_policy_template('scale_up', period_sec, server_group)
         self.prepare_policy_template('scale_down', period_sec, server_group)
 
-    def post_task(self, payload):
-        """Takes the rendered JSON and POSTs as a task to Spinnaker.
-        Checks task response until complete.
-
-        Args:
-            payload (json): The rendered data of the scaling policy to be created/deleted
-        """
-        url = "{0}/applications/{1}/tasks".format(API_URL, self.app)
-        response = requests.post(url, data=payload, headers=HEADERS)
-        assert response.ok, "Error creating {0} Autoscaling Policy: {1}".format(
-            self.app, response.text)
-        check_task(response.json()['ref'], self.app)
 
     def get_server_group(self):
         """Finds the most recently deployed server group for the application.
@@ -163,7 +151,8 @@ class AutoScalingPolicy:
                     "type":"deleteScalingPolicy",
                     "user":"pipes-autoscaling-policy"
                 }]}
-        self.post_task(json.dumps(delete_dict))
+        taskid = post_task(json.dumps(delete_dict))
+        check_task(taskid)
 
     def get_all_existing(self):
         """Finds all existing scaling policies for an application
