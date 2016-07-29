@@ -107,6 +107,8 @@ class SpinnakerPipeline:
 
         ami_template_file = generate_packer_filename(provider, region, baking_process)
 
+        pipeline_id = self.compare_with_existing(region=region)
+
         data = {'app': {
             'ami_id': ami_id,
             'appname': self.app_name,
@@ -118,7 +120,9 @@ class SpinnakerPipeline:
             'slack': slack,
             'root_volume_size': root_volume_size,
             'ami_template_file': ami_template_file,
-        }}
+            },
+        'id': pipeline_id
+        }
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
@@ -127,6 +131,38 @@ class SpinnakerPipeline:
             data=data)
 
         return json.loads(wrapper)
+
+    def get_existing_pipelines(self):
+        """Gets existing pipeline configs for specific application
+
+        Returns:
+            str of pipeline config json
+        """
+        url = "{}/applications/{}/pipelineConfigs".format(API_URL, self.app_name)
+        r = requests.get(url)
+        assert r.ok, 'Failed to lookup pipelines for {0}: {1}'.format(
+                    self.app_name, r.text)
+
+        return r.json()
+
+    def compare_with_existing(self, region='us-east-1'):
+        """Compares desired pipeline with existing pipelines.
+
+        Args:
+            region (str): region of desired pipeline
+
+        Returns:
+            str: pipeline_id if existing, empty string of not
+        """
+        pipelines = self.get_existing_pipelines()
+        for pipeline in pipelines:
+            if (pipeline['application'] == self.app_name
+                and region in pipeline['name']):
+                self.log.info('Existing pipeline found')
+                return pipeline['id']
+
+        self.log.info('No existing pipeline found')
+        return ''
 
     def create_pipeline(self):
         """Main wrapper for pipeline creation.
