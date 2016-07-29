@@ -34,7 +34,7 @@ from boto3.exceptions import botocore
 from ..consts import API_URL, HEADERS
 from ..exceptions import (SpinnakerSecurityGroupCreationFailed,
                           SpinnakerSecurityGroupError, SpinnakerTaskError)
-from ..utils import (check_task, get_properties, get_security_group_id,
+from ..utils import (check_task, post_task, get_properties, get_security_group_id,
                      get_template, get_vpc_id, warn_user)
 
 
@@ -161,7 +161,6 @@ class SpinnakerSecurityGroup(object):
         Returns:
             boolean: True if created successfully
         """
-        url = "{0}/applications/{1}/tasks".format(API_URL, self.app_name)
 
         ingress = self.properties['security_group']['ingress']
         ingress_rules = []
@@ -223,17 +222,8 @@ class SpinnakerSecurityGroup(object):
             template_file='securitygroup_template.json',
             **template_kwargs)
 
-        response = requests.post(url, data=secgroup_json, headers=HEADERS)
-
-        assert response.ok, ('Failed Security Group request for {0}: '
-                             '{1}').format(self.app_name, response.text)
-
-        try:
-            check_task(response.json(), self.app_name)
-        except SpinnakerTaskError as error:
-            self.log.error('Failed to create Security Group for %s: %s',
-                           self.app_name, response.text)
-            raise SpinnakerSecurityGroupCreationFailed(error)
+        taskid = post_task(secgroup_json)
+        check_task(taskid)
 
         # Append cidr rules
         self.add_cidr_rules(ingress_rules_cidr)
