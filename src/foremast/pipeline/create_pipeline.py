@@ -146,7 +146,7 @@ class SpinnakerPipeline:
         return resp.json()
 
     def compare_with_existing(self, region='us-east-1'):
-        """Compare desired pipeline with existing pipelines.
+        """Compares desired pipeline with existing pipelines.
 
         Args:
             region (str): region of desired pipeline
