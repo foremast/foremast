@@ -41,7 +41,7 @@ class ForemastRunner(object):
         generated = gogoutils.Generator(*parsed.parse_url(),
                                         formats=consts.APP_FORMATS)
 
-        self.app = generated.app
+        self.app = generated.app_name()
         self.trigger_job = generated.jenkins()['name']
         self.git_short = generated.gitlab()['main']
 

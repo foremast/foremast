@@ -77,7 +77,7 @@ def write_variables(app_configs=None, out_file='', git_short=''):
             rendered_configs = json.loads(
                 get_template('configs.json.j2',
                              env=env,
-                             app=generated.app,
+                             app=generated.app_name(),
                              profile=instance_profile))
             json_configs[env] = dict(DeepChainMap(configs, rendered_configs))
         else:
