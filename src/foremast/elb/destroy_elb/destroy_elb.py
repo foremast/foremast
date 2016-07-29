@@ -20,7 +20,7 @@ def destroy_elb(app='', env='dev', region='us-east-1', **_):
         region=region,
         vpc=get_vpc_id(account=env, region=region))
 
-    response = Gate('applications/{0}/tasks'.format(app)).post(task_json)
-    check_task(response, app)
+    response = Gate('/tasks').post(task_json)
+    check_task(response)
 
     return True
