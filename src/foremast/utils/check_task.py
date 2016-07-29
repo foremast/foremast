@@ -11,12 +11,11 @@ LOG = logging.getLogger(__name__)
 
 
 @retries(max_attempts=50, wait=2, exceptions=(AssertionError, ValueError))
-def check_task(taskid, app_name):
+def check_task(taskid):
     """Check task status.
 
     Args:
         taskid (str): the task id returned from create_elb.
-        app_name (str): application name related to this task.
 
     Returns:
         polls for task status.
