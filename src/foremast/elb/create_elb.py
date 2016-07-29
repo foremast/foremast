@@ -7,7 +7,7 @@ import requests
 
 from ..consts import API_URL, HEADERS
 from ..utils import (check_task, get_properties, get_subnets, get_template,
-                     get_vpc_id)
+                     get_vpc_id, post_task)
 from .format_listeners import format_listeners
 from .splay_health import splay_health
 
@@ -99,14 +99,8 @@ class SpinnakerELB:
         app = self.app
         json_data = self.make_elb_json()
 
-        url = API_URL + '/applications/%s/tasks' % app
-        response = requests.post(url, data=json_data, headers=HEADERS)
-
-        assert response.ok, 'Error creating {0} ELB: {1}'.format(app,
-                                                                 response.text)
-
-        taskid = response.json()
-        assert check_task(taskid, app)
+        taskid = post_task(json_data)
+        check_task(taskid)
 
         self.add_listener_policy(json_data)
 
