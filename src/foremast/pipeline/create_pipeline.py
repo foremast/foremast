@@ -163,7 +163,8 @@ class SpinnakerPipeline:
                 break
         else:
             self.log.info('No existing pipeline found')
-            return pipeline_id
+
+        return pipeline_id
 
     def create_pipeline(self):
         """Main wrapper for pipeline creation.

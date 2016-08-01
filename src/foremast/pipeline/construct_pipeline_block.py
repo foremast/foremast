@@ -45,16 +45,17 @@ def construct_pipeline_block(env='',
 
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
+    gen_app_name = generated.app_name()
     user_data = generate_encoded_user_data(env=env,
                                            region=region,
-                                           app_name=generated.app_name(),
+                                           app_name=gen_app_name,
                                            group_name=generated.project)
 
     # Use different variable to keep template simple
     instance_security_groups = [
         'sg_apps',
         'sg_offices',
-        generated.app_name(),
+        gen_app_name,
     ]
     instance_security_groups.extend(
         settings['security_group']['instance_extras'])
@@ -72,7 +73,7 @@ def construct_pipeline_block(env='',
     if settings['app']['eureka_enabled']:
         elb = []
     else:
-        elb = ['{0}'.format(generated.app_name())]
+        elb = ['{0}'.format(gen_app_name)]
     LOG.info('Attaching the following ELB: {0}'.format(elb))
 
     provider_healthcheck = []
@@ -95,15 +96,15 @@ def construct_pipeline_block(env='',
         LOG.info('Switching health check type to: EC2')
 
     LOG.info('White listed dev asg apps: {0}'.format(ASG_WHITELIST))
-    if env == 'dev' and generated.app_name() not in ASG_WHITELIST:
+    if env == 'dev' and gen_app_name not in ASG_WHITELIST:
         data['asg'].update({
             'max_inst': '1',
             'min_inst': '1'
         })
-        LOG.info('App {0} is not white listed, using default dev ASG settings'.format(generated.app_name()))
+        LOG.info('App {0} is not white listed, using default dev ASG settings'.format(gen_app_name))
 
     data['app'].update({
-        'appname': generated.app_name(),
+        'appname': gen_app_name,
         'repo_name': generated.repo,
         'group_name': generated.project,
         'environment': env,
