@@ -133,20 +133,20 @@ class SpinnakerPipeline:
         return json.loads(wrapper)
 
     def get_existing_pipelines(self):
-        """Gets existing pipeline configs for specific application
+        """Get existing pipeline configs for specific application
 
         Returns:
             str of pipeline config json
         """
         url = "{}/applications/{}/pipelineConfigs".format(API_URL, self.app_name)
-        r = requests.get(url)
-        assert r.ok, 'Failed to lookup pipelines for {0}: {1}'.format(
-                    self.app_name, r.text)
+        resp = requests.get(url)
+        assert resp.ok, 'Failed to lookup pipelines for {0}: {1}'.format(
+                    self.app_name, resp.text)
 
-        return r.json()
+        return resp.json()
 
     def compare_with_existing(self, region='us-east-1'):
-        """Compares desired pipeline with existing pipelines.
+        """Compare desired pipeline with existing pipelines.
 
         Args:
             region (str): region of desired pipeline
@@ -156,8 +156,7 @@ class SpinnakerPipeline:
         """
         pipelines = self.get_existing_pipelines()
         for pipeline in pipelines:
-            if (pipeline['application'] == self.app_name
-                and region in pipeline['name']):
+            if (pipeline['application'] == self.app_name and region in pipeline['name']):
                 self.log.info('Existing pipeline found')
                 return pipeline['id']
 
