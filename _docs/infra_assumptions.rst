@@ -1,15 +1,17 @@
-=========================
-Necessary Infrastructure
-=========================
+================
+Infrastructure
+================
 
 .. contents::
    :local:
 
-Spinnaker Infrastructure
-------------------------
+Spinnaker
+---------
 
 - Foremast assumes that Spinnaker is already setup. Please see the `Spinnaker documentation`_ for assistance
-- Foremast requires connectivity to the Gate component of Spinnaker.
+- Requires connectivity to the Gate component of Spinnaker.
+  - Does not support authentication (yet)
+- Assumes AWS EBS packer bakes
 
 
 Spinnaker Component Versions
@@ -26,9 +28,44 @@ Below are the Spinnaker component versions that we use internally at Gogo and th
     - Rosco: ``0.42.0``
     - Orca: ``1.168.0``
 
-If you have any issues with Foremast at other Spinnaker versions, file an issue (or pull request).  
+If you have any issues with Foremast at other Spinnaker versions please file an issue (or pull request).
 
-AWS Infrastructure
-------------------
+AWS
+---
+
+Foremast only works with AWS (for now). Below are the AWS requirements:
+
+- Foremast IAM Access:
+  - Will need credentials set up in a Boto3 configuration file. See :doc:`aws_creds` for details
+  - IAM user or role will need the following permissions:
+    - ``S3``: View, create and delete buckets
+    - ``IAM``: View, create and  delete roles, uers, and policies
+    - ``Route53``: View, create, and delete DNS records
+  - Everything else, such as ELBs and security groups, are handled through Spinnaker.
+- VPC Setup
+  - 
+
+Jenkins
+-------
+
+Foremast takes advantage of the Spinnaker Jenkins stage. In order for the Foremast generated pipeline to work you will need the following:
+
+- Jenkins configuration named "JenkinsCI" in Spinnaker Igor
+
+  - Example Igor config::
+
+        jenkins:
+          Masters:
+            -
+              name: 'JenkinsCI' # The display name for this server
+              address: 'http://jenkinsci.example.com'
+              username: 'spinnaker'
+              password: 'password'
+
+
+Gitlab
+------
+
+Gitlab is not required for Spinnaker but if it is already part of your infrastructure you can have Foremast directly look up the :doc:`pipeline_json` and :doc:`application_json` files. You will need to get the Gitlab Token of a user that has permissions to the desired repository and set them in your :doc:`foremast_config`. 
 
 .. _`Spinnaker documentation`: http://www.spinnaker.io/docs
