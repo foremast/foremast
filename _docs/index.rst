@@ -15,6 +15,7 @@ Contents
 
    getting_started
    configuration_files
+   infra_assumptions
    forming_pipelines
    modules
    RELEASING
