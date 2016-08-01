@@ -1,7 +1,6 @@
 """Package for foremast supporting utilities"""
 from .banner import *
 from .check_managed_pipeline import *
-from .check_task import *
 from .deep_chain_map import DeepChainMap
 from .find_elb import *
 from .gate import *
@@ -21,5 +20,5 @@ from .get_template import *
 from .get_vpc_id import *
 from .lookups import *
 from .post_slack_message import *
-from .post_task import *
+from .tasks import *
 from .warn_user import *
