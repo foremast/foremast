@@ -110,19 +110,19 @@ class SpinnakerPipeline:
         pipeline_id = self.compare_with_existing(region=region)
 
         data = {'app': {
-            'ami_id': ami_id,
-            'appname': self.app_name,
-            'base': base,
-            'environment': 'packaging',
-            'region': region,
-            'triggerjob': self.trigger_job,
-            'email': email,
-            'slack': slack,
-            'root_volume_size': root_volume_size,
-            'ami_template_file': ami_template_file,
-            },
-        'id': pipeline_id
-        }
+                    'ami_id': ami_id,
+                    'appname': self.app_name,
+                    'base': base,
+                    'environment': 'packaging',
+                    'region': region,
+                    'triggerjob': self.trigger_job,
+                    'email': email,
+                    'slack': slack,
+                    'root_volume_size': root_volume_size,
+                    'ami_template_file': ami_template_file,
+                },
+                'id': pipeline_id
+            }
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
@@ -133,12 +133,12 @@ class SpinnakerPipeline:
         return json.loads(wrapper)
 
     def get_existing_pipelines(self):
-        """Get existing pipeline configs for specific application
+        """Get existing pipeline configs for specific application.
 
         Returns:
-            str of pipeline config json
+            str: Pipeline config json
         """
-        url = "{}/applications/{}/pipelineConfigs".format(API_URL, self.app_name)
+        url = "{0}/applications/{1}/pipelineConfigs".format(API_URL, self.app_name)
         resp = requests.get(url)
         assert resp.ok, 'Failed to lookup pipelines for {0}: {1}'.format(
                     self.app_name, resp.text)
@@ -149,19 +149,21 @@ class SpinnakerPipeline:
         """Compare desired pipeline with existing pipelines.
 
         Args:
-            region (str): region of desired pipeline
+            region (str): Region of desired pipeline.
 
         Returns:
-            str: pipeline_id if existing, empty string of not
+            str: pipeline_id if existing, empty string of not.
         """
         pipelines = self.get_existing_pipelines()
+        pipeline_id = ''
         for pipeline in pipelines:
-            if (pipeline['application'] == self.app_name and region in pipeline['name']):
-                self.log.info('Existing pipeline found')
-                return pipeline['id']
-
-        self.log.info('No existing pipeline found')
-        return ''
+            if (pipeline['application'] == self.app_name) and (region in pipeline['name']):
+                self.log.info('Existing pipeline found - %s', pipeline['name'])
+                pipeline_id = pipeline['id']
+                break
+        else:
+            self.log.info('No existing pipeline found')
+            return pipeline_id
 
     def create_pipeline(self):
         """Main wrapper for pipeline creation.
