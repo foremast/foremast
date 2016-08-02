@@ -15,7 +15,7 @@
 #   limitations under the License.
 
 """Package for foremast supporting utilities"""
-from .banner import *
+from .banners import *
 from .check_managed_pipeline import *
 from .deep_chain_map import DeepChainMap
 from .find_elb import *
