@@ -26,6 +26,7 @@
     }
   ],
   "stages": [
-    {% include "pipeline/stage-bake.json.j2" %}
+    {% include "pipeline/stage-bake.json.j2" %},
+    {% include "pipeline/stage-tagger.json.j2" %}
   ]
 }
