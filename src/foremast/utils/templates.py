@@ -20,6 +20,8 @@ import os
 
 import jinja2
 
+from ..consts import TEMPLATES_PATH
+
 LOG = logging.getLogger(__name__)
 
 
@@ -33,9 +35,24 @@ def get_template(template_file='', **kwargs):
     Returns:
         String of rendered JSON template.
     """
+
     here = os.path.dirname(os.path.realpath(__file__))
     templatedir = '{0}/../templates/'.format(here)
-    LOG.debug('Template directory: %s', templatedir)
+
+    if TEMPLATES_PATH:
+        if not os.path.isdir(TEMPLATES_PATH):
+            templatedir = '{0}/../../../{1}'.format(here, TEMPLATES_PATH)
+            assert os.path.isdir(templatedir), 'Template path {0} not found'.format(
+                    TEMPLATES_PATH)
+        else:
+            templatedir = TEMPLATES_PATH
+
+    if TEMPLATES_PATH and not os.path.isfile( templatedir + template_file):
+        templatedir = '{0}/../templates/'.format(here)
+
+    LOG.info('Rendering template %s from %s', template_file, templatedir)
+
+    LOG.info('Template directory: %s', templatedir)
     LOG.debug('Template file: %s', template_file)
 
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(templatedir))

@@ -143,7 +143,7 @@ class SpinnakerPipeline:
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
         wrapper = get_template(
-            template_file='pipeline-templates/pipeline_wrapper.json',
+            template_file='pipeline/pipeline_wrapper.json',
             data=data)
 
         return json.loads(wrapper)
