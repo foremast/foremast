@@ -55,9 +55,9 @@ def construct_pipeline_block(env='',
     LOG.info('%s block for [%s].', env, region)
 
     if env.startswith('prod'):
-        template_name = 'pipeline-templates/pipeline_{}.json'.format(env)
+        template_name = 'pipeline/pipeline_{}.json'.format(env)
     else:
-        template_name = 'pipeline-templates/pipeline_stages.json'
+        template_name = 'pipeline/pipeline_stages.json'
 
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
