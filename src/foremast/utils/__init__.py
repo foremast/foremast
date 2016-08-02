@@ -16,7 +16,7 @@
 
 """Package for foremast supporting utilities"""
 from .banners import *
-from .check_managed_pipeline import *
+from .pipelines import *
 from .deep_chain_map import DeepChainMap
 from .find_elb import *
 from .gate import *

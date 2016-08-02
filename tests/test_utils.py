@@ -18,8 +18,7 @@
 
 import pytest
 from unittest import mock
-from foremast.utils.banners import banner
-from foremast.utils.deep_chain_map import DeepChainMap
+from foremast.utils import *
 
 
 @mock.patch('foremast.utils.banners.LOG')
@@ -48,3 +47,19 @@ def test_utils_deep_chain_map():
     assert DeepChainMap(first, second) == result
     with pytest.raises(KeyError):
         assert DeepChainMap(first, second)['key2'] == result
+
+
+def test_utils_pipeline_check_managed():
+
+    assert check_managed_pipeline('app [onetime]', 'app') == 'onetime'
+    assert check_managed_pipeline('app [us-east-1]', 'app') == 'us-east-1'
+
+    params = (
+        # pipeline, app, result
+        ['app', 'app', 'app'],  # no region
+        ['app app [us-east-1]', 'app', 'us-east-1'],  # no app
+        ['app [us-east-1]', 'example', 'us-east-1'],  # app / pipeline not matching
+    )
+    for param in params:
+        with pytest.raises(ValueError):
+            assert check_managed_pipeline(param[0], param[1]) == param[2]
