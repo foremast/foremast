@@ -3,7 +3,7 @@
   "id": "{{ data.id }}",
   "application": "{{ data.app.appname }}",
   "triggers": [
-    {% include "pipeline-templates/trigger-jenkins.json.j2" %}
+    {% include "pipeline/trigger-jenkins.json.j2" %}
   ],
   "limitConcurrent": false,
   "parallel": true,
@@ -26,7 +26,6 @@
     }
   ],
   "stages": [
-    {% include "pipeline-templates/stage-bake.json.j2" %},
-    {% include "pipeline-templates/stage-tagger.json.j2" %}
+    {% include "pipeline/stage-bake.json.j2" %}
   ]
 }
