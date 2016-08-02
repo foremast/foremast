@@ -53,7 +53,7 @@ def create_iam_resources(env='dev', app='', **_):
         action='create_role',
         log_format='Created Role: %(RoleName)s',
         RoleName=details.role,
-        AssumeRolePolicyDocument=get_template('iam_role_policy.json'))
+        AssumeRolePolicyDocument=get_template('infrastructure/iam_role_policy.json'))
     resource_action(
         client,
         action='create_instance_profile',
