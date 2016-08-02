@@ -52,7 +52,7 @@ def get_template(template_file='', **kwargs):
 
     LOG.info('Rendering template %s from %s', template_file, templatedir)
 
-    LOG.info('Template directory: %s', templatedir)
+    LOG.debug('Template directory: %s', templatedir)
     LOG.debug('Template file: %s', template_file)
 
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(templatedir))

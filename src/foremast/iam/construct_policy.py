@@ -72,7 +72,7 @@ def construct_policy(app='coreforrest',
             items = value
 
         try:
-            statement_block = get_template('iam/{0}.json.j2'.format(service),
+            statement_block = get_template('infrastructure/iam/{0}.json.j2'.format(service),
                                            account_number=account_number,
                                            app=app,
                                            env=env,
@@ -87,7 +87,7 @@ def construct_policy(app='coreforrest',
             statements.extend(statement_block_list)
 
     if statements:
-        policy_json = get_template('iam/wrapper.json.j2',
+        policy_json = get_template('infrastructure/iam/wrapper.json.j2',
                                    statements=json.dumps(statements))
     else:
         LOG.info('No services defined for %s.', app)
