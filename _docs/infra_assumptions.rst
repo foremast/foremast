@@ -36,14 +36,30 @@ AWS
 Foremast only works with AWS (for now). Below are the AWS requirements:
 
 - Foremast IAM Access:
+
   - Will need credentials set up in a Boto3 configuration file. See :doc:`aws_creds` for details
+
   - IAM user or role will need the following permissions:
+
     - ``S3``: View, create and delete buckets
+
     - ``IAM``: View, create and  delete roles, uers, and policies
+
     - ``Route53``: View, create, and delete DNS records
+
   - Everything else, such as ELBs and security groups, are handled through Spinnaker.
-- VPC Setup
-  - 
+
+- VPC Subnets
+
+  - If new subnets are being setup, follow the `Spinnaker AWS Setup guide`_.
+
+  - If using existing subnets add an ``immutable_metadata`` tag.
+
+    - Example ``immutable_metadata`` tag: ``{"purpose": "external", "target": "elb"}``
+
+    - The  ``"purpose"`` key will dictate how this appears in Spinnaker. 
+
+      - Needs to be ``"internal"`` or ``"external"`` in order to properly work with Foremast
 
 Jenkins
 -------
@@ -69,3 +85,4 @@ Gitlab
 Gitlab is not required for Spinnaker but if it is already part of your infrastructure you can have Foremast directly look up the :doc:`pipeline_json` and :doc:`application_json` files. You will need to get the Gitlab Token of a user that has permissions to the desired repository and set them in your :doc:`foremast_config`. 
 
 .. _`Spinnaker documentation`: http://www.spinnaker.io/docs
+.. _`Spinnaker AWS Setup guide`: http://www.spinnaker.io/v1.0/docs/target-deployment-setup#section-amazon-web-services-setup
