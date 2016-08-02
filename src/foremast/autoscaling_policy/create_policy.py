@@ -77,7 +77,7 @@ class AutoScalingPolicy:
             self.log.info('Rendering Scaling Policy Template: {0}'.format(
                 template_kwargs))
             rendered_template = get_template(
-                template_file='autoscaling_policy_template.json',
+                template_file='infrastructure/autoscaling_policy_template.json',
                 **template_kwargs)
 
             self.post_task(rendered_template)

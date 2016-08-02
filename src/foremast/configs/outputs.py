@@ -91,14 +91,14 @@ def write_variables(app_configs=None, out_file='', git_short=''):
         if env is not 'pipeline':
             instance_profile = generated.iam()['profile']
             rendered_configs = json.loads(
-                get_template('configs.json.j2',
+                get_template('configs/configs.json.j2',
                              env=env,
                              app=generated.app_name(),
                              profile=instance_profile))
             json_configs[env] = dict(DeepChainMap(configs, rendered_configs))
         else:
             default_pipeline_json = json.loads(get_template(
-                'pipeline.json.j2'))
+                'configs/pipeline.json.j2'))
             json_configs['pipeline'] = dict(DeepChainMap(
                 configs, default_pipeline_json))
 

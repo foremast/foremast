@@ -52,7 +52,7 @@ def generate_encoded_user_data(env='dev',
         env_c, env_p, env_s = "prod", "prodp", "prods"
     else:
         env_c, env_p, env_s = env, env, env
-    user_data = get_template(template_file='user_data.sh.j2',
+    user_data = get_template(template_file='infrastructure/user_data.sh.j2',
                              env=env,
                              env_c=env_c,
                              env_p=env_p,
