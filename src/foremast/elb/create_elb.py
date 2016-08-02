@@ -103,7 +103,7 @@ class SpinnakerELB:
         }
 
         rendered_template = get_template(
-            template_file='infrastructure/elb_data_template.json',
+            template_file='infrastructure/elb_data.json',
             **template_kwargs)
 
         return rendered_template
