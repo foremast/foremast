@@ -16,11 +16,35 @@
 
 """Test utils."""
 
+import pytest
 from unittest import mock
 from foremast.utils.banners import banner
+from foremast.utils.deep_chain_map import DeepChainMap
 
 
 @mock.patch('foremast.utils.banners.LOG')
 def test_utils_banner(mock_log):
     banner('test', border='+', width=10)
     mock_log.info.assert_called_with('+' * 10)
+
+
+def test_utils_deep_chain_map():
+
+    first = {'key1': {
+            'subkey1': 1,
+        },
+    }
+    second = {'key1': {
+            'subkey2': 2,
+        },
+     }
+
+    result = {'key1': {
+            'subkey1': 1,
+            'subkey2': 2,
+        }
+     }
+
+    assert DeepChainMap(first, second) == result
+    with pytest.raises(KeyError):
+        assert DeepChainMap(first, second)['key2'] == result
