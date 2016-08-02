@@ -19,7 +19,7 @@
 import pytest
 from unittest import mock
 from foremast.utils import *
-
+from foremast.exceptions import *
 
 @mock.patch('foremast.utils.banners.LOG')
 def test_utils_banner(mock_log):
@@ -68,3 +68,18 @@ def test_utils_pipeline_check_managed():
 def test_utils_generate_packer_filename():
     a = generate_packer_filename('aws', 'us-east-1', 'chroot')
     assert a == 'aws_us-east-1_chroot.json'
+
+
+@mock.patch('requests.get')
+def test_utils_find_elb(requests_get_mock):
+    results = [
+        {'account': 'dev', 'region': 'us-east-1', 'dnsname': 'appdns' }
+    ]
+    requests_get_mock.return_value.json.return_value = results
+    a = find_elb('app', 'dev', 'us-east-1')
+    assert a == 'appdns'
+
+    with pytest.raises(SpinnakerElbNotFound):
+        # we already filter by app, so sending incorrect env/region combo
+        # will trigger the error
+        find_elb('app', 'devbad', 'us-east-1')
