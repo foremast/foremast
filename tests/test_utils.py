@@ -63,3 +63,8 @@ def test_utils_pipeline_check_managed():
     for param in params:
         with pytest.raises(ValueError):
             assert check_managed_pipeline(param[0], param[1]) == param[2]
+
+
+def test_utils_generate_packer_filename():
+    a = generate_packer_filename('aws', 'us-east-1', 'chroot')
+    assert a == 'aws_us-east-1_chroot.json'
