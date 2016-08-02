@@ -84,7 +84,7 @@ class SpinnakerApp:
         self.appinfo['accounts'] = self.get_accounts()
         self.log.debug('App info:\n%s', pformat(self.appinfo))
 
-        jsondata = get_template(template_file='infrastructure/app_data_template.json',
+        jsondata = get_template(template_file='infrastructure/app_data.json',
                                 appinfo=self.appinfo)
 
         taskid = post_task(jsondata)

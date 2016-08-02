@@ -82,7 +82,7 @@ class SpinnakerDns:
         self.log.info('Updating Application URL: %s', dns_elb)
 
         # This is what will be added to DNS
-        dns_json = get_template(template_file='infrastructure/dns_upsert_template.json',
+        dns_json = get_template(template_file='infrastructure/dns_upsert.json',
                                 dns_elb=dns_elb,
                                 dns_elb_aws=dns_elb_aws,
                                 dns_ttl=dns_ttl)
