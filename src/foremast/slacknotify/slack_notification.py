@@ -49,7 +49,7 @@ class SlackNotification:
         Primarily for production deployments.
         """
         message = get_template(
-            template_file='slack-templates/pipeline-prepare-ran.j2',
+            template_file='slack/pipeline-prepare-ran.j2',
             info=self.info)
         channel = '#deployments-prod'
         post_slack_message(message, channel)
@@ -57,7 +57,7 @@ class SlackNotification:
     def notify_slack_channel(self):
         """Post message to a defined Slack channel."""
         message = get_template(
-            template_file='slack-templates/pipeline-prepare-ran.j2',
+            template_file='slack/pipeline-prepare-ran.j2',
             info=self.info)
 
         if self.settings['pipeline']['notifications']['slack']:
