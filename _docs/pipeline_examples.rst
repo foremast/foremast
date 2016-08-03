@@ -53,12 +53,12 @@ If you need to add more stages or  change the defaults, this is all possible via
 
 Pipeline Examples
 -----------------
-.. image:: _static/single-env-pipeline.png
+.. image:: _static/minimal-pipeline-example.png
 
-An example of a single environment non-prod deployment pipeline. 
 
-.. image:: _static/prod-pipeline.png
-An example of the production stages of a pipeline.
+The default generated pipeline should look like the above image. This is the basic `bake` -> `infrastructure` -> `deploy` -> `checkpoint` pipeline described above.
+
+
 
 
 
