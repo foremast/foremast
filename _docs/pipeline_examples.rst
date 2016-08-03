@@ -6,10 +6,10 @@ Pipeline Flow and Examples
    :local:
 
 
-Foremast generates a single pipeline per region. The pipeline is designed to allow deploying to multiple environment with checkpoints between each transition. At this time, the generated pipeline is not very customizable with out changing the source templates. We would like to include custom templates in a future release.
+Foremast generates a single pipeline per region. The pipeline is designed to allow deploying to multiple environment with checkpoints between each transition.
 
-Pipeline Flow
--------------
+Default Pipeline Flow
+---------------------
 
 The below flow can repeat for as many environments as defined in the configs. At Gogo, most applications go through these stages 3 times as we deploy to dev, stage, and production.
 
@@ -21,53 +21,35 @@ The below flow can repeat for as many environments as defined in the configs. At
 
   - Bakes an AMI the specified AMI ID
 
-3a. Infrastructure Setup [$env]
+3. Infrastructure Setup [$env]
 
   - Calls a Jenkins job to run the ``prepare-infrastructure`` Foremast command against a specific account.
   - Setups AWS infrastructure such as ELB, IAM roles, S3 bucket, and DNS needed for an application
-
-3b. Git Tag packaging
-
-  - Runs a Jenkins job to tag the repository
 
 4. Deploy $env
 
    - Uses Spinnaker to create a cluster and server group in specific account.
    - The behavior of this stage is largely based on the :doc:`application_json` configs.
 
-5a. QE $env
-
-  - Runs a Jenkins job for for QE/QA checks
-
-5b. Git Tag $env
-
-  - Runs a Jenkins job for tagging the repository
-
-5c. Attach Scaling Policy [$env]
+5. Attach Scaling Policy [$env]
 
   - If a scaling policy is defined in :doc:`application_json`, attaches it to the deployed server group
   - If no policy is defined, this stage is excluded
 
-6. Checkpoint $env
+6. Checkpoint $next-env
 
-   a) A manual checkpoint stage. This requires human intervention to approve deployment to the next environment.
-
-Prod Pipeline Extras
-********************
-
-If the desired environment starts with "prod", there are a few extra stages that get added.
-
-1. Audit Approval [$env]
-
-   - Triggers a jenkins job that checks if the Checkpoint approver is the same person that made the most recent commit. If true the pipeline fails. This makes it so that at least two people need to be involved in any change. 
-
-2. ServiceNow
-
-   - This is a stage for creating a ServiceNow ticket for new deployments. 
+  - A manual checkpoint stage. This requires human intervention to approve deployment to the next environment.
 
 
+Stages 3-6 repeat for each environment/account defined in :doc:`pipeline_json`.
 
-Stages 3a-6 repeat for each environment/account defined in :doc:`pipeline_json`.
+Custom Pipelines
+----------------
+
+You can specify an external templates directory in :doc:`foremast_config`. Templates in an external directory will need to have the same directory structure and naming as the default templates. if `templates_path` is set in the configs, Foremast will first see if the file exists there. If not, it will fall back to the provided tempaltes.
+
+If you need to add more stages or  change the defaults, this is all possible via external templates. Please see GITLAB_URL for examples on the templates.
+
 
 Pipeline Examples
 -----------------
