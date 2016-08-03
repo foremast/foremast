@@ -37,19 +37,18 @@ def get_template(template_file='', **kwargs):
     """
 
     here = os.path.dirname(os.path.realpath(__file__))
-    templatedir = '{0}/../templates/'.format(here)
+    local_templates = '{0}/../templates/'.format(here)
+    external_templates = os.path.expanduser(TEMPLATES_PATH)
+    jinja_lst = [local_templates]
 
-    if TEMPLATES_PATH:
-        assert os.path.isdir(TEMPLATES_PATH), 'Template path {0} not found'.format(
-                    TEMPLATES_PATH)
+    if external_templates:
+        assert os.path.isdir(external_templates), 'Template path {0} not found'.format(
+                    external_templates)
+        jinja_lst.insert(0, external_templates)
 
-        if os.path.isfile(os.path.join(TEMPLATES_PATH, template_file)):
-            templatedir = TEMPLATES_PATH
-
-    LOG.info('Rendering template %s from %s', template_file, templatedir)
-
-    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(templatedir))
+    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_lst))
     template = jinjaenv.get_template(template_file)
+    LOG.info('Rendering template %s', template.filename)
     for key, value in kwargs.items():
         LOG.debug('%s => %s', key, value)
     rendered_json = template.render(**kwargs)
