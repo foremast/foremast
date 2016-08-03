@@ -45,9 +45,9 @@ def test_valid_json_configs():
         'app': 'testapp',
     }
 
-    valid_json(template='configs.json.j2', data=data)
+    valid_json(template='configs/configs.json.j2', data=data)
 
 
 def test_valid_json_pipeline():
     data = {}
-    valid_json(template='pipeline.json.j2', data=data)
+    valid_json(template='configs/pipeline.json.j2', data=data)
