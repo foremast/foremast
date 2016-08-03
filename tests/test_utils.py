@@ -65,6 +65,29 @@ def test_utils_pipeline_check_managed():
             assert check_managed_pipeline(param[0], param[1]) == param[2]
 
 
+@mock.patch('requests.get')
+@mock.patch('foremast.utils.pipelines.murl')
+def test_utils_get_all_pipelines(mock_murl, mock_requests_get):
+    mock_requests_get.return_value.json.return_value = {}
+    result = get_all_pipelines(app='app')
+    assert result == {}
+
+
+@mock.patch('foremast.utils.pipelines.get_all_pipelines')
+def test_utils_get_pipeline_id(mock_get_pipelines):
+
+    data = [
+        {'name': 'app', 'id': 100},
+    ]
+    mock_get_pipelines.return_value = data
+
+    result = get_pipeline_id(name='app')
+    assert result is 100
+
+    result = get_pipeline_id(name='badapp')
+    assert result == None
+
+
 def test_utils_generate_packer_filename():
     a = generate_packer_filename('aws', 'us-east-1', 'chroot')
     assert a == 'aws_us-east-1_chroot.json'
