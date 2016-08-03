@@ -5,7 +5,7 @@ Getting Started
 .. contents::
     :local:
 
-This getting started guide will walk through the process of using Foremast to create an application in Spinnaker and dynamically generate the Spinnaker pipeline.
+This getting started guide will walk through the process of using Foremast to create an application in Spinnaker and dynamically generate a basic Spinnaker pipeline.
 
 
 Getting started with Foremast consists of the following steps:
