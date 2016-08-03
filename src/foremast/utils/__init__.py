@@ -28,7 +28,7 @@ from .get_env_credential import *
 from .get_properties import *
 from .get_properties import *
 from .security_group import *
-from .get_subnets import *
+from .subnets import *
 from .vpc import *
 from .lookups import *
 from .slack import *
