@@ -20,7 +20,7 @@ import logging
 
 import boto3
 
-from ...utils import get_app_details, get_dns_zone_ids, get_template
+from ...utils import get_details, get_dns_zone_ids, get_template
 
 LOG = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ def destroy_dns(app='', env='dev', **_):
     """
     client = boto3.Session(profile_name=env).client('route53')
 
-    generated = get_app_details.get_details(app=app, env=env)
+    generated = get_details(app=app, env=env)
     record = generated.dns_elb()
 
     zone_ids = get_dns_zone_ids(env=env, facing='external')

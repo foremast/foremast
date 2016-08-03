@@ -20,7 +20,7 @@ import logging
 
 import boto3
 
-from ...utils import get_app_details
+from ...utils import get_details
 from ..resource_action import resource_action
 
 LOG = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ def destroy_iam(app='', env='dev', **_):
     session = boto3.Session(profile_name=env)
     client = session.client('iam')
 
-    generated = get_app_details.get_details(env=env, app=app)
+    generated = get_details(env=env, app=app)
     app_details = collections.namedtuple('AppDetails',
                                          ['group', 'policy', 'profile', 'role',
                                           'user'])

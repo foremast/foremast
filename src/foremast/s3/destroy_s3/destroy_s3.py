@@ -19,7 +19,7 @@ import logging
 
 import boto3
 
-from ...utils import get_app_details
+from ...utils import get_details
 
 LOG = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ def destroy_s3(app='', env='dev', **_):
     session = boto3.Session(profile_name=env)
     client = session.resource('s3')
 
-    generated = get_app_details.get_details(app=app, env=env)
+    generated = get_details(app=app, env=env)
     archaius = generated.archaius()
 
     bucket = client.Bucket(archaius['bucket'])

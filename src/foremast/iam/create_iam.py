@@ -20,7 +20,7 @@ import logging
 
 import boto3
 
-from ..utils import get_app_details, get_properties, get_template
+from ..utils import get_details, get_properties, get_template
 from .construct_policy import construct_policy
 from .resource_action import resource_action
 
@@ -40,7 +40,7 @@ def create_iam_resources(env='dev', app='', **_):
     session = boto3.session.Session(profile_name=env)
     client = session.client('iam')
 
-    generated = get_app_details.get_details(env=env, app=app)
+    generated = get_details(env=env, app=app)
     app_details = collections.namedtuple('AppDetails',
                                          ['group', 'policy', 'profile', 'role',
                                           'user'])

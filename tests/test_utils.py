@@ -112,3 +112,37 @@ def test_utils_find_elb(requests_get_mock):
 def test_utils_post_slack_message(mock_slack):
     post_slack_message('test', '#test')
     mock_slack.called
+
+
+@mock.patch('requests.get')
+@mock.patch('foremast.utils.pipelines.murl')
+def test_utils_apps_get_details(mock_murl, mock_requests_get):
+    data = {
+        'attributes': {
+            'repoProjectKey': 'group',
+            'repoSlug': 'repo1'
+        }
+    }
+    mock_requests_get.return_value.json.return_value = data
+
+    result = get_details(app='repo1group', env='dev')
+    assert result.app_name() == 'repo1group'
+
+    with pytest.raises(SpinnakerAppNotFound):
+        mock_requests_get.return_value.ok = False
+        result = get_details(app='repo1group', env='dev')
+        assert result.app_name() == 'repo1group'
+
+
+@mock.patch('requests.get')
+@mock.patch('foremast.utils.pipelines.murl')
+def test_utils_apps_get_all_apps(mock_murl, mock_requests_get):
+    data = []
+    mock_requests_get.return_value.json.return_value = data
+
+    result = get_all_apps()
+    assert result == []
+
+    with pytest.raises(AssertionError):
+        mock_requests_get.return_value.ok = False
+        result = get_all_apps()
