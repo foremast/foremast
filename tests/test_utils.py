@@ -146,3 +146,39 @@ def test_utils_apps_get_all_apps(mock_murl, mock_requests_get):
     with pytest.raises(AssertionError):
         mock_requests_get.return_value.ok = False
         result = get_all_apps()
+
+
+@mock.patch('foremast.utils.dns.boto3.Session.client')
+def test_utils_dns_get_zone_ids(mock_boto3):
+    data = {
+        'HostedZones': [
+                {'Name': 'internal.example.com', 'Id': 100, 'Config': {'PrivateZone': True}},
+                {'Name': 'external.example.com', 'Id': 101, 'Config': {'PrivateZone': False}},
+            ]
+    }
+
+    data_external = {
+        'HostedZones': [
+                {'Name': 'internal.example.com', 'Id': 100, 'Config': {'PrivateZone': False}},
+                {'Name': 'external.example.com', 'Id': 101, 'Config': {'PrivateZone': False}},
+            ]
+    }
+
+    mock_boto3.return_value.list_hosted_zones_by_name.return_value = data
+
+    # default case
+    result = get_dns_zone_ids()
+    assert result == [100]
+
+    # all zones
+    result = get_dns_zone_ids(facing='external')
+    assert result == [100, 101]
+
+    # all internal
+    result = get_dns_zone_ids(facing='internal')
+    assert result == [100]
+
+    # no internal zones
+    mock_boto3.return_value.list_hosted_zones_by_name.return_value = data_external
+    result = get_dns_zone_ids(facing='internal')
+    assert result == []

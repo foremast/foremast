@@ -23,7 +23,7 @@ from .elb import *
 from .gate import *
 from .generate_encoded_user_data import *
 from .generate_filename import *
-from .get_dns_zone_ids import *
+from .dns import *
 from .get_env_credential import *
 from .get_properties import *
 from .get_properties import *
