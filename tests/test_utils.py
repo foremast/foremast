@@ -182,3 +182,24 @@ def test_utils_dns_get_zone_ids(mock_boto3):
     mock_boto3.return_value.list_hosted_zones_by_name.return_value = data_external
     result = get_dns_zone_ids(facing='internal')
     assert result == []
+
+
+@mock.patch('requests.get')
+@mock.patch('foremast.utils.security_group.get_vpc_id')
+def test_utils_sg_get_security_group_id(mock_vpc_id, mock_requests_get):
+    data = {'id': 100}
+    mock_requests_get.return_value.json.return_value = data
+
+    # default - happy path
+    result = get_security_group_id()
+    assert result == 100
+
+    # security group not found
+    with pytest.raises(SpinnakerSecurityGroupError):
+        mock_requests_get.return_value.json.return_value = {}
+        result = get_security_group_id()
+
+    # error getting details
+    with pytest.raises(AssertionError):
+        mock_requests_get.return_value.ok = False
+        result = get_security_group_id()
