@@ -16,6 +16,10 @@
 
 """Check Pipeline name to match format."""
 import logging
+import requests
+import murl
+
+from ..consts import API_URL
 
 LOG = logging.getLogger(__name__)
 
@@ -55,3 +59,49 @@ def check_managed_pipeline(name='', app_name=''):
         raise ValueError(not_managed_message)
 
     return region
+
+
+def get_all_pipelines(app=''):
+    """Get a list of all the Pipelines in _app_.
+
+    Args:
+        app (str): Name of Spinnaker Application.
+
+    Returns:
+        requests.models.Response: Response from Gate containing Pipelines.
+    """
+    url = murl.Url(API_URL)
+    url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
+    response = requests.get(url.url)
+
+    assert response.ok, 'Could not retrieve Pipelines for {0}.'.format(app)
+
+    pipelines = response.json()
+    LOG.debug('Pipelines:\n%s', pipelines)
+
+    return pipelines
+
+
+def get_pipeline_id(name=''):
+    """Get the ID for Pipeline _name_.
+
+    Args:
+        name (str): Name of Pipeline to get ID for.
+
+    Returns:
+        str: ID of specified Pipeline.
+        None: Pipeline or Spinnaker Appliation not found.
+    """
+    return_id = None
+
+    pipelines = get_all_pipelines(name)
+
+    for pipeline in pipelines:
+        LOG.debug('ID of %(name)s: %(id)s', pipeline)
+
+        if pipeline['name'] == name:
+            return_id = pipeline['id']
+            LOG.info('Pipeline %s found, ID: %s', name, return_id)
+            break
+
+    return return_id
