@@ -225,3 +225,26 @@ def test_utils_vpc_get_vpc_id(mock_requests_get):
     with pytest.raises(SpinnakerVPCNotFound):
         mock_requests_get.return_value.ok = False
         result = get_vpc_id(account='dev', region='us-east-1')
+
+
+@mock.patch('foremast.utils.subnets.requests.get')
+def test_utils_subnets_get_subnets(mock_requests_get):
+    data = [
+        {'vpcId': 100, 'account': 'dev', 'region': 'us-east-1',
+         'target': 'ec2', 'availabilityZone': []},
+    ]
+    mock_requests_get.return_value.json.return_value = data
+
+    # default - happy path
+    result = get_subnets(env='dev', region='us-east-1')
+    assert result == {'us-east-1': [[]]}
+
+    # subnet not found
+    with pytest.raises(SpinnakerSubnetError):
+        result = get_subnets(env='dev', region='us-west-1')
+        assert result == {'us-west-1': [[]]}
+
+    # error getting details
+    with pytest.raises(SpinnakerTimeout):
+        mock_requests_get.return_value.ok = False
+        result = get_subnets()

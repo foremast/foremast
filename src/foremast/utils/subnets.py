@@ -29,7 +29,7 @@ from ..exceptions import SpinnakerSubnetError, SpinnakerTimeout
 LOG = logging.getLogger(__name__)
 
 
-@retries(max_attempts=6, wait=10.0, exceptions=SpinnakerTimeout)
+@retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)
 def get_subnets(gate_url=API_URL,
                 target='ec2',
                 env='',
@@ -46,10 +46,11 @@ def get_subnets(gate_url=API_URL,
 
     Returns:
         az_dict: dictionary of  availbility zones, structured like
-        { $account: { $region: [ $avaibilityzones ] } }
+        { $region: [ $avaibilityzones ] }
     """
     account_az_dict = defaultdict(defaultdict)
 
+    LOG.info('Get subnets on %s, %s, %s', target, env, region)
     if sample_file_name:
         with open(sample_file_name, 'rt') as file_handle:
             try:
