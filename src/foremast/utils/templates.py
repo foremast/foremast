@@ -43,13 +43,10 @@ def get_template(template_file='', **kwargs):
         assert os.path.isdir(TEMPLATES_PATH), 'Template path {0} not found'.format(
                     TEMPLATES_PATH)
 
-        if os.path.isfile(TEMPLATES_PATH + template_file):
+        if os.path.isfile(os.path.join(TEMPLATES_PATH, template_file)):
             templatedir = TEMPLATES_PATH
 
     LOG.info('Rendering template %s from %s', template_file, templatedir)
-
-    LOG.debug('Template directory: %s', templatedir)
-    LOG.debug('Template file: %s', template_file)
 
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(templatedir))
     template = jinjaenv.get_template(template_file)
