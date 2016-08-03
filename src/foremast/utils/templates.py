@@ -40,15 +40,11 @@ def get_template(template_file='', **kwargs):
     templatedir = '{0}/../templates/'.format(here)
 
     if TEMPLATES_PATH:
-        if not os.path.isdir(TEMPLATES_PATH):
-            templatedir = '{0}/../../../{1}'.format(here, TEMPLATES_PATH)
-            assert os.path.isdir(templatedir), 'Template path {0} not found'.format(
+        assert os.path.isdir(TEMPLATES_PATH), 'Template path {0} not found'.format(
                     TEMPLATES_PATH)
-        else:
-            templatedir = TEMPLATES_PATH
 
-    if TEMPLATES_PATH and not os.path.isfile( templatedir + template_file):
-        templatedir = '{0}/../templates/'.format(here)
+        if os.path.isfile(TEMPLATES_PATH + template_file):
+            templatedir = TEMPLATES_PATH
 
     LOG.info('Rendering template %s from %s', template_file, templatedir)
 
