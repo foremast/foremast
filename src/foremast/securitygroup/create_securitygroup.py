@@ -235,7 +235,7 @@ class SpinnakerSecurityGroup(object):
         }
 
         secgroup_json = get_template(
-            template_file='infrastructure/securitygroup.json',
+            template_file='infrastructure/securitygroup_data.json.j2',
             **template_kwargs)
 
         taskid = post_task(secgroup_json)
