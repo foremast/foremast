@@ -21,7 +21,7 @@ from pprint import pformat
 
 import boto3.session
 
-from ..utils import find_elb, get_app_details, get_template, get_properties
+from ..utils import find_elb, get_details, get_template, get_properties
 
 
 class SpinnakerDns:
@@ -38,7 +38,7 @@ class SpinnakerDns:
     def __init__(self, app=None, env=None, region=None, elb_subnet=None, prop_path=None):
         self.log = logging.getLogger(__name__)
 
-        self.generated = get_app_details.get_details(app, env=env)
+        self.generated = get_details(app, env=env)
         self.app_name = self.generated.app_name()
 
         # Add domain

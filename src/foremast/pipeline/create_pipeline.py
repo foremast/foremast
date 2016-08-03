@@ -25,7 +25,7 @@ import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import (ami_lookup, get_app_details, get_properties, get_subnets,
+from ..utils import (ami_lookup, get_details, get_properties, get_subnets,
                      get_template, generate_packer_filename)
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block import construct_pipeline_block
@@ -54,7 +54,7 @@ class SpinnakerPipeline:
 
         self.base = base
         self.trigger_job = trigger_job
-        self.generated = get_app_details.get_details(app=app)
+        self.generated = get_details(app=app)
         self.app_name = self.generated.app_name()
         self.group_name = self.generated.project
 
