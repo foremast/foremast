@@ -83,3 +83,9 @@ def test_utils_find_elb(requests_get_mock):
         # we already filter by app, so sending incorrect env/region combo
         # will trigger the error
         find_elb('app', 'devbad', 'us-east-1')
+
+
+@mock.patch('foremast.utils.slack.slacker')
+def test_utils_post_slack_message(mock_slack):
+    post_slack_message('test', '#test')
+    mock_slack.called

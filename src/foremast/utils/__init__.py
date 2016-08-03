@@ -34,7 +34,7 @@ from .get_security_group_id import *
 from .get_subnets import *
 from .get_vpc_id import *
 from .lookups import *
-from .post_slack_message import *
+from .slack import *
 from .tasks import *
 from .templates import *
 from .warn_user import *
