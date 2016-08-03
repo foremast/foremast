@@ -39,4 +39,3 @@ def post_slack_message(message, channel):
         LOG.info('Message posted to %s', channel)
     except slacker.Error:
         LOG.info("error posted message to %s", channel)
-
