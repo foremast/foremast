@@ -29,7 +29,7 @@ from .get_properties import *
 from .get_properties import *
 from .security_group import *
 from .get_subnets import *
-from .get_vpc_id import *
+from .vpc import *
 from .lookups import *
 from .slack import *
 from .tasks import *

@@ -22,7 +22,7 @@ from tryagain import retries
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerSecurityGroupError
-from .get_vpc_id import get_vpc_id
+from .vpc import get_vpc_id
 
 LOG = logging.getLogger(__name__)
 
