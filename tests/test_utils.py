@@ -203,3 +203,25 @@ def test_utils_sg_get_security_group_id(mock_vpc_id, mock_requests_get):
     with pytest.raises(AssertionError):
         mock_requests_get.return_value.ok = False
         result = get_security_group_id()
+
+
+@mock.patch('requests.get')
+def test_utils_vpc_get_vpc_id(mock_requests_get):
+    data = [
+        {'id': 100, 'name': 'vpc','account': 'dev', 'region': 'us-east-1'},
+    ]
+    mock_requests_get.return_value.json.return_value = data
+
+    # default - happy path
+    result = get_vpc_id(account='dev', region='us-east-1')
+    assert result == 100
+
+    # vpc not found
+    with pytest.raises(SpinnakerVPCIDNotFound):
+        result = get_vpc_id(account='dev', region='us-west-2')
+        assert result == 100
+
+    # error getting details
+    with pytest.raises(SpinnakerVPCNotFound):
+        mock_requests_get.return_value.ok = False
+        result = get_vpc_id(account='dev', region='us-east-1')
