@@ -27,7 +27,7 @@ from .dns import *
 from .get_env_credential import *
 from .get_properties import *
 from .get_properties import *
-from .get_security_group_id import *
+from .security_group import *
 from .get_subnets import *
 from .get_vpc_id import *
 from .lookups import *
