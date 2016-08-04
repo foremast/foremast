@@ -97,8 +97,10 @@ This method is more explicit and requires calling multiple Foremast components t
 
 
 
-Continuing with Foremast
+Next Steps
 ------------------------
+
+This guide walked through running Foremast for the first time but there is still some setup that needs done for actually running a pipeline. Take a look at the :doc:`infra_assumptions` section for details on the necessary Jenkins Jobs. 
 
 This is only the tip of what Foremast can do. It also has functionality for creating scaling policies, setting up AWS infrastructure (elbs, security groups, iam policies, s3 buckets), sending slack notifications, and destorying old infrastructure. Take a look at our internal workflow docs for more detail on how Foremast is used at Gogo.
 

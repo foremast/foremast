@@ -78,6 +78,56 @@ Foremast takes advantage of the Spinnaker Jenkins stage. In order for the Forema
               username: 'spinnaker'
               password: 'password'
 
+Necessary Jenkins Jobs
+***********************
+
+The default generated pipeline requires a couple of Jenkins jobs to be setup in order to run.
+
+- ``pipes-pipeline-prepare``
+
+  - Runs Foremast ``prepare-infrastructure`` during the "Infrastructure Setup" pipeline stage
+
+  - Requires the following string variables
+
+    - ``PROJECT``
+
+    - ``GIT_REPO``
+
+    - ``ENV``
+
+    - ``REGION``
+
+  - Example Shell after cloning Foremast::
+
+     virtualenv -p python3 venv
+     . venv/bin/activate
+     pip install -U --quiet .
+
+     prepare-infrastructure
+
+- ``pipes-scaling-policy``
+
+  - Runs Foremast ``create-scaling-policy`` for attaching a scaling policy if defined.
+
+  - Only necessary if you plan on attaching scaling policies
+
+  - Requires the following string variables
+
+    - ``PROJECT``
+
+    - ``GIT_REPO``
+
+    - ``ENV``
+
+    - ``REGION``
+
+  - Example Shell after cloning Foremast::
+
+     virtualenv -p python3 venv
+     . venv/bin/activate
+     pip install -U --quiet .
+
+     create-scaling-policy
 
 Gitlab
 ------

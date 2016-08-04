@@ -43,6 +43,11 @@ The below flow can repeat for as many environments as defined in the configs. At
 
 Stages 3-6 repeat for each environment/account defined in :doc:`pipeline_json`.
 
+.. image:: _static/minimal-pipeline-example.png
+
+The default generated pipeline should look like the above image. This is the basic `bake` -> `infrastructure` -> `deploy` -> `checkpoint` pipeline described above.
+
+
 Custom Pipelines
 ----------------
 
@@ -51,13 +56,10 @@ You can specify an external templates directory in :doc:`foremast_config`. Templ
 If you need to add more stages or  change the defaults, this is all possible via external templates. Please see GITLAB_URL for examples on the templates.
 
 
-Pipeline Examples
+Example Workflow
 -----------------
-.. image:: _static/minimal-pipeline-example.png
 
-
-The default generated pipeline should look like the above image. This is the basic `bake` -> `infrastructure` -> `deploy` -> `checkpoint` pipeline described above.
-
+This Gogo's internal workflow for using Foremast and details on our internal custom pipeline.
 
 
 
