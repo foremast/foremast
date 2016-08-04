@@ -30,43 +30,31 @@ LOG = logging.getLogger(__name__)
 
 
 @retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)
-def get_subnets(gate_url=API_URL,
-                target='ec2',
+def get_subnets(target='ec2',
                 env='',
-                region='',
-                sample_file_name=''):
+                region='',):
     """Get all availability zones for a given target.
 
     Args:
-        gate_url (str): Gate API url.
         target (str): Type of subnets to look up (ec2 or elb).
         env (str): Environment to look up.
         region (str): AWS Region to find Subnets for.
-        sample_file_name (str): Sample JSON file contents override.
 
     Returns:
         az_dict: dictionary of  availbility zones, structured like
         { $region: [ $avaibilityzones ] }
+        or
+        { $account: $region: [ $availabilityzone] }
     """
     account_az_dict = defaultdict(defaultdict)
 
-    LOG.info('Get subnets on %s, %s, %s', target, env, region)
-    if sample_file_name:
-        with open(sample_file_name, 'rt') as file_handle:
-            try:
-                sample = file_handle.read()
-            except FileNotFoundError:
-                pass
+    subnet_url = '{0}/subnets/aws'.format(API_URL)
+    subnet_response = requests.get(subnet_url)
 
-        subnet_list = json.loads(sample)
-    else:
-        subnet_url = gate_url + "/subnets/aws"
-        subnet_response = requests.get(subnet_url)
+    if not subnet_response.ok:
+        raise SpinnakerTimeout(subnet_response.text)
 
-        if not subnet_response.ok:
-            raise SpinnakerTimeout(subnet_response.text)
-
-        subnet_list = subnet_response.json()
+    subnet_list = subnet_response.json()
 
     for subnet in subnet_list:
         LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t'
