@@ -3,10 +3,10 @@
     {% include "pipeline/stage-judgement-nonprod.json.j2" %},
     {% endif %}
     {% include "pipeline/stage-infrastructure-setup.json.j2" %},
-    {% include "pipeline/stage-deploy.json.j2" %},
     {% if data.app.scalingpolicy %}
-    {% include "pipeline/stage-scaling-policy.json.j2" %},
+    {% include "pipeline/stage-deploy.json.j2" %},
+    {% include "pipeline/stage-scaling-policy.json.j2" %}
+    {% else %}
+    {% include "pipeline/stage-deploy.json.j2" %}
     {% endif %}
-    {% include "pipeline/stage-tagger.json.j2" %},
-    {% include "pipeline/stage-qe.json.j2" %}
 ]
