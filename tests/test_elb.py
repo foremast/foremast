@@ -15,11 +15,13 @@
 #   limitations under the License.
 
 """Test ELB creation functions."""
+from unittest import mock
+
 from foremast.elb.format_listeners import format_listeners
 from foremast.elb.splay_health import splay_health
 
 
-def test_splay():
+def test_elb_splay():
     """Splay should split Health Checks properly."""
     health = splay_health('HTTP:80/test')
     assert health.path == '/test'
@@ -46,48 +48,58 @@ def test_splay():
     assert health.target == 'HTTPS:80/healthcheck'
 
 
-def test_format_listeners():
+@mock.patch('foremast.elb.format_listeners.get_env_credential')
+def test_elb_format_listeners(mock_creds):
     """Listeners should be formatted in list of dicts."""
-    test = {
+    mock_creds.return_value = { 'accountId': '0100' }
+
+    config = {
         'certificate': None,
         'i_port': 8080,
         'i_proto': 'HTTP',
         'lb_port': 80,
-        'lb_proto': 'HTTP'
+        'lb_proto': 'HTTP',
+        'policies': None,
     }
-    sample = [{
+    generated = [{
         'externalPort': 80,
         'externalProtocol': 'HTTP',
         'internalPort': 8080,
         'internalProtocol': 'HTTP',
-        'sslCertificateId': None
+        'sslCertificateId': None,
+        'listenerPolicies': None,
     }]
 
-    assert sample == format_listeners(elb_settings=test)
+    # check defaults
+    assert generated == format_listeners(elb_settings=config)
 
     # 'ports' key should override old style definitions
-    test['ports'] = [{'instance': 'HTTP:8000', 'loadbalancer': 'http:500'}]
-    sample = [{
+    config['ports'] = [{'instance': 'HTTP:8000', 'loadbalancer': 'http:500'}]
+    generated = [{
         'externalPort': 500,
         'externalProtocol': 'HTTP',
         'internalPort': 8000,
         'internalProtocol': 'HTTP',
-        'sslCertificateId': None
+        'sslCertificateId': None,
+        'listenerPolicies': [],
     }]
 
-    assert sample == format_listeners(elb_settings=test)
+    # check ports
+    assert generated == format_listeners(elb_settings=config)
 
-    test['ports'].append({
+    config['ports'].append({
         'certificate': 'kerby',
         'instance': 'http:80',
         'loadbalancer': 'https:443',
     })
-    sample.append({
+    generated.append({
         'externalPort': 443,
         'externalProtocol': 'HTTPS',
         'internalPort': 80,
         'internalProtocol': 'HTTP',
-        'sslCertificateId': 'kerby',
+        'sslCertificateId': 'arn:aws:iam::0100:server-certificate/kerby',
+        'listenerPolicies': [],
     })
 
-    assert sample == format_listeners(elb_settings=test)
+    # check certificate
+    assert generated == format_listeners(elb_settings=config)
