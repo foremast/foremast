@@ -38,13 +38,14 @@ def get_template(template_file='', **kwargs):
 
     here = os.path.dirname(os.path.realpath(__file__))
     local_templates = '{0}/../templates/'.format(here)
-    jinja_lst = [local_templates]
+    jinja_lst = []
 
     if TEMPLATES_PATH:
         external_templates = os.path.expanduser(TEMPLATES_PATH)
         assert os.path.isdir(external_templates), 'Template path {0} not found'.format(
                     external_templates)
-        jinja_lst.insert(0, external_templates)
+        jinja_lst.append(external_templates)
+    jinja_lst.append(local_templates)
 
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_lst))
     template = jinjaenv.get_template(template_file)
