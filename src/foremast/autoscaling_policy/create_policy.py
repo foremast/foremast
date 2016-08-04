@@ -74,15 +74,6 @@ class AutoScalingPolicy:
                 'comparisonOperator': 'GreaterThanThreshold',
                 'scalingAdjustment': 1
             }
-            self.log.info('Rendering Scaling Policy Template: {0}'.format(
-                template_kwargs))
-            rendered_template = get_template(
-                template_file='infrastructure/autoscaling_policy.json.j2',
-                **template_kwargs)
-
-            self.post_task(rendered_template)
-            self.log.info('Successfully created scaling policy in {0}'.format(
-                self.env))
         elif scaling_type == 'scale_down':
             self.settings['asg']['scaling_policy']['threshold'] = self.settings[
                 'asg']['scaling_policy']['threshold'] * 0.5
@@ -97,15 +88,17 @@ class AutoScalingPolicy:
                 'comparisonOperator': 'LessThanThreshold',
                 'scalingAdjustment': -1
             }
-            self.log.info('Rendering Scaling Policy Template: {0}'.format(
-                template_kwargs))
-            rendered_template = get_template(
-                template_file='autoscaling_policy_template.json',
-                **template_kwargs)
 
-            self.post_task(rendered_template)
-            self.log.info('Successfully created scaling policy in {0}'.format(
-                self.env))
+        self.log.info('Rendering Scaling Policy Template: {0}'.format(
+            template_kwargs))
+        rendered_template = get_template(
+            template_file='infrastructure/autoscaling_policy.json.j2',
+            **template_kwargs)
+        print(rendered_template)
+        taskid = post_task(rendered_template)
+        check_task(taskid)
+        self.log.info('Successfully created scaling policy in {0}'.format(
+            self.env))
 
     def create_policy(self):
         """Wrapper function. Gets the server group, sets sane defaults,
