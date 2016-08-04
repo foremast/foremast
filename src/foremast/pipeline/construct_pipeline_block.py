@@ -68,11 +68,7 @@ def construct_pipeline_block(env='',
                                            group_name=generated.project)
 
     # Use different variable to keep template simple
-    instance_security_groups = [
-        'sg_apps',
-        'sg_offices',
-        gen_app_name,
-    ]
+    instance_security_groups = [gen_app_name]
     instance_security_groups.extend(
         settings['security_group']['instance_extras'])
 
@@ -129,7 +125,7 @@ def construct_pipeline_block(env='',
         'az_dict': json.dumps(region_subnets),
         'previous_env': previous_env,
         'encoded_user_data': user_data,
-        'instance_security_groups': json.dumps(instance_security_groups),
+        'instance_security_groups': instance_security_groups,
         'elb': json.dumps(elb),
         'promote_restrict': pipeline_data['promote_restrict'],
         'owner_email': pipeline_data['owner_email'],
@@ -145,4 +141,5 @@ def construct_pipeline_block(env='',
     LOG.debug('Block data:\n%s', pformat(data))
 
     pipeline_json = get_template(template_file=template_name, data=data)
+    print(pipeline_json)
     return pipeline_json

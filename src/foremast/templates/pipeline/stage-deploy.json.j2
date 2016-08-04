@@ -32,7 +32,11 @@
           "availabilityZones": {{ data.app.az_dict }},
           "keyPair": "{{ data.app.environment }}_{{ data.app.region }}_default",
           "suspendedProcesses": [],
-          "securityGroups": {{ data.app.instance_security_groups }},
+          "securityGroups": [
+            {% for sg in data.app.instance_security_groups -%}
+            "{{ sg }}"{% if not loop.last %},{% endif %}
+            {% endfor -%}
+            ],
           "tags": {
             "app_group": "{{ data.app.group_name }}",
             "app_name": "{{ data.app.appname }}",
