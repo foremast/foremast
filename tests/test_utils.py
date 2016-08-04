@@ -235,14 +235,14 @@ def test_utils_subnets_get_subnets(mock_requests_get):
         {'vpcId': 101, 'account': 'dev', 'region': 'us-west-2',
          'target': 'ec2', 'availabilityZone': ['us-west-2a', 'us-west-2b']},
     ]
+
     mock_requests_get.return_value.json.return_value = data
 
     # default - happy path
     result = get_subnets(env='dev', region='us-east-1')
     assert result == {'us-east-1': [[]]}
 
-    # default - happy path w/az
-    mock_requests_get.return_value.json.return_value = data
+    # default - happy path w/multiple az
     result = get_subnets(env='dev', region='')
     assert result == {'dev': {'us-west-2': [['us-west-2a', 'us-west-2b']], 'us-east-1': [[]]}}
 
