@@ -21,12 +21,11 @@ from .pipelines import *
 from .deep_chain_map import DeepChainMap
 from .elb import *
 from .gate import *
-from .generate_encoded_user_data import *
+from .encoding import *
 from .generate_filename import *
 from .dns import *
-from .get_env_credential import *
-from .get_properties import *
-from .get_properties import *
+from .credentials import *
+from .properties import *
 from .security_group import *
 from .subnets import *
 from .vpc import *
