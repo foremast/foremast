@@ -12,7 +12,7 @@ This configuration holds information necessary for running foremast such as auth
 Example Configuration
 ----------------------
 
-.. literalinclude:: .foremast/foremast.cfg
+.. literalinclude:: ../src/foremast/templates/configs/foremast.cfg.example
 
 Configuration Locations
 ------------------------
@@ -74,6 +74,13 @@ FQDN of gitlab. Will be used for handling API calls to Gitlab
 FQDN Of your spinnaker Gate instance. This is where all API calls to Spinnaker will go
 
     | *Required*: Yes
+
+``templates_path``
+******************
+
+Path to custome templates directory. If provided, Foremast will first look in this directory for any templates. This can be an absolute path, or a path relative to where you where you are running the Foremast commands. See :doc:`pipeline_examples` for more details on custom templates.
+
+    | *Required*: No
 
 ``[credentials]``
 ~~~~~~~~~~~~~~~~~

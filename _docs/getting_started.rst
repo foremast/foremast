@@ -31,14 +31,14 @@ Pipeline Configs
 
 The :doc:`pipeline_json` and :doc:`application_json` are critical files that determine on how an application pipeline will work. Theses configurations need to exist for each application that you plan on using Foremast to deploy. We recommend keeping these files in the same repository as your application but as long as they are on the same local machine as the Foremast runner they can be used.
 
-In ``~/runway`` creates a file ``pipeline.json`` with the contents::
+In ``~/runway`` create a file ``pipeline.json`` with the contents::
 
     {
         "deployment": "spinnaker",
-        "env": [ "account1", "accounts2"]
+        "env": [ "account1", "account2"]
     }
 
-In the same ``~/runway`` directory, create a file ``application-master-$account.json`` where ``$accounts`` is the same name as an account in your AWS credentials file and in your ``env`` list in pipeline.json.
+In the same ``~/runway`` directory, create a file ``application-master-$account.json`` where ``$account`` is the same name as an account in your AWS credentials file and in your ``env`` list in pipeline.json.
 This file can be empty and it will just use the defaults defined at :doc:`application_json`. It is sugguested that you look through the docs and decide what values to set.
 
 **Note:** You will need an ``application-master-$account.json`` config for each ``$account`` that you are deploying to.
@@ -62,7 +62,7 @@ Running Foremast
 
 After setting up all of the configs there are a couple of ways to run Foremast components. You can use our bundled CLI endpoints that look at environment variables, or you can call each individual component with appropriate arguments on the CLI
 
-Both methods will generate the same out come. An application created in Spinnaker and a pipeline generated based on the configs.
+Both methods will generate the same outcome. An application created in Spinnaker and a pipeline generated based on the configs.
 
 Variables Needed
 ****************
@@ -70,8 +70,8 @@ Variables Needed
 For both methods you will want to set the following variables. Method 1 will look at the environoment for these, Method 2 you can just pass them directly as arguments.
 
     | ``TRIGGER_JOB``: The name of the Jenkins job that Spinnaker should look for as a trigger
-    | ``APPNAME``: The full name of your application in Spinnaker. We recommend ``${GIT_REPO}${PROJECT}``
-    | ``EMAIL``: email address associated with application in Spinnaker
+    | ``APPNAME``: The full name of your application in Spinnaker. ``${GIT_REPO}${PROJECT}`` is default
+    | ``EMAIL``: Email address associated with application in Spinnaker
     | ``PROJECT``: The namespace or group of the application being set up
     | ``GIT_REPO``: The name of the repo in the above namespace/group
     | ``RUNWAY_DIR``: Path to the pipeline.json and application-master-$account.json files created above
@@ -80,7 +80,7 @@ For both methods you will want to set the following variables. Method 1 will loo
 Method 1
 *********
 
-This is our recommended method and how we internally at Gogo run Foremast. You need to first set the environment variables from above. 
+This is our recommended method and how we internally at Gogo run Foremast. You need to first set the environment variables from above.
 
 With the environment variables defined, you can simply run the command ``prepare-app-pipeline`` from the command line. This will create the Application in Spinnaker as well as generate a base pipeline.
 
@@ -100,7 +100,9 @@ This method is more explicit and requires calling multiple Foremast components t
 Next Steps
 ------------------------
 
-This guide walked through running Foremast for the first time but there is still some setup that needs done for actually running a pipeline. Take a look at the :doc:`infra_assumptions` section for details on the necessary Jenkins Jobs. 
+This guide walked through running Foremast for the first time but there is still some setup that needs done for actually running a pipeline. Take a look at the :doc:`infra_assumptions` docs for details on the necessary Jenkins jobs.
+
+Take a look at :doc:`pipeline_examples` to see what the default pipeline looks like and to get some insight on how Foremast can be utilized.
 
 This is only the tip of what Foremast can do. It also has functionality for creating scaling policies, setting up AWS infrastructure (elbs, security groups, iam policies, s3 buckets), sending slack notifications, and destorying old infrastructure. Take a look at our internal workflow docs for more detail on how Foremast is used at Gogo.
 

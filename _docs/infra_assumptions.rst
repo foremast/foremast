@@ -9,9 +9,8 @@ Spinnaker
 ---------
 
 - Foremast assumes that Spinnaker is already setup. Please see the `Spinnaker documentation`_ for assistance
-- Requires connectivity to the Gate component of Spinnaker.
-  - Does not support authentication (yet)
-- Assumes AWS EBS packer bakes
+- Requires connectivity to the Gate component of Spinnaker. Foremast does not support authentication on Gate (yet).
+- Assumes AWS EBS is used for Packer bakes in Spinnaker Rosco
 
 
 Spinnaker Component Versions
@@ -37,15 +36,15 @@ Foremast only works with AWS (for now). Below are the AWS requirements:
 
 - Foremast IAM Access:
 
-  - Will need credentials set up in a Boto3 configuration file. See :doc:`aws_creds` for details
+  - Will need credentials set up in a Boto3 configuration file. See :doc:`aws_creds` for details.
 
   - IAM user or role will need the following permissions:
 
-    - ``S3``: View, create and delete buckets
+    - ``S3``: View, create and delete buckets.
 
-    - ``IAM``: View, create and  delete roles, uers, and policies
+    - ``IAM``: View, create and  delete roles, uers, and policies.
 
-    - ``Route53``: View, create, and delete DNS records
+    - ``Route53``: View, create, and delete DNS records.
 
   - Everything else, such as ELBs and security groups, are handled through Spinnaker.
 

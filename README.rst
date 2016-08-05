@@ -4,12 +4,6 @@ Spinnaker Foremast
 This project contains different modules for managing applications, pipelines,
 and AWS infrastructure through Spinnaker
 
-Basic Task Overview
--------------------
-
-These are designed to be loosely coupled applications and we will continue to
-update this README as the project grows.
-
 Usage
 -----
 
@@ -144,9 +138,8 @@ for each application
 pipeline.json
 ~~~~~~~~~~~~~
 
-``pipeline.json``, will be needed in some direct of your application. We use the
-``runway`` directory. We have a lot of defaults in place for ``pipeline.json``,
-take a look at the docs for all options.
+:doc:`pipeline.json`, will be needed for each application. We have a lot of defaults
+ in place for ``pipeline.json``, take a look at the :doc:`pipeline_json` docs for all options.
 
 Minimum
 ^^^^^^^
@@ -196,10 +189,10 @@ application-master-{env}.json
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Each deployment environment specified in the ``pipeline.json`` file will need an
-accompanying ``application-master-{env}.json`` file in the same directory.
+accompanying ``application-master-{env}.json`` file in the same directory. 
 
 The \`application-master-{env} files have a lot of exposed values with sane
-defaults. Please take a look at the docs for all options.
+defaults. Please take a look at the :doc:`application_json` docs for all options.
 
 application-master-{env}.json example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -242,11 +235,3 @@ application-master-{env}.json example
         "ttl": 120
         }
     }
-
-TODOs
------
-
--  [] Abstract Gogoutils or make public
--  [] Make prop\_path implied, or handle it better
--  [] Open Source!
--  [] Add github support

@@ -12,7 +12,7 @@ This configuration file holds infrastruction information for $account. Each AWS 
 Example Configuration
 ----------------------
 
-.. literalinclude:: ../src/foremast/templates/configs.json.j2
+.. literalinclude:: ../src/foremast/templates/configs/configs.json.j2
 
 Configuration Details
 ----------------------

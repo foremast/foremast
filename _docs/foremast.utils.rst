@@ -20,14 +20,6 @@ foremast.utils.check_managed_pipeline module
     :undoc-members:
     :show-inheritance:
 
-foremast.utils.check_task module
---------------------------------
-
-.. automodule:: foremast.utils.check_task
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 foremast.utils.deep_chain_map module
 ------------------------------------
 
@@ -140,14 +132,6 @@ foremast.utils.get_subnets module
     :undoc-members:
     :show-inheritance:
 
-foremast.utils.get_template module
-----------------------------------
-
-.. automodule:: foremast.utils.get_template
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 foremast.utils.get_vpc_id module
 --------------------------------
 
@@ -168,6 +152,22 @@ foremast.utils.post_slack_message module
 ----------------------------------------
 
 .. automodule:: foremast.utils.post_slack_message
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.tasks module
+---------------------------
+
+.. automodule:: foremast.utils.tasks
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.templates module
+-------------------------------
+
+.. automodule:: foremast.utils.templates
     :members:
     :undoc-members:
     :show-inheritance:

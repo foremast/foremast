@@ -12,7 +12,7 @@ This configuration file is used for defining pipeline settings that affect the p
 Example Configuration
 ---------------------
 
-.. literalinclude:: ../src/foremast/templates/pipeline.json.j2
+.. literalinclude:: ../src/foremast/templates/configs/pipeline.json.j2
 
 Configuration Details
 ----------------------
