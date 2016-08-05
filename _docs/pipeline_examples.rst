@@ -6,10 +6,16 @@ Pipeline Flow and Examples
    :local:
 
 
+<<<<<<< HEAD
 Foremast generates a single pipeline per region. The pipeline is designed to allow deploying to multiple environment with checkpoints between each transition.
 
 Default Pipeline Flow
 ---------------------
+=======
+Foremast generates a single pipeline per region. The pipeline is designed to allow deploying to multiple environment with checkpoints between each transition. At this time, the generated pipeline is not very customizable with out changing the source templates. We would like to include custom templates in a future release.
+
+Pipeline Flow
+-------------
 
 The below flow can repeat for as many environments as defined in the configs. At Gogo, most applications go through these stages 3 times as we deploy to dev, stage, and production.
 
@@ -46,7 +52,6 @@ Stages 3-6 repeat for each environment/account defined in :doc:`pipeline_json`.
 .. image:: _static/minimal-pipeline-example.png
 
 The default generated pipeline should look like the above image. This is the basic `bake` -> `infrastructure` -> `deploy` -> `checkpoint` pipeline described above.
-
 
 Custom Pipelines
 ----------------
@@ -88,9 +93,6 @@ At Gogo we have a detailed workflow for using Foremast internally. Feel free to 
     #. Attaches defined scaling policies
 
     #. Wants for manual judgement before continuing to the next stage
-
-
-
 
 
 
