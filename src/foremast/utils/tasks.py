@@ -26,6 +26,7 @@ from ..exceptions import SpinnakerTaskError
 
 LOG = logging.getLogger(__name__)
 
+
 def post_task(task_data):
     """POST JSON to Spinnaker /tasks.
 
@@ -52,6 +53,7 @@ def post_task(task_data):
         resp.text)
 
     return resp_json['ref']
+
 
 @retries(max_attempts=50, wait=2, exceptions=(AssertionError, ValueError))
 def check_task(taskid):

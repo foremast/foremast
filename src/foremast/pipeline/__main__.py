@@ -21,7 +21,7 @@ Help: ``python -m src.foremast.pipeline -h``
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_gitlab_token, add_properties
+from ..args import add_app, add_debug, add_properties
 from ..consts import ENVS, LOGGING_FORMAT
 from .create_pipeline import SpinnakerPipeline
 from .create_pipeline_onetime import SpinnakerPipelineOnetime
