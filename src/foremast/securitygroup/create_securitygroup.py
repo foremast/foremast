@@ -44,12 +44,10 @@ import ipaddress
 import logging
 
 import boto3
-import requests
 from boto3.exceptions import botocore
 
-from ..consts import API_URL, HEADERS
 from ..exceptions import (SpinnakerSecurityGroupCreationFailed,
-                          SpinnakerSecurityGroupError, SpinnakerTaskError)
+                          SpinnakerSecurityGroupError)
 from ..utils import (check_task, post_task, get_properties, get_security_group_id,
                      get_template, get_vpc_id, warn_user)
 

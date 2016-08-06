@@ -61,6 +61,7 @@ def validate_key_values(config_handle, section, key, default=None):
 
     return value
 
+
 def extract_formats(config_handle):
     """Get application formats.
 
@@ -78,6 +79,7 @@ def extract_formats(config_handle):
         formats = dict(config_handle['formats'])
 
     return formats
+
 
 def find_config():
     """Look for **foremast.cfg** in config_locations.

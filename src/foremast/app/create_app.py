@@ -23,7 +23,7 @@ from pprint import pformat
 
 import requests
 
-from ..consts import API_URL, HEADERS
+from ..consts import API_URL
 from ..utils import get_template, check_task, post_task
 
 

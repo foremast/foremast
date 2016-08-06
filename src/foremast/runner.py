@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Foremast - Pipeline Tooling
 #
 #   Copyright 2016 Gogo, LLC
@@ -14,7 +15,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-#!/usr/bin/env python
 """A runner for all of the spinnaker pipe modules.
 
 Read environment variables from Jenkins:
@@ -73,7 +73,7 @@ class ForemastRunner(object):
                 git_short=self.git_short)
         else:
             app_configs = configs.process_runway_configs(
-                    runway_dir=self.runway_dir)
+                runway_dir=self.runway_dir)
 
         self.configs = configs.write_variables(app_configs=app_configs,
                                                out_file=self.raw_path,
@@ -150,10 +150,10 @@ class ForemastRunner(object):
         """Create Scaling Policy for app in environment"""
         utils.banner("Creating Scaling Policy")
         policyobj = autoscaling_policy.AutoScalingPolicy(
-                                            app=self.app,
-                                            env=self.env,
-                                            region=self.region,
-                                            prop_path=self.json_path)
+            app=self.app,
+            env=self.env,
+            region=self.region,
+            prop_path=self.json_path)
         policyobj.create_policy()
 
     def slack_notify(self):
@@ -212,11 +212,13 @@ def prepare_onetime_pipeline():
     runner.create_pipeline(onetime=os.getenv('ENV'))
     runner.cleanup()
 
+
 def create_scaling_policy():
     runner = ForemastRunner()
     runner.write_configs()
     runner.create_autoscaling_policy()
     runner.cleanup()
+
 
 def rebuild_pipelines():
     """ Entry point for rebuilding pipelines. Can be used to rebuild all pipelines
@@ -228,20 +230,20 @@ def rebuild_pipelines():
         LOG.fatal(msg)
         raise SystemExit('Error: {0}'.format(msg))
 
-    for app in all_apps:
-        if not 'repoProjectKey' in app:
-            LOG.info("Skipping {}. No project key found".format(app['name']))
+    for apps in all_apps:
+        if 'repoProjectKey' not in apps:
+            LOG.info("Skipping {}. No project key found".format(apps['name']))
             continue
         if (app['repoProjectKey'].lower() == rebuild_project.lower() or
-                rebuild_project == 'ALL' ):
+                rebuild_project == 'ALL'):
             os.environ["PROJECT"] = app['repoProjectKey']
             os.environ["GIT_REPO"] = app['repoSlug']
             LOG.info('Rebuilding pipelines for {}/{}'.format(
-                    app['repoProjectKey'], app['repoSlug']))
+                apps['repoProjectKey'], apps['repoSlug']))
             runner = ForemastRunner()
             try:
                 runner.write_configs()
                 runner.create_pipeline()
                 runner.cleanup()
-            except Exception as e:
-                print(e)
+            except Exception as error:
+                print(error)

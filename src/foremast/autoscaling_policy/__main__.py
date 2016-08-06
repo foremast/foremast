@@ -22,8 +22,8 @@ Help: ```python -m src.foremast.autoscaling_policy -h```
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_region, add_gitlab_token, add_properties, add_env
-from ..consts import ENVS, LOGGING_FORMAT
+from ..args import add_app, add_debug, add_region, add_properties, add_env
+from ..consts import LOGGING_FORMAT
 from .create_policy import AutoScalingPolicy
 
 
