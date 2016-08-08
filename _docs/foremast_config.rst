@@ -82,6 +82,13 @@ Path to custome templates directory. If provided, Foremast will first look in th
 
     | *Required*: No
 
+``default_securitygroups``
+**************************
+Comma seperated list of security groups to include for all deployments
+
+    | *Required*: No
+    | *Example*: ``office,test_sg,example``
+
 ``[credentials]``
 ~~~~~~~~~~~~~~~~~
 

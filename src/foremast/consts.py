@@ -112,6 +112,8 @@ ENVS = set(validate_key_values(config, 'base', 'envs', default='').split(','))
 REGIONS = set(validate_key_values(config, 'base', 'regions', default='').split(','))
 TEMPLATES_PATH = validate_key_values(config, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(config, 'base', 'ami_json_url')
+DEFAULT_SECURITYGROUPS = set(validate_key_values(config, 'base', 'default_securitygroups',
+                            default='').split(','))
 
 GITLAB_TOKEN = validate_key_values(config, 'credentials', 'gitlab_token')
 SLACK_TOKEN = validate_key_values(config, 'credentials', 'slack_token')
