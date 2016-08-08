@@ -1,7 +1,6 @@
 boto3
 gogo-utils
 jinja2
-jira
 murl
 pyapi-gitlab
 requests
