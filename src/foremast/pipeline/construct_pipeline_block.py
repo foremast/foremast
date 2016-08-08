@@ -17,7 +17,6 @@
 """Construct a block section of Stages in a Spinnaker Pipeline."""
 import json
 import logging
-import os
 import copy
 from pprint import pformat
 

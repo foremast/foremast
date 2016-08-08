@@ -122,6 +122,7 @@ def test_utils_post_slack_message(mock_slack):
 
 @mock.patch('requests.get')
 @mock.patch('foremast.utils.pipelines.murl')
+@mock.patch('foremast.utils.apps.API_URL', 'http://test.com')
 def test_utils_apps_get_details(mock_murl, mock_requests_get):
     data = {
         'attributes': {
@@ -142,6 +143,7 @@ def test_utils_apps_get_details(mock_murl, mock_requests_get):
 
 @mock.patch('requests.get')
 @mock.patch('foremast.utils.pipelines.murl')
+@mock.patch('foremast.utils.apps.API_URL', 'http://test.com')
 def test_utils_apps_get_all_apps(mock_murl, mock_requests_get):
     data = []
     mock_requests_get.return_value.json.return_value = data
@@ -154,7 +156,8 @@ def test_utils_apps_get_all_apps(mock_murl, mock_requests_get):
         result = get_all_apps()
 
 
-@mock.patch('foremast.utils.dns.boto3.Session.client')
+@mock.patch('foremast.utils.dns.boto3.Session')
+@mock.patch('foremast.utils.dns.DOMAIN', 'test')
 def test_utils_dns_get_zone_ids(mock_boto3):
     data = {
         'HostedZones': [
@@ -170,7 +173,7 @@ def test_utils_dns_get_zone_ids(mock_boto3):
             ]
     }
 
-    mock_boto3.return_value.list_hosted_zones_by_name.return_value = data
+    mock_boto3.return_value.client.return_value.list_hosted_zones_by_name.return_value = data
 
     # default case
     result = get_dns_zone_ids()
@@ -185,7 +188,7 @@ def test_utils_dns_get_zone_ids(mock_boto3):
     assert result == [100]
 
     # no internal zones
-    mock_boto3.return_value.list_hosted_zones_by_name.return_value = data_external
+    mock_boto3.return_value.client.return_value.list_hosted_zones_by_name.return_value = data_external
     result = get_dns_zone_ids(facing='internal')
     assert result == []
 

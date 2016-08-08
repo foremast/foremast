@@ -15,7 +15,6 @@
 #   limitations under the License.
 
 """Get available Subnets for specific Targets."""
-import json
 import logging
 from collections import defaultdict
 from pprint import pformat
