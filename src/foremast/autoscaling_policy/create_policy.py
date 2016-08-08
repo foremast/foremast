@@ -24,7 +24,7 @@ import os
 
 import requests
 
-from ..consts import API_URL, HEADERS
+from ..consts import API_URL
 from ..utils import (get_properties, get_template, check_task, post_task)
 
 
@@ -124,7 +124,6 @@ class AutoScalingPolicy:
             period_sec = 1800
         self.prepare_policy_template('scale_up', period_sec, server_group)
         self.prepare_policy_template('scale_down', period_sec, server_group)
-
 
     def get_server_group(self):
         """Finds the most recently deployed server group for the application.

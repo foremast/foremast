@@ -16,11 +16,14 @@
 
 """Test IAM Policies for correctness."""
 import json
+from unittest import mock
 
 from foremast.iam.construct_policy import construct_policy
 
 
-def test_iam_construct_policy():
+@mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
+@mock.patch('foremast.utils.credentials.requests.get')
+def test_iam_construct_policy(requests_get):
     """Check general assemblage."""
     settings = {}
 

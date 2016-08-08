@@ -27,6 +27,7 @@ import logging
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
 
+
 def banner(text, border='=', width=80):
 
     """Center _text_ in a banner _width_ wide with _border_ characters.

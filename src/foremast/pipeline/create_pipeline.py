@@ -125,20 +125,21 @@ class SpinnakerPipeline:
 
         pipeline_id = self.compare_with_existing(region=region)
 
-        data = {'app': {
-                    'ami_id': ami_id,
-                    'appname': self.app_name,
-                    'base': base,
-                    'environment': 'packaging',
-                    'region': region,
-                    'triggerjob': self.trigger_job,
-                    'email': email,
-                    'slack': slack,
-                    'root_volume_size': root_volume_size,
-                    'ami_template_file': ami_template_file,
-                },
-                'id': pipeline_id
-            }
+        data = {
+            'app': {
+                'ami_id': ami_id,
+                'appname': self.app_name,
+                'base': base,
+                'environment': 'packaging',
+                'region': region,
+                'triggerjob': self.trigger_job,
+                'email': email,
+                'slack': slack,
+                'root_volume_size': root_volume_size,
+                'ami_template_file': ami_template_file,
+            },
+            'id': pipeline_id
+        }
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
@@ -157,7 +158,7 @@ class SpinnakerPipeline:
         url = "{0}/applications/{1}/pipelineConfigs".format(API_URL, self.app_name)
         resp = requests.get(url)
         assert resp.ok, 'Failed to lookup pipelines for {0}: {1}'.format(
-                    self.app_name, resp.text)
+            self.app_name, resp.text)
 
         return resp.json()
 

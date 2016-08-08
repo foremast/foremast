@@ -17,7 +17,6 @@
 """Lookup AMI ID from a simple name."""
 import json
 import logging
-import os
 from base64 import b64decode
 
 import gitlab
@@ -44,7 +43,7 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
         LOG.info("Getting AMI from %s", AMI_JSON_URL)
         response = requests.get(AMI_JSON_URL)
         assert response.ok, "Error getting ami info from {}".format(
-                AMI_JSON_URL)
+            AMI_JSON_URL)
 
         ami_dict = response.json()
         LOG.debug('Lookup AMI table: %s', ami_dict)

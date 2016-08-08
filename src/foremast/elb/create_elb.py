@@ -19,9 +19,7 @@ import json
 import logging
 
 import boto3
-import requests
 
-from ..consts import API_URL, HEADERS
 from ..utils import (check_task, get_properties, get_subnets, get_template,
                      get_vpc_id, post_task)
 from .format_listeners import format_listeners
@@ -112,7 +110,6 @@ class SpinnakerELB:
         """Create or Update the ELB after rendering JSON data from configs.
         Asserts that the ELB task was successful.
         """
-        app = self.app
         json_data = self.make_elb_json()
 
         taskid = post_task(json_data)

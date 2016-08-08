@@ -16,6 +16,7 @@
 
 """Generate various filenames."""
 
+
 def generate_packer_filename(provider, region, builder):
     """Generate a filename to be used by packer.
 
