@@ -51,13 +51,13 @@ Custom Pipelines
 
 You can specify an external templates directory in :doc:`foremast_config`. Templates in an external directory will need to have the same directory structure and naming as the default templates. if `templates_path` is set in :doc:`foremast_config`, Foremast will first see if the file exists there. If not, it will fall back to the provided tempaltes.
 
-If you need to add more stages or  change the defaults, this is all possible via external templates. Please see GITLAB_URL for examples on the templates.
+If you need to add more stages or  change the defaults, this is all possible via external templates. Please the `foremast-templates repo`_ for examples on the templates.
 
 
 Example Workflow
 -----------------
 
-At Gogo we have a detailed workflow for using Foremast internally. Feel free to copy our workflow or use it as insperation for your own.
+At Gogo we have a detailed workflow for using Foremast internally. Feel free to copy our workflow or use it as insperation for your own. You can view all of our internal templates on the `foremast-templates repo`_.
 
 .. image:: _static/gogo-pipeline.png
 
@@ -88,5 +88,4 @@ At Gogo we have a detailed workflow for using Foremast internally. Feel free to 
     #. Wants for manual judgement before continuing to the next stage
 
 
-
-
+.. _`foremast-templates repo`: https://github.com/gogoair/foremast-templates
