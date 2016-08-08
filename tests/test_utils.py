@@ -142,6 +142,7 @@ def test_utils_apps_get_details(mock_murl, mock_requests_get):
 
 @mock.patch('requests.get')
 @mock.patch('foremast.utils.pipelines.murl')
+@mock.patch('foremast.utils.apps.API_URL', 'http://test.com')
 def test_utils_apps_get_all_apps(mock_murl, mock_requests_get):
     data = []
     mock_requests_get.return_value.json.return_value = data
