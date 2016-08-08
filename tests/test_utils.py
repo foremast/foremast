@@ -154,7 +154,8 @@ def test_utils_apps_get_all_apps(mock_murl, mock_requests_get):
         result = get_all_apps()
 
 
-@mock.patch('foremast.utils.dns.boto3.Session.client')
+@mock.patch('foremast.utils.dns.boto3.Session')
+@mock.patch('foremast.utils.dns.DOMAIN', 'test')
 def test_utils_dns_get_zone_ids(mock_boto3):
     data = {
         'HostedZones': [
@@ -170,7 +171,7 @@ def test_utils_dns_get_zone_ids(mock_boto3):
             ]
     }
 
-    mock_boto3.return_value.list_hosted_zones_by_name.return_value = data
+    mock_boto3.return_value.client.return_value.list_hosted_zones_by_name.return_value = data
 
     # default case
     result = get_dns_zone_ids()
