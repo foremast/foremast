@@ -122,6 +122,7 @@ def test_utils_post_slack_message(mock_slack):
 
 @mock.patch('requests.get')
 @mock.patch('foremast.utils.pipelines.murl')
+@mock.patch('foremast.utils.apps.API_URL', 'http://test.com')
 def test_utils_apps_get_details(mock_murl, mock_requests_get):
     data = {
         'attributes': {
