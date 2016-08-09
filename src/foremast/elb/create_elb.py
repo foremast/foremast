@@ -20,6 +20,7 @@ import logging
 
 import boto3
 
+from ..consts import DEFAULT_ELB_SECURITYGROUPS
 from ..utils import (check_task, get_properties, get_subnets, get_template,
                      get_vpc_id, post_task)
 from .format_listeners import format_listeners
@@ -73,10 +74,8 @@ class SpinnakerELB:
 
         listeners = format_listeners(elb_settings=elb_settings, env=self.env)
 
-        security_groups = [
-            'sg_apps',
-            self.app,
-        ]
+        security_groups = list(DEFAULT_ELB_SECURITYGROUPS)
+        security_groups.append(self.app)
         security_groups.extend(self.properties['security_group']['elb_extras'])
 
         template_kwargs = {

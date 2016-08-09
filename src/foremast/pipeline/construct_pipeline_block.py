@@ -21,7 +21,7 @@ import copy
 from pprint import pformat
 
 from ..utils import generate_encoded_user_data, get_template
-from ..consts import ASG_WHITELIST, DEFAULT_SECURITYGROUPS
+from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
 
 LOG = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ def construct_pipeline_block(env='',
                                            group_name=generated.project)
 
     # Use different variable to keep template simple
-    instance_security_groups = list(DEFAULT_SECURITYGROUPS)
+    instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS)
     instance_security_groups.append(gen_app_name)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
 
