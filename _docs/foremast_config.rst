@@ -82,12 +82,20 @@ Path to custome templates directory. If provided, Foremast will first look in th
 
     | *Required*: No
 
-``default_securitygroups``
+``default_ec2_securitygroups``
 **************************
-Comma seperated list of security groups to include for all deployments
+Comma seperated list of EC2 security groups to include for all deployments
 
     | *Required*: No
     | *Example*: ``office,test_sg,example``
+
+``default_elb_securitygroups``
+**************************
+Comma seperated list of ELB security groups to include for all deployments
+
+    | *Required*: No
+    | *Example*: ``test_sg,example_elb_sg``
+
 
 ``[credentials]``
 ~~~~~~~~~~~~~~~~~

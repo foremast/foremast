@@ -88,4 +88,4 @@ At Gogo we have a detailed workflow for using Foremast internally. Feel free to 
     #. Wants for manual judgement before continuing to the next stage
 
 
-.. _`foremast-templates repo`: https://github.com/gogoair/foremast-templates
+.. _`foremast-templates repo`: https://github.com/gogoair/foremast-template-examples
