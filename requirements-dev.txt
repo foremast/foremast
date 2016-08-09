@@ -5,3 +5,4 @@ pytest-pep8
 sphinx
 sphinx_rtd_theme
 sphinxcontrib-napoleon
+tox
