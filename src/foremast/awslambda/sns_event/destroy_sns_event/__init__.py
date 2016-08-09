@@ -1,0 +1,1 @@
+from .destroy_sns_event import *

@@ -1,0 +1,26 @@
+{
+    "LambdaFunctionConfigurations": [
+        {
+            "LambdaFunctionArn": "{{ lambda_arn }}",
+            "Events": [
+            {% for event in events %}
+                {{ event }}{% if not loop.last %},
+                {% endif %}
+            {% endfor %}
+            ]{% if filters|length > 0 %},
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                      {% for filter in filters %}
+                        {
+                            "Name": "{{ filter.type }}",
+                            "Value": "{{ filter.value }}"
+                        }{% if not loop.last %},{% endif %}
+                      {% endfor %}
+                    ]
+                }
+            }
+            {% endif %}
+        }
+    ]
+}
