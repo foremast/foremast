@@ -115,9 +115,9 @@ REGIONS = set(validate_key_values(config, 'base', 'regions', default='').split('
 TEMPLATES_PATH = validate_key_values(config, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(config, 'base', 'ami_json_url')
 DEFAULT_EC2_SECURITYGROUPS = set(validate_key_values(config, 'base', 'default_ec2_securitygroups',
-                            default='').split(','))
+                             default='').split(','))
 DEFAULT_ELB_SECURITYGROUPS = set(validate_key_values(config, 'base', 'default_elb_securitygroups',
-                            default='').split(','))
+                             default='').split(','))
 GITLAB_TOKEN = validate_key_values(config, 'credentials', 'gitlab_token')
 SLACK_TOKEN = validate_key_values(config, 'credentials', 'slack_token')
 
