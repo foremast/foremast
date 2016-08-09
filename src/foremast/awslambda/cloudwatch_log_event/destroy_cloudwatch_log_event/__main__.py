@@ -1,4 +1,4 @@
-"""CLI entry point for DNS cleanup."""
+"""CLI entry point for Cloudwatch log subscription cleanup"""
 import argparse
 import logging
 
@@ -9,7 +9,7 @@ from .destroy_cloudwatch_log_event import destroy_cloudwatch_log_event
 
 def main():
     """
-    Destroy S3 event of a bucket
+    Destroy Cloudwatch log event
     """
     logging.basicConfig(format=LOGGING_FORMAT)
 

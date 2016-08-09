@@ -1,4 +1,4 @@
-"""Destroy Security Groups."""
+"""Create Lambda S3 event."""
 import argparse
 import logging
 
@@ -8,7 +8,7 @@ from .s3_event import create_s3_event
 
 
 def main():
-    """Destroy any Security Group related Resources."""
+    """Create Lambda S3 event."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)

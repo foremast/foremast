@@ -1,4 +1,4 @@
-"""Destroy any DNS records."""
+"""Destroy any cloudwatch log events."""
 import json
 import logging
 

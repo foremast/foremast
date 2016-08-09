@@ -1,4 +1,4 @@
-"""Destroy Security Groups."""
+"""Create Lambda SNS event subscription"""
 import argparse
 import logging
 
@@ -8,7 +8,7 @@ from .sns_event import create_sns_event
 
 
 def main():
-    """Destroy any Security Group related Resources."""
+    """Create Lambda SNS event subscription."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)

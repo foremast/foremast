@@ -1,4 +1,4 @@
-"""CLI entry point for DNS cleanup."""
+"""CLI entry point destroying Lambda SNS event subscription."""
 import argparse
 import logging
 
@@ -9,7 +9,7 @@ from .destroy_sns_event import destroy_sns_event
 
 def main():
     """
-    Destroy SNS event notification
+    Destroy Lambda SNS event subscription
     """
     logging.basicConfig(format=LOGGING_FORMAT)
 

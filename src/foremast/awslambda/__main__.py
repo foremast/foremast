@@ -1,6 +1,6 @@
-"""CLI entry point for security group creaation
+"""CLI entry point for aws events creation
 
-Help: ``python -m src.foremast.securitygroup -h``
+Help: ``python -m src.foremast.awslambdaevent -h``
 """
 import argparse
 import logging
