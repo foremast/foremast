@@ -1,5 +1,4 @@
-"""Destroy any DNS records."""
-import json
+"""Destroy S3 events."""
 import logging
 
 import boto3

@@ -1,4 +1,4 @@
-"""Destroy Security Groups."""
+"""Create Cloudwatch log event subscription"""
 import argparse
 import logging
 
@@ -8,7 +8,7 @@ from .cloudwatch_log_event import create_cloudwatch_log_event
 
 
 def main():
-    """Destroy any Security Group related Resources."""
+    """Create Cloudwatch log event subscription for Lambda."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)

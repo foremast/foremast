@@ -1,4 +1,4 @@
-"""CLI entry point for DNS cleanup."""
+"""CLI entry point for destroying lambda S3 event."""
 import argparse
 import logging
 

@@ -1,4 +1,4 @@
-"""Creates S3 event for Lambda apps."""
+"""Creates Lambda event triggers."""
 import logging
 
 from foremast.utils import get_properties
