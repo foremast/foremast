@@ -61,7 +61,7 @@ Installing the package will provide CLI commands for convenience.
 
 .. code-block:: bash
 
-    virutalenv venv
+    virtualenv venv
     source ./venv/bin/activate
     pip install .
 
