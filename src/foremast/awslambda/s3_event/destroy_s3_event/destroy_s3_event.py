@@ -29,5 +29,6 @@ def destroy_s3_event(app='', env='dev', region=''):
     config = {}
 
     s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=config)
+    LOG.debug("Deleted Lambda S3 notification")
 
     return True

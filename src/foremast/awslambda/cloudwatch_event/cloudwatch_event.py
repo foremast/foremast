@@ -30,13 +30,14 @@ def create_cloudwatch_event(app_name, env, region, rules):
         raise InvalidEventConfiguration('Rule name is required and no rule_name is defined!')
     else:
         # TODO: check if this is the right logic
-        LOG.info('{} and {}'.format(app_name, rule_name))
+        LOG.info('%s and %s', app_name, rule_name)
         # TODO: maybe we need to sanitize more?
         rule_name = "{}_{}".format(app_name, rule_name.replace(' ', '_'))
 
     if rule_description is None:
         rule_description = "{} - {}".format(app_name, rule_name)
 
+    # Create Cloudwatch rule
     # Create Cloudwatch rule
     cloudwatch_client.put_rule(Name=rule_name,
                                ScheduleExpression=schedule,

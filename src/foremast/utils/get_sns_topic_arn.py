@@ -29,5 +29,5 @@ def get_sns_topic_arn(topic_name='', account='', region=''):
         if topic_name == topic_arn.split(':')[-1]:
             return topic_arn
     else:
-        LOG.critical("No topic with name {0} found.".format(topic_name))
+        LOG.critical("No topic with name %s found.", topic_name)
         raise SNSTopicNotFound('No topic with name {0} found'.format(topic_name))
