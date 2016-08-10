@@ -43,7 +43,7 @@ class SpinnakerDns:
         self.app_name = self.generated.app_name()
 
         # Add domain
-        self.domain = domain
+        self.domain = DOMAIN
         self.env = env
         self.region = region
         self.elb_subnet = elb_subnet
