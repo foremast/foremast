@@ -13,13 +13,13 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Test utils."""
 
 import pytest
 from unittest import mock
 from foremast.utils import *
 from foremast.exceptions import *
+
 
 @mock.patch('foremast.utils.banners.LOG')
 def test_utils_banner(mock_log):
@@ -236,29 +236,59 @@ def test_utils_vpc_get_vpc_id(mock_requests_get):
         result = get_vpc_id(account='dev', region='us-east-1')
 
 
+SUBNET_DATA = [
+    {
+        'vpcId': 100,
+        'account': 'dev',
+        'region': 'us-east-1',
+        'target': 'ec2',
+        'availabilityZone': []
+    },
+    {
+        'vpcId': 101,
+        'account': 'dev',
+        'region': 'us-west-2',
+        'target': 'ec2',
+        'availabilityZone': ['us-west-2a', 'us-west-2b']
+    },
+]
+
+
 @mock.patch('foremast.utils.subnets.requests.get')
 def test_utils_subnets_get_subnets(mock_requests_get):
-    data = [
-        {'vpcId': 100, 'account': 'dev', 'region': 'us-east-1',
-         'target': 'ec2', 'availabilityZone': []},
-        {'vpcId': 101, 'account': 'dev', 'region': 'us-west-2',
-         'target': 'ec2', 'availabilityZone': ['us-west-2a', 'us-west-2b']},
-    ]
-
-    mock_requests_get.return_value.json.return_value = data
+    """Find one subnet."""
+    mock_requests_get.return_value.json.return_value = SUBNET_DATA
 
     # default - happy path
     result = get_subnets(env='dev', region='us-east-1')
     assert result == {'us-east-1': [[]]}
 
+
+@mock.patch('foremast.utils.subnets.requests.get')
+def test_utils_subnets_get_subnets_multiple_az(mock_requests_get):
+    """Find multiple Availability Zones."""
+    mock_requests_get.return_value.json.return_value = SUBNET_DATA
+
     # default - happy path w/multiple az
     result = get_subnets(env='dev', region='')
     assert result == {'dev': {'us-west-2': [['us-west-2a', 'us-west-2b']], 'us-east-1': [[]]}}
+
+
+@mock.patch('foremast.utils.subnets.requests.get')
+def test_utils_subnets_get_subnets_subnet_not_found(mock_requests_get):
+    """Trigger SpinnakerSubnetError when no subnets found."""
+    mock_requests_get.return_value.json.return_value = SUBNET_DATA
 
     # subnet not found
     with pytest.raises(SpinnakerSubnetError):
         result = get_subnets(env='dev', region='us-west-1')
         assert result == {'us-west-1': [[]]}
+
+
+@mock.patch('foremast.utils.subnets.requests.get')
+def test_utils_subnets_get_subnets_api_error(mock_requests_get):
+    """Trigger SpinnakerTimeout when API has error."""
+    mock_requests_get.return_value.json.return_value = SUBNET_DATA
 
     # error getting details
     with pytest.raises(SpinnakerTimeout):
