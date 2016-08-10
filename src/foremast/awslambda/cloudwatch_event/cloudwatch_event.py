@@ -12,7 +12,7 @@ def create_cloudwatch_event(app_name, env, region, rules):
     Creates cloudwatch event for lambda from rules
 
     Returns:
-        str: True if rule is created and attached to lambda
+        True if rule is created and attached to lambda
     """
     session = boto3.Session(profile_name=env, region_name=region)
     cloudwatch_client = session.client('events')
