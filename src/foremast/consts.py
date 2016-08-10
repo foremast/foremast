@@ -109,7 +109,7 @@ config = find_config()
 
 API_URL = validate_key_values(config, 'base', 'gate_api_url')
 GIT_URL = validate_key_values(config, 'base', 'git_url')
-DOMAIN = validate_key_values(config, 'base', 'domain')
+DOMAIN = validate_key_values(config, 'base', 'domain', default='example.com')
 ENVS = set(validate_key_values(config, 'base', 'envs', default='').split(','))
 REGIONS = set(validate_key_values(config, 'base', 'regions', default='').split(','))
 TEMPLATES_PATH = validate_key_values(config, 'base', 'templates_path')
