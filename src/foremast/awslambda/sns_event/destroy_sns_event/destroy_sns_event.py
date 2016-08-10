@@ -26,4 +26,5 @@ def destroy_sns_event(app_name, env, region):
             SubscriptionArn=subscription_arn
         )
 
+    LOG.debug("Lambda SNS event deleted")
     return True

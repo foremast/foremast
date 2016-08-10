@@ -22,5 +22,6 @@ def create_sns_event(app_name, env, region, rules):
     protocol = 'lambda'
 
     sns_client.subscribe(TopicArn=topic_arn, Protocol=protocol, Endpoint=lambda_arn)
+    LOG.debug("SNS Lambda event created")
 
     return True

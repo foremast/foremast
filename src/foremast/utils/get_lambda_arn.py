@@ -27,10 +27,10 @@ def get_lambda_arn(app, account, region):
     for lambda_function in lambda_functions:
         if lambda_function['FunctionName'] == app:
             lambda_arn = lambda_function['FunctionArn']
-            LOG.debug("Lambda ARN for lambda function {0} is {1}.".format(app, lambda_arn))
+            LOG.debug("Lambda ARN for lambda function %s is %s.", app, lambda_arn)
             return lambda_arn
     else:
-        LOG.fatal('Lambda function with name {0} not found in {1} {2}'.format(app, account, region))
+        LOG.fatal('Lambda function with name %s not found in %s %s', app, account, region)
         raise LambdaFunctionDoesNotExist('Lambda function with name {0} not found in {1} {2}'.format(app,
                                                                                                      account,
                                                                                                      region))

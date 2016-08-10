@@ -25,6 +25,6 @@ def get_sns_subscriptions(app_name, env, region):
             lambda_subscriptions.append(subscription['SubscriptionArn'])
 
     if not lambda_subscriptions:
-        LOG.debug('SNS subscription for function {0} not found '.format(lambda_arn))
+        LOG.debug('SNS subscription for function %s not found', lambda_arn)
 
     return lambda_subscriptions

@@ -24,8 +24,8 @@ def create_s3_event(app_name, env, region, rules):
 
     lambda_arn = get_lambda_arn(app_name, env, region)
 
-    LOG.debug("Lambda ARN for lambda function {0} is {1}.".format(app_name, lambda_arn))
-    LOG.debug("Creating S3 event for bucket {0} with events {1}".format(bucket, events))
+    LOG.debug("Lambda ARN for lambda function %s is %s.", app_name, lambda_arn)
+    LOG.debug("Creating S3 event for bucket %s with events %s", bucket, events)
 
     if bucket is None or events is None:
         LOG.critical("Bucket and events have to be defined")
