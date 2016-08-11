@@ -1,7 +1,7 @@
 import logging
 import boto3
 
-from ....utils.get_lambda_sns_subscriptions import get_sns_subscriptions
+from ....utils.get_sns_subscriptions import get_sns_subscriptions
 
 LOG = logging.getLogger(__name__)
 

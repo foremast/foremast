@@ -8,11 +8,8 @@ LOG = logging.getLogger(__name__)
 
 
 def create_sns_event(app_name, env, region, rules):
-    """ Creates SNS lambda event from rules
+    """Creates SNS lambda event from rules"""
 
-    Returns:
-        boolean: True if event created successfully
-    """
     session = boto3.Session(profile_name=env, region_name=region)
     sns_client = session.client('sns')
 
@@ -24,4 +21,4 @@ def create_sns_event(app_name, env, region, rules):
     sns_client.subscribe(TopicArn=topic_arn, Protocol=protocol, Endpoint=lambda_arn)
     LOG.debug("SNS Lambda event created")
 
-    return True
+    LOG.info("Created SNS event subscription on topic %s", topic_name)

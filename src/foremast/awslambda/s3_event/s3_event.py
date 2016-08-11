@@ -1,19 +1,18 @@
 import logging
+import json
+
 import boto3
 
 from ...utils import get_template
-from ...utils.get_lambda_arn import get_lambda_arn
-from ...utils.lambda_event_exception import InvalidEventConfiguration
+from ...utils import get_lambda_arn
+from ...utils import InvalidEventConfiguration
 
 LOG = logging.getLogger(__name__)
 
 
 def create_s3_event(app_name, env, region, rules):
-    """ Creates S3 lambda event from rules
+    """Creates S3 lambda event from rules"""
 
-    Returns:
-        boolean: True if event created successfully
-    """
     session = boto3.Session(profile_name=env, region_name=region)
     s3_client = session.client('s3')
 
@@ -35,27 +34,26 @@ def create_s3_event(app_name, env, region, rules):
 
     if prefix is not None:
         prefix_dict = {
-           "type": "prefix",
-           "value": prefix
+           "Name": "prefix",
+           "Value": prefix
         }
         filters.append(prefix_dict)
 
     if suffix is not None:
         suffix_dict = {
-           "type": "suffix",
-           "value": suffix
+           "Name": "suffix",
+           "Value": suffix
         }
         filters.append(suffix_dict)
 
     template_kwargs = {
         "lambda_arn": lambda_arn,
-        "events": events,
-        "bucket_name": bucket,
-        "filters": filters
+        "events": json.dumps(events),
+        "filters": json.dumps(filters)
     }
 
     config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
 
     s3_client.put_bucket_notification_configuration(Bucket=bucket,
-                                                    NotificationConfiguration=config)
-    return True
+                                                    NotificationConfiguration=json.loads(config))
+    LOG.info("Created lambda %s S3 event on bucket %s", app_name, bucket)
