@@ -23,7 +23,7 @@ import logging
 
 import gogoutils
 
-from ..args import add_debug, add_gitlab_token
+from ..args import add_debug
 from ..consts import LOGGING_FORMAT, APP_FORMATS
 from .outputs import write_variables
 from .prepare_configs import process_git_configs, process_runway_configs
@@ -37,7 +37,6 @@ def main():
 
     parser = argparse.ArgumentParser(description=main.__doc__)
     add_debug(parser)
-    add_gitlab_token(parser)
     parser.add_argument('-o',
                         '--output',
                         required=True,
@@ -47,7 +46,7 @@ def main():
         '--git-short',
         metavar='GROUP/PROJECT',
         required=True,
-        help='Short name for Git, e.g. forrest/core, requires --token-file')
+        help='Short name for Git, e.g. forrest/core')
     parser.add_argument(
         '-r',
         '--runway-dir',
@@ -64,8 +63,7 @@ def main():
     if args.runway_dir:
         configs = process_runway_configs(runway_dir=args.runway_dir)
     else:
-        configs = process_git_configs(git_short=git_short,
-                                      token_file=args.token_file)
+        configs = process_git_configs(git_short=git_short)
 
     write_variables(app_configs=configs,
                     out_file=args.output,
