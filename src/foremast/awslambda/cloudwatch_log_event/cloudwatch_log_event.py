@@ -1,19 +1,14 @@
 import logging
 import boto3
 
-from ...utils.lambda_event_exception import InvalidEventConfiguration
-from ...utils.get_lambda_arn import get_lambda_arn
+from ...utils import InvalidEventConfiguration
+from ...utils import get_lambda_arn
 
 LOG = logging.getLogger(__name__)
 
 
 def create_cloudwatch_log_event(app_name, env, region, rules):
-    """
-    Creates cloudwatch log event for lambda from rules
-
-    Returns:
-        str: True if rule is created successfully
-    """
+    """Creates cloudwatch log event for lambda from rules"""
     session = boto3.Session(profile_name=env, region_name=region)
     cloudwatch_client = session.client('logs')
 
@@ -42,5 +37,4 @@ def create_cloudwatch_log_event(app_name, env, region, rules):
         destinationArn=lambda_arn
     )
 
-    return True
-
+    LOG.info("Created Cloudwatch log event with filter: %s", filter_pattern)

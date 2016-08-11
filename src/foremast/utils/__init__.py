@@ -34,7 +34,8 @@ from .slack import *
 from .tasks import *
 from .templates import *
 from .warn_user import *
-from .get_cloudwatch_event_rule_name import get_event_rule_by_target
+from .get_cloudwatch_event_rule import get_cloudwatch_event_rule
 from .get_lambda_arn import get_lambda_arn
-from .get_lambda_sns_subscriptions import get_sns_subscriptions
+from .get_sns_subscriptions import get_sns_subscriptions
 from .get_sns_topic_arn import get_sns_topic_arn
+from .lambda_event_exception import InvalidEventConfiguration

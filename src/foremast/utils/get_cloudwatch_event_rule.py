@@ -7,7 +7,7 @@ from ..utils.get_lambda_arn import get_lambda_arn
 LOG = logging.getLogger(__name__)
 
 
-def get_event_rule_by_target(app_name, account, region):
+def get_cloudwatch_event_rule(app_name, account, region):
     session = boto3.Session(profile_name=account, region_name=region)
     cloudwatch_client = session.client('events')
 
