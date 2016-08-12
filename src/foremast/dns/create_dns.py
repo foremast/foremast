@@ -29,28 +29,31 @@ class SpinnakerDns:
     """Manipulate and create generated DNS record in Route53.
 
     Args:
-        app_name (str): application name for DNS record
+        app (str): application name for DNS record
         env (str): Environment/Account for DNS record creation
         region (str): AWS Region for DNS record
         elb_subnet (str): Wether the DNS record is in a public or private zone
         prop_path (str): Path to the generated property files
+
+    Returns:
+        str: FQDN of application
     """
 
     def __init__(self, app=None, env=None, region=None, elb_subnet=None, prop_path=None):
         self.log = logging.getLogger(__name__)
 
-        self.generated = get_details(app, env=env)
-        self.app_name = self.generated.app_name()
-
-        # Add domain
         self.domain = DOMAIN
         self.env = env
         self.region = region
         self.elb_subnet = elb_subnet
-        self.properties = get_properties(properties_file=prop_path, env=env)
+
+        self.generated = get_details(app, env=self.env)
+        self.app_name = self.generated.app_name()
+
+        self.properties = get_properties(properties_file=prop_path, env=self.env)
         self.header = {'content-type': 'application/json'}
-        env = boto3.session.Session(profile_name=self.env)
-        self.r53client = env.client('route53')
+        boto3_session = boto3.session.Session(profile_name=self.env)
+        self.r53client = boto3_session.client('route53')
 
     def create_elb_dns(self):
         """Create dns entries in route53.
