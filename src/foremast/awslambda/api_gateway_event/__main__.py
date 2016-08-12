@@ -4,7 +4,7 @@ import logging
 
 from ...args import add_app, add_debug, add_env, add_region
 from ...consts import LOGGING_FORMAT
-from .api_gateway_event import create_api_event
+from .api_gateway_event import APIGateway
 
 
 def main():
@@ -16,12 +16,12 @@ def main():
     add_app(parser)
     add_env(parser)
     add_region(parser)
-    add_properties(parser)
     args = parser.parse_args()
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
-    assert create_api_event(**vars(args))
+    apigateway = APIGateway(**vars(args))
+    apigateway.setup_lambda_api()
 
 
 if __name__ == '__main__':

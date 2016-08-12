@@ -49,6 +49,9 @@ class LambdaEvent(object):
 
             if trigger['type'] == 'cloudwatch-logs':
                 create_cloudwatch_log_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
+            if tiagger['type'] == 'api-gateway':
+                apigateway = APIGateway(app=self.app_name, env=self.env region=self.region, rules=trigger)
+                apigateway.setup_lambda_api()
         else:
             LOG.debug("Defined triggers: {}", triggers)
             LOG.info("No lambda events created")
