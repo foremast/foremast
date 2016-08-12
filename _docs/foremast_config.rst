@@ -128,3 +128,56 @@ Sections for configuring whitelist info
 Comma delimiated list of applications to whitelist from ASG rules
 
     | *Required*: No
+
+``[formats]``
+~~~~~~~~~~~~~
+
+Section handling the naming convention of applications, elb, iam, s3 buckets and other services.
+
+The most common sections are shown. The complete list of sections and defaults are defined by the underlying library gogo-utils_.
+
+Any of the possible variables below can be used as the value.
+
+- ``domain`` organization domain
+- ``env`` dev, qa, production, etc
+- ``project`` lowercase git group/organization
+- ``repo`` lowercase git project/repository
+- ``raw_project`` git group/organization
+- ``raw_repo`` git project/repository
+
+``domain``
+**********
+A string of your organization's domain
+
+    | *Default*: example.com
+    | *Required*: No
+
+``app``
+*******
+A string of the format of your application
+
+    | *Default*: {repo}{project}
+    | *Required*: No
+
+``dns_elb``
+*******
+An FQDN of your application's Elastic Load Balancer (ELB)
+
+    | *Default*: {repo}.{project}.{env}.{domain}
+    | *Required*: No
+
+``s3_bucket``
+*******
+An string of your base S3 bucket name
+
+    | *Default*: archaius-{env}
+    | *Required*: No
+
+``jenkins_job_name``
+*******
+An string of the format of the application's jenkins job name
+
+    | *Default*: {project}_{repo}
+    | *Required*: No
+
+.. _gogo-utils: https://github.com/gogoair/gogo-utils#formats
