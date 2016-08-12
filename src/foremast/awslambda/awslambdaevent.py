@@ -6,6 +6,7 @@ from .s3_event import create_s3_event
 from .sns_event import create_sns_event
 from .cloudwatch_event import create_cloudwatch_event
 from .cloudwatch_log_event import create_cloudwatch_log_event
+from .api_gateway_event import APIGateway
 
 LOG = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class LambdaEvent(object):
              boolean: True if all events are created
 
         """
-        triggers = self.properties['triggers']
+        triggers = self.properties['lambda_triggers']
         for trigger in triggers:
             if trigger['type'] == 's3':
                 create_s3_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
@@ -49,9 +50,6 @@ class LambdaEvent(object):
 
             if trigger['type'] == 'cloudwatch-logs':
                 create_cloudwatch_log_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
-            if tiagger['type'] == 'api-gateway':
-                apigateway = APIGateway(app=self.app_name, env=self.env region=self.region, rules=trigger)
+            if trigger['type'] == 'api-gateway':
+                apigateway = APIGateway(app=self.app_name, env=self.env, region=self.region, rules=trigger)
                 apigateway.setup_lambda_api()
-        else:
-            LOG.debug("Defined triggers: {}", triggers)
-            LOG.info("No lambda events created")
