@@ -13,11 +13,15 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+"""Foremast and Spinnaker related custom exceptions."""
 
-"""Spinnaker related custom exceptions."""
+
+class ForemastError(Exception):
+    """Foremast related error."""
+    pass
 
 
-class SpinnakerError(Exception):
+class SpinnakerError(ForemastError):
     """Spinnaker related error."""
     pass
 
