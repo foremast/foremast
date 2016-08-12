@@ -89,6 +89,22 @@ Run any unit tests available in ``./tests/``.
     # OR
     ./runtests.py
 
+Docs
+~~~~
+
+You can build the docs locally using Sphinx
+
+.. code-block:: bash
+
+    virtualenv venv
+    source ./venv/bin/activate
+    cd _docs/
+    pip install -r requirements-docs.txt
+
+    make html
+
+This will generate an index.html file that you can open in a browser and view the Foremast docs.
+
 Implementation
 --------------
 
