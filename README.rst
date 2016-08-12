@@ -105,35 +105,6 @@ You can build the docs locally using Sphinx
 
 This will generate an index.html file that you can open in a browser and view the Foremast docs.
 
-Implementation
---------------
-
-See ``pipes-pipeline-prepare`` in `dsl.groovy <runway/dsl.groovy>`_ for Jenkins
-Job configuration.
-
-#. Create logical Spinnaker app (triggered by Git Hook)
-#. Call downstream Job to manage infrastructure
-#. Read configurations from ``application-master-{env}.json`` and
-   ``pipeline.json``
-#. Generates an application and a pipeline in Spinnaker
-#. An infrastructure stage is created in the pipeline which does the following
-   when ran:
-
-   #. Create/modify IAM Profile and Role
-   #. Create/skip S3 Archaius application.properties file
-   #. Create/modify Security Groups
-   #. Create/modify ELB
-   #. Create DNS record to ELB
-   #. Create/modify application pipeline
-
-Not Used
-~~~~~~~~
-
--  Create/modify server group/ASG
-
-   -  This is part of Spinnaker "deploy" stages and is handled completely by
-      Spinnaker
-
 Technology Used
 ---------------
 
@@ -205,7 +176,7 @@ application-master-{env}.json
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Each deployment environment specified in the ``pipeline.json`` file will need an
-accompanying ``application-master-{env}.json`` file in the same directory. 
+accompanying ``application-master-{env}.json`` file in the same directory.
 
 The \`application-master-{env} files have a lot of exposed values with sane
 defaults. Please take a look at the :doc:`application_json` docs for all options.
