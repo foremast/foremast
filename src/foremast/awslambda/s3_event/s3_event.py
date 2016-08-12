@@ -26,20 +26,20 @@ def create_s3_event(app_name, env, region, rules):
     LOG.debug("Lambda ARN for lambda function %s is %s.", app_name, lambda_arn)
     LOG.debug("Creating S3 event for bucket %s with events %s", bucket, events)
 
-    if bucket is None or events is None:
+    if None in (bucket, events):
         LOG.critical("Bucket and events have to be defined")
         raise InvalidEventConfiguration("Bucket and events have to be defined")
 
     filters = []
 
-    if prefix is not None:
+    if prefix:
         prefix_dict = {
            "Name": "prefix",
            "Value": prefix
         }
         filters.append(prefix_dict)
 
-    if suffix is not None:
+    if suffix:
         suffix_dict = {
            "Name": "suffix",
            "Value": suffix

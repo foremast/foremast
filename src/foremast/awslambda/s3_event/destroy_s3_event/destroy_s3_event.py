@@ -6,7 +6,7 @@ import boto3
 LOG = logging.getLogger(__name__)
 
 
-def destroy_s3_event(app='', env='dev', region=''):
+def destroy_s3_event(app, env, region):
     """Destroy S3 event.
 
     Args:
