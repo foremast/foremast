@@ -8,7 +8,7 @@ class SNSTopicNotFound(Exception):
     pass
 
 
-def get_sns_topic_arn(topic_name='', account='', region=''):
+def get_sns_topic_arn(topic_name, account, region):
     """ Get SNS topic ARN
 
     Args:
