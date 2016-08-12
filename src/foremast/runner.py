@@ -212,6 +212,14 @@ def prepare_onetime_pipeline():
     runner.cleanup()
 
 
+def prepare_lambda_pipeline():
+    """Entry point for lambda pipeline setup in the defined app."""
+    runner = ForemastRunner()
+    runner.write_configs()
+    runner.create_pipeline(onetime=os.getenv('ENV'))
+    runner.cleanup()
+
+
 def create_scaling_policy():
     runner = ForemastRunner()
     runner.write_configs()
