@@ -26,9 +26,10 @@ from foremast.iam.create_iam import create_iam_resources
 def test_create_iam_resources(get_properties, get_details, construct_policy, session):
     """Check basic functionality."""
     get_details.return_value.iam.return_value = {'group': 1, 'policy': 2, 'profile': 3, 'role': 4, 'user': 5}
+    get_properties.return_value = {}
 
     assert create_iam_resources(env='narnia', app='lion/aslan')
     session.assert_called_with(profile_name='narnia')
     get_details.assert_called_with(env='narnia', app='lion/aslan')
     get_properties.assert_called_with(env='pipeline')
-    construct_policy.assert_called_with(app='lion/aslan', group=mock.ANY, env='narnia', pipeline_settings=mock.ANY)
+    construct_policy.assert_called_with(app='lion/aslan', group=1, env='narnia', pipeline_settings={})
