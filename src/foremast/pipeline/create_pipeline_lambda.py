@@ -227,7 +227,6 @@ class SpinnakerPipelineLambda:
                     region_subnets=region_subnets,
                     settings=self.settings[env],
                     pipeline_data=self.settings['pipeline'])
-                self.log.error(pformat(block))
                 pipelines[region]['stages'].extend(json.loads(block))
 
                 previous_env = env
