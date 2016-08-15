@@ -121,10 +121,10 @@ class SpinnakerELB:
         env = boto3.session.Session(profile_name=self.env, region_name=self.region)
         elbclient = env.client('elb')
 
-        for each_job in json.loads(json_data)['job']:
-            for each_listener in each_job['listeners']:
-                if each_listener['listenerPolicies']:
+        for job in json.loads(json_data)['job']:
+            for listener in job['listeners']:
+                if listener['listenerPolicies']:
                     elbclient.set_load_balancer_policies_of_listener(
                         LoadBalancerName=self.app,
-                        LoadBalancerPort=each_listener['externalPort'],
-                        PolicyNames=each_listener['listenerPolicies'])
+                        LoadBalancerPort=listener['externalPort'],
+                        PolicyNames=listener['listenerPolicies'])

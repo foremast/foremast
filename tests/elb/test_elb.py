@@ -167,3 +167,26 @@ def test_elb_make_elb_json(mock_get_properties, mock_get_subnets, mock_format_li
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb_json = json.loads(elb.make_elb_json())
     assert not elb_json['job'][0]['isInternal']
+
+
+@mock.patch('foremast.dns.create_dns.boto3.session.Session')
+@mock.patch('foremast.elb.create_elb.get_properties')
+def test_elb_add_listener_policy(mock_get_properties, mock_boto3_session):
+
+    json_data = {
+       'job': [
+            {
+                'listeners': [
+                    {
+                        'externalPort': 80,
+                        'listenerPolicies': ['policy_name']
+                    },
+                ],
+            }
+       ],
+    }
+    client = mock_boto3_session.return_value.client.return_value
+
+    elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
+    elb.add_listener_policy(json.dumps(json_data))
+    assert client.set_load_balancer_policies_of_listener.called
