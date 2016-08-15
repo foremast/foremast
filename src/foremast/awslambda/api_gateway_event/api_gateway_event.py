@@ -3,7 +3,7 @@ import uuid
 
 import boto3
 from foremast.utils import (InvalidEventConfiguration, get_details,
-                            get_env_credential, get_lambda_arn, get_properties)
+                            get_env_credential)
 
 LOG = logging.getLogger(__name__)
 
