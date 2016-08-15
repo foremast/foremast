@@ -11,6 +11,7 @@ from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids,
 
 LOG = logging.getLogger(__name__)
 
+
 class APIGateway:
     """Class to handle API Gateway and Lambda integration.
 
@@ -219,7 +220,6 @@ class APIGateway:
         except botocore.exceptions.ClientError:
             self.log.info("Method already exists")
 
-
     def setup_lambda_api(self):
         """A wrapper for all the steps needed to setup the integration."""
         self.find_api_id()
@@ -229,6 +229,7 @@ class APIGateway:
         self.create_api_deployment()
         self.create_api_key()
         self.update_api_mappings()
+
 
 if __name__ == "__main__":
     gateway = APIGateway(app='dougtest', env='sandbox', region='us-east-1')
