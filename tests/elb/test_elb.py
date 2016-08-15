@@ -17,7 +17,7 @@
 """Test ELB creation functions."""
 from unittest import mock
 
-from foremast.elb.format_listeners import format_listeners
+from foremast.elb.format_listeners import format_listeners, format_cert_name
 from foremast.elb.splay_health import splay_health
 
 
@@ -103,3 +103,14 @@ def test_elb_format_listeners(mock_creds):
 
     # check certificate
     assert generated == format_listeners(elb_settings=config)
+
+
+def test_elb_format_cert_name():
+    """Test the format_cert_name method"""
+    assert None == format_cert_name()
+
+    full_cert_name = 'arn:aws:123'
+    assert full_cert_name == format_cert_name(certificate=full_cert_name)
+
+    compiled_cert = 'arn:aws:iam::dev:server-certificate/mycert1'
+    assert compiled_cert == format_cert_name(account='dev', certificate='mycert1')
