@@ -23,6 +23,7 @@ import logging
 
 from ..args import add_app, add_debug, add_properties
 from ..consts import ENVS, LOGGING_FORMAT
+# from .create_pipeline_lambda import SpinnakerLambdaPipeline
 from .create_pipeline import SpinnakerPipeline
 from .create_pipeline_onetime import SpinnakerPipelineOnetime
 

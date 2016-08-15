@@ -25,14 +25,14 @@ import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import (ami_lookup, get_details, get_properties, get_subnets,
-                     get_template, generate_packer_filename)
+from ..utils import (ami_lookup, generate_packer_filename, get_details,
+                     get_properties, get_subnets, get_template)
 from .clean_pipelines import clean_pipelines
-from .construct_pipeline_block import construct_pipeline_block
+from .construct_pipeline_block_lambda import construct_pipeline_block_lambda
 from .renumerate_stages import renumerate_stages
 
 
-class SpinnakerPipeline:
+class SpinnakerPipelineLambda:
     """Manipulate Spinnaker Pipelines.
 
     Args:
@@ -219,7 +219,7 @@ class SpinnakerPipeline:
                     self.log.info('%s is not available for %s.', env, region)
                     continue
 
-                block = construct_pipeline_block(
+                block = construct_pipeline_block_lambda(
                     env=env,
                     generated=self.generated,
                     previous_env=previous_env,
@@ -227,7 +227,7 @@ class SpinnakerPipeline:
                     region_subnets=region_subnets,
                     settings=self.settings[env],
                     pipeline_data=self.settings['pipeline'])
-
+                self.log.error(pformat(block))
                 pipelines[region]['stages'].extend(json.loads(block))
 
                 previous_env = env
