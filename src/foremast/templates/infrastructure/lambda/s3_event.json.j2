@@ -1,0 +1,14 @@
+{
+    "LambdaFunctionConfigurations": [
+        {
+            "LambdaFunctionArn": "{{ lambda_arn }}",
+            "Events": {{ events }},
+            "Filter": {
+                "Key": {
+                    "FilterRules": {{ filters }}
+
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,2 @@
+class InvalidEventConfiguration(Exception):
+    pass
