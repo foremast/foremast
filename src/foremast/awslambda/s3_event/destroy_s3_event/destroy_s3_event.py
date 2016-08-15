@@ -3,6 +3,8 @@ import logging
 
 import boto3
 
+from ....utils import get_details
+
 LOG = logging.getLogger(__name__)
 
 
@@ -21,7 +23,9 @@ def destroy_s3_event(app, env, region):
     # Maybe list buckets and see which has notification to that lambda defined?
     # TODO: buckets should be named the same as apps, what if one app has multiple buckets?
     # bucket = rules.get('bucket')
-    bucket = "{0}-{1}-{2}".format('gogo', app, env)
+    generated = get_details(app=app, env=env)
+
+    bucket = generated.s3_app_bucket()
 
     session = boto3.Session(profile_name=env, region_name=region)
     s3_client = session.client('s3')
