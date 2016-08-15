@@ -9,6 +9,8 @@ from foremast.exceptions import InvalidEventConfiguration
 from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids,
                             update_dns_zone_record, get_properties)
 
+LOG = logging.getLogger(__name__)
+
 
 class APIGateway:
     """Class to handle API Gateway and Lambda integration.
@@ -179,6 +181,23 @@ class APIGateway:
                    }
         return uri_dict
 
+    def create_api(self):
+        created_api = self.client.create_rest_api(name=self.trigger_settings.get('api_name', default=self.app_name))
+        self.api_id = created_api['id']
+
+    def create_resource(self, parentId=None):
+        created_resource = self.client.create_resource(restApiId=self.api_id,
+                                                       parentId=parentId,
+                                                       pathPart=self.rules['resource'])
+        self.resource_id = created_resource['id']
+
+    def attach_method(self):
+        self.client.put_method(restApiId=self.api_id,
+                               resourceId=self.resource_id,
+                               httpMethod=self.rules['method'],
+                               authorizationType=SOMETHING,
+                               apiKeyRequired=True, )
+
     def setup_lambda_api(self):
         """A wrapper for all the steps needed to setup the integration."""
         self.find_api_id()
@@ -188,6 +207,7 @@ class APIGateway:
         self.create_api_deployment()
         self.create_api_key()
         self.update_api_mappings()
+
 
 if __name__ == "__main__":
     gateway = APIGateway(app='dougtest', env='sandbox', region='us-east-1')
