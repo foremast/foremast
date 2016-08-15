@@ -16,6 +16,7 @@
 
 """Test ELB creation functions."""
 from unittest import mock
+import json
 
 from foremast.elb.format_listeners import format_listeners, format_cert_name
 from foremast.elb.splay_health import splay_health
@@ -123,7 +124,46 @@ def test_elb_format_cert_name():
 @mock.patch.object(SpinnakerELB, 'make_elb_json', return_value={})
 @mock.patch('foremast.elb.create_elb.get_properties')
 def test_elb_create_elb(mock_get_properties, mock_elb_json, mock_post_task, mock_check_task, mock_listener_policy):
-    """Test SpinnakerELB"""
+    """Test SpinnakerELB create_elb method"""
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb.create_elb()
     mock_listener_policy.assert_called_with(mock_elb_json())
+
+
+@mock.patch('foremast.elb.create_elb.get_vpc_id', return_value='vpc-100')
+@mock.patch('foremast.elb.create_elb.format_listeners')
+@mock.patch('foremast.elb.create_elb.get_subnets')
+@mock.patch('foremast.elb.create_elb.get_properties')
+def test_elb_make_elb_json(mock_get_properties, mock_get_subnets, mock_format_listeners, mock_vpc_id):
+    """Test SpinnakerELB make_elbj_json method"""
+    properties = {
+        'elb': {
+            'health': {
+                'interval': 10,
+                'timeout': 1,
+                'threshold': 2,
+                'unhealthy_threshold': 3,
+            }
+        },
+        'security_group': {'elb_extras': []},
+    }
+
+    subnets = {'us-east-1': ['subnet-1']}
+    listeners = []
+
+    mock_get_properties.return_value = properties
+    mock_get_subnets.return_value = subnets
+    mock_format_listeners.return_value = listeners
+
+    # internal elb
+    elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
+    elb_str = elb.make_elb_json()
+    assert isinstance(elb_str, str)
+    elb_json = json.loads(elb_str)
+    assert elb_json['job'][0]['isInternal']
+
+    # external elb
+    properties['elb'].update({'subnet_purpose': 'external'})
+    elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
+    elb_json = json.loads(elb.make_elb_json())
+    assert not elb_json['job'][0]['isInternal']
