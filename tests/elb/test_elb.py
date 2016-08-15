@@ -19,6 +19,7 @@ from unittest import mock
 
 from foremast.elb.format_listeners import format_listeners, format_cert_name
 from foremast.elb.splay_health import splay_health
+from foremast.elb import SpinnakerELB
 
 
 def test_elb_splay():
@@ -114,3 +115,15 @@ def test_elb_format_cert_name():
 
     compiled_cert = 'arn:aws:iam::dev:server-certificate/mycert1'
     assert compiled_cert == format_cert_name(account='dev', certificate='mycert1')
+
+
+@mock.patch.object(SpinnakerELB, 'add_listener_policy')
+@mock.patch('foremast.elb.create_elb.check_task')
+@mock.patch('foremast.elb.create_elb.post_task')
+@mock.patch.object(SpinnakerELB, 'make_elb_json', return_value={})
+@mock.patch('foremast.elb.create_elb.get_properties')
+def test_elb_create_elb(mock_get_properties, mock_elb_json, mock_post_task, mock_check_task, mock_listener_policy):
+    """Test SpinnakerELB"""
+    elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
+    elb.create_elb()
+    mock_listener_policy.assert_called_with(mock_elb_json())
