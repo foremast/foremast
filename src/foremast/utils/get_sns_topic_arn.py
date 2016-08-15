@@ -5,6 +5,7 @@ from ..exceptions import SNSTopicNotFound
 
 LOG = logging.getLogger(__name__)
 
+
 def get_sns_topic_arn(topic_name, account, region):
     """ Get SNS topic ARN
 

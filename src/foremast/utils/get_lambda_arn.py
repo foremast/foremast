@@ -5,6 +5,7 @@ from ..exceptions import LambdaFunctionDoesNotExist
 
 LOG = logging.getLogger(__name__)
 
+
 def get_lambda_arn(app, account, region):
     """Get lambda ARN
 

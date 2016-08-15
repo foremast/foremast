@@ -33,15 +33,15 @@ def create_s3_event(app_name, env, region, rules):
 
     if prefix:
         prefix_dict = {
-           "Name": "prefix",
-           "Value": prefix
+            "Name": "prefix",
+            "Value": prefix
         }
         filters.append(prefix_dict)
 
     if suffix:
         suffix_dict = {
-           "Name": "suffix",
-           "Value": suffix
+            "Name": "suffix",
+            "Value": suffix
         }
         filters.append(suffix_dict)
 

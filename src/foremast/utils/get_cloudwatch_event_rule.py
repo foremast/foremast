@@ -18,6 +18,3 @@ def get_cloudwatch_event_rule(app_name, account, region):
         return rule_names['RuleNames']
     else:
         LOG.debug("No event rules found")
-
-
-
