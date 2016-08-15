@@ -8,6 +8,7 @@ import logging
 from ..args import add_app, add_debug, add_env, add_properties, add_region
 from ..consts import LOGGING_FORMAT
 from .awslambdaevent import LambdaEvent
+from .awslambda import LambdaFunction
 
 
 def main():
@@ -27,11 +28,20 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    lambdaevent = LambdaEvent(app=args.app,
-                              env=args.env,
-                              region=args.region,
-                              prop_path=args.properties)
-    lambdaevent.create_lambda_events()
+    # FIXME: not sure how would i get pipeline_props
+    lambda_function = LambdaFunction(app=args.app,
+                                     env=args.env,
+                                     region=args.region,
+                                     prop_path=args.properties,
+                                     pipeline_prop=args.pipeline)
+
+    lambda_function.create_lambda_function()
+
+    lambda_event = LambdaEvent(app=args.app,
+                               env=args.env,
+                               region=args.region,
+                               prop_path=args.properties)
+    lambda_event.create_lambda_events()
 
 
 if __name__ == "__main__":

@@ -118,4 +118,7 @@ class SNSSubscriptionDoesNotExist(Exception):
 
 class LambdaFunctionDoesNotExist(ForemastError):
     """Lambda function was not found."""
+
+class RequiredKeyNotFound(Exception):
+    """Required key in json config not found"""
     pass
