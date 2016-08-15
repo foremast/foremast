@@ -117,6 +117,8 @@ class LambdaFunction(object):
     def create_function(self):
         """Creates lambda function, configures lambda parameters"""
 
+        vpc_config = self._vpc_config()
+
         # We need to upload non-zero zip when creating function
         # uploading hello_world python lambda function since AWS
         # doesn't care which executable is in ZIP
@@ -147,4 +149,4 @@ class LambdaFunction(object):
         if self._check_lambda():
             self.update_function_configuration()
         else:
-            tself.create_function()
+            self.create_function()

@@ -35,12 +35,11 @@ def main():
 
     lambda_function.create_lambda_function()
 
-    #lambda_event = LambdaEvent(app=args.app,
-    #                           env=args.env,
-    #                           region=args.region,
-    #                           prop_path=args.properties)
-    #lambda_event.create_lambda_events()
-
+    lambda_event = LambdaEvent(app=args.app,
+                               env=args.env,
+                               region=args.region,
+                               prop_path=args.properties)
+    lambda_event.create_lambda_events()
 
 if __name__ == "__main__":
     main()
