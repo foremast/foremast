@@ -32,8 +32,8 @@ import os
 
 import gogoutils
 
-from foremast import (app, configs, consts, dns, elb, iam, pipeline, s3,
-                      securitygroup, slacknotify, utils, autoscaling_policy)
+from foremast import (app, autoscaling_policy, configs, consts, dns, elb, iam,
+                      pipeline, s3, securitygroup, slacknotify, utils)
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(format=consts.LOGGING_FORMAT)
@@ -101,6 +101,8 @@ class ForemastRunner(object):
 
         if not onetime:
             spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
+        if self.configs['pipeline']['type'] == 'lambda':
+            spinnakerpipeline=pipeline.SpinnakerPipelineLambda(**kwargs)
         else:
             spinnakerpipeline = pipeline.SpinnakerPipelineOnetime(
                 onetime=onetime, **kwargs)
@@ -206,14 +208,6 @@ def prepare_app_pipeline():
 
 def prepare_onetime_pipeline():
     """Entry point for single use pipeline setup in the defined app."""
-    runner = ForemastRunner()
-    runner.write_configs()
-    runner.create_pipeline(onetime=os.getenv('ENV'))
-    runner.cleanup()
-
-
-def prepare_lambda_pipeline():
-    """Entry point for lambda pipeline setup in the defined app."""
     runner = ForemastRunner()
     runner.write_configs()
     runner.create_pipeline(onetime=os.getenv('ENV'))
