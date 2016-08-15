@@ -1,13 +1,10 @@
 import logging
 import boto3
 
+from ....exceptions impoort SNSSubcriptionDoesNotExist
 from ....utils.get_sns_subscriptions import get_sns_subscriptions
 
 LOG = logging.getLogger(__name__)
-
-
-class SNSSubscriptionDoesNotExist(Exception):
-    pass
 
 
 def destroy_sns_event(app_name, env, region):

@@ -1,7 +1,7 @@
 import logging
 import boto3
 
-from ...utils import InvalidEventConfiguration
+from ...exceptions import InvalidEventConfiguration
 from ...utils import get_lambda_arn
 
 LOG = logging.getLogger(__name__)

@@ -1,2 +1,0 @@
-class InvalidEventConfiguration(Exception):
-    pass

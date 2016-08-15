@@ -3,9 +3,8 @@ import json
 
 import boto3
 
-from ...utils import get_template
-from ...utils import get_lambda_arn
-from ...utils import InvalidEventConfiguration
+from ...exceptions import InvalidEventConfiguration
+from ...utils import (get_template, get_lambda_arn)
 
 LOG = logging.getLogger(__name__)
 

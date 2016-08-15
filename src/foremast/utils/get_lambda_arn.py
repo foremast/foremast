@@ -1,12 +1,9 @@
 import boto3
 import logging
 
+from ..exceptions import LambdaFunctionDoesNotExist
+
 LOG = logging.getLogger(__name__)
-
-
-class LambdaFunctionDoesNotExist(Exception):
-    pass
-
 
 def get_lambda_arn(app, account, region):
     """Get lambda ARN

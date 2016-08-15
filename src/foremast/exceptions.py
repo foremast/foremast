@@ -99,3 +99,19 @@ class SpinnakerSubnetError(SpinnakerError):
     def __init__(self, env='', region=''):
         error = '{0} is not available for {1}'.format(region, env)
         super().__init__(error)
+
+class InvalidEventConfiguration(ForemastError):
+    """Invalid AWS Lambda event configuration."""
+    pass
+
+class SNSTopicNotFound(ForemastError):
+    """SNS Topic was not found."""
+    pass
+
+class SNSSubscriptionDoesNotExist(Exception):
+    """SNS Subscriptions does not exist."""
+    pass
+
+class LambdaFunctionDoesNotExist(ForemastError):
+    """Lambda function was not found."""
+    pass
