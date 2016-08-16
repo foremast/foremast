@@ -3,8 +3,8 @@ import uuid
 
 import boto3
 import botocore
-
 from tryagain import retries
+
 from foremast.exceptions import InvalidEventConfiguration
 from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids,
                             update_dns_zone_record, get_properties)
@@ -48,18 +48,22 @@ class APIGateway:
                 self.log.info("Found API for: %s", api_name)
                 break
         else:
-            raise InvalidEventConfiguration("API does not exist: {}".format(api_name))
+            self.create_api()
 
     def find_resource_id(self):
         """Given a resource path and API Id, find resource Id."""
         all_resources = self.client.get_resources(restApiId=self.api_id)
         for resource in all_resources['items']:
+            if resource['path'] == "/":
+                parent_id = resource['id']
             if resource['path'] == self.trigger_settings['resource']:
                 self.resource_id = resource['id']
                 self.log.info("Found Resource ID for: %s", resource['path'])
+                self.attach_method()
                 break
         else:
-            raise InvalidEventConfiguration("Resource does not exist: {}".format(self.trigger_settings['resource']))
+            self.create_resource(parent_id=parent_id)
+            self.attach_method()
 
     def add_lambda_integration(self):
         """Attach lambda found to API."""
@@ -182,21 +186,40 @@ class APIGateway:
         return uri_dict
 
     def create_api(self):
-        created_api = self.client.create_rest_api(name=self.trigger_settings.get('api_name', default=self.app_name))
+        """Create the REST API."""
+        created_api = self.client.create_rest_api(name=self.trigger_settings.get('api_name', self.app_name))
         self.api_id = created_api['id']
+        self.log.info("Successfully created API")
 
-    def create_resource(self, parentId=None):
+    def create_resource(self, parent_id=None):
+        """Create the specified resource.
+
+        Args:
+            parent_id (str): The resource ID of the parent resource in API Gateway
+        """
         created_resource = self.client.create_resource(restApiId=self.api_id,
-                                                       parentId=parentId,
-                                                       pathPart=self.rules['resource'])
+                                                       parentId=parent_id,
+                                                       pathPart=self.trigger_settings.get('resource', default='/'))
         self.resource_id = created_resource['id']
+        self.log.info("Successfully created resource")
 
     def attach_method(self):
-        self.client.put_method(restApiId=self.api_id,
-                               resourceId=self.resource_id,
-                               httpMethod=self.rules['method'],
-                               authorizationType=SOMETHING,
-                               apiKeyRequired=True, )
+        """Attach the defined method"""
+        try:
+            self.client.put_method(restApiId=self.api_id,
+                                   resourceId=self.resource_id,
+                                   httpMethod=self.trigger_settings['method'],
+                                   authorizationType="NONE",
+                                   apiKeyRequired=False, )
+            self.log.info("Successfully attached method")
+            self.client.put_method_response(restApiId=self.api_id,
+                                             resourceId=self.resource_id,
+                                             httpMethod=self.trigger_settings['method'],
+                                             statusCode='200')
+
+        except botocore.exceptions.ClientError:
+            self.log.info("Method already exists")
+
 
     def setup_lambda_api(self):
         """A wrapper for all the steps needed to setup the integration."""
@@ -207,7 +230,6 @@ class APIGateway:
         self.create_api_deployment()
         self.create_api_key()
         self.update_api_mappings()
-
 
 if __name__ == "__main__":
     gateway = APIGateway(app='dougtest', env='sandbox', region='us-east-1')
