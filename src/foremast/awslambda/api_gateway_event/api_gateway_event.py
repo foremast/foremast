@@ -3,7 +3,8 @@ import uuid
 
 import boto3
 from foremast.exceptions import InvalidEventConfiguration
-from foremast.utils import (get_details, get_env_credential)
+from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids,
+                            update_dns_zone_record, get_properties)
 
 
 LOG = logging.getLogger(__name__)
@@ -16,10 +17,11 @@ class APIGateway:
         app (str): Application Name
         env (str): Environment/account for deployments
         region (str): AWS Region
+        rules (str): Trigger settings
         prop_path (str): Path to the raw.properties.json
     """
 
-    def __init__(self, app='', env='', region='', rules=''):
+    def __init__(self, app='', env='', region='', rules='', prop_path=''):
         self.log = logging.getLogger(__name__)
         self.generated = get_details(app=app)
         self.trigger_settings = rules
@@ -27,6 +29,8 @@ class APIGateway:
         self.env = env
         self.account_id = get_env_credential(env=self.env)['accountId']
         self.region = region
+        self.properties = get_properties(properties_file=prop_path, env=self.env)
+
         session = boto3.Session(profile_name=env, region_name=region)
         self.client = session.client('apigateway')
         self.lambda_client = session.client('lambda')
@@ -109,8 +113,23 @@ class APIGateway:
 
     def update_dns(self):
         """Create a cname for the API deployment."""
-        dns_name = self.generate_uris()['api_dns']
-        #TODO: updated application CName with this DNS
+        dns = {
+            'dns_name': self.generate_uris()['api_dns'],
+            'dns_ttl': self.properties['dns']['ttl'],
+            'dns_public': self.trigger_settings.get('public', False),
+        }
+
+        facing = 'internal'
+        if dns['dns_public']:
+            facing = 'external'
+
+        zone_ids = get_dns_zone_ids(env=self.env, facing=facing)
+
+        for zone_id in zone_ids:
+            self.log.debug('zone_id: %s', zone_id)
+            response = update_dns_zone_record(self.env, zone_id, **dns)
+            self.log.debug('Dns upsert response: %s', response)
+        return response
 
     def generate_uris(self):
         lambda_arn = "arn:aws:execute-api:{0}:{1}:{2}/*/{3}/{4}".format(self.region, self.account_id, self.api_id,
