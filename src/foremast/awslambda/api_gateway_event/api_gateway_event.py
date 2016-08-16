@@ -42,7 +42,7 @@ class APIGateway:
                 self.log.info("Found API for: %s", api_name)
                 break
         else:
-            raise InvalidEventConfiguration("API does not exist: " + api_name)
+            raise InvalidEventConfiguration("API does not exist: {}".format(api_name))
 
     def find_resource_id(self):
         """Given a resource path and API Id, find resource Id."""
@@ -53,7 +53,7 @@ class APIGateway:
                 self.log.info("Found Resource ID for: %s", resource['path'])
                 break
         else:
-            raise InvalidEventConfiguration("Resource does not exist:" + self.trigger_settings['resource'])
+            raise InvalidEventConfiguration("Resource does not exist: {}".format(self.trigger_settings['resource']))
 
     def add_lambda_integration(self):
         """Attach lambda found to API."""
@@ -110,7 +110,6 @@ class APIGateway:
     def update_dns(self):
         """Create a cname for the API deployment."""
         dns_name = self.generate_uris()['api_dns']
-        print(dns_name)
         #TODO: updated application CName with this DNS
 
     def generate_uris(self):
