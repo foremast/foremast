@@ -22,7 +22,7 @@ from pprint import pformat
 import boto3.session
 
 from ..consts import DOMAIN
-from ..utils import find_elb, get_details, get_template, get_properties
+from ..utils import find_elb, get_details, get_template, get_properties, get_dns_zone_ids
 
 
 class SpinnakerDns:
@@ -69,19 +69,7 @@ class SpinnakerDns:
                                region=self.region)
         dns_ttl = self.properties['dns']['ttl']
 
-        # get correct hosted zone
-        zones = self.r53client.list_hosted_zones_by_name(DNSName=dns_zone)
-        # self.log.debug('zones:\n%s', pformat(zones))
-
-        zone_ids = []
-        if len(zones['HostedZones']) > 1:
-            for zone in zones['HostedZones']:
-                # We will always add a private record. The elb subnet must be
-                # specified as 'external' to get added publicly.
-                if any([zone['Config']['PrivateZone'], self.elb_subnet in (
-                        'external')]):
-                    self.log.info('Adding DNS record to %s zone', zone['Id'])
-                    zone_ids.append(zone['Id'])
+        zone_ids = get_dns_zone_ids(env=self.env, facing=self.elb_subnet)
 
         self.log.info('Updating Application URL: %s', dns_elb)
 

@@ -187,9 +187,17 @@ def test_utils_dns_get_zone_ids(mock_boto3):
     result = get_dns_zone_ids(facing='internal')
     assert result == [100]
 
+    # unkown param - mixed zones
+    result = get_dns_zone_ids(facing='wrong_param')
+    assert result == [100]
+
     # no internal zones
     mock_boto3.return_value.client.return_value.list_hosted_zones_by_name.return_value = data_external
     result = get_dns_zone_ids(facing='internal')
+    assert result == []
+
+    # unknown param - no internal zones
+    result = get_dns_zone_ids(facing='wrong_param')
     assert result == []
 
 

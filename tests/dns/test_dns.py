@@ -18,20 +18,15 @@ from foremast import dns
 from unittest.mock import patch, MagicMock
 
 
+@patch('foremast.dns.create_dns.get_dns_zone_ids')
 @patch('foremast.dns.create_dns.json.loads')
 @patch('foremast.dns.create_dns.find_elb')
 @patch('foremast.dns.create_dns.boto3.session.Session')
 @patch('foremast.dns.create_dns.get_properties')
 @patch('foremast.dns.create_dns.get_details')
-def test_dns_creation(mock_get_details, mock_properties, mock_aws_session, mock_find_elb, mock_json):
+def test_dns_creation(mock_get_details, mock_properties, mock_aws_session, mock_find_elb, mock_json, mock_dns_zones):
     # mocked data
-    hosted_zones = {
-        'HostedZones': [
-            {'Config': {'PrivateZone': True}, 'Id': 500},
-            {'Config': {'PrivateZone': False}, 'Id': 501},
-        ]
-    }
-
+    hosted_zones = [ 500, 501 ]
     dns_elb = {
         'elb': 'myapp.dev1.example.com'
     }
@@ -40,7 +35,7 @@ def test_dns_creation(mock_get_details, mock_properties, mock_aws_session, mock_
     mock_get_details.return_value.app_name.return_value = 'myapp'
     mock_get_details.return_value.dns.return_value = dns_elb
     mock_find_elb.return_value = 'myapp-internal.domain.external.com'
-    mock_aws_session.return_value.client.return_value.list_hosted_zones_by_name.return_value = hosted_zones
+    mock_dns_zones.return_value = hosted_zones
     mock_aws_session.return_value.client.return_value.change_resource_record_sets.return_value = True
 
     d = dns.SpinnakerDns(app='myapp', region='region1', env='dev1', elb_subnet='noexist')
