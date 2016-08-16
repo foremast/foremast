@@ -87,8 +87,8 @@ class SpinnakerDns:
 
         # This is what will be added to DNS
         dns_json = get_template(template_file='infrastructure/dns_upsert.json.j2',
-                                dns_elb=dns_elb,
-                                dns_elb_aws=dns_elb_aws,
+                                dns_name=dns_elb,
+                                dns_name_aws=dns_elb_aws,
                                 dns_ttl=dns_ttl)
 
         # TODO: Verify zone_id matches the domain we are updating There are

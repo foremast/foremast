@@ -4,12 +4,12 @@
         {
             "Action": "UPSERT",
             "ResourceRecordSet": {
-                "Name": "{{ dns_elb }}",
+                "Name": "{{ dns_name }}",
                 "Type": "CNAME",
                 "TTL": {{ dns_ttl }},
                 "ResourceRecords": [
                     {
-                        "Value": "{{ dns_elb_aws }}"
+                        "Value": "{{ dns_name_aws }}"
                     }
                 ]
             }
