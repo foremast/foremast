@@ -16,10 +16,12 @@
 
 """Retrieve Route 53 Hosted Zone IDs."""
 import logging
+import json
 
 import boto3
 
 from ..consts import DOMAIN
+from ..utils import get_template
 
 LOG = logging.getLogger(__name__)
 
@@ -49,3 +51,32 @@ def get_dns_zone_ids(env='dev', facing='internal'):
 
     LOG.debug('Zone IDs: %s', zone_ids)
     return zone_ids
+
+
+def update_dns_zone_record(env, zone_id, **kwargs):
+    """Create a Route53 CNAME record in _env_ zone.
+
+    Args:
+        env (str): Deployment environment.
+        zone_id (str): Route53 zone id.
+
+    Keyword Args:
+        dns_name (str): FQDN of application's dns entry to add/update.
+        dns_name_aws (str): FQDN of AWS resource
+        dns_ttl (int): DNS time-to-live (ttl)
+
+    Returns:
+        str: Route53 client response.
+    """
+    client = boto3.Session(profile_name=env).client('route53')
+
+    # This is what will be added to DNS
+    dns_json = get_template(template_file='infrastructure/dns_upsert.json.j2',
+                            **kwargs)
+
+    # TODO: boto3 call can fail with botocore.exceptions.ClientError,
+    response = client.change_resource_record_sets(
+        HostedZoneId=zone_id,
+        ChangeBatch=json.loads(dns_json), )
+
+    return response

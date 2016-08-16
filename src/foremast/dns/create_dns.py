@@ -15,14 +15,12 @@
 #   limitations under the License.
 
 """Module to create dynamically generated DNS record in route53"""
-import json
 import logging
 from pprint import pformat
 
-import boto3.session
-
 from ..consts import DOMAIN
-from ..utils import find_elb, get_details, get_template, get_properties, get_dns_zone_ids
+from ..utils import (find_elb, get_details, get_properties, get_dns_zone_ids,
+                     update_dns_zone_record)
 
 
 class SpinnakerDns:
@@ -52,8 +50,6 @@ class SpinnakerDns:
 
         self.properties = get_properties(properties_file=prop_path, env=self.env)
         self.header = {'content-type': 'application/json'}
-        boto3_session = boto3.session.Session(profile_name=self.env)
-        self.r53client = boto3_session.client('route53')
 
     def create_elb_dns(self):
         """Create dns entries in route53.
@@ -61,8 +57,6 @@ class SpinnakerDns:
         Returns:
             Auto-generated DNS name for the Elastic Load Balancer.
         """
-        dns_zone = '{}.{}'.format(self.env, self.domain)
-
         dns_elb = self.generated.dns()['elb']
         dns_elb_aws = find_elb(name=self.app_name,
                                env=self.env,
@@ -73,11 +67,11 @@ class SpinnakerDns:
 
         self.log.info('Updating Application URL: %s', dns_elb)
 
-        # This is what will be added to DNS
-        dns_json = get_template(template_file='infrastructure/dns_upsert.json.j2',
-                                dns_name=dns_elb,
-                                dns_name_aws=dns_elb_aws,
-                                dns_ttl=dns_ttl)
+        dns_kwargs = {
+            'dns_name': dns_elb,
+            'dns_name_aws': dns_elb_aws,
+            'dns_ttl': dns_ttl,
+        }
 
         # TODO: Verify zone_id matches the domain we are updating There are
         # cases where more than 2 zones are in the account and we need to
@@ -85,12 +79,7 @@ class SpinnakerDns:
         for zone_id in zone_ids:
             self.log.debug('zone_id: %s', zone_id)
 
-            # TODO: boto3 call can fail with botocore.exceptions.ClientError,
-            # need to retry
-            response = self.r53client.change_resource_record_sets(
-                HostedZoneId=zone_id,
-                ChangeBatch=json.loads(dns_json), )
-
+            response = update_dns_zone_record(self.env, zone_id, **dns_kwargs)
             self.log.debug('Dns upsert response: %s', pformat(response))
 
         return dns_elb
