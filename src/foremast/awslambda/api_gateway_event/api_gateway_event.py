@@ -2,8 +2,9 @@ import logging
 import uuid
 
 import boto3
-from foremast.utils import (InvalidEventConfiguration, get_details,
-                            get_env_credential)
+from foremast.exceptions import InvalidEventConfiguration
+from foremast.utils import (get_details, get_env_credential)
+
 
 LOG = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ class APIGateway:
         session = boto3.Session(profile_name=env, region_name=region)
         self.client = session.client('apigateway')
         self.lambda_client = session.client('lambda')
+        self.api_version = self.lambda_client.meta.service_model.api_version
 
     def find_api_id(self):
         """Given API name, find API ID."""
@@ -55,10 +57,7 @@ class APIGateway:
 
     def add_lambda_integration(self):
         """Attach lambda found to API."""
-        api_version = self.lambda_client.meta.service_model.api_version
-        lambda_uri = ("arn:aws:apigateway:{0}:lambda:path/{1}/functions/"
-                      "arn:aws:lambda:{0}:{2}:function:{3}/invocations").format(self.region, api_version,
-                                                                                self.account_id, self.app_name)
+        lambda_uri = self.generate_uris()['lambda_uri']
         self.client.put_integration(restApiId=self.api_id,
                                     resourceId=self.resource_id,
                                     httpMethod=self.trigger_settings['method'],
@@ -78,19 +77,17 @@ class APIGateway:
 
     def add_lambda_permission(self):
         """Add permission to Lambda for the API Trigger."""
-        arn = "arn:aws:execute-api:{0}:{1}:{2}/*/{3}/{4}".format(self.region, self.account_id, self.api_id,
-                                                                 self.trigger_settings['method'],
-                                                                 self.trigger_settings['resource'])
+        lambda_arn = self.generate_uris()['lambda_arn']
         self.lambda_client.add_permission(FunctionName=self.app_name,
                                           StatementId=uuid.uuid4().hex,
                                           Action='lambda:InvokeFunction',
                                           Principal='apigateway.amazonaws.com',
-                                          SourceArn=arn)
+                                          SourceArn=lambda_arn)
         self.log.info("Successfully updated lambda permissions for API")
 
     def create_api_deployment(self):
         """Create API deployment of ENV name."""
-        deployment = self.client.create_deployment(restApiId=self.api_id, stageName=self.env)
+        self.client.create_deployment(restApiId=self.api_id, stageName=self.env)
 
     def create_api_key(self):
         """Create API Key for API access."""
@@ -112,8 +109,26 @@ class APIGateway:
 
     def update_dns(self):
         """Create a cname for the API deployment."""
-        dns_name = "https://{0}.execute-api.{1}.amazonaws.com/{2}".format(self.api_id, self.region, self.env)
+        dns_name = self.generate_uris()['api_dns']
         print(dns_name)
+        #TODO: updated application CName with this DNS
+
+    def generate_uris(self):
+        lambda_arn = "arn:aws:execute-api:{0}:{1}:{2}/*/{3}/{4}".format(self.region, self.account_id, self.api_id,
+                                                                 self.trigger_settings['method'],
+                                                                 self.trigger_settings['resource'])
+
+        lambda_uri = ("arn:aws:apigateway:{0}:lambda:path/{1}/functions/"
+                      "arn:aws:lambda:{0}:{2}:function:{3}/invocations").format(self.region, self.api_version,
+                                                                                self.account_id, self.app_name)
+
+        api_dns = "https://{0}.execute-api.{1}.amazonaws.com/{2}".format(self.api_id, self.region, self.env)
+
+        uri_dict = { 'lambda_arn': lambda_arn,
+                     'lambda_uri': lambda_uri,
+                     'api_dns': api_dns
+                   }
+        return uri_dict
 
     def setup_lambda_api(self):
         """A wrapper for all the steps needed to setup the integration."""
@@ -124,13 +139,6 @@ class APIGateway:
         self.create_api_deployment()
         self.create_api_key()
         self.update_dns()
-
-#    def create_api(self):
-#        created_api = self.client.create_rest_api(
-#                                  name=self.trigger_settings['api_name'],
-#                                  description=self.settings[self.env]['lambda']['app_description']
-#                              )
-#        self.api_id = created_api['id']
 
 if __name__ == "__main__":
     gateway = APIGateway(app='dougtest', env='sandbox', region='us-east-1')
