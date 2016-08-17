@@ -1,5 +1,5 @@
 import logging
-import os
+import zipfile
 
 import boto3
 
@@ -120,9 +120,10 @@ class LambdaFunction(object):
         # We need to upload non-zero zip when creating function
         # uploading hello_world python lambda function since AWS
         # doesn't care which executable is in ZIP
-        here = os.path.dirname(os.path.realpath(__file__))
-        dummyzip = "{}/dummylambda.zip".format(here)
-        application_zip = open(dummyzip, 'rb').read()
+        ziparchive = zipfile.ZipFile('lambda-holder.zip', mode='w')
+        ziparchive.write('print "hello world"')
+        ziparchive.close
+        application_zip = open('lambda-holder.zip', 'rb').read()
 
         vpc_config = self._vpc_config()
 
