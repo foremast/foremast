@@ -68,12 +68,12 @@ class LambdaFunction(object):
     def _vpc_config(self):
         """Gets VPC config"""
 
-        #FIXME get security groups and subnets
+        #TODO: Change how we get subnet IDs
         if self.vpc_enabled:
             subnets = []
             security_groups = []
 
-            vpc_config = {'SubnetIds': [], 'SecurityGroupIds': []}
+            vpc_config = {'SubnetIds': subnets, 'SecurityGroupIds': security_groups}
         else:
             vpc_config = {'SubnetIds': [], 'SecurityGroupIds': []}
 
@@ -97,7 +97,6 @@ class LambdaFunction(object):
 
     def create_function(self):
         """Creates lambda function, configures lambda parameters"""
-        vpc_config = self._vpc_config()
 
         # We need to upload non-zero zip when creating function
         # uploading hello_world python lambda function since AWS
@@ -105,6 +104,8 @@ class LambdaFunction(object):
         here = os.path.dirname(os.path.realpath(__file__))
         dummyzip = "{}/dummylambda.zip".format(here)
         application_zip = open(dummyzip, 'rb').read()
+
+        vpc_config = self._vpc_config()
 
         self.lambda_client.create_function(FunctionName=self.app_name,
                                            Runtime=self.runtime,
