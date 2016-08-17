@@ -4,7 +4,7 @@ import os
 import boto3
 
 from ..exceptions import RequiredKeyNotFound
-from ..utils import get_role_arn, get_properties, get_details
+from ..utils import (get_role_arn, get_properties, get_details, get_subnets, get_security_group_id)
 
 LOG = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class LambdaFunction(object):
             LOG.critical("Runtime, description and handler are required keys.")
             raise RequiredKeyNotFound('Runtime, description and handler are required keys.')
 
-        self.vpc_enabled = self.pipeline.get('app', {}).get('vpc_enabled', False)
+        self.vpc_enabled = self.pipeline.get('vpc_enabled', False)
         self.memory = self.properties.get('app', {}).get('memory', "128")
         self.timeout = self.properties.get('app', {}).get('timeout', "30")
 
@@ -67,17 +67,36 @@ class LambdaFunction(object):
 
     def _vpc_config(self):
         """Gets VPC config"""
-
-        #TODO: Change how we get subnet IDs
         if self.vpc_enabled:
-            subnets = []
-            security_groups = []
+            subnets = get_subnets(env=self.env, region=self.region,
+                                purpose='internal')['subnet_ids'][self.region]
+            security_groups = self._get_sg_ids()
 
             vpc_config = {'SubnetIds': subnets, 'SecurityGroupIds': security_groups}
         else:
             vpc_config = {'SubnetIds': [], 'SecurityGroupIds': []}
-
+        LOG.info("Lambda VPC config setup: %s", vpc_config)
         return vpc_config
+
+
+    def _get_sg_ids(self):
+        """get IDs for all defined security groups
+
+        Returns:
+            list: security group IDs for all lambda_extras
+        """
+        try:
+            lambda_extras = self.properties[self.env]['security_groups']['lambda_extras']
+        except KeyError:
+            lambda_extras = []
+
+        app_sg = get_security_group_id(name=self.app_name, env=self.env, region=self.region)
+        sg_ids = [app_sg]
+        for sg in lambda_extras:
+            sg_id = get_security_group_id(name=sg, env=self.env, region=self.region)
+            sg_ids.append(sg_id)
+        return sg_ids
+
 
     def update_function(self):
         """Updates existing Lambda function configuration"""
@@ -127,4 +146,4 @@ class LambdaFunction(object):
         if self._check_lambda():
             self.update_function()
         else:
-            self.create_function()
+            tself.create_function()
