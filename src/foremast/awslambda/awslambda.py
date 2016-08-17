@@ -3,7 +3,7 @@ import logging
 import boto3
 
 from ..exceptions import RequiredKeyNotFound
-from ..utils import get_role_arn
+from ..utils import get_role_arn, get_properties
 
 LOG = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ LOG = logging.getLogger(__name__)
 class LambdaFunction(object):
     """Manipulate Lambda function"""
 
-    def __init__(self, app, env, region, prop_path, pipeline_prop):
+    def __init__(self, app, env, region, prop_path):
         """
         Lambda function object
         Args:
@@ -19,17 +19,15 @@ class LambdaFunction(object):
             env (str): Environment/Account
             region (str): AWS Region
             prop_path (dict): Path of environment property file
-            pipeline_prop (dict): pipeline.json
         """
         self.app_name = app
         self.env = env
         self.region = region
+        self.properties = get_properties(prop_path).get('app', {})
 
-        # FIXME: this is coming from pipeline.json and application-master-env.json files
-        self.properties = prop_path.get('app', default={})
-        self.pipeline = pipeline_prop.get('lambda')
-
-        if not self.pipeline:
+        try:
+            self.pipeline = self.properties['pipeline']['lambda']
+        except KeyError:
             raise RequiredKeyNotFound("Lambda key in pipeline.json is required.")
 
         self.runtime = self.pipeline.get('runtime')
@@ -74,15 +72,9 @@ class LambdaFunction(object):
             subnets = []
             security_groups = []
 
-            vpc_config = {
-                'SubnetIds': [],
-                'SecurityGroupIds': []
-            }
+            vpc_config = {'SubnetIds': [], 'SecurityGroupIds': []}
         else:
-            vpc_config = {
-                'SubnetIds': [],
-                'SecurityGroupIds': []
-            }
+            vpc_config = {'SubnetIds': [], 'SecurityGroupIds': []}
 
         return vpc_config
 
@@ -91,17 +83,15 @@ class LambdaFunction(object):
 
         vpc_config = self._vpc_config()
 
-        self.lambda_client.update_function_configuration(
-            FunctionName=self.app_name,
-            Runtime=self.runtime,
-            Role=self.role_arn,
-            Handler=self.handler,
-            Description=self.description,
-            Timeout=int(self.timeout),
-            MemorySize=int(self.memory),
-            Publish=False,
-            VpcConfig=vpc_config
-        )
+        self.lambda_client.update_function_configuration(FunctionName=self.app_name,
+                                                         Runtime=self.runtime,
+                                                         Role=self.role_arn,
+                                                         Handler=self.handler,
+                                                         Description=self.description,
+                                                         Timeout=int(self.timeout),
+                                                         MemorySize=int(self.memory),
+                                                         Publish=False,
+                                                         VpcConfig=vpc_config)
 
         LOG.info("Successfully updated Lambda function")
 
@@ -114,20 +104,18 @@ class LambdaFunction(object):
         # doesn't care which executable is in ZIP
         application_zip = open('lambda2.zip', 'rb').read()
 
-        self.lambda_client.create_function(
-            FunctionName=self.app_name,
-            Runtime=self.runtime,
-            Role=self.role_arn,
-            Handler=self.handler,
-            Code={
-                'ZipFile': application_zip
-            },
-            Description=self.description,
-            Timeout=int(self.timeout),
-            MemorySize=int(self.memory),
-            Publish=False,
-            VpcConfig=vpc_config
-        )
+        self.lambda_client.create_function(FunctionName=self.app_name,
+                                           Runtime=self.runtime,
+                                           Role=self.role_arn,
+                                           Handler=self.handler,
+                                           Code={
+                                               'ZipFile': application_zip
+                                           },
+                                           Description=self.description,
+                                           Timeout=int(self.timeout),
+                                           MemorySize=int(self.memory),
+                                           Publish=False,
+                                           VpcConfig=vpc_config)
 
         LOG.info("Successfully created Lambda function")
 

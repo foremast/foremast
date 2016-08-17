@@ -28,20 +28,18 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    # FIXME: not sure how would i get pipeline_props
     lambda_function = LambdaFunction(app=args.app,
                                      env=args.env,
                                      region=args.region,
-                                     prop_path=args.properties,
-                                     pipeline_prop=args.pipeline)
+                                     prop_path=args.properties)
 
     lambda_function.create_lambda_function()
 
-    lambda_event = LambdaEvent(app=args.app,
-                               env=args.env,
-                               region=args.region,
-                               prop_path=args.properties)
-    lambda_event.create_lambda_events()
+    #lambda_event = LambdaEvent(app=args.app,
+    #                           env=args.env,
+    #                           region=args.region,
+    #                           prop_path=args.properties)
+    #lambda_event.create_lambda_events()
 
 
 if __name__ == "__main__":
