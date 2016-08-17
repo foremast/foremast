@@ -116,7 +116,6 @@ class LambdaFunction(object):
 
     def create_function(self):
         """Creates lambda function, configures lambda parameters"""
-
         vpc_config = self._vpc_config()
 
         # We need to upload non-zero zip when creating function
@@ -128,6 +127,7 @@ class LambdaFunction(object):
         application_zip = open('lambda-holder.zip', 'rb').read()
 
         vpc_config = self._vpc_config()
+
 
         self.lambda_client.create_function(FunctionName=self.app_name,
                                            Runtime=self.runtime,
