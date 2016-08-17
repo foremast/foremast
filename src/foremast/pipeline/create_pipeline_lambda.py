@@ -25,8 +25,7 @@ import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import (ami_lookup, generate_packer_filename, get_details,
-                     get_properties, get_subnets, get_template)
+from ..utils import get_details, get_properties, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_lambda import construct_pipeline_block_lambda
 from .renumerate_stages import renumerate_stages
@@ -51,13 +50,11 @@ class SpinnakerPipelineLambda:
 
         self.header = {'content-type': 'application/json'}
         self.here = os.path.dirname(os.path.realpath(__file__))
-
         self.base = base
         self.trigger_job = trigger_job
         self.generated = get_details(app=app)
         self.app_name = self.generated.app_name()
         self.group_name = self.generated.project
-
         self.settings = get_properties(prop_path)
         self.environments = self.settings['pipeline']['env']
 
@@ -109,34 +106,20 @@ class SpinnakerPipelineLambda:
 
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
-        baking_process = self.settings['pipeline']['image']['builder']
+        deploy_type = self.settings['pipeline']['type']
         provider = 'aws'
-        root_volume_size = self.settings['pipeline']['image']['root_volume_size']
-
-        if root_volume_size > 50:
-            raise SpinnakerPipelineCreationFailed(
-                'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
-                    root_volume_size))
-
-        ami_id = ami_lookup(name=base,
-                            region=region)
-
-        ami_template_file = generate_packer_filename(provider, region, baking_process)
-
         pipeline_id = self.compare_with_existing(region=region)
 
         data = {
             'app': {
-                'ami_id': ami_id,
                 'appname': self.app_name,
                 'base': base,
+                'deploy_type': deploy_type,
                 'environment': 'packaging',
                 'region': region,
                 'triggerjob': self.trigger_job,
                 'email': email,
                 'slack': slack,
-                'root_volume_size': root_volume_size,
-                'ami_template_file': ami_template_file,
             },
             'id': pipeline_id
         }
