@@ -1,9 +1,10 @@
 import logging
+import os
 
 import boto3
 
 from ..exceptions import RequiredKeyNotFound
-from ..utils import get_role_arn, get_properties
+from ..utils import get_role_arn, get_properties, get_details
 
 LOG = logging.getLogger(__name__)
 
@@ -23,7 +24,8 @@ class LambdaFunction(object):
         self.app_name = app
         self.env = env
         self.region = region
-        self.properties = get_properties(prop_path).get('app', {})
+        self.properties = get_properties(prop_path)
+        generated = get_details(app=self.app_name)
 
         try:
             self.pipeline = self.properties['pipeline']['lambda']
@@ -38,12 +40,11 @@ class LambdaFunction(object):
             LOG.critical("Runtime, description and handler are required keys.")
             raise RequiredKeyNotFound('Runtime, description and handler are required keys.')
 
-        self.vpc_enabled = self.pipeline.get('vpc_enabled', default=False)
-        self.memory = self.properties.get('memory', default="128")
-        self.timeout = self.properties.get('timeout', default="30")
+        self.vpc_enabled = self.pipeline.get('app', {}).get('vpc_enabled', False)
+        self.memory = self.properties.get('app', {}).get('memory', "128")
+        self.timeout = self.properties.get('app', {}).get('timeout', "30")
 
-        self.role = "{}_lambda_role".format(self.app_name)
-        self.role_arn = get_role_arn(self.role, self.env, self.region)
+        self.role_arn = get_role_arn(generated.iam()['role'], self.env, self.region)
 
         session = boto3.Session(profile_name=self.env, region_name=self.region)
         self.lambda_client = session.client('lambda')
@@ -90,7 +91,6 @@ class LambdaFunction(object):
                                                          Description=self.description,
                                                          Timeout=int(self.timeout),
                                                          MemorySize=int(self.memory),
-                                                         Publish=False,
                                                          VpcConfig=vpc_config)
 
         LOG.info("Successfully updated Lambda function")
@@ -102,7 +102,9 @@ class LambdaFunction(object):
         # We need to upload non-zero zip when creating function
         # uploading hello_world python lambda function since AWS
         # doesn't care which executable is in ZIP
-        application_zip = open('lambda2.zip', 'rb').read()
+        here = os.path.dirname(os.path.realpath(__file__))
+        dummyzip = "{}/dummylambda.zip".format(here)
+        application_zip = open(dummyzip, 'rb').read()
 
         self.lambda_client.create_function(FunctionName=self.app_name,
                                            Runtime=self.runtime,
