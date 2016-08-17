@@ -97,7 +97,6 @@ class LambdaFunction(object):
             sg_ids.append(sg_id)
         return sg_ids
 
-
     def update_function_configuration(self):
         """Updates existing Lambda function configuration"""
 
@@ -149,4 +148,4 @@ class LambdaFunction(object):
         if self._check_lambda():
             self.update_function_configuration()
         else:
-            self.create_function()
+            tself.create_function()
