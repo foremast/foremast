@@ -190,7 +190,6 @@ def prepare_infrastructure():
         LOG.info("No Eureka, running ELB and DNS setup")
         runner.create_elb()
         runner.create_dns()
-        LOG.info("Eureka Enabled, skipping ELB and DNS setup")
 
     runner.slack_notify()
     runner.cleanup()
