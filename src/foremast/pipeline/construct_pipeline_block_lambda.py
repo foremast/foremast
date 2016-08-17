@@ -20,7 +20,7 @@ import json
 import logging
 from pprint import pformat
 
-from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
+from ..consts import DEFAULT_EC2_SECURITYGROUPS
 from ..utils import generate_encoded_user_data, get_template
 
 LOG = logging.getLogger(__name__)
@@ -73,47 +73,7 @@ def construct_pipeline_block_lambda(env='',
 
     LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
 
-    # check if scaling policy exists
-    if settings['asg']['scaling_policy']:
-        scalingpolicy = True
-        LOG.info('Found scaling policy')
-    else:
-        scalingpolicy = False
-        LOG.info('No scaling policy found')
-
-    if settings['app']['eureka_enabled']:
-        elb = []
-    else:
-        elb = ['{0}'.format(gen_app_name)]
-    LOG.info('Attaching the following ELB: {0}'.format(elb))
-
-    provider_healthcheck = []
-    for provider, active in settings['asg']['provider_healthcheck'].items():
-        if active:
-            provider_healthcheck.append(provider.capitalize())
-    LOG.info('Provider healthchecks: {0}'.format(provider_healthcheck))
-
-    has_provider_healthcheck = False
-    if len(provider_healthcheck) > 0:
-        has_provider_healthcheck = True
-
     data = copy.deepcopy(settings)
-
-    # Default HC type in DEV to EC2, default to EC2 if eureka enabled
-    # FIXME: Need to also set `provider_healthcheck` when `eureka_enabled`
-    if env == 'dev' or settings['app']['eureka_enabled']:
-        data['asg'].update({
-            'hc_type': 'EC2'
-        })
-        LOG.info('Switching health check type to: EC2')
-
-    LOG.info('White listed dev asg apps: {0}'.format(ASG_WHITELIST))
-    if env == 'dev' and gen_app_name not in ASG_WHITELIST:
-        data['asg'].update({
-            'max_inst': '1',
-            'min_inst': '1'
-        })
-        LOG.info('App {0} is not white listed, using default dev ASG settings'.format(gen_app_name))
 
     data['app'].update({
         'appname': gen_app_name,
@@ -125,16 +85,8 @@ def construct_pipeline_block_lambda(env='',
         'previous_env': previous_env,
         'encoded_user_data': user_data,
         'instance_security_groups': json.dumps(instance_security_groups),
-        'elb': json.dumps(elb),
         'promote_restrict': pipeline_data['promote_restrict'],
-        'owner_email': pipeline_data['owner_email'],
-        'scalingpolicy': scalingpolicy
-    })
-
-    data['asg'].update({
-        'hc_type': data['asg'].get('hc_type').upper(),
-        'provider_healthcheck': json.dumps(provider_healthcheck),
-        "has_provider_healthcheck": has_provider_healthcheck,
+        'owner_email': pipeline_data['owner_email']
     })
 
     LOG.debug('Block data:\n%s', pformat(data))
