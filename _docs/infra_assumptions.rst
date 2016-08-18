@@ -18,11 +18,11 @@ Spinnaker Component Versions
 Below are the Spinnaker component versions that we use internally at Gogo and that Foremast has been tested against:
 
     - Gate: ``2.70.0``
-    - Clouddriver: ``1.212.0``
+    - Clouddriver: ``1.286.0``
     - Deck: ``2.711.0``
     - Igor: ``1.50.0``
     - Echo: ``1.108.0``
-    - Front50: ``1.8.0``
+    - Front50: ``1.38.0``
     - Spinnaker: ``0.50.0``
     - Rosco: ``0.42.0``
     - Orca: ``1.168.0``
