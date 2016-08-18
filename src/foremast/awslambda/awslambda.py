@@ -32,17 +32,13 @@ class LambdaFunction(object):
         except KeyError:
             raise RequiredKeyNotFound("Lambda key in pipeline.json is required.")
 
-        self.runtime = self.pipeline.get('runtime')
-        self.description = self.pipeline.get('app_description')
-        self.handler = self.pipeline.get('handler')
+        self.runtime = self.pipeline['runtime']
+        self.description = self.pipeline['app_description']
+        self.handler = self.pipeline['handler']
+        self.vpc_enabled = self.pipeline['vpc_enabled']
 
-        if None in (self.runtime, self.description, self.handler):
-            LOG.critical("Runtime, description and handler are required keys.")
-            raise RequiredKeyNotFound('Runtime, description and handler are required keys.')
-
-        self.vpc_enabled = self.pipeline.get('vpc_enabled', False)
-        self.memory = self.properties['app']['lambda_memory']
-        self.timeout = self.properties['app']['lambda_timeout']
+        self.memory = self.properties[env]['app']['lambda_memory']
+        self.timeout = self.properties[env]['app']['lambda_timeout']
 
         self.role_arn = get_role_arn(generated.iam()['role'], self.env, self.region)
 

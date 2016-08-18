@@ -1,4 +1,5 @@
 {
+    "type": "ec2",
     "owner_email": "",
     "documentation": "",
     "notifications": {
@@ -11,5 +12,11 @@
     "image": {
         "root_volume_size": 6,
         "builder": "ebs"
+    },
+    "lambda": {
+        "app_description": "default description",
+        "runtime": "python2.7",
+        "handler": "main",
+        "vpc_enabled": false
     }
 }
