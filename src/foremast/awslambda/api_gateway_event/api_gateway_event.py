@@ -2,6 +2,8 @@ import logging
 import uuid
 
 import boto3
+import botocore
+
 from foremast.exceptions import InvalidEventConfiguration
 from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids,
                             update_dns_zone_record, get_properties)
@@ -91,7 +93,10 @@ class APIGateway:
 
     def create_api_deployment(self):
         """Create API deployment of ENV name."""
-        self.client.create_deployment(restApiId=self.api_id, stageName=self.env)
+        try:
+            self.client.create_deployment(restApiId=self.api_id, stageName=self.env)
+        except botocore.exceptions.ClientError:
+            self.log.debug('We should retry create_deployment. We have hit api limit.')
 
     def create_api_key(self):
         """Create API Key for API access."""
