@@ -81,12 +81,22 @@ class APIGateway:
     def add_lambda_permission(self):
         """Add permission to Lambda for the API Trigger."""
         lambda_arn = self.generate_uris()['lambda_arn']
-        self.lambda_client.add_permission(FunctionName=self.app_name,
-                                          StatementId=uuid.uuid4().hex,
-                                          Action='lambda:InvokeFunction',
-                                          Principal='apigateway.amazonaws.com',
-                                          SourceArn=lambda_arn)
-        self.log.info("Successfully updated lambda permissions for API")
+        response_action = None
+        statement_id = 'add_permission_for_{}'.format(
+            self.trigger_settings['api_name'],
+        )
+        try:
+            self.lambda_client.add_permission(FunctionName=self.app_name,
+                                              StatementId=statement_id,
+                                              Action='lambda:InvokeFunction',
+                                              Principal='apigateway.amazonaws.com',
+                                              SourceArn=lambda_arn)
+            response_action = 'Add permission with Sid: {}'.format(statement_id)
+        except botocore.exceptions.ClientError:
+            response_action = 'Did not add any permissions.'
+
+        self.log.debug('Related StatementId (SID): %s', statement_id)
+        self.log.info(response_action)
 
     def create_api_deployment(self):
         """Create API deployment of ENV name."""
