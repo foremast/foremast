@@ -28,6 +28,7 @@ class LambdaEvent(object):
         self.app_name = app
         self.env = env
         self.region = region
+        self.prop_path = prop_path
         self.properties = get_properties(properties_file=prop_path, env=env)
 
     def create_lambda_events(self):
@@ -51,5 +52,6 @@ class LambdaEvent(object):
             if trigger['type'] == 'cloudwatch-logs':
                 create_cloudwatch_log_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
             if trigger['type'] == 'api-gateway':
-                apigateway = APIGateway(app=self.app_name, env=self.env, region=self.region, rules=trigger)
+                apigateway = APIGateway(app=self.app_name, env=self.env, region=self.region, rules=trigger,
+                                        prop_path=self.prop_path)
                 apigateway.setup_lambda_api()
