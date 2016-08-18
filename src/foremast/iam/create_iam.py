@@ -39,6 +39,8 @@ def create_iam_resources(env='dev', app='', **_):
     session = boto3.session.Session(profile_name=env)
     client = session.client('iam')
 
+    app_properties = get_properties(env='pipeline')
+
     generated = get_details(env=env, app=app)
     app_details = collections.namedtuple('AppDetails', ['group', 'policy', 'profile', 'role', 'user'])
     details = app_details(**generated.iam())
@@ -58,8 +60,7 @@ def create_iam_resources(env='dev', app='', **_):
         InstanceProfileName=details.profile)
     attach_profile_to_role(client, role_name=details.role, profile_name=details.profile)
 
-    iam_policy = construct_policy(
-        app=app, group=details.group, env=env, pipeline_settings=get_properties(env='pipeline'))
+    iam_policy = construct_policy(app=app, group=details.group, env=env, pipeline_settings=app_properties)
     if iam_policy:
         resource_action(
             client,
