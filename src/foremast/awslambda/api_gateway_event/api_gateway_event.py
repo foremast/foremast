@@ -22,7 +22,7 @@ class APIGateway:
 
     def __init__(self, app='', env='', region='', rules='', prop_path=''):
         self.log = logging.getLogger(__name__)
-        self.generated = get_details(app=app)
+        self.generated = get_details(app=app, env=env)
         self.trigger_settings = rules
         self.app_name = self.generated.app_name()
         self.env = env
@@ -123,25 +123,32 @@ class APIGateway:
                                        ])
             self.log.info("Successfully created API Key %s. Look in the AWS console for the key", self.app_name)
 
-    def update_dns(self):
+    def _format_base_path(self, api_name):
+        """Format the base path name"""
+        name = self.app_name
+        if self.app_name != api_name:
+            name = '{0}-{1}'.format(self.app_name, api_name)
+        return name
+
+    def update_api_mappings(self):
         """Create a cname for the API deployment."""
-        dns = {
-            'dns_name': self.generate_uris()['api_dns'],
-            'dns_ttl': self.properties['dns']['ttl'],
-            'dns_public': self.trigger_settings.get('public', False),
-        }
+        response_provider = None
+        response_action = None
+        domain = self.generated.apigateway()['domain']
+        try:
+            response_provider = self.client.create_base_path_mapping(
+                domainName=domain,
+                basePath=self._format_base_path(self.trigger_settings['api_name']),
+                restApiId=self.api_id,
+                stage=self.env,
+            )
+            response_action = 'API mapping added.'
+        except botocore.exceptions.ClientError:
+            response_action = 'API mapping already exist.'
 
-        facing = 'internal'
-        if dns['dns_public']:
-            facing = 'external'
-
-        zone_ids = get_dns_zone_ids(env=self.env, facing=facing)
-
-        for zone_id in zone_ids:
-            self.log.debug('zone_id: %s', zone_id)
-            response = update_dns_zone_record(self.env, zone_id, **dns)
-            self.log.debug('Dns upsert response: %s', response)
-        return response
+        self.log.debug('Provider response: %s', response_provider)
+        self.log.info(response_action)
+        return response_provider
 
     def generate_uris(self):
         lambda_arn = "arn:aws:execute-api:{0}:{1}:{2}/*/{3}/{4}".format(self.region, self.account_id, self.api_id,
@@ -168,7 +175,7 @@ class APIGateway:
         self.add_lambda_permission()
         self.create_api_deployment()
         self.create_api_key()
-        self.update_dns()
+        self.update_api_mappings()
 
 if __name__ == "__main__":
     gateway = APIGateway(app='dougtest', env='sandbox', region='us-east-1')
