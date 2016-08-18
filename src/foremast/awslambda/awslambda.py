@@ -98,7 +98,7 @@ class LambdaFunction(object):
         return sg_ids
 
 
-    def update_function(self):
+    def update_function_configuration(self):
         """Updates existing Lambda function configuration"""
 
         vpc_config = self._vpc_config()
@@ -145,6 +145,6 @@ class LambdaFunction(object):
     def create_lambda_function(self):
         """Creates or updates Lambda function"""
         if self._check_lambda():
-            self.update_function()
+            self.update_function_configuration()
         else:
             tself.create_function()
