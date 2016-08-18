@@ -23,8 +23,8 @@ import logging
 
 from ..args import add_app, add_debug, add_properties
 from ..consts import ENVS, LOGGING_FORMAT
-# from .create_pipeline_lambda import SpinnakerLambdaPipeline
 from .create_pipeline import SpinnakerPipeline
+from .create_pipeline_lambda import SpinnakerLambdaPipeline
 from .create_pipeline_onetime import SpinnakerPipelineOnetime
 
 
@@ -48,6 +48,12 @@ def main():
                         required=False,
                         choices=ENVS,
                         help='Onetime deployment environment')
+    parser.add_argument('-t',
+                        '--type',
+                        dest='type',
+                        required=False,
+                        default='ec2',
+                        help='Deployment type, e.g. ec2, lambda')
     args = parser.parse_args()
 
     if args.base and '"' in args.base:
@@ -65,11 +71,19 @@ def main():
                                                  base=args.base)
         spinnakerapps.create_pipeline()
     else:
-        spinnakerapps = SpinnakerPipeline(app=args.app,
-                                          trigger_job=args.triggerjob,
-                                          prop_path=args.properties,
-                                          base=args.base)
-        spinnakerapps.create_pipeline()
+
+        if args.type == "ec2":
+            spinnakerapps = SpinnakerPipeline(app=args.app,
+                                              trigger_job=args.triggerjob,
+                                              prop_path=args.properties,
+                                              base=args.base)
+            spinnakerapps.create_pipeline()
+        elif args.type == "lambda":
+            spinnakerapps = SpinnakerLambdaPipeline(app=args.app,
+                                                    trigger_job=args.triggerjob,
+                                                    prop_path=args.properties,
+                                                    base=args.base)
+            spinnakerapps.create_pipeline()
 
 
 if __name__ == "__main__":
