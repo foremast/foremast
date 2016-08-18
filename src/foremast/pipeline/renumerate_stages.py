@@ -58,7 +58,7 @@ def renumerate_stages(pipeline):
     stages = pipeline['stages']
 
     main_index = 1
-    for stage in stages:
+    for idx, stage in enumerate(stages):
         if stage['name'].startswith('Git Tag'):
             stage['requisiteStageRefIds'] = [str(main_index)]
             stage['refId'] = str(main_index * 100)
@@ -68,7 +68,7 @@ def renumerate_stages(pipeline):
         elif stage['name'].startswith('ServiceNow'):
             stage['requisiteStageRefIds'] = [str(main_index)]
             stage['refId'] = str(main_index * 102)
-        elif stage['type'] == 'bake':
+        elif stage['type'] == 'bake' or idx == 0:
             stage['requisiteStageRefIds'] = []
             stage['refId'] = str(main_index)
         else:
