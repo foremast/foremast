@@ -41,8 +41,8 @@ class LambdaFunction(object):
             raise RequiredKeyNotFound('Runtime, description and handler are required keys.')
 
         self.vpc_enabled = self.pipeline.get('vpc_enabled', False)
-        self.memory = self.properties.get('app', {}).get('memory', "128")
-        self.timeout = self.properties.get('app', {}).get('timeout', "30")
+        self.memory = self.properties['app']['lambda_memory']
+        self.timeout = self.properties['app']['lambda_timeout']
 
         self.role_arn = get_role_arn(generated.iam()['role'], self.env, self.region)
 

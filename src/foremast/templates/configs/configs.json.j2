@@ -5,7 +5,9 @@
         "email": null,
         "eureka_enabled": false,
         "instance_profile": "{{ profile }}",
-        "instance_type": "t2.micro"
+        "instance_type": "t2.micro",
+        "lambda_memory": "128",
+        "lambda_timeout": "30"
     },
     "asg": {
         "hc_type": "ELB",
