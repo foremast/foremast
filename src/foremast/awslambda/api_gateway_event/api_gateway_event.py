@@ -11,7 +11,6 @@ from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids,
 
 LOG = logging.getLogger(__name__)
 
-
 class APIGateway:
     """Class to handle API Gateway and Lambda integration.
 
