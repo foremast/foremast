@@ -47,12 +47,14 @@ def create_iam_resources(env='dev', app='', **_):
 
     LOG.debug('Application details: %s', details)
 
+    role_policy_template = get_template('infrastructure/iam_role_policy.json.j2')
+
     resource_action(
         client,
         action='create_role',
         log_format='Created Role: %(RoleName)s',
         RoleName=details.role,
-        AssumeRolePolicyDocument=get_template('infrastructure/iam_role_policy.json.j2'))
+        AssumeRolePolicyDocument=role_policy_template)
     resource_action(
         client,
         action='create_instance_profile',
