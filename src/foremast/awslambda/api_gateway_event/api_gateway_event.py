@@ -143,8 +143,12 @@ class APIGateway:
                 stage=self.env,
             )
             response_action = 'API mapping added.'
-        except botocore.exceptions.ClientError:
-            response_action = 'API mapping already exist.'
+        except botocore.exceptions.ClientError as error:
+            error_code = error.response['Error']['Code']
+            if error_code == 'ConflictException':
+                response_action = 'API mapping already exist.'
+            else:
+                response_action = 'Unknown error: {0}'.format(error_code)
 
         self.log.debug('Provider response: %s', response_provider)
         self.log.info(response_action)
