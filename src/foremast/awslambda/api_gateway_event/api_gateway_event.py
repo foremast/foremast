@@ -151,6 +151,7 @@ class APIGateway:
         return response_provider
 
     def generate_uris(self):
+        """Generate several lambda uris"""
         lambda_arn = "arn:aws:execute-api:{0}:{1}:{2}/*/{3}/{4}".format(self.region, self.account_id, self.api_id,
                                                                  self.trigger_settings['method'],
                                                                  self.trigger_settings['resource'])
