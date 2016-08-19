@@ -1,4 +1,6 @@
+import base64
 import logging
+import os
 import zipfile
 
 import boto3
@@ -51,15 +53,13 @@ class LambdaFunction(object):
             True if function does exist
             False if function does not exist
         """
-        list_lambda = self.lambda_client.list_functions()
-        functions = list_lambda['Functions']
-
-        for function in functions:
-            if function['FunctionName'] == self.app_name:
-                return True
-        else:
-            self.function_config = {}
-            return False
+        exists = False
+        try:
+            self.lambda_client.get_function(FunctionName=self.app_name)
+            exists = True
+        except boto3.exceptions.botocore.exceptions.ClientError:
+            pass
+        return exists
 
     def _vpc_config(self):
         """Gets VPC config"""
@@ -71,7 +71,7 @@ class LambdaFunction(object):
             vpc_config = {'SubnetIds': subnets, 'SecurityGroupIds': security_groups}
         else:
             vpc_config = {'SubnetIds': [], 'SecurityGroupIds': []}
-        LOG.info("Lambda VPC config setup: %s", vpc_config)
+        LOG.debug("Lambda VPC config setup: %s", vpc_config)
         return vpc_config
 
 
@@ -86,17 +86,20 @@ class LambdaFunction(object):
         except KeyError:
             lambda_extras = []
 
-        app_sg = get_security_group_id(name=self.app_name, env=self.env, region=self.region)
-        sg_ids = [app_sg]
-        for sg in lambda_extras:
+        security_groups = [self.app_name] + lambda_extras
+        sg_ids = []
+        for sg in security_groups:
             sg_id = get_security_group_id(name=sg, env=self.env, region=self.region)
             sg_ids.append(sg_id)
         return sg_ids
 
-    def update_function_configuration(self):
-        """Updates existing Lambda function configuration"""
+    def update_function_configuration(self, vpc_config):
+        """Updates existing Lambda function configuration
 
-        vpc_config = self._vpc_config()
+        Args:
+            vpc_config (dict): Dictionary of SubnetIds and SecurityGroupsIds for using
+                               a VPC in lambda
+        """
 
         self.lambda_client.update_function_configuration(FunctionName=self.app_name,
                                                          Runtime=self.runtime,
@@ -109,19 +112,23 @@ class LambdaFunction(object):
 
         LOG.info("Successfully updated Lambda function")
 
-    def create_function(self):
-        """Creates lambda function, configures lambda parameters"""
-        vpc_config = self._vpc_config()
+    def create_function(self, vpc_config):
+        """Creates lambda function, configures lambda parameters
+        Args:
+            vpc_config (dict): Dictionary of SubnetIds and SecurityGroupsIds for using
+                               a VPC in lambda
+        """
 
         # We need to upload non-zero zip when creating function
         # uploading hello_world python lambda function since AWS
         # doesn't care which executable is in ZIP
-        ziparchive = zipfile.ZipFile('lambda-holder.zip', mode='w')
-        ziparchive.write('print "hello world"')
-        ziparchive.close
-        application_zip = open('lambda-holder.zip', 'rb').read()
+        zip_file = 'lambda-holder.zip'
+        with zipfile.ZipFile(zip_file, mode='w') as z:
+            z.writestr('index.py', 'print "Hello world"')
 
-        vpc_config = self._vpc_config()
+        contents = ''
+        with open('lambda-holder.zip', 'rb') as openfile:
+            contents = openfile.read()
 
 
         self.lambda_client.create_function(FunctionName=self.app_name,
@@ -129,7 +136,7 @@ class LambdaFunction(object):
                                            Role=self.role_arn,
                                            Handler=self.handler,
                                            Code={
-                                               'ZipFile': application_zip
+                                               'ZipFile': contents
                                            },
                                            Description=self.description,
                                            Timeout=int(self.timeout),
@@ -141,7 +148,8 @@ class LambdaFunction(object):
 
     def create_lambda_function(self):
         """Creates or updates Lambda function"""
+        vpc_config = self._vpc_config()
         if self._check_lambda():
-            self.update_function_configuration()
+            self.update_function_configuration(vpc_config)
         else:
-            tself.create_function()
+            self.create_function(vpc_config)

@@ -21,6 +21,6 @@ def get_role_arn(role_name, env, region):
     role = iam_client.get_role(RoleName=role_name)
     role_arn = role['Role']['Arn']
 
-    LOG.debug("Found role's %s ARN %", role_name, role_arn)
+    LOG.debug("Found role's %s ARN %s", role_name, role_arn)
 
     return role_arn
