@@ -6,7 +6,8 @@ import zipfile
 import boto3
 
 from ..exceptions import RequiredKeyNotFound
-from ..utils import (get_role_arn, get_properties, get_details, get_subnets, get_security_group_id)
+from ..utils import (get_details, get_properties, get_role_arn,
+                     get_security_group_id, get_subnets)
 
 LOG = logging.getLogger(__name__)
 
