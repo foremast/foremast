@@ -14,9 +14,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Test IAM Policy construction."""
+import json
 from unittest import mock
 
 from foremast.iam.create_iam import create_iam_resources
+from foremast.utils import get_template
 
 EC2_TEMPLATE_NAME = 'infrastructure/iam/ec2_role_policy.json.j2'
 LAMBDA_TEMPLATE_NAME = 'infrastructure/iam/lambda_role_policy.json.j2'
@@ -40,7 +42,8 @@ def test_create_iam_resources(resource_action, get_properties, get_details, cons
     session.assert_called_with(profile_name='narnia')
     get_details.assert_called_with(env='narnia', app='lion/aslan')
     get_properties.assert_called_with(env='pipeline')
-    construct_policy.assert_called_with(app='lion/aslan', group=1, env='narnia', pipeline_settings=get_properties.return_value)
+    construct_policy.assert_called_with(
+        app='lion/aslan', group=1, env='narnia', pipeline_settings=get_properties.return_value)
 
 
 @mock.patch('foremast.iam.create_iam.attach_profile_to_role')
@@ -66,3 +69,18 @@ def test_iam_role_policy(resource_action, get_template, get_properties, get_deta
         RoleName=mock.ANY,
         AssumeRolePolicyDocument=get_template.return_value)]
     resource_action.assert_has_calls(calls)
+
+
+def test_ec2_iam_policy():
+    """Check template for proper format."""
+    ec2_json = get_template(EC2_TEMPLATE_NAME)
+    ec2_dict = json.loads(ec2_json)
+
+    assert all(key in ec2_dict for key in ('Version', 'Statement'))
+    assert len(ec2_dict['Statement']) == 1
+
+    only_statement = ec2_dict['Statement'][0]
+
+    assert only_statement['Action'] == 'sts:AssumeRole'
+    assert only_statement['Effect'] == 'Allow'
+    assert only_statement['Principal']['Service'] == 'ec2.amazonaws.com'
