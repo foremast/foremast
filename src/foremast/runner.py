@@ -14,7 +14,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """A runner for all of the spinnaker pipe modules.
 
 Read environment variables from Jenkins:
@@ -54,8 +53,7 @@ class ForemastRunner(object):
 
         self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
-        generated = gogoutils.Generator(*parsed.parse_url(),
-                                        formats=consts.APP_FORMATS)
+        generated = gogoutils.Generator(*parsed.parse_url(), formats=consts.APP_FORMATS)
 
         self.app = generated.app_name()
         self.trigger_job = generated.jenkins()['name']
@@ -69,11 +67,9 @@ class ForemastRunner(object):
         """Generate the configurations needed for pipes."""
         utils.banner("Generating Configs")
         if not self.runway_dir:
-            app_configs = configs.process_git_configs(
-                git_short=self.git_short)
+            app_configs = configs.process_git_configs(git_short=self.git_short)
         else:
-            app_configs = configs.process_runway_configs(
-                runway_dir=self.runway_dir)
+            app_configs = configs.process_runway_configs(runway_dir=self.runway_dir)
 
         self.configs = configs.write_variables(app_configs=app_configs,
                                                out_file=self.raw_path,
@@ -82,10 +78,7 @@ class ForemastRunner(object):
     def create_app(self):
         """Create the spinnaker application."""
         utils.banner("Creating Spinnaker App")
-        spinnakerapp = app.SpinnakerApp(app=self.app,
-                                        email=self.email,
-                                        project=self.group,
-                                        repo=self.repo)
+        spinnakerapp = app.SpinnakerApp(app=self.app, email=self.email, project=self.group, repo=self.repo)
         spinnakerapp.create_app()
 
     def create_pipeline(self, onetime=None):
@@ -102,10 +95,9 @@ class ForemastRunner(object):
         if not onetime:
             spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
         elif self.configs['pipeline']['type'] == 'lambda':
-            spinnakerpipeline=pipeline.SpinnakerPipelineLambda(**kwargs)
+            spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
         else:
-            spinnakerpipeline = pipeline.SpinnakerPipelineOnetime(
-                onetime=onetime, **kwargs)
+            spinnakerpipeline = pipeline.SpinnakerPipelineOnetime(onetime=onetime, **kwargs)
 
         spinnakerpipeline.create_pipeline()
 
@@ -132,25 +124,19 @@ class ForemastRunner(object):
         """Create security groups as defined in the configs."""
         utils.banner("Creating Lambda Function")
         awslambdaobj = awslambda.LambdaFunction(app=self.app,
-                                                 env=self.env,
-                                                 region=self.region,
-                                                 prop_path=self.json_path)
+                                                env=self.env,
+                                                region=self.region,
+                                                prop_path=self.json_path)
         awslambdaobj.create_lambda_function()
 
         utils.banner("Creating Lambda Event")
-        lambdaeventobj = awslambda.LambdaEvent(app=self.app,
-                                                 env=self.env,
-                                                 region=self.region,
-                                                 prop_path=self.json_path)
+        lambdaeventobj = awslambda.LambdaEvent(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
         lambdaeventobj.create_lambda_events()
 
     def create_elb(self):
         """Create the ELB for the defined environment."""
         utils.banner("Creating ELB")
-        elbobj = elb.SpinnakerELB(app=self.app,
-                                  env=self.env,
-                                  region=self.region,
-                                  prop_path=self.json_path)
+        elbobj = elb.SpinnakerELB(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
         elbobj.create_elb()
 
     def create_dns(self):
@@ -167,11 +153,10 @@ class ForemastRunner(object):
     def create_autoscaling_policy(self):
         """Create Scaling Policy for app in environment"""
         utils.banner("Creating Scaling Policy")
-        policyobj = autoscaling_policy.AutoScalingPolicy(
-            app=self.app,
-            env=self.env,
-            region=self.region,
-            prop_path=self.json_path)
+        policyobj = autoscaling_policy.AutoScalingPolicy(app=self.app,
+                                                         env=self.env,
+                                                         region=self.region,
+                                                         prop_path=self.json_path)
         policyobj.create_policy()
 
     def slack_notify(self):
@@ -179,9 +164,7 @@ class ForemastRunner(object):
         utils.banner("Sending slack notification")
 
         if self.env.startswith("prod"):
-            notify = slacknotify.SlackNotification(app=self.app,
-                                                   env=self.env,
-                                                   prop_path=self.json_path)
+            notify = slacknotify.SlackNotification(app=self.app, env=self.env, prop_path=self.json_path)
             notify.post_message()
         else:
             LOG.info("No slack message sent, not production environment")
@@ -255,12 +238,10 @@ def rebuild_pipelines():
         if 'repoProjectKey' not in apps:
             LOG.info("Skipping {}. No project key found".format(apps['name']))
             continue
-        if (app['repoProjectKey'].lower() == rebuild_project.lower() or
-                rebuild_project == 'ALL'):
+        if (app['repoProjectKey'].lower() == rebuild_project.lower() or rebuild_project == 'ALL'):
             os.environ["PROJECT"] = app['repoProjectKey']
             os.environ["GIT_REPO"] = app['repoSlug']
-            LOG.info('Rebuilding pipelines for {}/{}'.format(
-                apps['repoProjectKey'], apps['repoSlug']))
+            LOG.info('Rebuilding pipelines for {}/{}'.format(apps['repoProjectKey'], apps['repoSlug']))
             runner = ForemastRunner()
             try:
                 runner.write_configs()
