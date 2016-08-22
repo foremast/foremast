@@ -28,10 +28,11 @@ from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import get_details, get_properties, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_lambda import construct_pipeline_block_lambda
+from .create_pipeline import SpinnakerPipeline
 from .renumerate_stages import renumerate_stages
 
 
-class SpinnakerPipelineLambda:
+class SpinnakerPipelineLambda(SpinnakerPipeline):
     """Manipulate Spinnaker Pipelines.
 
     Args:
@@ -40,53 +41,6 @@ class SpinnakerPipelineLambda:
         base (str): Base image name (i.e: fedora).
         prop_path (str): Path to the raw.properties.json.
     """
-
-    def __init__(self,
-                 app='',
-                 trigger_job='',
-                 prop_path='',
-                 base=''):
-        self.log = logging.getLogger(__name__)
-
-        self.header = {'content-type': 'application/json'}
-        self.here = os.path.dirname(os.path.realpath(__file__))
-        self.base = base
-        self.trigger_job = trigger_job
-        self.generated = get_details(app=app)
-        self.app_name = self.generated.app_name()
-        self.group_name = self.generated.project
-        self.settings = get_properties(prop_path)
-        self.environments = self.settings['pipeline']['env']
-
-    def post_pipeline(self, pipeline):
-        """Send Pipeline JSON to Spinnaker.
-
-        Args:
-            pipeline (json): json of the pipeline to be created in Spinnaker
-        """
-        url = "{0}/pipelines".format(API_URL)
-
-        if isinstance(pipeline, str):
-            pipeline_json = pipeline
-        else:
-            pipeline_json = json.dumps(pipeline)
-
-        self.log.debug('Pipeline JSON:\n%s', pipeline_json)
-
-        pipeline_response = requests.post(url,
-                                          data=pipeline_json,
-                                          headers=self.header)
-
-        self.log.debug('Pipeline creation response:\n%s',
-                       pipeline_response.text)
-
-        if not pipeline_response.ok:
-            raise SpinnakerPipelineCreationFailed(
-                'Failed to create pipeline for {0}: {1}'.format(
-                    self.app_name, pipeline_response.json()))
-
-        self.log.info('Successfully created "%s" pipeline',
-                      json.loads(pipeline_json)['name'])
 
     def render_wrapper(self, region='us-east-1'):
         """Generate the base Pipeline wrapper.
@@ -131,40 +85,6 @@ class SpinnakerPipelineLambda:
             data=data)
 
         return json.loads(wrapper)
-
-    def get_existing_pipelines(self):
-        """Get existing pipeline configs for specific application.
-
-        Returns:
-            str: Pipeline config json
-        """
-        url = "{0}/applications/{1}/pipelineConfigs".format(API_URL, self.app_name)
-        resp = requests.get(url)
-        assert resp.ok, 'Failed to lookup pipelines for {0}: {1}'.format(
-            self.app_name, resp.text)
-
-        return resp.json()
-
-    def compare_with_existing(self, region='us-east-1'):
-        """Compare desired pipeline with existing pipelines.
-
-        Args:
-            region (str): Region of desired pipeline.
-
-        Returns:
-            str: pipeline_id if existing, empty string of not.
-        """
-        pipelines = self.get_existing_pipelines()
-        pipeline_id = ''
-        for pipeline in pipelines:
-            if (pipeline['application'] == self.app_name) and (region in pipeline['name']):
-                self.log.info('Existing pipeline found - %s', pipeline['name'])
-                pipeline_id = pipeline['id']
-                break
-        else:
-            self.log.info('No existing pipeline found')
-
-        return pipeline_id
 
     def create_pipeline(self):
         """Main wrapper for pipeline creation.
