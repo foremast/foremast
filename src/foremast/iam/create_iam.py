@@ -47,7 +47,8 @@ def create_iam_resources(env='dev', app='', **_):
 
     LOG.debug('Application details: %s', details)
 
-    role_policy_template = get_template('infrastructure/iam_role_policy.json.j2')
+    deployment_type = app_properties['type']
+    role_policy_template = get_template('infrastructure/iam/{0}_role_policy.json.j2'.format(deployment_type))
 
     resource_action(
         client,
