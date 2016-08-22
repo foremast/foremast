@@ -31,7 +31,6 @@ import logging
 import os
 
 import gogoutils
-
 from foremast import (app, autoscaling_policy, configs, consts, dns, elb, iam,
                       pipeline, s3, securitygroup, slacknotify, utils)
 
@@ -101,7 +100,7 @@ class ForemastRunner(object):
 
         if not onetime:
             spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
-        if self.configs['pipeline']['type'] == 'lambda':
+        elif self.configs['pipeline']['type'] == 'lambda':
             spinnakerpipeline=pipeline.SpinnakerPipelineLambda(**kwargs)
         else:
             spinnakerpipeline = pipeline.SpinnakerPipelineOnetime(
