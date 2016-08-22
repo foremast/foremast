@@ -43,7 +43,7 @@ def create_cloudwatch_event(app_name, env, region, rules):
 
     targets = []
     # TODO: read this one from file event-config-*.json
-    json_payload = {}
+    json_payload = "{}"
 
     target = {
         "Id": app_name,
