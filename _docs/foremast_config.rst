@@ -85,7 +85,6 @@ Path to custome templates directory. If provided, Foremast will first look in th
 
 ``default_ec2_securitygroups``
 ******************************
-
 Comma seperated list of EC2 security groups to include for all deployments
 
     | *Required*: No
@@ -93,7 +92,6 @@ Comma seperated list of EC2 security groups to include for all deployments
 
 ``default_elb_securitygroups``
 ******************************
-
 Comma seperated list of ELB security groups to include for all deployments
 
     | *Required*: No
@@ -166,7 +164,6 @@ A string of the format of your application
 
 ``dns_elb``
 ***********
-
 An FQDN of your application's Elastic Load Balancer (ELB)
 
     | *Default*: {repo}.{project}.{env}.{domain}
@@ -174,7 +171,6 @@ An FQDN of your application's Elastic Load Balancer (ELB)
 
 ``s3_bucket``
 *************
-
 An string of your base S3 bucket name
 
     | *Default*: archaius-{env}
@@ -182,7 +178,6 @@ An string of your base S3 bucket name
 
 ``jenkins_job_name``
 ********************
-
 An string of the format of the application's jenkins job name
 
     | *Default*: {project}_{repo}

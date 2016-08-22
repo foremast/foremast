@@ -17,6 +17,18 @@ Example Configuration
 Configuration Details
 ----------------------
 
+
+``type``
+~~~~~~~~
+
+Specifies what type of pipeline to use for the application. 
+
+    | *Default*: ``"ec2"``
+    | *Options*:
+
+        - ``"lambda"`` - Sets up the AWS Lambda pipeline and infrastructure
+        - ``"ec2"`` - Sets up the AWS EC2 pipeline and infrastructure
+
 ``owner_email``
 ~~~~~~~~~~~~~~~
 
