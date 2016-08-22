@@ -93,9 +93,12 @@ class ForemastRunner(object):
         }
 
         if not onetime:
-            spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
-        elif self.configs['pipeline']['type'] == 'lambda':
-            spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
+            if self.configs['pipeline']['type'] == 'ec2':
+                spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
+            elif self.configs['pipeline']['type'] == 'lambda':
+                spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
+            else:
+                raise NotImplementedError("Pipeline type is not implemented.")
         else:
             spinnakerpipeline = pipeline.SpinnakerPipelineOnetime(onetime=onetime, **kwargs)
 
