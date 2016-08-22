@@ -24,7 +24,7 @@ import logging
 from ..args import add_app, add_debug, add_properties
 from ..consts import ENVS, LOGGING_FORMAT
 from .create_pipeline import SpinnakerPipeline
-from .create_pipeline_lambda import SpinnakerLambdaPipeline
+from .create_pipeline_lambda import SpinnakerPipelineLambda
 from .create_pipeline_onetime import SpinnakerPipelineOnetime
 
 
@@ -79,7 +79,7 @@ def main():
                                               base=args.base)
             spinnakerapps.create_pipeline()
         elif args.type == "lambda":
-            spinnakerapps = SpinnakerLambdaPipeline(app=args.app,
+            spinnakerapps = SpinnakerPipelineLambda(app=args.app,
                                                     trigger_job=args.triggerjob,
                                                     prop_path=args.properties,
                                                     base=args.base)
