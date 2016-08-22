@@ -31,8 +31,9 @@ import logging
 import os
 
 import gogoutils
-from foremast import (app, autoscaling_policy, configs, consts, dns, elb, iam,
-                      pipeline, s3, securitygroup, slacknotify, utils)
+from foremast import (app, autoscaling_policy, awslambda, configs, consts, dns,
+                      elb, iam, pipeline, s3, securitygroup, slacknotify,
+                      utils)
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(format=consts.LOGGING_FORMAT)
@@ -127,6 +128,22 @@ class ForemastRunner(object):
                                                      prop_path=self.json_path)
         sgobj.create_security_group()
 
+    def create_awslambda(self):
+        """Create security groups as defined in the configs."""
+        utils.banner("Creating Lambda Function")
+        awslambdaobj = awslambda.LambdaFunction(app=self.app,
+                                                 env=self.env,
+                                                 region=self.region,
+                                                 prop_path=self.json_path)
+        awslambdaobj.create_lambda_function()
+
+        utils.banner("Creating Lambda Event")
+        lambdaeventobj = awslambda.LambdaEvent(app=self.app,
+                                                 env=self.env,
+                                                 region=self.region,
+                                                 prop_path=self.json_path)
+        lambdaeventobj.create_lambda_events()
+
     def create_elb(self):
         """Create the ELB for the defined environment."""
         utils.banner("Creating ELB")
@@ -182,11 +199,15 @@ def prepare_infrastructure():
     runner.create_iam()
     runner.create_s3()
     runner.create_secgroups()
+    runner.create_awslambda()
 
     eureka = runner.configs[runner.env]['app']['eureka_enabled']
+    deploy_type = runner.configs['pipeline']['type']
 
     if eureka:
         LOG.info("Eureka Enabled, skipping ELB and DNS setup")
+    if deploy_type == "lambda":
+        LOG.info("Lambda Enabled, skipping ELB and DNS setup")
     else:
         LOG.info("No Eureka, running ELB and DNS setup")
         runner.create_elb()
