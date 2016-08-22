@@ -169,7 +169,7 @@ def test_elb_make_elb_json(mock_get_properties, mock_get_subnets, mock_format_li
     assert not elb_json['job'][0]['isInternal']
 
 
-@mock.patch('foremast.dns.create_dns.boto3.session.Session')
+@mock.patch('foremast.elb.create_elb.boto3.session.Session')
 @mock.patch('foremast.elb.create_elb.get_properties')
 def test_elb_add_listener_policy(mock_get_properties, mock_boto3_session):
 
