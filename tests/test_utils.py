@@ -248,6 +248,8 @@ SUBNET_DATA = [
     {
         'vpcId': 100,
         'account': 'dev',
+        'id': 1,
+        'purpose': 'internal',
         'region': 'us-east-1',
         'target': 'ec2',
         'availabilityZone': []
@@ -255,6 +257,8 @@ SUBNET_DATA = [
     {
         'vpcId': 101,
         'account': 'dev',
+        'id': 2,
+        'purpose': 'other',
         'region': 'us-west-2',
         'target': 'ec2',
         'availabilityZone': ['us-west-2a', 'us-west-2b']
@@ -269,7 +273,12 @@ def test_utils_subnets_get_subnets(mock_requests_get):
 
     # default - happy path
     result = get_subnets(env='dev', region='us-east-1')
-    assert result == {'us-east-1': [[]]}
+    assert result == {
+        'subnet_ids': {
+            'us-east-1': [SUBNET_DATA[0]['id']],
+        },
+        'us-east-1': [[]],
+    }
 
 
 @mock.patch('foremast.utils.subnets.requests.get')
