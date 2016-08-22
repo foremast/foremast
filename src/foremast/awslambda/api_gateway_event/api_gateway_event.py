@@ -6,8 +6,7 @@ import botocore
 from tryagain import retries
 
 from foremast.exceptions import InvalidEventConfiguration
-from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids,
-                            update_dns_zone_record, get_properties)
+from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids, update_dns_zone_record, get_properties)
 
 LOG = logging.getLogger(__name__)
 
@@ -87,20 +86,14 @@ class APIGateway:
 
     def add_lambda_permission(self):
         """Add permission to Lambda for the API Trigger."""
-        lambda_arn = self.generate_uris()['lambda_arn']
         response_action = None
-        statement_id = 'add_permission_for_{}'.format(
-            self.trigger_settings['api_name'],
-        )
-        try:
-            self.lambda_client.add_permission(FunctionName=self.app_name,
-                                              StatementId=statement_id,
-                                              Action='lambda:InvokeFunction',
-                                              Principal='apigateway.amazonaws.com',
-                                              SourceArn=lambda_arn)
-            response_action = 'Add permission with Sid: {}'.format(statement_id)
-        except botocore.exceptions.ClientError:
-            response_action = 'Did not add any permissions.'
+        statement_id = 'add_permission_for_{}'.format(self.trigger_settings['api_name'], )
+        self.lambda_client.remove_permission(FunctionName=self.app_name, StatementId=statement_id)
+        self.lambda_client.add_permission(FunctionName=self.app_name,
+                                          StatementId=statement_id,
+                                          Action='lambda:*',
+                                          Principal='apigateway.amazonaws.com')
+        response_action = 'Add permission with Sid: {}'.format(statement_id)
 
         self.log.debug('Related StatementId (SID): %s', statement_id)
         self.log.info(response_action)
@@ -153,8 +146,7 @@ class APIGateway:
                 domainName=domain,
                 basePath=self._format_base_path(self.trigger_settings['api_name']),
                 restApiId=self.api_id,
-                stage=self.env,
-            )
+                stage=self.env, )
             response_action = 'API mapping added.'
         except botocore.exceptions.ClientError as error:
             error_code = error.response['Error']['Code']
@@ -170,8 +162,8 @@ class APIGateway:
     def generate_uris(self):
         """Generate several lambda uris"""
         lambda_arn = "arn:aws:execute-api:{0}:{1}:{2}/*/{3}/{4}".format(self.region, self.account_id, self.api_id,
-                                                                 self.trigger_settings['method'],
-                                                                 self.trigger_settings['resource'])
+                                                                        self.trigger_settings['method'],
+                                                                        self.trigger_settings['resource'])
 
         lambda_uri = ("arn:aws:apigateway:{0}:lambda:path/{1}/functions/"
                       "arn:aws:lambda:{0}:{2}:function:{3}/invocations").format(self.region, self.api_version,
@@ -179,10 +171,7 @@ class APIGateway:
 
         api_dns = "https://{0}.execute-api.{1}.amazonaws.com/{2}".format(self.api_id, self.region, self.env)
 
-        uri_dict = { 'lambda_arn': lambda_arn,
-                     'lambda_uri': lambda_uri,
-                     'api_dns': api_dns
-                   }
+        uri_dict = {'lambda_arn': lambda_arn, 'lambda_uri': lambda_uri, 'api_dns': api_dns}
         return uri_dict
 
     def create_api(self):
@@ -199,7 +188,8 @@ class APIGateway:
         """
         created_resource = self.client.create_resource(restApiId=self.api_id,
                                                        parentId=parent_id,
-                                                       pathPart=self.trigger_settings.get('resource', default='/'))
+                                                       pathPart=self.trigger_settings.get('resource',
+                                                                                          default='/'))
         self.resource_id = created_resource['id']
         self.log.info("Successfully created resource")
 
@@ -213,9 +203,9 @@ class APIGateway:
                                    apiKeyRequired=False, )
             self.log.info("Successfully attached method")
             self.client.put_method_response(restApiId=self.api_id,
-                                             resourceId=self.resource_id,
-                                             httpMethod=self.trigger_settings['method'],
-                                             statusCode='200')
+                                            resourceId=self.resource_id,
+                                            httpMethod=self.trigger_settings['method'],
+                                            statusCode='200')
 
         except botocore.exceptions.ClientError:
             self.log.info("Method already exists")
@@ -229,6 +219,7 @@ class APIGateway:
         self.create_api_deployment()
         self.create_api_key()
         self.update_api_mappings()
+
 
 if __name__ == "__main__":
     gateway = APIGateway(app='dougtest', env='sandbox', region='us-east-1')
