@@ -58,6 +58,22 @@ The size/type of the EC2 instance. Uses Standard AWS instance names. See https:/
 
     | *Default*: ``"t2.micro"``
 
+``lambda_memory``
+*****************
+
+The amount of memory to give a Lambda function
+
+    | *Default*: ``"128"``
+    | *Units*: Megabytes
+
+``lambda_timeout``
+******************
+
+The timeout setting for Lambda function
+
+    | *Default*: ``"3600"``
+    | *Units*: Seconds
+
 ``asg`` Block
 ~~~~~~~~~~~~~
 

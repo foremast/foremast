@@ -1,5 +1,5 @@
 ================================
-ami-xxxx.json
+ami-lookup.json
 ================================
 
 .. contents::
@@ -38,6 +38,6 @@ Example Json
 
 Json Location
 ------------------------
-Foremast will look for this information at ``ami_json_url`` defined in :doc:`foremast_config`. For example, you can host the file in an S3 bucket named ``ami-xxxx.json`` and then set ``ami_json_url = http://s3bucketurl.com/ami-xxxx.json``.
+Foremast will look for this information at ``ami_json_url`` defined in :doc:`foremast_config`. For example, you can host the file named ``ami-lookup.json`` in an S3 bucket and then set ``ami_json_url = http://s3bucketurl.com/ami-lookup.json``.
 
 You can host this file anywhere as long as an HTTP GET will return the JSON and a 2XX.
