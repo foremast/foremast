@@ -37,32 +37,42 @@ class APIGateway:
         self.lambda_client = session.client('lambda')
         self.api_version = self.lambda_client.meta.service_model.api_version
 
+        self.api_id  = self.find_api_id()
+        self.resource_id = self.find_resource_id()
+
     def find_api_id(self):
         """Given API name, find API ID."""
         allapis = self.client.get_rest_apis()
         api_name = self.trigger_settings['api_name']
+        api_id = None
         for api in allapis['items']:
             if api['name'] == api_name:
-                self.api_id = api['id']
+                api_id = api['id']
                 self.log.info("Found API for: %s", api_name)
                 break
         else:
-            self.create_api()
+            api_id = self.create_api()
+
+        return api_id
 
     def find_resource_id(self):
         """Given a resource path and API Id, find resource Id."""
         all_resources = self.client.get_resources(restApiId=self.api_id)
+        parent_id = None
+        resournce_id = None
         for resource in all_resources['items']:
             if resource['path'] == "/":
                 parent_id = resource['id']
             if resource['path'] == self.trigger_settings['resource']:
-                self.resource_id = resource['id']
+                resource_id = resource['id']
                 self.log.info("Found Resource ID for: %s", resource['path'])
-                self.attach_method()
+                self.attach_method(resource_id)
                 break
         else:
-            self.create_resource(parent_id=parent_id)
-            self.attach_method()
+            resource_id = self.create_resource(parent_id=parent_id)
+            self.attach_method(resource_id)
+
+        return resource_id
 
     def add_lambda_integration(self):
         """Attach lambda found to API."""
@@ -88,12 +98,14 @@ class APIGateway:
         """Add permission to Lambda for the API Trigger."""
         response_action = None
         statement_id = 'add_permission_for_{}'.format(self.trigger_settings['api_name'], )
-        self.lambda_client.remove_permission(FunctionName=self.app_name, StatementId=statement_id)
-        self.lambda_client.add_permission(FunctionName=self.app_name,
-                                          StatementId=statement_id,
-                                          Action='lambda:*',
-                                          Principal='apigateway.amazonaws.com')
-        response_action = 'Add permission with Sid: {}'.format(statement_id)
+        try:
+            self.lambda_client.add_permission(FunctionName=self.app_name,
+                                              StatementId=statement_id,
+                                              Action='lambda:InvokeFunction',
+                                              Principal='apigateway.amazonaws.com')
+            response_action = 'Add permission with Sid: {}'.format(statement_id)
+        except botocore.exceptions.ClientError:
+            response_action = "Did not add permissions"
 
         self.log.debug('Related StatementId (SID): %s', statement_id)
         self.log.info(response_action)
@@ -177,10 +189,11 @@ class APIGateway:
     def create_api(self):
         """Create the REST API."""
         created_api = self.client.create_rest_api(name=self.trigger_settings.get('api_name', self.app_name))
-        self.api_id = created_api['id']
+        api_id = created_api['id']
         self.log.info("Successfully created API")
+        return api_id
 
-    def create_resource(self, parent_id=None):
+    def create_resource(self, parent_id=""):
         """Create the specified resource.
 
         Args:
@@ -189,31 +202,31 @@ class APIGateway:
         created_resource = self.client.create_resource(restApiId=self.api_id,
                                                        parentId=parent_id,
                                                        pathPart=self.trigger_settings.get('resource',
-                                                                                          default='/'))
-        self.resource_id = created_resource['id']
+                                                                      '/'))
+        resource_id = created_resource['id']
         self.log.info("Successfully created resource")
+        return resource_id
 
-    def attach_method(self):
+    def attach_method(self, resource_id):
         """Attach the defined method"""
         try:
-            self.client.put_method(restApiId=self.api_id,
-                                   resourceId=self.resource_id,
+            method_r = self.client.put_method(restApiId=self.api_id,
+                                   resourceId=resource_id,
                                    httpMethod=self.trigger_settings['method'],
                                    authorizationType="NONE",
                                    apiKeyRequired=False, )
-            self.log.info("Successfully attached method")
-            self.client.put_method_response(restApiId=self.api_id,
-                                            resourceId=self.resource_id,
+            resp_r = self.client.put_method_response(restApiId=self.api_id,
+                                            resourceId=resource_id,
                                             httpMethod=self.trigger_settings['method'],
                                             statusCode='200')
 
+            self.log.info("Successfully attached method: %s", self.trigger_settings['method'])
         except botocore.exceptions.ClientError:
-            self.log.info("Method already exists")
+            self.log.info("Method %s already exists", self.trigger_settings['method'])
+
 
     def setup_lambda_api(self):
         """A wrapper for all the steps needed to setup the integration."""
-        self.find_api_id()
-        self.find_resource_id()
         self.add_lambda_integration()
         self.add_lambda_permission()
         self.create_api_deployment()
