@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Create IAM Instance Profiles, Roles, Users, and Groups."""
 import collections
 import logging
@@ -41,9 +40,7 @@ def create_iam_resources(env='dev', app='', **_):
     client = session.client('iam')
 
     generated = get_details(env=env, app=app)
-    app_details = collections.namedtuple('AppDetails',
-                                         ['group', 'policy', 'profile', 'role',
-                                          'user'])
+    app_details = collections.namedtuple('AppDetails', ['group', 'policy', 'profile', 'role', 'user'])
     details = app_details(**generated.iam())
 
     LOG.debug('Application details: %s', details)
@@ -59,31 +56,21 @@ def create_iam_resources(env='dev', app='', **_):
         action='create_instance_profile',
         log_format='Created Instance Profile: %(InstanceProfileName)s',
         InstanceProfileName=details.profile)
-    attach_profile_to_role(client,
-                           role_name=details.role,
-                           profile_name=details.profile)
+    attach_profile_to_role(client, role_name=details.role, profile_name=details.profile)
 
     iam_policy = construct_policy(
-        app=app,
-        group=details.group,
-        env=env,
-        pipeline_settings=get_properties(env='pipeline'))
+        app=app, group=details.group, env=env, pipeline_settings=get_properties(env='pipeline'))
     if iam_policy:
-        resource_action(client,
-                        action='put_role_policy',
-                        log_format='Added IAM Policy: %(PolicyName)s',
-                        RoleName=details.role,
-                        PolicyName=details.policy,
-                        PolicyDocument=iam_policy)
+        resource_action(
+            client,
+            action='put_role_policy',
+            log_format='Added IAM Policy: %(PolicyName)s',
+            RoleName=details.role,
+            PolicyName=details.policy,
+            PolicyDocument=iam_policy)
 
-    resource_action(client,
-                    action='create_user',
-                    log_format='Created User: %(UserName)s',
-                    UserName=details.user)
-    resource_action(client,
-                    action='create_group',
-                    log_format='Created Group: %(GroupName)s',
-                    GroupName=details.group)
+    resource_action(client, action='create_user', log_format='Created User: %(UserName)s', UserName=details.user)
+    resource_action(client, action='create_group', log_format='Created Group: %(GroupName)s', GroupName=details.group)
     resource_action(
         client,
         action='add_user_to_group',
@@ -94,9 +81,7 @@ def create_iam_resources(env='dev', app='', **_):
     return True
 
 
-def attach_profile_to_role(client,
-                           role_name='forrest_unicorn_role',
-                           profile_name='forrest_unicorn_profile'):
+def attach_profile_to_role(client, role_name='forrest_unicorn_role', profile_name='forrest_unicorn_profile'):
     """Attach an IAM Instance Profile _profile_name_ to Role _role_name_.
 
     Args:
@@ -114,8 +99,7 @@ def attach_profile_to_role(client,
 
     for profile in current_instance_profiles:
         if profile['InstanceProfileName'] == profile_name:
-            LOG.info('Found Instance Profile attached to Role: %s -> %s',
-                     profile_name, role_name)
+            LOG.info('Found Instance Profile attached to Role: %s -> %s', profile_name, role_name)
             break
     else:
         for remove_profile in current_instance_profiles:
@@ -127,11 +111,12 @@ def attach_profile_to_role(client,
                 InstanceProfileName=remove_profile['InstanceProfileName'],
                 RoleName=role_name)
 
-        resource_action(client,
-                        action='add_role_to_instance_profile',
-                        log_format='Added Instance Profile to Role: '
-                        '%(InstanceProfileName)s -> %(RoleName)s',
-                        InstanceProfileName=profile_name,
-                        RoleName=role_name)
+        resource_action(
+            client,
+            action='add_role_to_instance_profile',
+            log_format='Added Instance Profile to Role: '
+            '%(InstanceProfileName)s -> %(RoleName)s',
+            InstanceProfileName=profile_name,
+            RoleName=role_name)
 
     return True
