@@ -84,3 +84,18 @@ def test_ec2_iam_policy():
     assert only_statement['Action'] == 'sts:AssumeRole'
     assert only_statement['Effect'] == 'Allow'
     assert only_statement['Principal']['Service'] == 'ec2.amazonaws.com'
+
+
+def test_lambda_iam_policy():
+    """Check Lambda Trust Relationship template format."""
+    lambda_json = get_template(LAMBDA_TEMPLATE_NAME)
+    lambda_dict = json.loads(lambda_json)
+
+    assert all(key in lambda_dict for key in ('Version', 'Statement'))
+    assert len(lambda_dict['Statement']) == 1
+
+    only_statement = lambda_dict['Statement'][0]
+
+    assert only_statement['Action'] == 'sts:AssumeRole'
+    assert only_statement['Effect'] == 'Allow'
+    assert only_statement['Principal']['Service'] == 'lambda.amazonaws.com'
