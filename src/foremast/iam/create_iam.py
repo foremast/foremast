@@ -39,18 +39,23 @@ def create_iam_resources(env='dev', app='', **_):
     session = boto3.session.Session(profile_name=env)
     client = session.client('iam')
 
+    app_properties = get_properties(env='pipeline')
+
     generated = get_details(env=env, app=app)
     app_details = collections.namedtuple('AppDetails', ['group', 'policy', 'profile', 'role', 'user'])
     details = app_details(**generated.iam())
 
     LOG.debug('Application details: %s', details)
 
+    deployment_type = app_properties['type']
+    role_trust_template = get_template('infrastructure/iam/trust/{0}_role.json.j2'.format(deployment_type))
+
     resource_action(
         client,
         action='create_role',
         log_format='Created Role: %(RoleName)s',
         RoleName=details.role,
-        AssumeRolePolicyDocument=get_template('infrastructure/iam_role_policy.json.j2'))
+        AssumeRolePolicyDocument=role_trust_template)
     resource_action(
         client,
         action='create_instance_profile',
@@ -58,8 +63,7 @@ def create_iam_resources(env='dev', app='', **_):
         InstanceProfileName=details.profile)
     attach_profile_to_role(client, role_name=details.role, profile_name=details.profile)
 
-    iam_policy = construct_policy(
-        app=app, group=details.group, env=env, pipeline_settings=get_properties(env='pipeline'))
+    iam_policy = construct_policy(app=app, group=details.group, env=env, pipeline_settings=app_properties)
     if iam_policy:
         resource_action(
             client,
