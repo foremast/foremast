@@ -333,3 +333,11 @@ Defines DNS TTL for generated DNS records
     | *Type*: int
     | *Units*: seconds
     | *Default*: ``60``
+
+``lambda_triggers``
+~~~~~~~~~~~~~~~~~~~
+
+A list of all events to trigger a Lambda function. See :doc:`lambda_events` for details
+
+    | *Type*: List
+    | *Default*: ``[]``

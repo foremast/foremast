@@ -17,6 +17,7 @@ Contents
    configuration_files
    infra_assumptions
    pipeline_examples
+   aws_lambda
    modules
    RELEASING
 
