@@ -20,8 +20,8 @@ from unittest import mock
 from foremast.iam.create_iam import create_iam_resources
 from foremast.utils import get_template
 
-EC2_TEMPLATE_NAME = 'infrastructure/iam/ec2_role_policy.json.j2'
-LAMBDA_TEMPLATE_NAME = 'infrastructure/iam/lambda_role_policy.json.j2'
+EC2_TEMPLATE_NAME = 'infrastructure/iam/trust/ec2_role.json.j2'
+LAMBDA_TEMPLATE_NAME = 'infrastructure/iam/trust/lambda_role.json.j2'
 
 
 @mock.patch('foremast.iam.create_iam.attach_profile_to_role')

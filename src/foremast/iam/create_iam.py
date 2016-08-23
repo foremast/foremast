@@ -48,14 +48,14 @@ def create_iam_resources(env='dev', app='', **_):
     LOG.debug('Application details: %s', details)
 
     deployment_type = app_properties['type']
-    role_policy_template = get_template('infrastructure/iam/{0}_role_policy.json.j2'.format(deployment_type))
+    role_trust_template = get_template('infrastructure/iam/trust/{0}_role.json.j2'.format(deployment_type))
 
     resource_action(
         client,
         action='create_role',
         log_format='Created Role: %(RoleName)s',
         RoleName=details.role,
-        AssumeRolePolicyDocument=role_policy_template)
+        AssumeRolePolicyDocument=role_trust_template)
     resource_action(
         client,
         action='create_instance_profile',
