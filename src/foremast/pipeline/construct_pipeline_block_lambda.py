@@ -86,7 +86,8 @@ def construct_pipeline_block_lambda(env='',
         'encoded_user_data': user_data,
         'instance_security_groups': json.dumps(instance_security_groups),
         'promote_restrict': pipeline_data['promote_restrict'],
-        'owner_email': pipeline_data['owner_email']
+        'owner_email': pipeline_data['owner_email'],
+        'function_name': pipeline_data['lambda']['handler']
     })
 
     LOG.debug('Block data:\n%s', pformat(data))
