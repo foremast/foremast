@@ -2,7 +2,7 @@ import logging
 
 import boto3
 
-from ..utils.get_lambda_arn import get_lambda_arn
+from ..utils.awslambda import get_lambda_arn
 
 LOG = logging.getLogger(__name__)
 

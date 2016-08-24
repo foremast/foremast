@@ -32,3 +32,23 @@ def get_lambda_arn(app, account, region):
         raise LambdaFunctionDoesNotExist('Lambda function with name {0} not found in {1} {2}'.format(app,
                                                                                                      account,
                                                                                                      region))
+
+def add_lambda_permissions(function='', statement_id='', action='lambda:InvokeFunction', principal='',
+        source_arn=None, env='', region='us-east-1'):
+    """Add permission to Lambda for the event trigger."""
+    session = boto3.Session(profile_name=env, region_name=region)
+    lambda_client = session.client('lambda')
+    response_action = None
+    statement_id = '{}_{}'.format(function, principal)
+    try:
+        lambda_client.add_permission(FunctionName=function,
+                                          StatementId=statement_id,
+                                          Action=action,
+                                          Principal=principal,
+                                          SourceArn=source_arn)
+        response_action = 'Add permission with Sid: {}'.format(statement_id)
+    except botocore.exceptions.ClientError:
+        response_action = "Did not add permissions"
+
+    self.log.debug('Related StatementId (SID): %s', statement_id)
+    self.log.info(response_action)

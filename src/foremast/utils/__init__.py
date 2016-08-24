@@ -35,7 +35,7 @@ from .tasks import *
 from .templates import *
 from .warn_user import *
 from .get_cloudwatch_event_rule import get_cloudwatch_event_rule
-from .get_lambda_arn import get_lambda_arn
+from .awslambda import *
 from .get_sns_subscriptions import get_sns_subscriptions
 from .get_sns_topic_arn import get_sns_topic_arn
 from .roles import *

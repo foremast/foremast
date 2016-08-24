@@ -52,6 +52,7 @@ def create_s3_event(app_name, env, region, rules):
     }
 
     config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
+    print(config)
 
     s3_client.put_bucket_notification_configuration(Bucket=bucket,
                                                     NotificationConfiguration=json.loads(config))
