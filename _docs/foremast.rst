@@ -8,11 +8,11 @@ Subpackages
 
     foremast.app
     foremast.autoscaling_policy
+    foremast.awslambda
     foremast.configs
     foremast.dns
     foremast.elb
     foremast.iam
-    foremast.jira_validator
     foremast.pipeline
     foremast.s3
     foremast.securitygroup

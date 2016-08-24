@@ -4,18 +4,26 @@ foremast.utils package
 Submodules
 ----------
 
-foremast.utils.banner module
-----------------------------
+foremast.utils.apps module
+--------------------------
 
-.. automodule:: foremast.utils.banner
+.. automodule:: foremast.utils.apps
     :members:
     :undoc-members:
     :show-inheritance:
 
-foremast.utils.check_managed_pipeline module
---------------------------------------------
+foremast.utils.banners module
+-----------------------------
 
-.. automodule:: foremast.utils.check_managed_pipeline
+.. automodule:: foremast.utils.banners
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.credentials module
+---------------------------------
+
+.. automodule:: foremast.utils.credentials
     :members:
     :undoc-members:
     :show-inheritance:
@@ -28,10 +36,26 @@ foremast.utils.deep_chain_map module
     :undoc-members:
     :show-inheritance:
 
-foremast.utils.find_elb module
+foremast.utils.dns module
+-------------------------
+
+.. automodule:: foremast.utils.dns
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.elb module
+-------------------------
+
+.. automodule:: foremast.utils.elb
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.encoding module
 ------------------------------
 
-.. automodule:: foremast.utils.find_elb
+.. automodule:: foremast.utils.encoding
     :members:
     :undoc-members:
     :show-inheritance:
@@ -44,14 +68,6 @@ foremast.utils.gate module
     :undoc-members:
     :show-inheritance:
 
-foremast.utils.generate_encoded_user_data module
-------------------------------------------------
-
-.. automodule:: foremast.utils.generate_encoded_user_data
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 foremast.utils.generate_filename module
 ---------------------------------------
 
@@ -60,82 +76,34 @@ foremast.utils.generate_filename module
     :undoc-members:
     :show-inheritance:
 
-foremast.utils.get_all_apps module
-----------------------------------
+foremast.utils.get_cloudwatch_event_rule module
+-----------------------------------------------
 
-.. automodule:: foremast.utils.get_all_apps
+.. automodule:: foremast.utils.get_cloudwatch_event_rule
     :members:
     :undoc-members:
     :show-inheritance:
 
-foremast.utils.get_all_pipelines module
----------------------------------------
-
-.. automodule:: foremast.utils.get_all_pipelines
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-foremast.utils.get_app_details module
--------------------------------------
-
-.. automodule:: foremast.utils.get_app_details
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-foremast.utils.get_dns_zone_ids module
---------------------------------------
-
-.. automodule:: foremast.utils.get_dns_zone_ids
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-foremast.utils.get_env_credential module
-----------------------------------------
-
-.. automodule:: foremast.utils.get_env_credential
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-foremast.utils.get_pipeline_id module
--------------------------------------
-
-.. automodule:: foremast.utils.get_pipeline_id
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-foremast.utils.get_properties module
+foremast.utils.get_lambda_arn module
 ------------------------------------
 
-.. automodule:: foremast.utils.get_properties
+.. automodule:: foremast.utils.get_lambda_arn
     :members:
     :undoc-members:
     :show-inheritance:
 
-foremast.utils.get_security_group_id module
+foremast.utils.get_sns_subscriptions module
 -------------------------------------------
 
-.. automodule:: foremast.utils.get_security_group_id
+.. automodule:: foremast.utils.get_sns_subscriptions
     :members:
     :undoc-members:
     :show-inheritance:
 
-foremast.utils.get_subnets module
----------------------------------
+foremast.utils.get_sns_topic_arn module
+---------------------------------------
 
-.. automodule:: foremast.utils.get_subnets
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-foremast.utils.get_vpc_id module
---------------------------------
-
-.. automodule:: foremast.utils.get_vpc_id
+.. automodule:: foremast.utils.get_sns_topic_arn
     :members:
     :undoc-members:
     :show-inheritance:
@@ -148,10 +116,50 @@ foremast.utils.lookups module
     :undoc-members:
     :show-inheritance:
 
-foremast.utils.post_slack_message module
-----------------------------------------
+foremast.utils.pipelines module
+-------------------------------
 
-.. automodule:: foremast.utils.post_slack_message
+.. automodule:: foremast.utils.pipelines
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.properties module
+--------------------------------
+
+.. automodule:: foremast.utils.properties
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.roles module
+---------------------------
+
+.. automodule:: foremast.utils.roles
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.security_group module
+------------------------------------
+
+.. automodule:: foremast.utils.security_group
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.slack module
+---------------------------
+
+.. automodule:: foremast.utils.slack
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.subnets module
+-----------------------------
+
+.. automodule:: foremast.utils.subnets
     :members:
     :undoc-members:
     :show-inheritance:
@@ -168,6 +176,14 @@ foremast.utils.templates module
 -------------------------------
 
 .. automodule:: foremast.utils.templates
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.utils.vpc module
+-------------------------
+
+.. automodule:: foremast.utils.vpc
     :members:
     :undoc-members:
     :show-inheritance:
