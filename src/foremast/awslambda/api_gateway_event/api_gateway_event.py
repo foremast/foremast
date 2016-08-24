@@ -59,7 +59,7 @@ class APIGateway:
         """Given a resource path and API Id, find resource Id."""
         all_resources = self.client.get_resources(restApiId=self.api_id)
         parent_id = None
-        resournce_id = None
+        resource_id = None
         for resource in all_resources['items']:
             if resource['path'] == "/":
                 parent_id = resource['id']
