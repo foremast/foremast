@@ -116,13 +116,14 @@ class LambdaFunction(object):
     def create_function(self, vpc_config):
         """Create lambda function, configures lambda parameters.
 
+        We need to upload non-zero zip when creating function. Uploading
+        hello_world python lambda function since AWS doesn't care which
+        executable is in ZIP.
+
         Args:
             vpc_config (dict): Dictionary of SubnetIds and SecurityGroupsIds for using
                                a VPC in lambda
         """
-        # We need to upload non-zero zip when creating function
-        # uploading hello_world python lambda function since AWS
-        # doesn't care which executable is in ZIP
         zip_file = 'lambda-holder.zip'
         with zipfile.ZipFile(zip_file, mode='w') as z:
             z.writestr('index.py', 'print "Hello world"')
