@@ -142,7 +142,7 @@ class APIGateway:
             self.log.info("Successfully created API Key %s. Look in the AWS console for the key", self.app_name)
 
     def _format_base_path(self, api_name):
-        """Format the base path name"""
+        """Format the base path name."""
         name = self.app_name
         if self.app_name != api_name:
             name = '{0}-{1}'.format(self.app_name, api_name)
@@ -172,7 +172,7 @@ class APIGateway:
         return response_provider
 
     def generate_uris(self):
-        """Generate several lambda uris"""
+        """Generate several lambda uris."""
         lambda_arn = "arn:aws:execute-api:{0}:{1}:{2}/*/{3}/{4}".format(self.region, self.account_id, self.api_id,
                                                                         self.trigger_settings['method'],
                                                                         self.trigger_settings['resource'])
@@ -208,7 +208,7 @@ class APIGateway:
         return resource_id
 
     def attach_method(self, resource_id):
-        """Attach the defined method"""
+        """Attach the defined method."""
         try:
             method_r = self.client.put_method(restApiId=self.api_id,
                                    resourceId=resource_id,
