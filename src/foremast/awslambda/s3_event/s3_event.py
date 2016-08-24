@@ -47,7 +47,6 @@ def create_s3_event(app_name, env, region, rules):
     template_kwargs = {"lambda_arn": lambda_arn, "events": json.dumps(events), "filters": json_filters}
 
     config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
-    print(config)
 
     principal = 's3.amazonaws.com'
     statement_id = "{}_s3_{}".format(app_name, bucket)
