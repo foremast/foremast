@@ -3,6 +3,14 @@
         {
             "LambdaFunctionArn": "{{ lambda_arn }}",
             "Events": {{ events }}
+            {% if filters -%},
+            "Filter": {
+                "Key": {
+                    "FilterRules": {{ filters }}
+
+                }
+            }
+            {% endif -%}
         }
     ]
 }

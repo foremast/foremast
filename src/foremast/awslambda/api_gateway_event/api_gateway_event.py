@@ -6,7 +6,7 @@ import botocore
 from tryagain import retries
 
 from foremast.exceptions import InvalidEventConfiguration
-from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids, update_dns_zone_record, get_properties)
+from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids, update_dns_zone_record, get_properties, add_lambda_permissions)
 
 LOG = logging.getLogger(__name__)
 
@@ -94,21 +94,14 @@ class APIGateway:
                                              statusCode='200',
                                              responseTemplates={'application/json': ''})
 
-    def add_lambda_permission(self):
+    def add_permission(self):
         """Add permission to Lambda for the API Trigger."""
-        response_action = None
-        statement_id = 'add_permission_for_{}'.format(self.trigger_settings['api_name'], )
-        try:
-            self.lambda_client.add_permission(FunctionName=self.app_name,
-                                              StatementId=statement_id,
-                                              Action='lambda:InvokeFunction',
-                                              Principal='apigateway.amazonaws.com')
-            response_action = 'Add permission with Sid: {}'.format(statement_id)
-        except botocore.exceptions.ClientError:
-            response_action = "Did not add permissions"
-
-        self.log.debug('Related StatementId (SID): %s', statement_id)
-        self.log.info(response_action)
+        statement_id = '{}_api_{}'.format(self.app_name, self.trigger_settings['api_name'])
+        principal = 'apigateway.amazonaws.com'
+        add_lambda_permissions(function=self.app_name,
+                               statement_id=statement_id,
+                               action='lambda:InvokeFunction',
+                               principal='apigateway.amazonaws.com')
 
     @retries(max_attempts=5, wait=2, exceptions=(botocore.exceptions.ClientError))
     def create_api_deployment(self):
@@ -228,7 +221,7 @@ class APIGateway:
     def setup_lambda_api(self):
         """A wrapper for all the steps needed to setup the integration."""
         self.add_lambda_integration()
-        self.add_lambda_permission()
+        self.add_permission()
         self.create_api_deployment()
         self.create_api_key()
         self.update_api_mappings()
