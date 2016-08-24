@@ -1,4 +1,4 @@
-"""CLI entry point for aws events creation
+"""CLI entry point for aws events creation.
 
 Help: ``python -m src.foremast.awslambdaevent -h``
 """
