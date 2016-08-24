@@ -1,6 +1,6 @@
-================================
+============
 foremast.cfg
-================================
+============
 
 .. contents::
    :local:
@@ -10,12 +10,13 @@ Purpose
 This configuration holds information necessary for running foremast such as auth tokens, URLs, whitelists etc
 
 Example Configuration
-----------------------
+---------------------
 
 .. literalinclude:: ../src/foremast/templates/configs/foremast.cfg.example
 
 Configuration Locations
-------------------------
+-----------------------
+
 Foremast will look in the following locations, in order, for the foremast.cfg config file.
 
 1. ``./.foremast/foremast.cfg``
@@ -23,22 +24,22 @@ Foremast will look in the following locations, in order, for the foremast.cfg co
 3. ``/etc/foremast/foremast/cfg``
 
 Configuration Details
-----------------------
+---------------------
 
 ``[base]``
-~~~~~~~~~~~~~
+~~~~~~~~~~
 
 Sections for base information such as urls and general configurations
 
 ``domain``
-***********
+**********
 
 The base domain of your applications. Used for generating DNS
 
     | *Required*: Yes
 
 ``envs``
-*********
+********
 
 Comma delimiated list of environments/applications that will be managed with Foremast
 
@@ -54,7 +55,7 @@ Comma delimiated list of AWS regions managed by Foremast
     | *Required*: Yes
 
 ``ami_json_url``
-*****************
+****************
 
 FQDN of where to query for AMI ID look ups. See :doc:`ami_json` for more details
 
@@ -62,14 +63,14 @@ FQDN of where to query for AMI ID look ups. See :doc:`ami_json` for more details
 
 
 ``gitlab_url``
-***************
+**************
 
 FQDN of gitlab. Will be used for handling API calls to Gitlab
 
     | *Required*: No
 
 ``gate_api_url``
-*****************
+****************
 
 FQDN Of your spinnaker Gate instance. This is where all API calls to Spinnaker will go
 
@@ -83,14 +84,16 @@ Path to custome templates directory. If provided, Foremast will first look in th
     | *Required*: No
 
 ``default_ec2_securitygroups``
-**************************
+******************************
+
 Comma seperated list of EC2 security groups to include for all deployments
 
     | *Required*: No
     | *Example*: ``office,test_sg,example``
 
 ``default_elb_securitygroups``
-**************************
+******************************
+
 Comma seperated list of ELB security groups to include for all deployments
 
     | *Required*: No
@@ -110,7 +113,7 @@ Gitlab token used for authentication in Foremast
     | *Required*: No
 
 ``slack_token``
-****************
+***************
 
 Slack token used for authentication when sending Slack messages from Foremast
 
@@ -118,7 +121,7 @@ Slack token used for authentication when sending Slack messages from Foremast
 
 
 ``[whitelists]``
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 Sections for configuring whitelist info
 
@@ -147,6 +150,7 @@ Any of the possible variables below can be used as the value.
 
 ``domain``
 **********
+
 A string of your organization's domain
 
     | *Default*: example.com
@@ -154,27 +158,31 @@ A string of your organization's domain
 
 ``app``
 *******
+
 A string of the format of your application
 
     | *Default*: {repo}{project}
     | *Required*: No
 
 ``dns_elb``
-*******
+***********
+
 An FQDN of your application's Elastic Load Balancer (ELB)
 
     | *Default*: {repo}.{project}.{env}.{domain}
     | *Required*: No
 
 ``s3_bucket``
-*******
+*************
+
 An string of your base S3 bucket name
 
     | *Default*: archaius-{env}
     | *Required*: No
 
 ``jenkins_job_name``
-*******
+********************
+
 An string of the format of the application's jenkins job name
 
     | *Default*: {project}_{repo}
