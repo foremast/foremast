@@ -37,7 +37,7 @@ def add_lambda_permissions(function='',
                            statement_id='',
                            action='lambda:InvokeFunction',
                            principal='',
-                           source_arn=None,
+                           source_arn='',
                            env='',
                            region='us-east-1'):
     """Add permission to Lambda for the event trigger.
@@ -53,18 +53,18 @@ def add_lambda_permissions(function='',
     session = boto3.Session(profile_name=env, region_name=region)
     lambda_client = session.client('lambda')
     response_action = None
+
+    add_permissions_kwargs = {
+        'FunctionName': function,
+        'StatementId': statement_id,
+        'Action': action,
+        'Principal': principal,
+    }
+    if source_arn:
+        add_permissions_kwargs['SourceArn'] = source_arn
+
     try:
-        if not source_arn:
-            lambda_client.add_permission(FunctionName=function,
-                                         StatementId=statement_id,
-                                         Action=action,
-                                         Principal=principal)
-        else:
-            lambda_client.add_permission(FunctionName=function,
-                                         StatementId=statement_id,
-                                         Action=action,
-                                         Principal=principal,
-                                         SourceArn=source_arn)
+        lambda_client.add_permission(**add_permissions_kwargs)
         response_action = 'Add permission with Sid: {}'.format(statement_id)
     except boto3.exceptions.botocore.exceptions.ClientError:
         response_action = "Did not add permissions"

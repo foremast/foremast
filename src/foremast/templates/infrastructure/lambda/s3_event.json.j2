@@ -2,15 +2,15 @@
     "LambdaFunctionConfigurations": [
         {
             "LambdaFunctionArn": "{{ lambda_arn }}",
-            "Events": {{ events }}
-            {% if filters -%},
+            {% if filters -%}
             "Filter": {
                 "Key": {
                     "FilterRules": {{ filters }}
 
                 }
-            }
+            },
             {% endif -%}
+            "Events": {{ events }}
         }
     ]
 }

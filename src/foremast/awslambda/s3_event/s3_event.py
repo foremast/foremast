@@ -39,7 +39,7 @@ def create_s3_event(app_name, env, region, rules):
         suffix_dict = {"Name": "suffix", "Value": suffix}
         filters.append(suffix_dict)
 
-    if len(filters) > 0:
+    if filters:
         json_filters = json.dumps(filters)
     else:
         json_filters = None

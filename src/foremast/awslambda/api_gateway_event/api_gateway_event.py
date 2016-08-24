@@ -101,7 +101,7 @@ class APIGateway:
         add_lambda_permissions(function=self.app_name,
                                statement_id=statement_id,
                                action='lambda:InvokeFunction',
-                               principal='apigateway.amazonaws.com',
+                               principal=principal,
                                env=self.env,
                                region=self.region)
 
