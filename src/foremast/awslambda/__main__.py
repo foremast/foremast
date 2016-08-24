@@ -12,11 +12,11 @@ from .awslambda import LambdaFunction
 
 
 def main():
-    """Entry point for creating an Lambda event"""
+    """Create Lambda events."""
     logging.basicConfig(format=LOGGING_FORMAT)
     log = logging.getLogger(__name__)
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=main.__doc__)
     add_debug(parser)
     add_app(parser)
     add_env(parser)
