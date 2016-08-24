@@ -232,8 +232,3 @@ class APIGateway:
         self.create_api_deployment()
         self.create_api_key()
         self.update_api_mappings()
-
-
-if __name__ == "__main__":
-    gateway = APIGateway(app='dougtest', env='sandbox', region='us-east-1')
-    gateway.setup_lambda_api()
