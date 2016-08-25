@@ -18,7 +18,7 @@ def create_cloudwatch_event(app_name, env, region, rules):
     rule_name = rules.get('rule_name')
     schedule = rules.get('schedule')
     rule_description = rules.get('rule_description')
-    json_input = rules.get('json_input')
+    json_input = rules.get('json_input', {})
 
 
     if schedule is None:
