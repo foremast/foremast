@@ -1,14 +1,23 @@
 import logging
+
 import boto3
 
 from ...exceptions import InvalidEventConfiguration
-from ...utils import get_lambda_arn, add_lambda_permissions, get_env_credential
+from ...utils import add_lambda_permissions, get_env_credential, get_lambda_arn
 
 LOG = logging.getLogger(__name__)
 
 
 def create_cloudwatch_log_event(app_name, env, region, rules):
-    """Creates cloudwatch log event for lambda from rules"""
+    """Creates cloudwatch log event for lambda from rules
+
+    Args:
+        app_name (str): name of the lambda function
+        env (str): Environment/Account for lambda function
+        region (str): AWS region of the lambda function
+        rules (str): Trigger rules from the settings
+    """
+
     session = boto3.Session(profile_name=env, region_name=region)
     cloudwatch_client = session.client('logs')
 
