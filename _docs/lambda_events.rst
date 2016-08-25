@@ -1,6 +1,6 @@
-=============
-Lambda Events
-=============
+==========================
+Lambda Triggers and Events
+==========================
 
 .. contents::
    :local:
@@ -70,56 +70,140 @@ Specifies what type of Lambda event/trigger to use. This needs to be set for all
 S3 Event
 ~~~~~~~~
 
+A Lambda trigger on S3 bucket actions.
+
 ``bucket``
 **********
+
+The bucket of the event to monitor
+
+    | *Required*: True
+
 
 ``events``
 **********
 
+The S3 event to trigger the lambda function from
+
+    | *Type*: List
+    | *Required*: True
+    | *Example*: ``["s3:ObjectCreated:*", "s3:ObjectedRemoved:Delete"]``
+
 ``prefix``
 **********
+
+Sets up a prefix filter on S3 bucket events
+
+    | *Required*: False
+    | *Example*: ``"logs/"``
 
 ``suffix``
 **********
 
+Sets up a suffix filter on s3 bucket events
+
+    | *Required*: False
+    | *Example*: ``"jpg"``
+
 SNS Event
 ~~~~~~~~~
+
+A Lambda trigger on SNS topic events
+
 
 ``topic``
 *********
 
+The SNS topic name to monitor for events
+
+    | *Required*: True
+
 Cloudwatch Event
 ~~~~~~~~~~~~~~~~
+
+A Cloudwatch Scheduled event for Lambda triggers
 
 ``schedule``
 ************
 
+The rate or cron string to trigger the Lambda function
+
+    | *Required*: True
+    | *Examples*:
+
+        - ``"rate(5 minutes)"``
+        - ``"cron(0 17 ? * MON-FRI *)"``
+
+
 ``rule_name``
 *************
+
+The name of the cloudwatch rule being created
+
+    | *Required*: False
+    | *Default*: ``"{app_name}+{schedule}"``
 
 ``rule_description``
 *********************
 
+Description of the rule being created
+
+    | *Required*: False
+
 Cloudwatch Log Event
 ~~~~~~~~~~~~~~~~~~~~
+
+A lambda event that triggers off a Cloudwatch log action
 
 ``log_group``
 *************
 
+The name of the log group to monitor
+
+    | *Required*: True
+    | *Example*: ``"/aws/lambda/test_function"``
+
 ``filter_name``
 ***************
+
+The name of the filter on log event
+
+    | *Required*: True
 
 ``filter_pattern``
 ******************
 
+The pattern to look for in the ``log_group`` for triggering a Lambda function
+
+    | *Required*: True
+    | *Example*: ``"warning"``
+
+
 API Gateway Event
 ~~~~~~~~~~~~~~~~~
+
+Sets up an API Gatway event to trigger a lambda function. 
 
 ``api_name``
 ************
 
+The name of an existing API Gateway. If not provided, an API will be created
+
+    | *Required*: False
+    | *Default*: ``{app_name}``
+
 ``resource``
 ************
 
+The API resource to tie the Lambda function to
+
+    | *Required*: True
+    | *Example*: ``"/test"``
+
 ``method``
 ***********
+
+The API Method to trigger the Lambda function
+
+    | *Required*: True
+    | *Example*: ``"GET"``

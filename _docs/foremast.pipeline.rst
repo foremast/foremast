@@ -36,10 +36,26 @@ foremast.pipeline.construct_pipeline_block_lambda module
     :undoc-members:
     :show-inheritance:
 
+foremast.pipeline.construct_pipeline_block_lambda module
+--------------------------------------------------------
+
+.. automodule:: foremast.pipeline.construct_pipeline_block_lambda
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 foremast.pipeline.create_pipeline module
 ----------------------------------------
 
 .. automodule:: foremast.pipeline.create_pipeline
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+foremast.pipeline.create_pipeline_lambda module
+-----------------------------------------------
+
+.. automodule:: foremast.pipeline.create_pipeline_lambda
     :members:
     :undoc-members:
     :show-inheritance:
