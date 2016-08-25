@@ -26,6 +26,7 @@ Read environment variables from Jenkins:
 
 Then run specific prepare jobs.
 """
+import argparse
 import logging
 import os
 
@@ -34,9 +35,9 @@ from foremast import (app, autoscaling_policy, awslambda, configs, consts, dns,
                       elb, iam, pipeline, s3, securitygroup, slacknotify,
                       utils)
 
+from .args import add_debug
+
 LOG = logging.getLogger(__name__)
-logging.basicConfig(format=consts.LOGGING_FORMAT)
-logging.getLogger("foremast").setLevel(logging.INFO)
 
 
 class ForemastRunner(object):
@@ -44,6 +45,8 @@ class ForemastRunner(object):
 
     def __init__(self):
         """Setup the Runner for all Foremast modules."""
+        debug_flag()
+
         self.email = os.getenv("EMAIL")
         self.env = os.getenv("ENV")
         self.group = os.getenv("PROJECT")
@@ -252,3 +255,15 @@ def rebuild_pipelines():
                 runner.cleanup()
             except Exception as error:
                 print(error)
+
+
+def debug_flag():
+    """Set logging level for entry points."""
+    logging.basicConfig(format=consts.LOGGING_FORMAT)
+
+    parser = argparse.ArgumentParser(description=debug_flag.__doc__)
+    add_debug(parser)
+    args = parser.parse_args()
+
+    package, *_ = __package__.split('.')
+    logging.getLogger(package).setLevel(args.debug)
