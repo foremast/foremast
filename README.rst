@@ -125,7 +125,7 @@ for each application
 pipeline.json
 ~~~~~~~~~~~~~
 
-:doc:`pipeline.json`, will be needed for each application. We have a lot of defaults
+:file:`pipeline.json`, will be needed for each application. We have a lot of defaults
  in place for ``pipeline.json``, take a look at the :doc:`pipeline_json` docs for all options.
 
 Minimum
