@@ -42,7 +42,7 @@ def process_git_configs(git_short=''):
         collections.defaultdict: Configurations stored for each environment
         found.
     """
-    LOG.info('Processing application.json files from GitLab.')
+    LOG.info('Processing application.json files from GitLab "%s".', git_short)
 
     server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
 
