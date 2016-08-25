@@ -1,8 +1,9 @@
 import logging
+
 import boto3
 
 from ...exceptions import InvalidEventConfiguration
-from ...utils import get_lambda_arn, add_lambda_permissions, get_env_credential
+from ...utils import add_lambda_permissions, get_env_credential, get_lambda_arn
 
 LOG = logging.getLogger(__name__)
 
@@ -25,9 +26,7 @@ def create_cloudwatch_event(app_name, env, region, rules):
         LOG.critical('Rule name is required and no rule_name is defined!')
         raise InvalidEventConfiguration('Rule name is required and no rule_name is defined!')
     else:
-        # TODO: check if this is the right logic
         LOG.info('%s and %s', app_name, rule_name)
-        # TODO: maybe we need to sanitize more?
         rule_name = "{}_{}".format(app_name, rule_name.replace(' ', '_'))
 
     if rule_description is None:
