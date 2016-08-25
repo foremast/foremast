@@ -2,7 +2,7 @@ import logging
 import boto3
 
 from ...exceptions import InvalidEventConfiguration
-from ...utils import get_lambda_arn
+from ...utils import get_lambda_arn, add_lambda_permissions, get_env_credential
 
 LOG = logging.getLogger(__name__)
 
@@ -29,6 +29,18 @@ def create_cloudwatch_log_event(app_name, env, region, rules):
         raise InvalidEventConfiguration('Filter pattern is required and no filter_pattern is defined!')
 
     lambda_arn = get_lambda_arn(app=app_name, account=env, region=region)
+
+    statement_id = '{}_cloudwatchlog_{}'.format(app_name, filter_name.replace(" ", "_"))
+    principal = 'logs.{}.amazonaws.com'.format(region)
+    account_id = get_env_credential(env=env)['accountId']
+    source_arn = "arn:aws:logs:{0}:{1}:log-group:{2}:*".format(region, account_id, log_group)
+    add_lambda_permissions(function=app_name,
+                           statement_id=statement_id,
+                           action='lambda:InvokeFunction',
+                           principal=principal,
+                           source_arn=source_arn,
+                           env=env,
+                           region=region)
 
     cloudwatch_client.put_subscription_filter(
         logGroupName=log_group,
