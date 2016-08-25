@@ -1,13 +1,21 @@
 import logging
+
 import boto3
 
-from ...utils import (get_sns_topic_arn, get_lambda_arn, add_lambda_permissions, get_env_credential)
+from ...utils import add_lambda_permissions, get_lambda_arn, get_sns_topic_arn
 
 LOG = logging.getLogger(__name__)
 
 
 def create_sns_event(app_name, env, region, rules):
-    """Creates SNS lambda event from rules"""
+    """Creates SNS lambda event from rules
+
+    Args:
+        app_name (str): name of the lambda function
+        env (str): Environment/Account for lambda function
+        region (str): AWS region of the lambda function
+        rules (str): Trigger rules from the settings
+    """
 
     session = boto3.Session(profile_name=env, region_name=region)
     sns_client = session.client('sns')
@@ -19,7 +27,6 @@ def create_sns_event(app_name, env, region, rules):
 
     statement_id = '{}_sns_{}'.format(app_name, topic_name)
     principal = 'sns.amazonaws.com'
-    print(topic_arn)
     add_lambda_permissions(function=app_name,
                            statement_id=statement_id,
                            action='lambda:InvokeFunction',
