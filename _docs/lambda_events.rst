@@ -7,14 +7,15 @@ Lambda Triggers and Events
 
 Purpose
 -------
-Foremast supports multiple Lambda events. These are configured in the :doc:`application_json` config and set as a list under the ``lambda_triggers`` key.
+
+Foremast supports multiple Lambda events. These are configured in the :doc:`application_json` config and set as a list under the :ref:`lambda_trigger` key.
 
 Example Configuration
 ---------------------
 
-This example would go in the :doc:`application_json` configuration file
+This example would go in the :doc:`application_json` configuration file.
 
-::
+.. code-block:: json
 
       "lambda_triggers": [
         {
@@ -47,8 +48,6 @@ This example would go in the :doc:`application_json` configuration file
           "method": "GET",
         }
       ]
-      }
-
 
 Configuration Details
 ----------------------
@@ -56,7 +55,7 @@ Configuration Details
 ``type``
 ~~~~~~~~
 
-Specifies what type of Lambda event/trigger to use. This needs to be set for all events
+Specifies what type of Lambda event/trigger to use. This needs to be set for all events.
 
     | *Options*:
 
@@ -65,6 +64,7 @@ Specifies what type of Lambda event/trigger to use. This needs to be set for all
         - ``"cloudwatch-event"`` - Cloudwatch event Lambda trigger
         - ``"cloudwatch-logs"`` - Cloudwatch logs event Lambda trigger
         - ``"api-gateway"`` - API Gateway Lambda trigger
+
     | *Required*: True
 
 S3 Event
@@ -75,7 +75,7 @@ A Lambda trigger on S3 bucket actions.
 ``bucket``
 **********
 
-The bucket of the event to monitor
+The bucket of the event to monitor.
 
     | *Required*: True
 
@@ -83,7 +83,7 @@ The bucket of the event to monitor
 ``events``
 **********
 
-The S3 event to trigger the lambda function from
+The S3 event to trigger the lambda function from.
 
     | *Type*: List
     | *Required*: True
@@ -92,7 +92,7 @@ The S3 event to trigger the lambda function from
 ``prefix``
 **********
 
-Sets up a prefix filter on S3 bucket events
+Sets up a prefix filter on S3 bucket events.
 
     | *Required*: False
     | *Example*: ``"logs/"``
@@ -100,7 +100,7 @@ Sets up a prefix filter on S3 bucket events
 ``suffix``
 **********
 
-Sets up a suffix filter on s3 bucket events
+Sets up a suffix filter on s3 bucket events.
 
     | *Required*: False
     | *Example*: ``"jpg"``
@@ -108,25 +108,24 @@ Sets up a suffix filter on s3 bucket events
 SNS Event
 ~~~~~~~~~
 
-A Lambda trigger on SNS topic events
-
+A Lambda trigger on SNS topic events.
 
 ``topic``
 *********
 
-The SNS topic name to monitor for events
+The SNS topic name to monitor for events.
 
     | *Required*: True
 
 Cloudwatch Event
 ~~~~~~~~~~~~~~~~
 
-A Cloudwatch Scheduled event for Lambda triggers
+A Cloudwatch Scheduled event for Lambda triggers.
 
 ``schedule``
 ************
 
-The rate or cron string to trigger the Lambda function
+The rate or cron string to trigger the Lambda function.
 
     | *Required*: True
     | *Examples*:
@@ -134,11 +133,10 @@ The rate or cron string to trigger the Lambda function
         - ``"rate(5 minutes)"``
         - ``"cron(0 17 ? * MON-FRI *)"``
 
-
 ``rule_name``
 *************
 
-The name of the cloudwatch rule being created
+The name of the cloudwatch rule being created.
 
     | *Required*: False
     | *Default*: ``"{app_name}+{schedule}"``
@@ -146,19 +144,19 @@ The name of the cloudwatch rule being created
 ``rule_description``
 *********************
 
-Description of the rule being created
+Description of the rule being created.
 
     | *Required*: False
 
 Cloudwatch Log Event
 ~~~~~~~~~~~~~~~~~~~~
 
-A lambda event that triggers off a Cloudwatch log action
+A lambda event that triggers off a Cloudwatch log action.
 
 ``log_group``
 *************
 
-The name of the log group to monitor
+The name of the log group to monitor.
 
     | *Required*: True
     | *Example*: ``"/aws/lambda/test_function"``
@@ -166,28 +164,27 @@ The name of the log group to monitor
 ``filter_name``
 ***************
 
-The name of the filter on log event
+The name of the filter on log event.
 
     | *Required*: True
 
 ``filter_pattern``
 ******************
 
-The pattern to look for in the ``log_group`` for triggering a Lambda function
+The pattern to look for in the ``log_group`` for triggering a Lambda function.
 
     | *Required*: True
     | *Example*: ``"warning"``
 
-
 API Gateway Event
 ~~~~~~~~~~~~~~~~~
 
-Sets up an API Gatway event to trigger a lambda function. 
+Sets up an API Gatway event to trigger a lambda function.
 
 ``api_name``
 ************
 
-The name of an existing API Gateway. If not provided, an API will be created
+The name of an existing API Gateway. If not provided, an API will be created.
 
     | *Required*: False
     | *Default*: ``{app_name}``
@@ -195,7 +192,7 @@ The name of an existing API Gateway. If not provided, an API will be created
 ``resource``
 ************
 
-The API resource to tie the Lambda function to
+The API resource to tie the Lambda function to.
 
     | *Required*: True
     | *Example*: ``"/test"``
@@ -203,7 +200,7 @@ The API resource to tie the Lambda function to
 ``method``
 ***********
 
-The API Method to trigger the Lambda function
+The API Method to trigger the Lambda function.
 
     | *Required*: True
     | *Example*: ``"GET"``

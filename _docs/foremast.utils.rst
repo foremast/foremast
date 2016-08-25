@@ -12,6 +12,14 @@ foremast.utils.apps module
     :undoc-members:
     :show-inheritance:
 
+foremast.utils.awslambda module
+-------------------------------
+
+.. automodule:: foremast.utils.awslambda
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 foremast.utils.banners module
 -----------------------------
 
@@ -80,14 +88,6 @@ foremast.utils.get_cloudwatch_event_rule module
 -----------------------------------------------
 
 .. automodule:: foremast.utils.get_cloudwatch_event_rule
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-foremast.utils.get_lambda_arn module
-------------------------------------
-
-.. automodule:: foremast.utils.get_lambda_arn
     :members:
     :undoc-members:
     :show-inheritance:

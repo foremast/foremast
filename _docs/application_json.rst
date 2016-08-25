@@ -334,6 +334,8 @@ Defines DNS TTL for generated DNS records
     | *Units*: seconds
     | *Default*: ``60``
 
+.. _lambda_trigger:
+
 ``lambda_triggers``
 ~~~~~~~~~~~~~~~~~~~
 

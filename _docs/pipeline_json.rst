@@ -103,6 +103,8 @@ Defines the root volume size of the resulting AMI in GB
     | *Units*: Gigabyte
     | *Default*: `6`
 
+.. _lambda_block:
+
 ``lambda`` Block
 ~~~~~~~~~~~~~~~~~
 
