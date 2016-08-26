@@ -36,7 +36,12 @@ from ..utils import get_env_credential, get_template
 LOG = logging.getLogger(__name__)
 
 
-def construct_policy(app='coreforrest', env='dev', group='forrest', region='us-east-1', pipeline_settings=None):
+def construct_policy(app='coreforrest',
+                     env='dev',
+                     group='forrest',
+                     region='us-east-1',
+                     pipeline_settings=None,
+                     deployment_type='ec2'):
     """Assemble IAM Policy for _app_.
 
     Args:
@@ -45,6 +50,7 @@ def construct_policy(app='coreforrest', env='dev', group='forrest', region='us-e
         group (str):A Application group/namespace
         region (str): AWS region
         pipeline_settings (dict): Settings from *pipeline.json*.
+        deployment_type (str): Deployment type, e.g. ec2, lambda.
 
     Returns:
         json: Custom IAM Policy for _app_.

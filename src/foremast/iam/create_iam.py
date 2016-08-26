@@ -63,7 +63,8 @@ def create_iam_resources(env='dev', app='', **_):
         InstanceProfileName=details.profile)
     attach_profile_to_role(client, role_name=details.role, profile_name=details.profile)
 
-    iam_policy = construct_policy(app=app, group=details.group, env=env, pipeline_settings=app_properties)
+    iam_policy = construct_policy(
+        app=app, group=details.group, env=env, pipeline_settings=app_properties, deployment_type=deployment_type)
     if iam_policy:
         resource_action(
             client,

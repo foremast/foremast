@@ -43,7 +43,7 @@ def test_create_iam_resources(resource_action, get_properties, get_details, cons
     get_details.assert_called_with(env='narnia', app='lion/aslan')
     get_properties.assert_called_with(env='pipeline')
     construct_policy.assert_called_with(
-        app='lion/aslan', group=1, env='narnia', pipeline_settings=get_properties.return_value)
+        app='lion/aslan', group=1, env='narnia', pipeline_settings=get_properties.return_value, deployment_type='ec2')
 
 
 @mock.patch('foremast.iam.create_iam.attach_profile_to_role')
