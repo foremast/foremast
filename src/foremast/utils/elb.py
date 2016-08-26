@@ -20,7 +20,7 @@ import logging
 import requests
 from tryagain import retries
 
-from ..consts import API_URL
+from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
 from ..exceptions import SpinnakerElbNotFound
 
 LOG = logging.getLogger(__name__)
@@ -43,8 +43,9 @@ def find_elb(name='', env='', region=''):
     LOG.info('Find %s ELB in %s [%s].', name, env, region)
 
     url = '{0}/applications/{1}/loadBalancers'.format(API_URL, name)
-    response = requests.get(url)
-
+    response = requests.get(url,
+                            verify=GATE_CA_BUNDLE,
+                            cert=GATE_CLIENT_CERT)
     assert response.ok
 
     elb_dns = None

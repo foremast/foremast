@@ -20,7 +20,7 @@ import logging
 import requests
 from tryagain import retries
 
-from ..consts import API_URL
+from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
 from ..exceptions import SpinnakerSecurityGroupError
 from .vpc import get_vpc_id
 
@@ -50,8 +50,9 @@ def get_security_group_id(name='', env='', region=''):
 
     url = '{0}/securityGroups/{1}/{2}/{3}?vpcId={4}'.format(
         API_URL, env, region, name, vpc_id)
-    response = requests.get(url)
-
+    response = requests.get(url,
+                            verify=GATE_CA_BUNDLE,
+                            cert=GATE_CLIENT_CERT)
     assert response.ok
 
     result = response.json()

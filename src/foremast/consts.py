@@ -123,6 +123,8 @@ SLACK_TOKEN = validate_key_values(config, 'credentials', 'slack_token')
 
 ASG_WHITELIST = set(validate_key_values(config, 'whitelists', 'asg_whitelist', default='').split(','))
 APP_FORMATS = extract_formats(config)
+GATE_CLIENT_CERT = validate_key_values(config, 'base', 'gate_client_cert')
+GATE_CA_BUNDLE = validate_key_values(config, 'base', 'gate_ca_bundle')
 
 HEADERS = {
     'accept': '*/*',

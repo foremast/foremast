@@ -22,18 +22,18 @@ from pprint import pformat
 import requests
 from tryagain import retries
 
-from ..consts import API_URL
+from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
 from ..exceptions import SpinnakerSubnetError, SpinnakerTimeout
 
 LOG = logging.getLogger(__name__)
 
 
-#TODO: split up into get_az, and get_subnet_id
+# TODO: split up into get_az, and get_subnet_id
 @retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)
 def get_subnets(target='ec2',
                 purpose='internal',
                 env='',
-                region='',):
+                region='', ):
     """Get all availability zones for a given target.
 
     Args:
@@ -51,7 +51,9 @@ def get_subnets(target='ec2',
     subnet_id_dict = defaultdict(defaultdict)
 
     subnet_url = '{0}/subnets/aws'.format(API_URL)
-    subnet_response = requests.get(subnet_url)
+    subnet_response = requests.get(subnet_url,
+                                   verify=GATE_CA_BUNDLE,
+                                   cert=GATE_CLIENT_CERT)
 
     if not subnet_response.ok:
         raise SpinnakerTimeout(subnet_response.text)
@@ -72,7 +74,7 @@ def get_subnets(target='ec2',
                     account_az_dict[account][subnet_region].append(az)
             except KeyError:
                 account_az_dict[account][subnet_region] = [az]
-            #get list of all subnet IDs with correct purpose
+            # get list of all subnet IDs with correct purpose
             if subnet['purpose'] == purpose:
                 try:
                     subnet_id_dict[account][subnet_region].append(subnet_id)

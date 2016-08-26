@@ -21,7 +21,7 @@ import json
 import requests
 from tryagain import retries
 
-from ..consts import API_URL, HEADERS
+from ..consts import API_URL, HEADERS, GATE_CLIENT_CERT, GATE_CA_BUNDLE
 from ..exceptions import SpinnakerTaskError
 
 LOG = logging.getLogger(__name__)
@@ -44,7 +44,12 @@ def post_task(task_data):
     else:
         task_json = json.dumps(task_data)
 
-    resp = requests.post(url, data=task_json, headers=HEADERS)
+    resp = requests.post(url,
+                         data=task_json,
+                         headers=HEADERS,
+                         verify=GATE_CA_BUNDLE,
+                         cert=GATE_CLIENT_CERT)
+
     resp_json = resp.json()
 
     LOG.debug(resp_json)
@@ -75,7 +80,10 @@ def check_task(taskid):
     LOG.info('Checking taskid %s', taskid)
 
     url = '{}/tasks/{}'.format(API_URL, taskid)
-    task_response = requests.get(url, headers=HEADERS)
+    task_response = requests.get(url,
+                                 headers=HEADERS,
+                                 verify=GATE_CA_BUNDLE,
+                                 cert=GATE_CLIENT_CERT)
 
     LOG.debug(task_response.json())
 

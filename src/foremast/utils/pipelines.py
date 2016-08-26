@@ -19,7 +19,7 @@ import logging
 import requests
 import murl
 
-from ..consts import API_URL
+from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
 
 LOG = logging.getLogger(__name__)
 
@@ -72,7 +72,9 @@ def get_all_pipelines(app=''):
     """
     url = murl.Url(API_URL)
     url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
-    response = requests.get(url.url)
+    response = requests.get(url.url,
+                            verify=GATE_CA_BUNDLE,
+                            cert=GATE_CLIENT_CERT)
 
     assert response.ok, 'Could not retrieve Pipelines for {0}.'.format(app)
 

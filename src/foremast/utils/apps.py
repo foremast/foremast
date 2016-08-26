@@ -21,7 +21,7 @@ import requests
 
 import gogoutils
 
-from ..consts import API_URL, APP_FORMATS
+from ..consts import API_URL, APP_FORMATS, GATE_CLIENT_CERT, GATE_CA_BUNDLE
 from ..exceptions import SpinnakerAppNotFound
 
 LOG = logging.getLogger(__name__)
@@ -36,7 +36,9 @@ def get_all_apps():
     LOG.info('Retreiving list of all Spinnaker applications')
     url = murl.Url(API_URL)
     url.path = 'applications'
-    response = requests.get(url.url)
+    response = requests.get(url.url,
+                            verify=GATE_CA_BUNDLE,
+                            cert=GATE_CLIENT_CERT)
 
     assert response.ok, 'Could not retrieve application list'
 
@@ -60,7 +62,9 @@ def get_details(app='groupproject', env='dev'):
     api = murl.Url(API_URL)
     api.path = 'applications/{app}'.format(app=app)
 
-    request = requests.get(api.url)
+    request = requests.get(api.url,
+                           verify=GATE_CA_BUNDLE,
+                           cert=GATE_CLIENT_CERT)
 
     if not request.ok:
         raise SpinnakerAppNotFound('"{0}" not found.'.format(app))

@@ -23,7 +23,7 @@ from pprint import pformat
 
 import requests
 
-from ..consts import API_URL
+from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
 from ..utils import get_template, check_task, post_task
 
 
@@ -63,8 +63,9 @@ class SpinnakerApp:
             AssertionError: Failure getting accounts from Spinnaker.
         """
         url = '{gate}/credentials'.format(gate=API_URL)
-        response = requests.get(url)
-
+        response = requests.get(url,
+                                verify=GATE_CA_BUNDLE,
+                                cert=GATE_CLIENT_CERT)
         assert response.ok, 'Failed to get accounts: {0}'.format(response.text)
 
         all_accounts = response.json()
@@ -84,8 +85,9 @@ class SpinnakerApp:
         self.appinfo['accounts'] = self.get_accounts()
         self.log.debug('App info:\n%s', pformat(self.appinfo))
 
-        jsondata = get_template(template_file='infrastructure/app_data.json.j2',
-                                appinfo=self.appinfo)
+        jsondata = get_template(
+            template_file='infrastructure/app_data.json.j2',
+            appinfo=self.appinfo)
 
         taskid = post_task(jsondata)
         check_task(taskid)

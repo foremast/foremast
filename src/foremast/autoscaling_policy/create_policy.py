@@ -24,7 +24,7 @@ import os
 
 import requests
 
-from ..consts import API_URL
+from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
 from ..utils import (get_properties, get_template, check_task, post_task)
 
 
@@ -41,6 +41,7 @@ class AutoScalingPolicy:
         log (str): Logger name
         settings (dict): Properties imported from prop_path
     """
+
     def __init__(self, app='', prop_path='', env='', region=''):
 
         self.log = logging.getLogger(__name__)
@@ -75,8 +76,9 @@ class AutoScalingPolicy:
                 'scalingAdjustment': 1
             }
         elif scaling_type == 'scale_down':
-            self.settings['asg']['scaling_policy']['threshold'] = self.settings[
-                'asg']['scaling_policy']['threshold'] * 0.5
+            self.settings['asg']['scaling_policy']['threshold'] = \
+                self.settings[
+                    'asg']['scaling_policy']['threshold'] * 0.5
             template_kwargs = {
                 'app': self.app,
                 'env': self.env,
@@ -119,7 +121,8 @@ class AutoScalingPolicy:
                 self.delete_existing_policy(subpolicy, server_group)
 
         if self.settings['asg']['scaling_policy']['period_minutes']:
-            period_sec = self.settings['asg']['scaling_policy']['period_minutes'] * 60
+            period_sec = self.settings['asg']['scaling_policy'][
+                             'period_minutes'] * 60
         else:
             period_sec = 1800
         self.prepare_policy_template('scale_up', period_sec, server_group)
@@ -132,8 +135,10 @@ class AutoScalingPolicy:
         Returns:
             server_group (str): Name of the newest server group
         """
-        response = requests.get("{0}/applications/{1}".format(API_URL,
-                                                              self.app))
+        api_url = "{0}/applications/{1}".format(API_URL, self.app)
+        response = requests.get(api_url,
+                                verify=GATE_CA_BUNDLE,
+                                cert=GATE_CLIENT_CERT)
         for server_group in response.json()['clusters'][self.env]:
             return server_group['serverGroups'][-1]
 
@@ -145,7 +150,8 @@ class AutoScalingPolicy:
             scaling_policy (json): the scaling_policy json from Spinnaker that should be deleted
             server_group (str): the affected server_group
         """
-        self.log.info("Deleting policy {}".format(scaling_policy['policyName']))
+        self.log.info(
+            "Deleting policy {}".format(scaling_policy['policyName']))
         delete_dict = {
             "application": self.app,
             "description": "Delete scaling policy",
@@ -153,11 +159,11 @@ class AutoScalingPolicy:
                 {
                     "policyName": scaling_policy['policyName'],
                     "serverGroupName": server_group,
-                    "credentials":self.env,
-                    "region":self.region,
-                    "provider":"aws",
-                    "type":"deleteScalingPolicy",
-                    "user":"pipes-autoscaling-policy"
+                    "credentials": self.env,
+                    "region": self.region,
+                    "provider": "aws",
+                    "type": "deleteScalingPolicy",
+                    "user": "pipes-autoscaling-policy"
                 }]}
         taskid = post_task(json.dumps(delete_dict))
         check_task(taskid)
@@ -171,7 +177,9 @@ class AutoScalingPolicy:
         self.log.info("Checking for existing scaling policy")
         url = "{0}/applications/{1}/clusters/{2}/{1}/serverGroups".format(
             API_URL, self.app, self.env)
-        response = requests.get(url)
+        response = requests.get(url,
+                                verify=GATE_CA_BUNDLE,
+                                cert=GATE_CLIENT_CERT)
         assert response.ok, "Error looking for existing Autoscaling Policy for {0}: {1}".format(
             self.app, response.text)
 

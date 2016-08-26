@@ -19,7 +19,7 @@ import logging
 
 import requests
 
-from ..consts import API_URL
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerVPCIDNotFound, SpinnakerVPCNotFound
 
 LOG = logging.getLogger(__name__)
@@ -36,7 +36,9 @@ def get_vpc_id(account, region):
         str: ID for the requested _account_ in _region_.
     """
     url = '{0}/vpcs'.format(API_URL)
-    response = requests.get(url)
+    response = requests.get(url,
+                            verify=GATE_CA_BUNDLE,
+                            cert=GATE_CLIENT_CERT)
 
     if not response.ok:
         raise SpinnakerVPCNotFound(response.text)
@@ -46,14 +48,15 @@ def get_vpc_id(account, region):
     for vpc in vpcs:
         LOG.debug('VPC: %(name)s, %(account)s, %(region)s => %(id)s', vpc)
         if all([
-                vpc['name'] == 'vpc', vpc['account'] == account, vpc[
-                    'region'] == region
+                    vpc['name'] == 'vpc', vpc['account'] == account, vpc[
+                'region'] == region
         ]):
             LOG.info('Found VPC ID for %s in %s: %s', account, region,
                      vpc['id'])
             vpc_id = vpc['id']
             break
     else:
+        print(account, region)
         LOG.fatal('VPC list: %s', vpcs)
         raise SpinnakerVPCIDNotFound('No VPC available for {0} [{1}].'.format(
             account, region))
