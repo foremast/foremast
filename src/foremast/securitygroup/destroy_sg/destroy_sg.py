@@ -17,8 +17,10 @@
 """Destroy Security Group Resources."""
 import logging
 
-from ...consts import API_URL
-from ...utils import Gate, check_task, get_template, get_vpc_id
+import requests
+
+from ...consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
+from ...utils import Gate, check_task, post_task, get_template, get_vpc_id
 
 LOG = logging.getLogger(__name__)
 
@@ -27,7 +29,8 @@ def destroy_sg(app='', env='', region='', **_):
     """Destroy Security Group.
 
     Args:
-        account (str): AWS account name.
+        app (str): Spinnaker Application name.
+        env (str): Deployment environment.
         region (str): Region name, e.g. us-east-1.
 
     Returns:
@@ -37,9 +40,12 @@ def destroy_sg(app='', env='', region='', **_):
 
     try:
         url = '{api}/securityGroups/{env}/{region}/{app}'.format(
-            api=API_URL, env=env, region=region,
-            app=app)
-        security_group = Gate(url).get(vpcId=vpc)
+            api=API_URL, env=env, region=region, app=app)
+        payload = {'vpcId': vpc}
+        security_group = requests.get(url,
+                                      params=payload,
+                                      verify=GATE_CA_BUNDLE,
+                                      cert=GATE_CLIENT_CERT)
     except AssertionError:
         raise
 
@@ -54,9 +60,8 @@ def destroy_sg(app='', env='', region='', **_):
                                        env=env,
                                        region=region,
                                        vpc=vpc)
+        task_id = post_task(destroy_request)
 
-        response = Gate().tasks.post(destroy_request)
-
-        check_task(response)
+        check_task(task_id)
 
     return True

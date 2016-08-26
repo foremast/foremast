@@ -15,7 +15,8 @@
 #   limitations under the License.
 
 """Destroy any ELB Resources."""
-from ...utils import Gate, check_task, get_template, get_vpc_id
+
+from ...utils import check_task, post_task, get_template, get_vpc_id
 
 
 def destroy_elb(app='', env='dev', region='us-east-1', **_):
@@ -24,7 +25,7 @@ def destroy_elb(app='', env='dev', region='us-east-1', **_):
     Args:
         app (str): Spinnaker Application name.
         env (str): Deployment environment.
-        regions (str): AWS region.
+        region (str): AWS region.
 
     Returns:
         True upon successful completion.
@@ -36,7 +37,7 @@ def destroy_elb(app='', env='dev', region='us-east-1', **_):
         region=region,
         vpc=get_vpc_id(account=env, region=region))
 
-    response = Gate('/tasks').post(task_json)
-    check_task(response)
+    task_id = post_task(task_json)
+    check_task(task_id)
 
     return True
