@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Construct an IAM Policy from templates.
 
 Examples:
@@ -32,16 +31,12 @@ Examples:
 import json
 import logging
 
-from ..utils import get_template, get_env_credential
+from ..utils import get_env_credential, get_template
 
 LOG = logging.getLogger(__name__)
 
 
-def construct_policy(app='coreforrest',
-                     env='dev',
-                     group='forrest',
-                     region='us-east-1',
-                     pipeline_settings=None):
+def construct_policy(app='coreforrest', env='dev', group='forrest', region='us-east-1', pipeline_settings=None):
     """Assemble IAM Policy for _app_.
 
     Args:
@@ -72,13 +67,14 @@ def construct_policy(app='coreforrest',
             items = value
 
         try:
-            statement_block = get_template('infrastructure/iam/{0}.json.j2'.format(service),
-                                           account_number=account_number,
-                                           app=app,
-                                           env=env,
-                                           group=group,
-                                           region=region,
-                                           items=items)
+            statement_block = get_template(
+                'infrastructure/iam/{0}.json.j2'.format(service),
+                account_number=account_number,
+                app=app,
+                env=env,
+                group=group,
+                region=region,
+                items=items)
             statement = json.loads(statement_block)
             statements.append(statement)
         except ValueError:
@@ -87,8 +83,7 @@ def construct_policy(app='coreforrest',
             statements.extend(statement_block_list)
 
     if statements:
-        policy_json = get_template('infrastructure/iam/wrapper.json.j2',
-                                   statements=json.dumps(statements))
+        policy_json = get_template('infrastructure/iam/wrapper.json.j2', statements=json.dumps(statements))
     else:
         LOG.info('No services defined for %s.', app)
         policy_json = None
