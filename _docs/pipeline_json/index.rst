@@ -1,3 +1,5 @@
+.. _pipeline.json:
+
 =============
 pipeline.json
 =============
@@ -12,7 +14,7 @@ This configuration file is used for defining pipeline settings that affect the p
 Example Configuration
 ---------------------
 
-.. literalinclude:: ../src/foremast/templates/configs/pipeline.json.j2
+.. literalinclude:: ../../src/foremast/templates/configs/pipeline.json.j2
 
 Configuration Details
 ----------------------
@@ -21,7 +23,7 @@ Configuration Details
 ``type``
 ~~~~~~~~
 
-Specifies what type of pipeline to use for the application. 
+Specifies what type of pipeline to use for the application.
 
     | *Default*: ``"ec2"``
     | *Options*:
@@ -77,7 +79,7 @@ Restriction setting for promotions to prod* accounts.
 ``base``
 ~~~~~~~~
 
-The base AMI to use for baking the application. This can be an alias defined in :doc:`ami_json` or an AMI Id.
+The base AMI to use for baking the application. This can be an alias defined in :ref:`ami-lookup.json` or an AMI Id.
 
     | *Default*: ``"tomcat8"``
 
@@ -144,5 +146,3 @@ Wether or not the Lambda function should use a VPC
 
     | *Type*: Boolean
     | *Default*: ``false``
-
-

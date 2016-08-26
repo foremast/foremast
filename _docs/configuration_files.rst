@@ -5,7 +5,7 @@ Configuration Files
    :maxdepth: 2
 
    foremast_config
-   pipeline_json
+   pipeline_json/index
    application_json
    aws_creds
    ami_json
