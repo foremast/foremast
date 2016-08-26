@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Test IAM Policies for correctness."""
 import json
 from unittest import mock
@@ -32,16 +31,12 @@ def test_iam_construct_policy(requests_get):
     assert policy_json is None
 
     settings = {'services': {'s3': True}}
-    policy_json = construct_policy(app='unicornforrest',
-                                   env='stage',
-                                   group='forrest',
-                                   pipeline_settings=settings)
+    policy_json = construct_policy(app='unicornforrest', env='stage', group='forrest', pipeline_settings=settings)
 
     # checking s3 policy
     assert type(json.loads(policy_json)) == dict
 
     # TODO: Test other services besides S3
-    settings.update({'services': {'dynamodb': ['coreforrest', 'edgeforrest',
-                                               'attendantdevops']}})
+    settings.update({'services': {'dynamodb': ['coreforrest', 'edgeforrest', 'attendantdevops']}})
     policy_json = construct_policy(pipeline_settings=settings)
     policy = json.loads(policy_json)
