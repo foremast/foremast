@@ -15,7 +15,7 @@ Contents
 
    getting_started
    CONTRIBUTING
-   configuration_files
+   configuration_files/index
    infra_assumptions
    pipeline_examples
    aws_lambda

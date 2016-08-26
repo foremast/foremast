@@ -19,17 +19,17 @@ Getting started with Foremast consists of the following steps:
 Configuration Setup
 -------------------
 
-There are a few :doc:`configuration_files` that will need to be setup before Foremast can be used
+There are a few :ref:`configuration_files` that will need to be setup before Foremast can be used
 
-    1. :doc:`foremast_config` - This config holds basic info such Spinnaker URL, tokens, and environments
-    2. :doc:`aws_creds` - This is the Boto3 credentials file for AWS access
-    3. :doc:`pipeline_json` - Pipeline configuration. Discussed in more detail below
-    4. :doc:`application_json` - Application AWS configuration. Discussed in more detail below
+    1. :ref:`foremast_config` - This config holds basic info such Spinnaker URL, tokens, and environments
+    2. :ref:`aws_creds` - This is the Boto3 credentials file for AWS access
+    3. :ref:`pipeline_json` - Pipeline configuration. Discussed in more detail below
+    4. :ref:`application_json` - Application AWS configuration. Discussed in more detail below
 
 Pipeline Configs
 *******************
 
-The :doc:`pipeline_json` and :doc:`application_json` are critical files that determine on how an application pipeline will work. Theses configurations need to exist for each application that you plan on using Foremast to deploy. We recommend keeping these files in the same repository as your application but as long as they are on the same local machine as the Foremast runner they can be used.
+The :ref:`pipeline_json` and :ref:`application_json` are critical files that determine on how an application pipeline will work. Theses configurations need to exist for each application that you plan on using Foremast to deploy. We recommend keeping these files in the same repository as your application but as long as they are on the same local machine as the Foremast runner they can be used.
 
 In ``~/runway`` create a file ``pipeline.json`` with the contents::
 
@@ -39,11 +39,11 @@ In ``~/runway`` create a file ``pipeline.json`` with the contents::
     }
 
 In the same ``~/runway`` directory, create a file ``application-master-$account.json`` where ``$account`` is the same name as an account in your AWS credentials file and in your ``env`` list in pipeline.json.
-This file can be empty and it will just use the defaults defined at :doc:`application_json`. It is sugguested that you look through the docs and decide what values to set.
+This file can be empty and it will just use the defaults defined at :ref:`application_json`. It is sugguested that you look through the docs and decide what values to set.
 
 **Note:** You will need an ``application-master-$account.json`` config for each ``$account`` that you are deploying to.
 
-See :doc:`pipeline_json` and :doc:`application_json` for all configuration options
+See :ref:`pipeline_json` and :ref:`application_json` for all configuration options
 
 
 Install Foremast
@@ -105,10 +105,3 @@ This guide walked through running Foremast for the first time but there is still
 Take a look at :doc:`pipeline_examples` to see what the default pipeline looks like and to get some insight on how Foremast can be utilized.
 
 This is only the tip of what Foremast can do. It also has functionality for creating scaling policies, setting up AWS infrastructure (elbs, security groups, iam policies, s3 buckets), sending slack notifications, and destorying old infrastructure. Take a look at our internal workflow docs for more detail on how Foremast is used at Gogo.
-
-
-
-
-
-
-

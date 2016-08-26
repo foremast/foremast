@@ -36,7 +36,7 @@ Foremast only works with AWS (for now). Below are the AWS requirements:
 
 - Foremast IAM Access:
 
-  - Will need credentials set up in a Boto3 configuration file. See :doc:`aws_creds` for details.
+  - Will need credentials set up in a Boto3 configuration file. See :ref:`aws_creds` for details.
 
   - IAM user or role will need the following permissions:
 
@@ -56,7 +56,7 @@ Foremast only works with AWS (for now). Below are the AWS requirements:
 
     - Example ``immutable_metadata`` tag: ``{"purpose": "external", "target": "elb"}``
 
-    - The  ``"purpose"`` key will dictate how this appears in Spinnaker. 
+    - The  ``"purpose"`` key will dictate how this appears in Spinnaker.
 
       - Needs to be ``"internal"`` or ``"external"`` in order to properly work with Foremast
 
@@ -131,7 +131,7 @@ The default generated pipeline requires a couple of Jenkins jobs to be setup in 
 Gitlab
 ------
 
-Gitlab is not required for Spinnaker but if it is already part of your infrastructure you can have Foremast directly look up the :doc:`pipeline_json` and :doc:`application_json` files. You will need to get the Gitlab Token of a user that has permissions to the desired repository and set them in your :doc:`foremast_config`. 
+Gitlab is not required for Spinnaker but if it is already part of your infrastructure you can have Foremast directly look up the :ref:`pipeline_json` and :ref:`application_json` files. You will need to get the Gitlab Token of a user that has permissions to the desired repository and set them in your :ref:`foremast_config`.
 
 .. _`Spinnaker documentation`: http://www.spinnaker.io/docs
 .. _`Spinnaker AWS Setup guide`: http://www.spinnaker.io/v1.0/docs/target-deployment-setup#section-amazon-web-services-setup

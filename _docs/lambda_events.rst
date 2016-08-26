@@ -1,3 +1,5 @@
+.. _lambda_events:
+
 ==========================
 Lambda Triggers and Events
 ==========================
@@ -8,12 +10,12 @@ Lambda Triggers and Events
 Purpose
 -------
 
-Foremast supports multiple Lambda events. These are configured in the :doc:`application_json` config and set as a list under the :ref:`lambda_trigger` key.
+Foremast supports multiple Lambda events. These are configured in the :ref:`application_json` config and set as a list under the :ref:`lambda_trigger` key.
 
 Example Configuration
 ---------------------
 
-This example would go in the :doc:`application_json` configuration file.
+This example would go in the :ref:`application_json` configuration file.
 
 .. code-block:: json
 

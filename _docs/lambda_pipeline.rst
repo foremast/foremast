@@ -13,9 +13,9 @@ Lambda Specific Setup
 ---------------------
 
 #. Look at the :doc:`getting_started` guide for basic setup. The Lambda process will be very similar
-#. Look at the :ref:`lambda_block` configurations in :doc:`pipeline_json` and :doc:`application_json`. 
-#. In :doc:`pipeline_json` set ``"type" : "lambda"`` in order for Foremast to treat the application as a Lambda function.
-#. Setup the desired Lambda triggers. See :doc:`lambda_events` for details.
+#. Look at the :ref:`lambda_block` configurations in :ref:`pipeline_json` and :ref:`application_json`.
+#. In :ref:`pipeline_json` set ``"type" : "lambda"`` in order for Foremast to treat the application as a Lambda function.
+#. Setup the desired Lambda triggers. See :ref:`lambda_events` for details.
 
 Lambda Pipeline Example
 -----------------------
@@ -37,10 +37,3 @@ Lambda Pipeline Example
 #. Repeat steps 3-5 for each desired environment
 
 .. image:: _static/lambda_example.png
-
-
-
-
-
-
-

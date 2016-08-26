@@ -1,3 +1,5 @@
+.. _application_json:
+
 ================================
 application-master-$account.json
 ================================
@@ -12,7 +14,7 @@ This configuration file holds infrastruction information for $account. Each AWS 
 Example Configuration
 ----------------------
 
-.. literalinclude:: ../src/foremast/templates/configs/configs.json.j2
+.. literalinclude:: ../../src/foremast/templates/configs/configs.json.j2
 
 Configuration Details
 ----------------------
@@ -339,7 +341,7 @@ Defines DNS TTL for generated DNS records
 ``lambda_triggers``
 ~~~~~~~~~~~~~~~~~~~
 
-A list of all events to trigger a Lambda function. See :doc:`lambda_events` for details
+A list of all events to trigger a Lambda function. See :ref:`lambda_events` for details
 
     | *Type*: List
     | *Default*: ``[]``

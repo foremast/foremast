@@ -1,3 +1,5 @@
+.. _aws_creds:
+
 ================================
 AWS Credentials
 ================================
@@ -24,7 +26,7 @@ Example Configuration
 
     [stage]
     aws_access_key_id = TTTTTTTTTTTTTTTTTTTTTTTTTT
-    aws_secret_access_key = sssssssssssstttttttttttttttsssssssss 
+    aws_secret_access_key = sssssssssssstttttttttttttttsssssssss
 
 
 Configuration Location
