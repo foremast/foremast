@@ -29,4 +29,4 @@ Once that is taken care of, execute the following:
 
 .. code-block:: bash
 
-    $ python setup.py sdist upload -r gogo
+    $ python setup.py bdist_wheel upload -r gogo
