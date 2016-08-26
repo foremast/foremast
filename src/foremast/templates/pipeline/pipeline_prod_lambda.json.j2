@@ -1,7 +1,5 @@
 [
-    {% if data.app.previous_env %}
     {% include "pipeline/stage-judgement-nonprod.json.j2" %},
-    {% endif %}
     {% include "pipeline/stage-infrastructure-setup-lambda.json.j2" %},
     {% include "pipeline/stage-deploy-lambda.json.j2" %}
 ]

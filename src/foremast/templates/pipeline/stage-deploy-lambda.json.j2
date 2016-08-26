@@ -13,6 +13,10 @@
       "PROJECT": "{{ data.app.group_name }}",
       "GIT_REPO": "{{ data.app.repo_name }}",
       "ENV": "{{ data.app.environment }}",
-      "REGION": "{{ data.app.region }}"
+      "REGION": "{{ data.app.region }}",
+      "OWNER_EMAIL": "{{ data.app.owner_email }}",
+      "FUNCTION_NAME": "{{ data.app.function_name }}",
+      "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
+      "APP_NAME": "{{ data.app.appname }}"
       }
   }
