@@ -14,6 +14,7 @@ Contents
    :titlesonly:
 
    getting_started
+   CONTRIBUTING
    configuration_files
    infra_assumptions
    pipeline_examples

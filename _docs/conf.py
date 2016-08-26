@@ -344,6 +344,10 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/3': None}
+intersphinx_mapping = {
+    'napoleon': ('https://sphinxcontrib-napoleon.readthedocs.io/en/latest', None),
+    'python': ('https://docs.python.org/3', None),
+    'pythondev': ('https://docs.python.org/devguide/', None),
+}
 
 autodoc_mock_imports = []
