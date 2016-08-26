@@ -7,6 +7,58 @@ Contributions to Foremast are welcome.
 Getting Started
 ---------------
 
+.. _commits:
+
+Commits
+^^^^^^^
+
+Follow `semantic commits`_ to make :command:`git log` a little easier to follow.
+
+chore
+   something just needs to happen, e.g. versioning
+docs
+   documentation pages in :file:`_docs/` or docstrings
+feat
+   new code in :file:`src/`
+fix
+   code improvement in :file:`src/`
+refactor
+   code movement in :file:`src/`
+style
+   aesthetic changes
+test
+   test case modifications in :file:`test/`
+
+Examples commit messages:
+
+* chore: v10.0
+* docs: Add configuration setting
+* feat: Create Lambda function
+* fix: Retry upload on failure
+* refactor: Extract duplicate code
+* style: isort, YAPF
+* test: Coverage around add permissions
+
+.. _semantic commits: https://seesparkbox.com/foundry/semantic_commit_messages
+
+Branches
+^^^^^^^^
+
+Use `slash convention`_ with the same leaders as :ref:`commits`, e.g.:
+
+* chore/v10.0
+* docs/configs
+* feat/lambda
+* fix/deadlock
+* refactor/debug_util
+* style/lambda_whitespace
+* test/lambda_permission
+
+.. _slash convention: http://www.guyroutledge.co.uk/blog/git-branch-naming-conventions/
+
+Code Submission
+---------------
+
 Code Improvement
 ^^^^^^^^^^^^^^^^
 
