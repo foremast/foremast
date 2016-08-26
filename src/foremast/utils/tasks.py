@@ -49,7 +49,6 @@ def post_task(task_data):
                          headers=HEADERS,
                          verify=GATE_CA_BUNDLE,
                          cert=GATE_CLIENT_CERT)
-
     resp_json = resp.json()
 
     LOG.debug(resp_json)

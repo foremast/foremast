@@ -76,9 +76,8 @@ class AutoScalingPolicy:
                 'scalingAdjustment': 1
             }
         elif scaling_type == 'scale_down':
-            self.settings['asg']['scaling_policy']['threshold'] = \
-                self.settings[
-                    'asg']['scaling_policy']['threshold'] * 0.5
+            self.settings['asg']['scaling_policy']['threshold'] = self.settings[
+                'asg']['scaling_policy']['threshold'] * 0.5
             template_kwargs = {
                 'app': self.app,
                 'env': self.env,
@@ -121,8 +120,7 @@ class AutoScalingPolicy:
                 self.delete_existing_policy(subpolicy, server_group)
 
         if self.settings['asg']['scaling_policy']['period_minutes']:
-            period_sec = self.settings['asg']['scaling_policy'][
-                             'period_minutes'] * 60
+            period_sec = self.settings['asg']['scaling_policy']['period_minutes'] * 60
         else:
             period_sec = 1800
         self.prepare_policy_template('scale_up', period_sec, server_group)
@@ -150,8 +148,7 @@ class AutoScalingPolicy:
             scaling_policy (json): the scaling_policy json from Spinnaker that should be deleted
             server_group (str): the affected server_group
         """
-        self.log.info(
-            "Deleting policy {}".format(scaling_policy['policyName']))
+        self.log.info("Deleting policy {}".format(scaling_policy['policyName']))
         delete_dict = {
             "application": self.app,
             "description": "Delete scaling policy",

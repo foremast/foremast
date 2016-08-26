@@ -20,7 +20,7 @@ import logging
 import murl
 import requests
 
-from ..consts import API_URL
+from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import check_managed_pipeline, get_all_pipelines
 
@@ -76,7 +76,9 @@ def clean_pipelines(app='', settings=None):
 
             url.path = 'pipelines/{app}/{pipeline}'.format(
                 app=app, pipeline=pipeline_name)
-            response = requests.delete(url.url)
+            response = requests.delete(url.url,
+                                       verify=GATE_CA_BUNDLE,
+                                       cert=GATE_CLIENT_CERT)
 
             LOG.debug('Deleted "%s" Pipeline response:\n%s', pipeline_name,
                       response.text)

@@ -113,8 +113,7 @@ class SpinnakerPipeline:
         slack = self.settings['pipeline']['notifications']['slack']
         baking_process = self.settings['pipeline']['image']['builder']
         provider = 'aws'
-        root_volume_size = self.settings['pipeline']['image'][
-            'root_volume_size']
+        root_volume_size = self.settings['pipeline']['image']['root_volume_size']
 
         if root_volume_size > 50:
             raise SpinnakerPipelineCreationFailed(
@@ -124,8 +123,7 @@ class SpinnakerPipeline:
         ami_id = ami_lookup(name=base,
                             region=region)
 
-        ami_template_file = generate_packer_filename(provider, region,
-                                                     baking_process)
+        ami_template_file = generate_packer_filename(provider, region, baking_process)
 
         pipeline_id = self.compare_with_existing(region=region)
 
@@ -159,8 +157,7 @@ class SpinnakerPipeline:
         Returns:
             str: Pipeline config json
         """
-        url = "{0}/applications/{1}/pipelineConfigs".format(API_URL,
-                                                            self.app_name)
+        url = "{0}/applications/{1}/pipelineConfigs".format(API_URL, self.app_name)
         resp = requests.get(url,
                             verify=GATE_CA_BUNDLE,
                             cert=GATE_CLIENT_CERT)
@@ -181,8 +178,7 @@ class SpinnakerPipeline:
         pipelines = self.get_existing_pipelines()
         pipeline_id = ''
         for pipeline in pipelines:
-            if (pipeline['application'] == self.app_name) and (
-                region in pipeline['name']):
+            if (pipeline['application'] == self.app_name) and (region in pipeline['name']):
                 self.log.info('Existing pipeline found - %s', pipeline['name'])
                 pipeline_id = pipeline['id']
                 break
