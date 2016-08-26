@@ -61,6 +61,10 @@ def construct_policy(app='coreforrest',
     services = pipeline_settings.get('services', {})
     LOG.debug('Found requested services: %s', services)
 
+    if deployment_type == 'lambda':
+        if 'cloudwatchlogs' not in services:
+            services['cloudwatchlogs'] = True
+
     if services:
         credential = get_env_credential(env=env)
         account_number = credential['accountId']
