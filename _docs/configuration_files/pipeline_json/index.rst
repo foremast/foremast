@@ -106,4 +106,4 @@ Defines the root volume size of the resulting AMI in GB
     | *Default*: `6`
 
 .. include:: lambda.rest
-.. include:: services.rst
+.. include:: services.rest
