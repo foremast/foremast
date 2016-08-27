@@ -18,7 +18,7 @@ Contents
    configuration_files/index
    infra_assumptions
    pipeline_examples
-   aws_lambda
+   lambda/index
    modules
    RELEASING
 
