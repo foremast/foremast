@@ -105,46 +105,5 @@ Defines the root volume size of the resulting AMI in GB
     | *Units*: Gigabyte
     | *Default*: `6`
 
-.. _lambda_block:
-
-``lambda`` Block
-~~~~~~~~~~~~~~~~~
-
-Holds settings related to lambda deployments
-
-``app_description``
-*******************
-
-Lambda function description
-
-    | *Default*: ``"default description"``
-
-``runtime``
-***********
-
-The runtime environment for the Lambda function
-
-    | *Default*: ``"java8"``
-    | *Options*:
-
-        - ``"java8"``
-        - ``"nodejs"``
-        - ``"nodejs4.3"``
-        - ``"python2.7"``
-
-``handler``
-***********
-
-The function that Lambda calls to beign execution
-
-    | *Default*: ``"main"``
-
-``vpc_enabled``
-***************
-
-Wether or not the Lambda function should use a VPC
-
-    | *Type*: Boolean
-    | *Default*: ``false``
-
+.. include:: lambda.rest
 .. include:: services.rst
