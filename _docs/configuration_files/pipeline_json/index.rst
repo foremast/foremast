@@ -146,3 +146,5 @@ Wether or not the Lambda function should use a VPC
 
     | *Type*: Boolean
     | *Default*: ``false``
+
+.. include:: services.rst
