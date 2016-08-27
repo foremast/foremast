@@ -13,6 +13,14 @@ Add CloudFormation access.
    | *Type*: bool
    | *Default*: ``false``
 
+``cloudwatchlogs``
+******************
+
+Add CloudWatch Logs access. Lambda Functions will automatically have this added.
+
+   | *Type*: bool
+   | *Default*: ``false``
+
 ``dynamodb``
 ************
 
