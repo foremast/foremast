@@ -19,37 +19,41 @@ This example would go in the :ref:`application_json` configuration file.
 
 .. code-block:: json
 
-      "lambda_triggers": [
-        {
-          "type": "s3",
-          "bucket": "app-bucket-dev",
-          "events": ["s3:ObjectCreated:*"],
-          "prefix": "",
-          "suffix": ""
-        },
-        {
-          "type": "sns",
-          "topic": "app-dns-dev"
-        },
-        {
-          "type": "cloudwatch-event",
-          "schedule": "rate(5 minutes)",
-          "rule_name": "app cron - 5min",
-          "rule_description": "triggers lambda function every five minutes"
-        },
-        {
-          "type": "cloudwatch-logs",
-          "log_group": "/aws/lambda/awslimit_test",
-          "filter_name": "Trigger lambda on every WARNING message",
-          "filter_pattern": ""
-        },
-        {
-          "type": "api-gateway",
-          "api_name": "lambdatest-api",
-          "resource": "/index",
-          "method": "GET",
-        }
-      ]
+   {
+     "lambda_triggers": [
+       {
+         "type": "s3",
+         "bucket": "app-bucket-dev",
+         "events": [
+           "s3:ObjectCreated:*"
+         ],
+         "prefix": "",
+         "suffix": ""
+       },
+       {
+         "type": "sns",
+         "topic": "app-dns-dev"
+       },
+       {
+         "type": "cloudwatch-event",
+         "schedule": "rate(5 minutes)",
+         "rule_name": "app cron - 5min",
+         "rule_description": "triggers lambda function every five minutes"
+       },
+       {
+         "type": "cloudwatch-logs",
+         "log_group": "/aws/lambda/awslimit_test",
+         "filter_name": "Trigger lambda on every WARNING message",
+         "filter_pattern": ""
+       },
+       {
+         "type": "api-gateway",
+         "api_name": "lambdatest-api",
+         "resource": "/index",
+         "method": "GET"
+       }
+     ]
+   }
 
 Configuration Details
 ----------------------
