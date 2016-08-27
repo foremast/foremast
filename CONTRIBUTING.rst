@@ -59,6 +59,13 @@ Use `slash convention`_ with the same leaders as :ref:`commits`, e.g.:
 
 .. _slash convention: http://www.guyroutledge.co.uk/blog/git-branch-naming-conventions/
 
+Documentation
+^^^^^^^^^^^^^
+
+Use reStructuredText for docstrings and documentation. For docstrings, follow
+:ref:`napoleon:example_google`. For documentation pages, follow the strong
+guidelines from Python with :ref:`pythondev:documenting`.
+
 Code Submission
 ---------------
 
@@ -118,13 +125,6 @@ Try to keep history as linear as possible using a `rebase` merge strategy.
       git push
 
 #. Delete merged Branch
-
-Documentation
-^^^^^^^^^^^^^
-
-Use reStructuredText for docstrings and documentation. For docstrings, follow
-:ref:`napoleon:example_google`. For documentation pages, follow the strong
-guidelines from Python with :ref:`pythondev:documenting`.
 
 .. _Issue: https://github.com/gogoit/foremast/issues
 .. _Pull Request: https://github.com/gogoit/foremast/pulls
