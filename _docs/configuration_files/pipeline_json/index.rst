@@ -45,24 +45,7 @@ Link to the applications documentation. This is not used directly in the pipelin
 
     | *Default*: ``null``
 
-``notifications`` Block
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Where to send pipeline failure notifications
-
-``email``
-**********
-
-Email address to send pipeline failures (email must be configured in Spinnaker Echo)
-
-    | *Default*: ``null``
-
-``slack``
-**********
-
-Slack channel to send pipeline failures (Slack must be configured in Spinnaker Echo)
-
-    | *Default*: ``null``
+.. include:: notifications.rest
 
 ``promote_restrict``
 ~~~~~~~~~~~~~~~~~~~~
