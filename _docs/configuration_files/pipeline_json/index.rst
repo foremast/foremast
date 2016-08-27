@@ -91,19 +91,6 @@ List of accounts that the application will be deployed to. Order matters as it d
     | *Type*: List of strings
     | *Default*: ``["stage", "prod"]``
 
-``image`` Block
-~~~~~~~~~~~~~~~
-
-Holds settings for the baked image
-
-``root_volume_size``
-********************
-
-Defines the root volume size of the resulting AMI in GB
-
-    | *Type*: int
-    | *Units*: Gigabyte
-    | *Default*: `6`
-
+.. include:: image.rest
 .. include:: lambda.rest
 .. include:: services.rest
