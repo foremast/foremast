@@ -62,9 +62,10 @@ Use `slash convention`_ with the same leaders as :ref:`commits`, e.g.:
 Documentation
 ^^^^^^^^^^^^^
 
-Use reStructuredText for docstrings and documentation. For docstrings, follow
-:ref:`napoleon:example_google`. For documentation pages, follow the strong
-guidelines from Python with :ref:`pythondev:documenting`.
+* Use reStructuredText for docstrings and documentation
+* For docstrings, follow :ref:`napoleon:example_google`
+* For documentation pages, follow the strong guidelines from Python with
+  :ref:`pythondev:documenting`
 
 Code Submission
 ---------------
