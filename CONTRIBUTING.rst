@@ -2,6 +2,9 @@
 How To Contribute
 =================
 
+.. contents::
+   :local:
+
 Contributions to Foremast are welcome.
 
 Getting Started
