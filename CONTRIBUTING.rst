@@ -67,6 +67,12 @@ Documentation
 * For documentation pages, follow the strong guidelines from Python with
   :ref:`pythondev:documenting`
 
+.. note::
+
+   * Use :file:`.rst` for regular pages
+   * Use :file:`.rest` for pages included using ``.. include:: file.rest``
+     (fixes a Sphinx issue that thinks references are duplicated)
+
 Code Submission
 ---------------
 
