@@ -40,3 +40,22 @@ def test_iam_construct_policy(requests_get):
     settings.update({'services': {'dynamodb': ['coreforrest', 'edgeforrest', 'attendantdevops']}})
     policy_json = construct_policy(pipeline_settings=settings)
     policy = json.loads(policy_json)
+
+
+@mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
+@mock.patch('foremast.utils.credentials.requests.get')
+def test_construct_cloudwatchlogs(requests_get):
+    """Check Lambda Policy."""
+    pipeline_settings = {'services': {'cloudwatchlogs': True}, 'type': 'lambda'}
+
+    policy_json = construct_policy(
+        app='unicornforrest', env='dev', group='forrest', pipeline_settings=pipeline_settings)
+    policy = json.loads(policy_json)
+
+    statements = list(statement for statement in policy['Statement'] if statement['Sid'] == 'LambdaCloudWatchLogs')
+    assert len(statements) == 1
+
+    statement = statements[0]
+    assert statement['Effect'] == 'Allow'
+    assert len(statement['Action']) == 3
+    assert all(action.startswith('logs:') for action in statement['Action'])

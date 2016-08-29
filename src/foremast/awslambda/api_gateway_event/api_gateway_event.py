@@ -18,11 +18,11 @@ class APIGateway:
         app (str): Application Name
         env (str): Environment/account for deployments
         region (str): AWS Region
-        rules (str): Trigger settings
+        rules (dict): Trigger settings
         prop_path (str): Path to the raw.properties.json
     """
 
-    def __init__(self, app='', env='', region='', rules='', prop_path=''):
+    def __init__(self, app='', env='', region='', rules={}, prop_path=''):
         self.log = logging.getLogger(__name__)
         self.generated = get_details(app=app, env=env)
         self.trigger_settings = rules
