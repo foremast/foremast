@@ -86,7 +86,6 @@ def test_construct_s3(requests_get):
     assert len(allow_edit_policy['Resource']) == 1
 
 
-
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.requests.get')
 def test_construct_s3_buckets(requests_get):
@@ -104,6 +103,6 @@ def test_construct_s3_buckets(requests_get):
 
     allow_list_policy, allow_edit_policy = policy['Statement']
 
-    assert len(allow_list_policy['Resource']) == 2
+    assert len(allow_list_policy['Resource']) == 3
 
-    assert len(allow_edit_policy['Resource']) == 2
+    assert len(allow_edit_policy['Resource']) == 3

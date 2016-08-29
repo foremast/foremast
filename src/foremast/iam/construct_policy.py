@@ -61,7 +61,9 @@ def construct_policy(app='coreforrest', env='dev', group='forrest', region='us-e
 
     statements = []
     for service, value in services.items():
-        if isinstance(value, (bool, str)):
+        if value is True:
+            items = []
+        elif isinstance(value, str):
             items = [value]
         else:
             items = value
