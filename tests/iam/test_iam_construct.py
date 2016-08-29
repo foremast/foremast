@@ -47,7 +47,7 @@ def test_iam_construct_policy(requests_get):
 def test_construct_lambda(requests_get):
     """Check Lambda Policy."""
     policy_json = construct_policy(
-        app='unicornforrest', env='dev', group='forrest', pipeline_settings={}, deployment_type='lambda')
+        app='unicornforrest', env='dev', group='forrest', pipeline_settings={'type': 'lambda'})
     policy = json.loads(policy_json)
 
     statements = list(statement for statement in policy['Statement'] if statement['Sid'] == 'LambdaCloudWatchLogs')
