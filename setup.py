@@ -22,7 +22,7 @@ with open('requirements.txt', 'rt') as reqs_file:
 
 setup(
     name='foremast',
-    version='2.12',
+    version='2.13',
     description='Tools for creating infrastructure and Spinnaker Pipelines.',
     long_description=open('README.rst').read(),
     author='Gogo DevOps',
