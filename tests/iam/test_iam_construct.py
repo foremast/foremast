@@ -84,3 +84,26 @@ def test_construct_s3(requests_get):
     assert len(allow_edit_policy['Action']) == 3
     assert all(('s3:{0}Object'.format(action) in allow_edit_policy['Action'] for action in ('Delete', 'Get', 'Put')))
     assert len(allow_edit_policy['Resource']) == 1
+
+
+
+@mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
+@mock.patch('foremast.utils.credentials.requests.get')
+def test_construct_s3_buckets(requests_get):
+    """Check S3 Policy with multiple Buckets listed."""
+    pipeline_settings = {'services': {'s3': ['Bucket1', 'Bucket2']}}
+    construct_policy_kwargs = {'app': 'unicornforrest',
+                               'env': 'dev',
+                               'group': 'forrest',
+                               'pipeline_settings': pipeline_settings}
+
+    policy_json = construct_policy(**construct_policy_kwargs)
+    policy = json.loads(policy_json)
+    print(policy)
+    assert len(policy['Statement']) == 2
+
+    allow_list_policy, allow_edit_policy = policy['Statement']
+
+    assert len(allow_list_policy['Resource']) == 2
+
+    assert len(allow_edit_policy['Resource']) == 2

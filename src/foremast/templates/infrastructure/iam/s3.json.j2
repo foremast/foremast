@@ -5,7 +5,12 @@
                 "s3:ListBucket"
             ],
             "Resource": [
-                "arn:aws:s3:::{{ bucket_name }}"
+                {% for bucket in items -%}
+                  "arn:aws:s3:::{{ bucket }}"
+                  {%- if not loop.last -%}
+                    ,
+                  {%- endif %}
+                {% endfor -%}
             ]
         },
         {
@@ -16,6 +21,11 @@
                 "s3:PutObject"
             ],
             "Resource": [
-                "arn:aws:s3:::{{ bucket_name }}"
+                {% for bucket in items -%}
+                  "arn:aws:s3:::{{ bucket }}/*"
+                  {%- if not loop.last -%}
+                    ,
+                  {%- endif %}
+                {% endfor -%}
             ]
         }
