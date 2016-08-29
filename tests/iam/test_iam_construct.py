@@ -44,10 +44,12 @@ def test_iam_construct_policy(requests_get):
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.requests.get')
-def test_construct_lambda(requests_get):
+def test_construct_cloudwatchlogs(requests_get):
     """Check Lambda Policy."""
+    pipeline_settings = {'services': {'cloudwatchlogs': True}, 'type': 'lambda'}
+
     policy_json = construct_policy(
-        app='unicornforrest', env='dev', group='forrest', pipeline_settings={'type': 'lambda'})
+        app='unicornforrest', env='dev', group='forrest', pipeline_settings=pipeline_settings)
     policy = json.loads(policy_json)
 
     statements = list(statement for statement in policy['Statement'] if statement['Sid'] == 'LambdaCloudWatchLogs')
