@@ -188,7 +188,6 @@ def prepare_infrastructure():
     runner.create_iam()
     runner.create_s3()
     runner.create_secgroups()
-    runner.create_awslambda()
 
     eureka = runner.configs[runner.env]['app']['eureka_enabled']
     deploy_type = runner.configs['pipeline']['type']
@@ -197,6 +196,7 @@ def prepare_infrastructure():
         LOG.info("Eureka Enabled, skipping ELB and DNS setup")
     if deploy_type == "lambda":
         LOG.info("Lambda Enabled, skipping ELB and DNS setup")
+        runner.create_awslambda()
     else:
         LOG.info("No Eureka, running ELB and DNS setup")
         runner.create_elb()
