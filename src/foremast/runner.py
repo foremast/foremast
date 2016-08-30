@@ -194,7 +194,7 @@ def prepare_infrastructure():
 
     if eureka:
         LOG.info("Eureka Enabled, skipping ELB and DNS setup")
-    if deploy_type == "lambda":
+    elif deploy_type == "lambda":
         LOG.info("Lambda Enabled, skipping ELB and DNS setup")
         runner.create_awslambda()
     else:
