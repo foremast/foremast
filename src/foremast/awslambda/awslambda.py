@@ -2,6 +2,7 @@ import logging
 import zipfile
 
 import boto3
+from tryagain import retries
 
 from ..exceptions import RequiredKeyNotFound
 from ..utils import get_details, get_properties, get_role_arn, get_security_group_id, get_subnets
@@ -90,6 +91,7 @@ class LambdaFunction(object):
             sg_ids.append(sg_id)
         return sg_ids
 
+    @retries(max_attempts=3, wait=1, exceptions=(SystemExit))
     def update_function_configuration(self, vpc_config):
         """Update existing Lambda function configuration.
 
@@ -110,7 +112,7 @@ class LambdaFunction(object):
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
-                LOG.critical(message)
+                LOG.debug(message)
                 raise SystemExit(message)
 
             raise
