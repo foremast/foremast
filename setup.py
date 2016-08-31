@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #   Foremast - Pipeline Tooling
 #
 #   Copyright 2016 Gogo, LLC
@@ -13,8 +14,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-#!/usr/bin/env python3
 from setuptools import find_packages, setup
 
 with open('requirements.txt', 'rt') as reqs_file:
