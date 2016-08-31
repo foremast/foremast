@@ -14,14 +14,26 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+import shlex
+import subprocess
+
 from setuptools import find_packages, setup
+
+
+def tag_version():
+    """Generate version number from Git Tag, e.g. v2.0.0, v2.0.0-1."""
+    recent_tag = subprocess.check_output(shlex.split('git describe --tags --long'))
+    tag, count, _ = recent_tag.decode().split('-')
+    version = '-'.join([tag, count]) if int(count) else tag
+    return version
+
 
 with open('requirements.txt', 'rt') as reqs_file:
     reqs_list = reqs_file.readlines()
 
 setup(
     name='foremast',
-    version='2.16.3',
+    version=tag_version(),
     description='Tools for creating infrastructure and Spinnaker Pipelines.',
     long_description=open('README.rst').read(),
     author='Gogo DevOps',
@@ -66,5 +78,4 @@ setup(
             'rebuild_pipelines=foremast.runner:rebuild_pipelines',
             'slack-notify=foremast.slacknotify.__main__:main',
         ]
-    },
-)
+    }, )
