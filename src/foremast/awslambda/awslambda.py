@@ -109,12 +109,12 @@ class LambdaFunction(object):
                 Timeout=int(self.timeout),
                 MemorySize=int(self.memory),
                 VpcConfig=vpc_config)
-        except boto3.exceptions.botocore.exceptions.ClientError:
-            LOG.critical('Failed to update Lambda Function:\n'
-                         'Profile: %s\n'
-                         'Region: %s\n'
-                         'Function Role: %s', self.session.profile_name, self.lambda_client.meta.region_name,
-                         self.role_arn)
+        except boto3.exceptions.botocore.exceptions.ClientError as error:
+            if 'CreateNetworkInterface' in error.response['Error']['Message']:
+                message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
+                LOG.critical(message)
+                raise SystemExit(message)
+
             raise
 
         LOG.info("Successfully updated Lambda function")
@@ -138,19 +138,27 @@ class LambdaFunction(object):
         with open('lambda-holder.zip', 'rb') as openfile:
             contents = openfile.read()
 
-        self.lambda_client.create_function(
-            FunctionName=self.app_name,
-            Runtime=self.runtime,
-            Role=self.role_arn,
-            Handler=self.handler,
-            Code={
-                'ZipFile': contents
-            },
-            Description=self.description,
-            Timeout=int(self.timeout),
-            MemorySize=int(self.memory),
-            Publish=False,
-            VpcConfig=vpc_config)
+        try:
+            self.lambda_client.create_function(
+                FunctionName=self.app_name,
+                Runtime=self.runtime,
+                Role=self.role_arn,
+                Handler=self.handler,
+                Code={
+                    'ZipFile': contents
+                },
+                Description=self.description,
+                Timeout=int(self.timeout),
+                MemorySize=int(self.memory),
+                Publish=False,
+                VpcConfig=vpc_config)
+        except boto3.exceptions.botocore.exceptions.ClientError as error:
+            if 'CreateNetworkInterface' in error.response['Error']['Message']:
+                message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
+                LOG.critical(message)
+                raise SystemExit(message)
+
+            raise
 
         LOG.info("Successfully created Lambda function")
 
