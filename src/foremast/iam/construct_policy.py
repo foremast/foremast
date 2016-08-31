@@ -76,7 +76,8 @@ def construct_policy(app='coreforrest', env='dev', group='forrest', region='us-e
                 env=env,
                 group=group,
                 region=region,
-                items=items)
+                items=items,
+                settings=pipeline_settings)
             statement = json.loads(statement_block)
             statements.append(statement)
         except ValueError:

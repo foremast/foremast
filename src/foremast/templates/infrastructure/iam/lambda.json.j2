@@ -1,5 +1,8 @@
         {
             "Action": [
+            {% if settings.lambda.vpc_enabled %}
+                "ec2:CreateNetworkInterface",
+            {% endif %}
                 "lambda:*"
             ],
             "Effect": "Allow",
