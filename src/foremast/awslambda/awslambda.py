@@ -45,8 +45,8 @@ class LambdaFunction(object):
 
         self.role_arn = get_role_arn(generated.iam()['role'], self.env, self.region)
 
-        session = boto3.Session(profile_name=self.env, region_name=self.region)
-        self.lambda_client = session.client('lambda')
+        self.session = boto3.Session(profile_name=self.env, region_name=self.region)
+        self.lambda_client = self.session.client('lambda')
 
     def _check_lambda(self):
         """Check if lambda function exists.
@@ -102,14 +102,21 @@ class LambdaFunction(object):
             vpc_config (dict): Dictionary of SubnetIds and SecurityGroupsIds for using
                                a VPC in lambda
         """
-        self.lambda_client.update_function_configuration(FunctionName=self.app_name,
-                                                         Runtime=self.runtime,
-                                                         Role=self.role_arn,
-                                                         Handler=self.handler,
-                                                         Description=self.description,
-                                                         Timeout=int(self.timeout),
-                                                         MemorySize=int(self.memory),
-                                                         VpcConfig=vpc_config)
+        try:
+            self.lambda_client.update_function_configuration(
+                FunctionName=self.app_name,
+                Runtime=self.runtime,
+                Role=self.role_arn,
+                Handler=self.handler,
+                Description=self.description,
+                Timeout=int(self.timeout),
+                MemorySize=int(self.memory),
+                VpcConfig=vpc_config)
+        except boto3.exceptions.botocore.exceptions.ClientError:
+            LOG.critical('Failed to update Lambda Function:\n'
+                         'Profile: %s\n'
+                         'Region: %s', self.session.profile_name, self.lambda_client.meta.region_name)
+            raise
 
         LOG.info("Successfully updated Lambda function")
 
