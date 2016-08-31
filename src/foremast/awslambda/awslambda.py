@@ -115,7 +115,9 @@ class LambdaFunction(object):
         except boto3.exceptions.botocore.exceptions.ClientError:
             LOG.critical('Failed to update Lambda Function:\n'
                          'Profile: %s\n'
-                         'Region: %s', self.session.profile_name, self.lambda_client.meta.region_name)
+                         'Region: %s\n'
+                         'Function Role: %s', self.session.profile_name, self.lambda_client.meta.region_name,
+                         self.role_arn)
             raise
 
         LOG.info("Successfully updated Lambda function")
