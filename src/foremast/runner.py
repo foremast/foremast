@@ -185,6 +185,7 @@ def prepare_infrastructure():
     runner = ForemastRunner()
 
     runner.write_configs()
+    runner.create_app()
     runner.create_iam()
     runner.create_s3()
     runner.create_secgroups()
