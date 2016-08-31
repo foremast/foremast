@@ -6,8 +6,7 @@ import zipfile
 import boto3
 
 from ..exceptions import RequiredKeyNotFound
-from ..utils import (get_details, get_properties, get_role_arn,
-                     get_security_group_id, get_subnets)
+from ..utils import get_details, get_properties, get_role_arn, get_security_group_id, get_subnets
 
 LOG = logging.getLogger(__name__)
 
@@ -66,8 +65,7 @@ class LambdaFunction(object):
     def _vpc_config(self):
         """Get VPC config."""
         if self.vpc_enabled:
-            subnets = get_subnets(env=self.env, region=self.region,
-                                purpose='internal')['subnet_ids'][self.region]
+            subnets = get_subnets(env=self.env, region=self.region, purpose='internal')['subnet_ids'][self.region]
             security_groups = self._get_sg_ids()
 
             vpc_config = {'SubnetIds': subnets, 'SecurityGroupIds': security_groups}
@@ -75,7 +73,6 @@ class LambdaFunction(object):
             vpc_config = {'SubnetIds': [], 'SecurityGroupIds': []}
         LOG.debug("Lambda VPC config setup: %s", vpc_config)
         return vpc_config
-
 
     def _get_sg_ids(self):
         """Get IDs for all defined security groups.
@@ -141,19 +138,19 @@ class LambdaFunction(object):
         with open('lambda-holder.zip', 'rb') as openfile:
             contents = openfile.read()
 
-
-        self.lambda_client.create_function(FunctionName=self.app_name,
-                                           Runtime=self.runtime,
-                                           Role=self.role_arn,
-                                           Handler=self.handler,
-                                           Code={
-                                               'ZipFile': contents
-                                           },
-                                           Description=self.description,
-                                           Timeout=int(self.timeout),
-                                           MemorySize=int(self.memory),
-                                           Publish=False,
-                                           VpcConfig=vpc_config)
+        self.lambda_client.create_function(
+            FunctionName=self.app_name,
+            Runtime=self.runtime,
+            Role=self.role_arn,
+            Handler=self.handler,
+            Code={
+                'ZipFile': contents
+            },
+            Description=self.description,
+            Timeout=int(self.timeout),
+            MemorySize=int(self.memory),
+            Publish=False,
+            VpcConfig=vpc_config)
 
         LOG.info("Successfully created Lambda function")
 
