@@ -49,6 +49,7 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
         LOG.debug('Lookup AMI table: %s', ami_dict)
         ami_id = ami_dict[region][name]
     elif GITLAB_TOKEN:
+        # TODO: Remove GitLab repository in favour of JSON URL option.
         LOG.info("Getting AMI from Gitlab")
         server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
         project_id = server.getproject('devops/ansible')['id']
