@@ -22,7 +22,7 @@ from setuptools import find_packages, setup
 
 def tag_version():
     """Generate version number from Git Tag, e.g. v2.0.0, v2.0.0-1."""
-    recent_tag = subprocess.check_output(shlex.split('git describe --tags --long'))
+    recent_tag = subprocess.check_output(shlex.split('git describe --long'))
     tag, count, _ = recent_tag.decode().split('-')
     version = '-'.join([tag, count]) if int(count) else tag
     return version
