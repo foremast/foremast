@@ -20,13 +20,18 @@ Add the following to ``~/.pypirc`` file
 Upload Release
 ==============
 
-When releasing a new version, the following needs to occur
+When releasing a new version, the following needs to occur:
 
--  Update version in ``setup.py``
--  Ensure all test via ``tox`` pass
+#. Add version Tag
 
-Once that is taken care of, execute the following:
+   .. code:: bash
 
-.. code-block:: bash
+      git tag -a #.#.#
+      git push --tags
 
-    $ python setup.py bdist_wheel upload -r gogo
+#. Ensure all test via ``tox`` pass
+#. Generate and upload the package
+
+   .. code:: bash
+
+      python setup.py bdist_wheel upload -r gogo
