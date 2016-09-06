@@ -16,15 +16,14 @@ entry points.
 Entry Points
 ^^^^^^^^^^^^
 
--  ``prepare-app-pipeline`` - Creates an application and pipeline Spinnaker
--  ``prepare-infrastructure`` - Sets up AWS infrastructure like s3, iam, elb,
+-  ``foremast-pipeline`` - Creates an application and pipeline Spinnaker
+-  ``foremast-infrastructure`` - Sets up AWS infrastructure like s3, iam, elb,
    and security groups
--  ``prepare-onetime-pipeline`` - Generates a pipeline for deploying to one
+-  ``foremast-onetime-pipeline`` - Generates a pipeline for deploying to one
    specific account
--  ``create-scaling-policy`` - Creates and attaches a scaling policy to an
+-  ``foremast-scaling-policy`` - Creates and attaches a scaling policy to an
    application server group.
--  ``rebuild_pipelines`` - rebuild pipelines after changes have been made
--  ``slack-notify`` - sends a slack notification to the proper channels
+-  ``foremast-rebuild-pipelines`` - rebuild pipelines after changes have been made
 
 You can run any of these entries points from the command line. They rely on
 environment variables and are ideal for running in a Jenkins job

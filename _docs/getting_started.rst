@@ -84,7 +84,7 @@ Method 1
 
 This is our recommended method and how we internally at Gogo run Foremast. You need to first set the environment variables from above.
 
-With the environment variables defined, you can simply run the command ``prepare-app-pipeline`` from the command line. This will create the Application in Spinnaker as well as generate a base pipeline.
+With the environment variables defined, you can simply run the command ``foremast-pipeline`` from the command line. This will create the Application in Spinnaker as well as generate a base pipeline.
 
 Method 2
 ********
