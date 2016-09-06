@@ -80,7 +80,7 @@ setup(
             'create-scaling-policy=foremast.runner:create_scaling_policy',
             'foremast-scaling-policy=foremast.runner:create_scaling_policy',
             'rebuild_pipelines=foremast.runner:rebuild_pipelines',
-            'foremast-rebuild-pipelines=feremast.runner:rebuild_pipelines',
+            'foremast-pipeline-rebuild=feremast.runner:rebuild_pipelines',
             'slack-notify=foremast.slacknotify.__main__:main',
         ]
     }, )

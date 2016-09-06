@@ -19,18 +19,18 @@ Entry Points
 -  ``foremast-pipeline`` - Creates an application and pipeline Spinnaker
 -  ``foremast-infrastructure`` - Sets up AWS infrastructure like s3, iam, elb,
    and security groups
--  ``foremast-onetime-pipeline`` - Generates a pipeline for deploying to one
+-  ``foremast-pipeline-onetime`` - Generates a pipeline for deploying to one
    specific account
 -  ``foremast-scaling-policy`` - Creates and attaches a scaling policy to an
    application server group.
--  ``foremast-rebuild-pipelines`` - rebuild pipelines after changes have been made
+-  ``foremast-pipeline-rebuild`` - rebuild pipelines after changes have been made
 
 You can run any of these entries points from the command line. They rely on
 environment variables and are ideal for running in a Jenkins job
 
 .. code-block:: bash
 
-    PROJECT=forrest GIT_REPO=core EMAIL=test@example.com prepare-app-pipeline
+    PROJECT=forrest GIT_REPO=core EMAIL=test@example.com foremast-pipeline
 
 Individual Packages
 ~~~~~~~~~~~~~~~~~~~
