@@ -72,10 +72,15 @@ setup(
             'destroy-sg=foremast.securitygroup.destroy_sg.__main__:main',
             'full-destroy=foremast.destroyer:main',
             'prepare-app-pipeline=foremast.runner:prepare_app_pipeline',
+            'foremast-pipeline=foremast.runner:prepare_app_pipeline',
             'prepare-infrastructure=foremast.runner:prepare_infrastructure',
+            'foremast-infrastructure=foremast.runner:prepare_infrastructure',
             'prepare-onetime-pipeline=foremast.runner:prepare_onetime_pipeline',
+            'foremast-onetime-pipeline=foremast.runner:prepare_onetime_pipeline',
             'create-scaling-policy=foremast.runner:create_scaling_policy',
+            'foremast-scaling-policy=foremast.runner:create_scaling_policy',
             'rebuild_pipelines=foremast.runner:rebuild_pipelines',
+            'foremast-rebuild-pipelines=feremast.runner:rebuild_pipelines',
             'slack-notify=foremast.slacknotify.__main__:main',
         ]
     }, )
