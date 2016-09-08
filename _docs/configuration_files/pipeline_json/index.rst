@@ -74,14 +74,6 @@ List of accounts that the application will be deployed to. Order matters as it d
     | *Type*: List of strings
     | *Default*: ``["stage", "prod"]``
 
-``eureka_enabled``
-~~~~~~~~~~~~~~~~~~
-
-When set to ``True``, no DNS or ELB Resources will be created.
-
-    | *Type*: bool
-    | *Default*: ``False``
-
 .. include:: image.rest
 .. include:: lambda.rest
 .. include:: services.rest

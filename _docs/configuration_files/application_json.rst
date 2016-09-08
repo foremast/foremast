@@ -41,7 +41,7 @@ SSH key that your EC2 instances will use. Must already be created in AWS.
 ``eureka_enabled``
 ***********************
 
-Setting this value to true will not create an ELB, DNS record, and set the ASG health check to EC2.
+Setting this value to ``true`` will not create an ELB, DNS record, and set the ASG health check to EC2.
 
     | *Type*: Boolean
     | *Default*: ``false``
