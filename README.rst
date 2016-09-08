@@ -1,20 +1,30 @@
 Spinnaker Foremast
 ==================
 
-This project contains different modules for managing applications, pipelines,
-and AWS infrastructure through Spinnaker
+Foremast is a Spinnaker pipeline and infrastructure configuration and templating tool. Just create a couple JSON configuration files and then manually creating Spinnaker pipelines becomes a thing of the past.
 
-Usage
------
 
-Run Jobs
-~~~~~~~~
+Why Foremast?
+-------------
 
-Commands can be run in the same way that Jenkins will execute using the below
-entry points.
+- Do not want to create each Spinnaker pipeline manually in the UI.
+- Pipelines should be versioned and easily reproducible.
+- Provide a standardized pipeline for all apps but still allow for flexibility.
+
+With Foremast, Developers create a couple simple JSON configs directly in their application repos. These configs provide details on the pipeline and infrastructure specific to the application. Foremast takes those configurations, renders a bunch of Jinja2 templates, and then acts as a client for the Spinnaker Gate API. Foremast comes with generic templates for creating a simple pipeline but it can also point to external templates. This allows for custom pipelines to fit any workflow
+
+
+Quick Guide
+-----------
+
+
+More Details
+------------
 
 Entry Points
 ^^^^^^^^^^^^
+
+Foremast has a few easy to use endpoints. These look for environment variables which makes them easy to run from Jenkins.
 
 -  ``foremast-pipeline`` - Creates an application and pipeline Spinnaker
 -  ``foremast-infrastructure`` - Sets up AWS infrastructure like s3, iam, elb,
@@ -30,28 +40,7 @@ environment variables and are ideal for running in a Jenkins job
 
 .. code-block:: bash
 
-    PROJECT=forrest GIT_REPO=core EMAIL=test@example.com foremast-pipeline
-
-Individual Packages
-~~~~~~~~~~~~~~~~~~~
-
-Run code directly without installing the ``foremast`` package.
-
-.. code-block:: bash
-
-    virtualenv venv
-    source ./venv/bin/activate
-    pip install -U -r requirements.txt
-
-    python -m src.foremast.app -h
-    python -m src.foremast.configs -h
-    python -m src.foremast.configurations -h
-    python -m src.foremast.dns -h
-    python -m src.foremast.elb -h
-    python -m src.foremast.iam -h
-    python -m src.foremast.pipeline -h
-    python -m src.foremast.s3 -h
-    python -m src.foremast.securitygroup -h
+    PROJECT=forrest GIT_REPO=core foremast-pipeline
 
 Install
 ~~~~~~~
@@ -60,18 +49,11 @@ Installing the package will provide CLI commands for convenience.
 
 .. code-block:: bash
 
-    virtualenv venv
-    source ./venv/bin/activate
-    pip install .
-
-    create-app -h
-    create-configs -h
-    create-dns -h
-    create-elb -h
-    create-iam -h
-    create-pipeline -h
-    create-s3 -h
-    create-sg -h
+    git clone https://github.com/gogoit/foremast.git
+    cd foremast
+    virtualenv -p python3 venv
+    source venv/bin/activate
+    pip install -U .
 
 Testing
 ~~~~~~~
@@ -88,32 +70,17 @@ Run any unit tests available in ``./tests/``.
     # OR
     ./runtests.py
 
-Docs
-~~~~
+Foremast Configuration
+----------------------
+A file at ``~/.foremast/foremast.cfg`` or ``/etc/foremast/foremast.cfg`` needs to exist in order to run foremast.
 
-You can build the docs locally using Sphinx
+.. code-block:: ini
 
-.. code-block:: bash
-
-    virtualenv venv
-    source ./venv/bin/activate
-    cd _docs/
-    pip install -r requirements-docs.txt
-
-    make html
-
-This will generate an index.html file that you can open in a browser and view the Foremast docs.
-
-Technology Used
----------------
-
-See `requirements <requirements.txt>`_ for package listing.
-
-#. Python3
-#. Jinja2 templating
-#. Python Requests
-#. Argparse for arguments
-#. Boto3 (direct AWS access to parts not exposed by Spinnaker, e.g. S3)
+    [base]
+    domain = example.com
+    envs = dev,stage,prod
+    regions = us-east-1
+    gate_api_url = http://gate.example.com:8084
 
 Runway Configuration Files
 --------------------------
@@ -151,25 +118,6 @@ the order matters and Pipeline will be generated in the given order.
         "env": [
             "prod"
         ]
-    }
-
-Complete JSON Override
-^^^^^^^^^^^^^^^^^^^^^^
-
-Complete manual overrides can also be provided based on JSON configuration for a
-Spinnaker Pipeline, but are not supported. JSON dump can be found in the
-Pipeline view.
-
-.. code:: json
-
-    {
-        "deployment": "spinnaker",
-        "env": [
-            "prod"
-        ],
-        "prod": {
-            "_Custom Spinnaker Pipeline configuration": "Insert here."
-        }
     }
 
 application-master-{env}.json
