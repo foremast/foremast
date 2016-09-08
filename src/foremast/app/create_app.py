@@ -23,8 +23,9 @@ from pprint import pformat
 
 import requests
 
-from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
-from ..utils import get_template, check_task, post_task
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..exceptions import ForemastError
+from ..utils import check_task, get_template, post_task
 
 
 class SpinnakerApp:
@@ -69,6 +70,10 @@ class SpinnakerApp:
         assert response.ok, 'Failed to get accounts: {0}'.format(response.text)
 
         all_accounts = response.json()
+
+        if not all_accounts:
+            raise ForemastError('No Accounts found in Spinnaker.')
+
         filtered_accounts = []
         for account in all_accounts:
             if account['type'] == provider:
