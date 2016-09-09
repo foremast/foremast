@@ -42,7 +42,7 @@ Foremast only works with AWS (for now). Below are the AWS requirements:
 
     - ``S3``: View, create and delete buckets.
 
-    - ``IAM``: View, create and  delete roles, uers, and policies.
+    - ``IAM``: View, create and  delete roles, users, and policies.
 
     - ``Route53``: View, create, and delete DNS records.
 

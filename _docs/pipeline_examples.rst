@@ -51,7 +51,7 @@ The default generated pipeline should look like the above image. This is the bas
 Custom Pipelines
 ----------------
 
-You can specify an external templates directory in :ref:`foremast_config`. Templates in an external directory will need to have the same directory structure and naming as the default templates. if `templates_path` is set in :ref:`foremast_config`, Foremast will first see if the file exists there. If not, it will fall back to the provided tempaltes.
+You can specify an external templates directory in :ref:`foremast_config`. Templates in an external directory will need to have the same directory structure and naming as the default templates. if `templates_path` is set in :ref:`foremast_config`, Foremast will first see if the file exists there. If not, it will fall back to the provided templates.
 
 If you need to add more stages or  change the defaults, this is all possible via external templates. Please the `foremast-templates repo`_ for examples on the templates.
 
@@ -59,7 +59,7 @@ If you need to add more stages or  change the defaults, this is all possible via
 Example Workflow
 -----------------
 
-At Gogo we have a detailed workflow for using Foremast internally. Feel free to copy our workflow or use it as insperation for your own. You can view all of our internal templates on the `foremast-templates repo`_.
+At Gogo we have a detailed workflow for using Foremast internally. Feel free to copy our workflow or use it as inspiration for your own. You can view all of our internal templates on the `foremast-templates repo`_.
 
 .. image:: _static/gogo-pipeline.png
 
@@ -87,7 +87,7 @@ At Gogo we have a detailed workflow for using Foremast internally. Feel free to 
 
     #. Attaches defined scaling policies
 
-    #. Wants for manual judgement before continuing to the next stage
+    #. Wants for manual judgment before continuing to the next stage
 
 
 .. _`foremast-templates repo`: https://github.com/gogoair/foremast-template-examples

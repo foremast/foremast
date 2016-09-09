@@ -129,7 +129,7 @@ In ``~/runway`` create a file ``pipeline.json`` with the contents::
     }
 
 In the same ``~/runway`` directory, create a file ``application-master-$account.json`` where ``$account`` is the same name as an account in your AWS credentials file and in your ``env`` list in pipeline.json.
-This file can be empty and it will just use the defaults defined at :ref:`application_json`. It is sugguested that you look through the docs and decide what values to set.
+This file can be empty and it will just use the defaults defined at :ref:`application_json`. It is suggested that you look through the docs and decide what values to set.
 
 **Note:** You will need an ``application-master-$account.json`` config for each ``$account`` that you are deploying to.
 
@@ -139,7 +139,7 @@ See :ref:`pipeline_json` and :ref:`application_json` for all configuration optio
 Install Foremast
 -----------------
 
-In order to use Foremast, you will need to install it in a Python environment. Below is our prefered method::
+In order to use Foremast, you will need to install it in a Python environment. Below is our preferred method::
 
     virtualenv -p python3 venv
     . venv/bin/activate
@@ -157,7 +157,7 @@ Both methods will generate the same outcome. An application created in Spinnaker
 Variables Needed
 ****************
 
-For both methods you will want to set the following variables. Method 1 will look at the environoment for these, Method 2 you can just pass them directly as arguments.
+For both methods you will want to set the following variables. Method 1 will look at the environment for these, Method 2 you can just pass them directly as arguments.
 
     | ``TRIGGER_JOB``: The name of the Jenkins job that Spinnaker should look for as a trigger
     | ``APPNAME``: The full name of your application in Spinnaker. ``${GIT_REPO}${PROJECT}`` is default
@@ -194,4 +194,4 @@ This guide walked through running Foremast for the first time but there is still
 
 Take a look at :doc:`pipeline_examples` to see what the default pipeline looks like and to get some insight on how Foremast can be utilized.
 
-This is only the tip of what Foremast can do. It also has functionality for creating scaling policies, setting up AWS infrastructure (elbs, security groups, iam policies, s3 buckets), sending slack notifications, and destorying old infrastructure. Take a look at our internal workflow docs for more detail on how Foremast is used at Gogo.
+This is only the tip of what Foremast can do. It also has functionality for creating scaling policies, setting up AWS infrastructure (elbs, security groups, iam policies, s3 buckets), sending slack notifications, and destroying old infrastructure. Take a look at our internal workflow docs for more detail on how Foremast is used at Gogo.
