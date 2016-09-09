@@ -46,6 +46,7 @@ Method 2 - Using git
 .. code-block:: sh
 
     $ git clone https://github.com/gogoit/foremast.git
+    $ cd foremast
     $ pip3 install -U .
 
 Configuration Files
