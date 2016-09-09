@@ -17,6 +17,94 @@ Getting started with Foremast consists of the following steps:
     3. Setting up the variables
     4. Running Foremast
 
+Quick Start Guide
+-----------------
+
+In this section, we will install, configure and run Foremast to create a basic pipeline.
+
+Installation
+************
+
+Setting up the environment::
+
+    $ pip3 install virtualenv
+    $ virtualenv -p $(which python3) venv
+    $ source venv/bin/activate
+
+Method 1 - Using pip (Preferred)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: sh
+
+    $ pip install foremast
+
+Method 2 - Using git
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: sh
+
+    $ git clone https://github.com/gogoit/foremast.git
+    $ pip3 install -U .
+
+Configuration Files
+*******************
+
+Create a ``runway`` and ``.foremast`` directory and go into ``runway`` directory.::
+
+    $ mkdir runway .foremast
+
+Create ``pipeline.json`` in ``runway`` directory::
+
+    {
+       "deployment": "spinnaker",
+       "env": [ "dev"]
+    }
+
+Create ``application-master-dev.json`` in ``runway`` directory::
+
+    {
+       "app": {
+           "instance_type": "t2.micro"
+       },
+       "asg": {
+           "max_inst": 1,
+           "min_inst": 1
+       },
+       "regions": [
+           "us-east-1"
+       ]
+    }
+
+Go to ``.foremast`` directory and create the ``foremast.cfg`` file::
+
+    [base]
+    domain = example.com
+    envs = dev,prod
+    regions = us-east-1
+    gate_api_url = http://gate.example.com:8084
+
+
+You should now see something similar structure::
+
+    $ tree -a
+    .
+    ├── .foremast
+    │   └── foremast.cfg
+    └── runway
+        ├── application-master-dev.json
+        └── pipeline.json
+
+    2 directories, 3 files
+
+
+Running
+*******
+
+Now from within the root directory, run ``foremast-pipeline``::
+
+    $ GIT_REPO=hello PROJECT=world RUNWAY_DIR=runway/ foremast-pipeline
+
+This will create an application in Spinnaker named ``helloword`` along with a simple pipeline.
 
 Configuration Setup
 -------------------
