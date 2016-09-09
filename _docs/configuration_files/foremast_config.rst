@@ -101,6 +101,21 @@ Comma seperated list of ELB security groups to include for all deployments
     | *Required*: No
     | *Example*: ``test_sg,example_elb_sg``
 
+``gate_client_cert``
+********************
+
+If Gate is using x509 certificate authentication this value provides the local path to find the certificate.
+
+    | *Required*: No
+    | *Example*: ``/var/certs/gate-cert.pem``
+
+``gate_ca_bundle``
+********************
+
+If Gate is using an x509 certificate made with a custom certificate authority, this value provides the local path to the CA bundle.
+
+    | *Required*: No
+    | *Example*: ``/var/certs/CA.pem``
 
 ``[credentials]``
 ~~~~~~~~~~~~~~~~~
