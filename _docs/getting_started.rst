@@ -25,7 +25,9 @@ In this section, we will install, configure and run Foremast to create a basic p
 Installation
 ************
 
-Setting up the environment::
+Setting up the environment
+
+.. code-block:: sh
 
     $ pip3 install virtualenv
     $ virtualenv -p $(which python3) venv
@@ -49,18 +51,24 @@ Method 2 - Using git
 Configuration Files
 *******************
 
-Create a ``runway`` and ``.foremast`` directory and go into ``runway`` directory.::
+Create a ``runway`` and ``.foremast`` directory and go into ``runway`` directory.
+
+.. code-block:: sh
 
     $ mkdir runway .foremast
 
-Create ``pipeline.json`` in ``runway`` directory::
+Create ``pipeline.json`` in ``runway`` directory
+
+.. code-block:: json
 
     {
        "deployment": "spinnaker",
        "env": [ "dev"]
     }
 
-Create ``application-master-dev.json`` in ``runway`` directory::
+Create ``application-master-dev.json`` in ``runway`` directory.
+
+.. code-block:: json
 
     {
        "app": {
@@ -75,7 +83,9 @@ Create ``application-master-dev.json`` in ``runway`` directory::
        ]
     }
 
-Go to ``.foremast`` directory and create the ``foremast.cfg`` file::
+Go to ``.foremast`` directory and create the ``foremast.cfg`` file.
+
+.. code-block:: ini
 
     [base]
     domain = example.com
@@ -84,7 +94,9 @@ Go to ``.foremast`` directory and create the ``foremast.cfg`` file::
     gate_api_url = http://gate.example.com:8084
 
 
-You should now see something similar structure::
+You should now see something similar structure.
+
+.. code-block:: sh
 
     $ tree -a
     .
@@ -100,7 +112,9 @@ You should now see something similar structure::
 Running
 *******
 
-Now from within the root directory, run ``foremast-pipeline``::
+Now from within the root directory, run ``foremast-pipeline``.
+
+.. code-block:: sh
 
     $ GIT_REPO=hello PROJECT=world RUNWAY_DIR=runway/ foremast-pipeline
 
