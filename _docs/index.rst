@@ -14,13 +14,14 @@ Contents
    :titlesonly:
 
    getting_started
-   CONTRIBUTING
-   configuration_files/index
-   infra_assumptions
    pipeline_examples
+   configuration_files/index
+   advance_usages
+   infra_assumptions
    lambda/index
-   modules
+   CONTRIBUTING
    RELEASING
+   modules
 
 .. include:: ../README.rst
 
