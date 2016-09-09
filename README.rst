@@ -22,23 +22,32 @@ Foremast Features
 -----------------
 
 - Dynamically generate Spinnaker pipelines based on JSON configs.
-- Customizable pipelines through external Jinja2 Templates. See Foremast templates_ for examples.
+- Customizable pipelines through external Jinja2 Templates. See `Foremast templates`_ for examples.
 - Dynamically generate AWS infrastructure based on pipeline configs.
 - Set up resources not defined in Spinnaker, such as S3 buckets and IAM roles.
 - Support for AWS Lambda pipelines.
 
-.. _templates: https://github.com/gogoair/foremast-template-examples/
+Getting Started
+---------------
 
-Quick Start Guide
------------------
+Take a look at our `quick start guide`_ to for a quick introduction on how to use Foremast. 
 
+Documentation
+~~~~~~~~~~~~~
+
+All the documentation can be viewed on `Read the Docs`_. You can find all configuration options, code information, 
+and better examples there. 
+
+Getting Help
+~~~~~~~~~~~~~
+
+For questions, support, or friendly conversation you can find us on Gitter_.
 
 More Details
 ------------
 
-
-Install
-~~~~~~~
+Installing
+~~~~~~~~~~
 
 Installing the package will provide CLI commands for convenience.
 
@@ -68,7 +77,7 @@ Run any unit tests available in ``./tests/``.
 Entry Points
 ~~~~~~~~~~~~~
 
-Foremast has a few easy to use endpoints. These look for environment variables which makes them easy to run from Jenkins.
+Foremast has a few easy to use CLI endpoints.
 
 -  ``foremast-pipeline`` - Creates an application and pipeline Spinnaker
 -  ``foremast-infrastructure`` - Sets up AWS infrastructure like s3, iam, elb,
@@ -88,6 +97,7 @@ environment variables and are ideal for running in a Jenkins job
 
 Foremast Configuration
 ~~~~~~~~~~~~~~~~~~~~~~
+
 A file at ``~/.foremast/foremast.cfg`` or ``/etc/foremast/foremast.cfg`` needs to exist in order to run foremast.
 
 .. code-block:: bash
@@ -99,20 +109,19 @@ A file at ``~/.foremast/foremast.cfg`` or ``/etc/foremast/foremast.cfg`` needs t
     gate_api_url = http://gate.example.com:8084
 
 Runway Configuration Files
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To begin using Foremast, you must have a few JSON configuration files defined
 for each application
 
 pipeline.json
-&&&&&&&&&&&&&&
+^^^^^^^^^^^^^
 
 A :file:`pipeline_json`, will be needed for each application. We have a lot of
 defaults in place for ``pipeline.json``, take a look at the :ref:`pipeline_json`
 docs for all options.
 
 *Minimum*
-
 
 .. code-block:: json
 
@@ -136,7 +145,7 @@ the order matters and Pipeline will be generated in the given order.
     }
 
 application-master-{env}.json
-&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Each deployment environment specified in the ``pipeline.json`` file will need an
 accompanying ``application-master-{env}.json`` file in the same directory.
@@ -184,3 +193,8 @@ defaults. Please take a look at the :ref:`application_json` docs for all options
         "ttl": 120
         }
     }
+
+.. _`Foremast templates`: https://github.com/gogoair/foremast-template-examples/
+.. _`quick start guide`: https://example.com
+.. _`Read the Docs`: http://example.com
+.. _Gitter: http://example.com
