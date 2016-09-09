@@ -1,5 +1,5 @@
-How to do releases
-------------------
+How To Create Releases
+----------------------
 
 Setup
 =====
