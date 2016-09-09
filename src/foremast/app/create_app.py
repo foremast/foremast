@@ -81,7 +81,7 @@ class SpinnakerApp:
                 filtered_accounts.append(account)
 
         if not filtered_accounts:
-            raise ForemastError('No Accounts matching %s.', provider)
+            raise ForemastError('No Accounts matching {0}.'.format(provider))
 
         return filtered_accounts
 
