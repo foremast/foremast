@@ -72,9 +72,6 @@ class SpinnakerApp:
         all_accounts = response.json()
         self.log.debug('Found Accounts in Spinnaker:\n%s', all_accounts)
 
-        if not all_accounts:
-            raise ForemastError('No Accounts found in Spinnaker.')
-
         filtered_accounts = []
         for account in all_accounts:
             if account['type'] == provider:
