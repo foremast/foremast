@@ -1,5 +1,5 @@
-foremast
-========
+Foremast Modules
+================
 
 .. toctree::
    :maxdepth: 4
