@@ -80,6 +80,9 @@ class SpinnakerApp:
             if account['type'] == provider:
                 filtered_accounts.append(account)
 
+        if not filtered_accounts:
+            raise ForemastError('No Accounts matching %s.', provider)
+
         return filtered_accounts
 
     def create_app(self):
