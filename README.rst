@@ -24,8 +24,8 @@ Foremast Features
 - Dynamically generate Spinnaker pipelines based on JSON configs.
 - Customizable pipelines through external Jinja2 Templates. See Foremast templates_ for examples.
 - Dynamically generate AWS infrastructure based on pipeline configs.
-- Set up resources not defined in Spinnaker, such as S3 buckets and IAM roles
-- Support for AWS Lambda pipelines
+- Set up resources not defined in Spinnaker, such as S3 buckets and IAM roles.
+- Support for AWS Lambda pipelines.
 
 .. _templates: https://github.com/gogoair/foremast-template-examples/
 
@@ -87,7 +87,7 @@ environment variables and are ideal for running in a Jenkins job
     PROJECT=forrest GIT_REPO=core foremast-pipeline
 
 Foremast Configuration
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 A file at ``~/.foremast/foremast.cfg`` or ``/etc/foremast/foremast.cfg`` needs to exist in order to run foremast.
 
 .. code-block:: bash
@@ -99,20 +99,20 @@ A file at ``~/.foremast/foremast.cfg`` or ``/etc/foremast/foremast.cfg`` needs t
     gate_api_url = http://gate.example.com:8084
 
 Runway Configuration Files
---------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To begin using Foremast, you must have a few JSON configuration files defined
 for each application
 
 pipeline.json
-~~~~~~~~~~~~~
+&&&&&&&&&&&&&&
 
 A :file:`pipeline_json`, will be needed for each application. We have a lot of
 defaults in place for ``pipeline.json``, take a look at the :ref:`pipeline_json`
 docs for all options.
 
-Minimum
-^^^^^^^
+*Minimum*
+
 
 .. code-block:: json
 
@@ -120,8 +120,7 @@ Minimum
         "deployment": "spinnaker"
     }
 
-Example Deployment Environments Override
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*Example Deployment Environments Override*
 
 Custom deployment environment order and selection can be provided in the ``env``
 key. When missing, the default provided is ``{"env": ["stage", "prod"]}``. Here,
@@ -137,7 +136,7 @@ the order matters and Pipeline will be generated in the given order.
     }
 
 application-master-{env}.json
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 Each deployment environment specified in the ``pipeline.json`` file will need an
 accompanying ``application-master-{env}.json`` file in the same directory.
@@ -145,8 +144,7 @@ accompanying ``application-master-{env}.json`` file in the same directory.
 The \`application-master-{env} files have a lot of exposed values with sane
 defaults. Please take a look at the :ref:`application_json` docs for all options.
 
-application-master-{env}.json example
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*application-master-{env}.json example*
 
 .. code-block:: json
 
