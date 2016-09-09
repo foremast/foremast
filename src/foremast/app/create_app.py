@@ -70,7 +70,7 @@ class SpinnakerApp:
         assert response.ok, 'Failed to get accounts: {0}'.format(response.text)
 
         all_accounts = response.json()
-        self.log.debug('Found Accounts in Spinnaker:\n%s', all_accounts)
+        self.log.debug('Accounts in Spinnaker:\n%s', all_accounts)
 
         filtered_accounts = []
         for account in all_accounts:
