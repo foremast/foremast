@@ -70,6 +70,7 @@ class SpinnakerApp:
         assert response.ok, 'Failed to get accounts: {0}'.format(response.text)
 
         all_accounts = response.json()
+        self.log.debug('Found Accounts in Spinnaker:\n%s', all_accounts)
 
         if not all_accounts:
             raise ForemastError('No Accounts found in Spinnaker.')
