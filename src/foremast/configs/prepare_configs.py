@@ -23,10 +23,8 @@ from base64 import b64decode
 
 import gitlab
 
-from ..consts import GIT_URL, GITLAB_TOKEN
+from ..consts import ENVS, GIT_URL, GITLAB_TOKEN
 
-ENVS = ('build', 'dev', 'stage', 'prod', 'prodp', 'stagepci', 'prods',
-        'stagesox')
 LOG = logging.getLogger(__name__)
 JSON_ERROR_MSG = '"{0}" appears to be invalid json. Please validate it with http://jsonlint.com.'
 
