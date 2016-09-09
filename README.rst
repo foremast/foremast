@@ -1,7 +1,8 @@
 Spinnaker Foremast
 ==================
 
-Foremast is a Spinnaker pipeline and infrastructure configuration and templating tool. Just create a couple JSON configuration files and then manually creating Spinnaker pipelines becomes a thing of the past.
+Foremast is a Spinnaker pipeline and infrastructure configuration and templating tool. 
+Just create a couple JSON configuration files and then manually creating Spinnaker pipelines becomes a thing of the past.
 
 
 Why Foremast?
@@ -11,36 +12,30 @@ Why Foremast?
 - Pipelines should be versioned and easily reproducible.
 - Provide a standardized pipeline for all apps but still allow for flexibility.
 
-With Foremast, Developers create a couple simple JSON configs directly in their application repos. These configs provide details on the pipeline and infrastructure specific to the application. Foremast takes those configurations, renders a bunch of Jinja2 templates, and then acts as a client for the Spinnaker Gate API. Foremast comes with generic templates for creating a simple pipeline but it can also point to external templates. This allows for custom pipelines to fit any workflow
+With Foremast, Developers create a couple simple JSON configs per application. 
+These configs provide details on the pipeline and infrastructure specific to the application's needs. 
+Foremast takes those configs, renders some Jinja2 templates, and then acts as a client for the 
+Spinnaker Gate API. Foremast comes with generic templates for creating a simple pipeline but it can also 
+point to external templates. This allows for custom pipelines to fit any workflow
 
+Foremast Features
+-----------------
 
-Quick Guide
------------
+- Dynamically generate Spinnaker pipelines based on JSON configs.
+- Customizable pipelines through external Jinja2 Templates. See Foremast templates_ for examples.
+- Dynamically generate AWS infrastructure based on pipeline configs.
+- Set up resources not defined in Spinnaker, such as S3 buckets and IAM roles
+- Support for AWS Lambda pipelines
+
+.. _templates: https://github.com/gogoair/foremast-template-examples/
+
+Quick Start Guide
+-----------------
 
 
 More Details
 ------------
 
-Entry Points
-^^^^^^^^^^^^
-
-Foremast has a few easy to use endpoints. These look for environment variables which makes them easy to run from Jenkins.
-
--  ``foremast-pipeline`` - Creates an application and pipeline Spinnaker
--  ``foremast-infrastructure`` - Sets up AWS infrastructure like s3, iam, elb,
-   and security groups
--  ``foremast-pipeline-onetime`` - Generates a pipeline for deploying to one
-   specific account
--  ``foremast-scaling-policy`` - Creates and attaches a scaling policy to an
-   application server group.
--  ``foremast-pipeline-rebuild`` - rebuild pipelines after changes have been made
-
-You can run any of these entries points from the command line. They rely on
-environment variables and are ideal for running in a Jenkins job
-
-.. code-block:: bash
-
-    PROJECT=forrest GIT_REPO=core foremast-pipeline
 
 Install
 ~~~~~~~
@@ -70,11 +65,32 @@ Run any unit tests available in ``./tests/``.
     # OR
     ./runtests.py
 
+Entry Points
+~~~~~~~~~~~~~
+
+Foremast has a few easy to use endpoints. These look for environment variables which makes them easy to run from Jenkins.
+
+-  ``foremast-pipeline`` - Creates an application and pipeline Spinnaker
+-  ``foremast-infrastructure`` - Sets up AWS infrastructure like s3, iam, elb,
+   and security groups
+-  ``foremast-pipeline-onetime`` - Generates a pipeline for deploying to one
+   specific account
+-  ``foremast-scaling-policy`` - Creates and attaches a scaling policy to an
+   application server group.
+-  ``foremast-pipeline-rebuild`` - rebuild pipelines after changes have been made
+
+You can run any of these entries points from the command line. They rely on
+environment variables and are ideal for running in a Jenkins job
+
+.. code-block:: bash
+
+    PROJECT=forrest GIT_REPO=core foremast-pipeline
+
 Foremast Configuration
 ----------------------
 A file at ``~/.foremast/foremast.cfg`` or ``/etc/foremast/foremast.cfg`` needs to exist in order to run foremast.
 
-.. code-block:: ini
+.. code-block:: bash
 
     [base]
     domain = example.com
