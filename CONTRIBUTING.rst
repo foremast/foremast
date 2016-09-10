@@ -73,6 +73,21 @@ Documentation
    * Use :file:`.rest` for pages included using ``.. include:: file.rest``
      (fixes a Sphinx issue that thinks references are duplicated)
 
+Testing
+^^^^^^^
+
+Run any unit tests available in ``./tests/``.
+
+.. code-block:: bash
+
+    virtualenv venv
+    source ./venv/bin/activate
+    pip install -U -r requirements-dev.txt
+
+    tox
+    # OR
+    ./runtests.py
+
 Code Submission
 ---------------
 

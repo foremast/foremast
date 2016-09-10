@@ -8,35 +8,38 @@ Just create a couple JSON configuration files and then manually creating Spinnak
 Why Foremast?
 -------------
 
-- Do not want to create each Spinnaker pipeline manually in the UI.
-- Pipelines should be versioned and easily reproducible.
-- Provide a standardized pipeline for all apps but still allow for flexibility.
+- No manual creation of pipelines in the Spinnaker UI
+- Reproducible and versioned Spinnaker pipelines
+- Standardized pipelines with flexibilty for application specific needs
 
 With Foremast, Developers create a couple simple JSON configs per application. 
 These configs provide details on the pipeline and infrastructure specific to the application's needs. 
 Foremast takes those configs, renders some Jinja2 templates, and then acts as a client for the 
 Spinnaker Gate API. Foremast comes with generic templates for creating a simple pipeline but it can also 
-point to external templates. This allows for custom pipelines to fit any workflow
+point to external templates for custom pipelines that fit any workflow. 
 
 Foremast Features
 -----------------
 
-- Dynamically generate Spinnaker pipelines based on JSON configs.
-- Customizable pipelines through external Jinja2 Templates. See `Foremast templates`_ for examples.
-- Dynamically generate AWS infrastructure based on pipeline configs.
-- Set up resources not defined in Spinnaker, such as S3 buckets and IAM roles.
-- Support for AWS Lambda pipelines.
+- Dynamically generate Spinnaker pipelines based on JSON configs
+- Customizable pipelines through external Jinja2 Templates, see `Foremast templates`_ for examples
+- Dynamically generate AWS infrastructure based on pipeline configs
+- Set up resources not defined in Spinnaker, such as S3 buckets and IAM roles
+- Support for AWS Lambda pipelines
 
 Getting Started
 ---------------
 
-Take a look at our `quick start guide`_ to for a quick introduction on how to use Foremast. 
+Take a look at `quick start guide`_ for a quick introduction on how to use Foremast.
 
 Documentation
 ~~~~~~~~~~~~~
 
-All the documentation can be viewed on `Read the Docs`_. You can find all configuration options, code information, 
-and better examples there. 
+All the documentation can be viewed on `Read the Docs`_. You can find all configuration options, code information, and better examples there.
+
+Development
+~~~~~~~~~~~
+See the `contribution guide`_ for information on code style, contributing, and testing.
 
 Getting Help
 ~~~~~~~~~~~~~
@@ -53,26 +56,9 @@ Installing the package will provide CLI commands for convenience.
 
 .. code-block:: bash
 
-    git clone https://github.com/gogoit/foremast.git
-    cd foremast
-    virtualenv -p python3 venv
-    source venv/bin/activate
-    pip install -U .
-
-Testing
-~~~~~~~
-
-Run any unit tests available in ``./tests/``.
-
-.. code-block:: bash
-
-    virtualenv venv
-    source ./venv/bin/activate
-    pip install -U -r requirements-dev.txt
-
-    tox
-    # OR
-    ./runtests.py
+   virtualenv -p python3 venv
+   source venv/bin/activate
+   pip install foremast
 
 Entry Points
 ~~~~~~~~~~~~~
@@ -98,7 +84,7 @@ environment variables and are ideal for running in a Jenkins job
 Foremast Configuration
 ~~~~~~~~~~~~~~~~~~~~~~
 
-A file at ``~/.foremast/foremast.cfg`` or ``/etc/foremast/foremast.cfg`` needs to exist in order to run foremast.
+A file at ``{pwd}/.foremast/foremast.cfg``, ``~/.foremast/foremast.cfg``, or ``/etc/foremast/foremast.cfg`` needs to exist in order to run foremast.
 
 .. code-block:: bash
 
@@ -117,8 +103,8 @@ for each application
 pipeline.json
 ^^^^^^^^^^^^^
 
-A :file:`pipeline_json`, will be needed for each application. We have a lot of
-defaults in place for ``pipeline.json``, take a look at the :ref:`pipeline_json`
+This file will be needed for each application. Foremast has a lot of
+defaults in place for ``pipeline.json``, take a look at the `pipeline.json`_
 docs for all options.
 
 *Minimum*
@@ -151,7 +137,7 @@ Each deployment environment specified in the ``pipeline.json`` file will need an
 accompanying ``application-master-{env}.json`` file in the same directory.
 
 The \`application-master-{env} files have a lot of exposed values with sane
-defaults. Please take a look at the :ref:`application_json` docs for all options.
+defaults. Please take a look at the `application.json`_ docs for all options.
 
 *application-master-{env}.json example*
 
@@ -197,4 +183,8 @@ defaults. Please take a look at the :ref:`application_json` docs for all options
 .. _`Foremast templates`: https://github.com/gogoair/foremast-template-examples/
 .. _`quick start guide`: https://example.com
 .. _`Read the Docs`: http://example.com
+.. _`contribution guide`: http://example.com
 .. _Gitter: http://example.com
+.. _`pipeline.json`: http://example.com
+.. _`application.json`: http://example.com
+
