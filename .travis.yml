@@ -16,3 +16,10 @@ install:
 script:
   - tox -e $TOX_ENV
 
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/a57f158d4365b3598713
+    on_success: always
+    on_failure: always
+    on_start: never
