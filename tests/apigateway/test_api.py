@@ -26,4 +26,4 @@ def test_create_resource(get_properties, get_env_credential, get_details, boto3)
     test.api_id = ''
     test.create_resource()
 
-    test.client.create_resource.assert_called_with(restApiId='', parentId='', pathPart='/')
+    test.client.create_resource.assert_called_with(restApiId='', parentId='', pathPart='')
