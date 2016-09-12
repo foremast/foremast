@@ -30,7 +30,9 @@ def check_provider_healthcheck(settings, provider='Amazon'):
     provider_healthcheck = []
     has_provider_healthcheck = False
 
-    for provider, active in settings['asg']['provider_healthcheck'].items():
+    providers = settings['asg']['provider_healthcheck']
+
+    for provider, active in providers.items():
         if active:
             provider_healthcheck.append(provider.capitalize())
     LOG.info('Provider healthchecks: {0}'.format(provider_healthcheck))
