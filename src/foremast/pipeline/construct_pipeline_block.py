@@ -25,6 +25,21 @@ from ..utils import generate_encoded_user_data, get_template
 LOG = logging.getLogger(__name__)
 
 
+def check_provider_healthcheck(settings, provider='Amazon'):
+    """Set Provider Health Check when specified."""
+    provider_healthcheck = []
+    for provider, active in settings['asg']['provider_healthcheck'].items():
+        if active:
+            provider_healthcheck.append(provider.capitalize())
+    LOG.info('Provider healthchecks: {0}'.format(provider_healthcheck))
+
+    has_provider_healthcheck = False
+    if len(provider_healthcheck) > 0:
+        has_provider_healthcheck = True
+
+    return provider_healthcheck, has_provider_healthcheck
+
+
 def construct_pipeline_block(env='',
                              generated=None,
                              previous_env=None,
@@ -83,15 +98,7 @@ def construct_pipeline_block(env='',
         elb = ['{0}'.format(gen_app_name)]
     LOG.info('Attaching the following ELB: {0}'.format(elb))
 
-    provider_healthcheck = []
-    for provider, active in settings['asg']['provider_healthcheck'].items():
-        if active:
-            provider_healthcheck.append(provider.capitalize())
-    LOG.info('Provider healthchecks: {0}'.format(provider_healthcheck))
-
-    has_provider_healthcheck = False
-    if len(provider_healthcheck) > 0:
-        has_provider_healthcheck = True
+    provider_healthcheck, has_provider_healthcheck = check_provider_healthcheck(settings)
 
     data = copy.deepcopy(settings)
 
