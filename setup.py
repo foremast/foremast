@@ -22,7 +22,10 @@ from setuptools import find_packages, setup
 
 def tag_version():
     """Generate version number from Git Tag, e.g. v2.0.0, v2.0.0-1."""
-    recent_tag = subprocess.check_output(shlex.split('git describe --long'))
+    try:
+        recent_tag = subprocess.check_output(shlex.split('git describe --long'))
+    except subprocess.CalledProcessError:
+        recent_tag = b'v0.0-0-00000000'
     tag, count, _ = recent_tag.decode().split('-')
     version = 'a'.join([tag, count]) if int(count) else tag
     return version
