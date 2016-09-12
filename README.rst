@@ -180,9 +180,9 @@ defaults. Please take a look at the `application.json`_ docs for all options.
     }
 
 .. _`Foremast templates`: https://github.com/gogoair/foremast-template-examples/
-.. _`quick start guide`: https://example.com
-.. _`Read the Docs`: http://example.com
-.. _`contribution guide`: http://example.com
-.. _Gitter: http://example.com
-.. _`pipeline.json`: http://example.com
-.. _`application.json`: http://example.com
+.. _`quick start guide`: http://foremast.readthedocs.io/en/latest/getting_started.html#quick-start-guide
+.. _`Read the Docs`: http://foremast.readthedocs.io/en/latest/
+.. _`contribution guide`: http://foremast.readthedocs.io/en/latest/CONTRIBUTING.html
+.. _Gitter: https://gitter.im/gogoair/foremast
+.. _`pipeline.json`: http://foremast.readthedocs.io/en/latest/configuration_files/pipeline_json/index.html
+.. _`application.json`: http://foremast.readthedocs.io/en/latest/configuration_files/application_json.html
