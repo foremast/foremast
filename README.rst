@@ -1,7 +1,7 @@
 Spinnaker Foremast
 ==================
 
-Foremast is a Spinnaker pipeline and infrastructure configuration and templating tool. 
+Foremast is a Spinnaker pipeline and infrastructure configuration and templating tool.
 Just create a couple JSON configuration files and then manually creating Spinnaker pipelines becomes a thing of the past.
 
 
@@ -12,11 +12,11 @@ Why Foremast?
 - Reproducible and versioned Spinnaker pipelines
 - Standardized pipelines with flexibilty for application specific needs
 
-With Foremast, Developers create a couple simple JSON configs per application. 
-These configs provide details on the pipeline and infrastructure specific to the application's needs. 
-Foremast takes those configs, renders some Jinja2 templates, and then acts as a client for the 
-Spinnaker Gate API. Foremast comes with generic templates for creating a simple pipeline but it can also 
-point to external templates for custom pipelines that fit any workflow. 
+With Foremast, Developers create a couple simple JSON configs per application.
+These configs provide details on the pipeline and infrastructure specific to the application's needs.
+Foremast takes those configs, renders some Jinja2 templates, and then acts as a client for the
+Spinnaker Gate API. Foremast comes with generic templates for creating a simple pipeline but it can also
+point to external templates for custom pipelines that fit any workflow.
 
 Foremast Features
 -----------------
@@ -187,4 +187,3 @@ defaults. Please take a look at the `application.json`_ docs for all options.
 .. _Gitter: http://example.com
 .. _`pipeline.json`: http://example.com
 .. _`application.json`: http://example.com
-
