@@ -1,9 +1,12 @@
 Spinnaker Foremast
 ==================
-
+.. image:: https://travis-ci.org/gogoair/foremast.svg?branch=master
+    :target: https://travis-ci.org/gogoair/foremast
+    
 .. image:: https://badges.gitter.im/gogoair/foremast.svg
    :alt: Join the chat at https://gitter.im/gogoair/foremast
    :target: https://gitter.im/gogoair/foremast?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 
 Foremast is a Spinnaker pipeline and infrastructure configuration and templating tool.
 Just create a couple JSON configuration files and then manually creating Spinnaker pipelines becomes a thing of the past.
