@@ -13,15 +13,14 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Construct a block section of Stages in a Spinnaker Pipeline."""
+import copy
 import json
 import logging
-import copy
 from pprint import pformat
 
-from ..utils import generate_encoded_user_data, get_template
 from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
+from ..utils import generate_encoded_user_data, get_template
 
 LOG = logging.getLogger(__name__)
 
@@ -61,10 +60,7 @@ def construct_pipeline_block(env='',
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
     gen_app_name = generated.app_name()
-    user_data = generate_encoded_user_data(env=env,
-                                           region=region,
-                                           app_name=gen_app_name,
-                                           group_name=generated.project)
+    user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project)
 
     # Use different variable to keep template simple
     instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS)
@@ -102,17 +98,12 @@ def construct_pipeline_block(env='',
     # Default HC type in DEV to EC2, default to EC2 if eureka enabled
     # FIXME: Need to also set `provider_healthcheck` when `eureka_enabled`
     if env == 'dev' or settings['app']['eureka_enabled']:
-        data['asg'].update({
-            'hc_type': 'EC2'
-        })
+        data['asg'].update({'hc_type': 'EC2'})
         LOG.info('Switching health check type to: EC2')
 
     LOG.info('White listed dev asg apps: {0}'.format(ASG_WHITELIST))
     if env == 'dev' and gen_app_name not in ASG_WHITELIST:
-        data['asg'].update({
-            'max_inst': '1',
-            'min_inst': '1'
-        })
+        data['asg'].update({'max_inst': '1', 'min_inst': '1'})
         LOG.info('App {0} is not white listed, using default dev ASG settings'.format(gen_app_name))
 
     data['app'].update({
