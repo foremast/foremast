@@ -95,10 +95,10 @@ def construct_pipeline_block(env='',
 
     data = copy.deepcopy(settings)
 
-    # Default HC type in DEV to EC2, default to EC2 if eureka enabled
-    # FIXME: Need to also set `provider_healthcheck` when `eureka_enabled`
+    # Use EC2 Health Check for DEV or Eureka enabled
     if env == 'dev' or settings['app']['eureka_enabled']:
         data['asg'].update({'hc_type': 'EC2'})
+        has_provider_healthcheck = True
         LOG.info('Switching health check type to: EC2')
 
     LOG.info('White listed dev asg apps: {0}'.format(ASG_WHITELIST))
