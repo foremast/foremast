@@ -25,12 +25,20 @@ from ..utils import generate_encoded_user_data, get_template
 LOG = logging.getLogger(__name__)
 
 
-def check_provider_healthcheck(settings, provider='Amazon'):
+def check_provider_healthcheck(settings, default_provider='Amazon'):
     """Set Provider Health Check when specified."""
     provider_healthcheck = []
     has_provider_healthcheck = False
 
+    eureka_enabled = settings['app']['eureka_enabled']
     providers = settings['asg']['provider_healthcheck']
+
+    if eureka_enabled:
+        for provider in providers.keys():
+            if provider.lower() == default_provider.lower():
+                break
+        else:
+            providers[default_provider] = True
 
     for provider, active in providers.items():
         if active:
