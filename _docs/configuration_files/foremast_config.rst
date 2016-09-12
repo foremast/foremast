@@ -104,7 +104,7 @@ Comma seperated list of ELB security groups to include for all deployments
 ``gate_client_cert``
 ********************
 
-If Gate is using x509 certificate authentication this value provides the local path to find the certificate.
+If accessing Gate via x509 certificate authentication, this value provides the local path to the certificate. Only PEM certs are supported at this time (containing both the key and certificate in the PEM).
 
     | *Required*: No
     | *Example*: ``/var/certs/gate-cert.pem``
@@ -112,7 +112,7 @@ If Gate is using x509 certificate authentication this value provides the local p
 ``gate_ca_bundle``
 ********************
 
-If Gate is using an x509 certificate made with a custom certificate authority, this value provides the local path to the CA bundle.
+If accessing Gate via x509 leveraging a custom certificate authority (such as acting as your own CA), this value provides the local path to the CA bundle. It is recommended to use an existing CA Bundle and append your CA certificate to it (https://certifi.io/en/latest/)
 
     | *Required*: No
     | *Example*: ``/var/certs/CA.pem``
