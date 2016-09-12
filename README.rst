@@ -139,9 +139,8 @@ accompanying ``application-master-{env}.json`` file in the same directory.
 The \`application-master-{env} files have a lot of exposed values with sane
 defaults. Please take a look at the `application.json`_ docs for all options.
 
-*application-master-{env}.json example*
-
 .. code-block:: json
+   :caption: *application-master-{env}.json example*
 
     {
       "security_group": {
