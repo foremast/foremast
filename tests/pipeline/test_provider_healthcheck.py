@@ -14,7 +14,7 @@ def test_provider_healthcheck():
 
 
 def test_setting_eureka_enabled():
-    """When Eureka is enabled, Amazon EC2 Helath Check should be used."""
+    """When Eureka is enabled, default Helath Check should be used."""
     eureka_enabled_settings = copy.copy(TEST_SETTINGS)
     eureka_enabled_settings['app']['eureka_enabled'] = True
 
