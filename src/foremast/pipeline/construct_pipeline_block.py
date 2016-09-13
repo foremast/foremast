@@ -14,6 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Construct a block section of Stages in a Spinnaker Pipeline."""
+import collections
 import copy
 import json
 import logging
@@ -26,9 +27,16 @@ LOG = logging.getLogger(__name__)
 
 
 def check_provider_healthcheck(settings, default_provider='Amazon'):
-    """Set Provider Health Check when specified."""
-    provider_healthcheck = []
-    has_provider_healthcheck = False
+    """Set Provider Health Check when specified.
+
+    Returns:
+        collections.namedtuple: **ProviderHealthCheck** with attributes:
+
+            * providers (list): Providers set to use native Health Check.
+            * has_healthcheck (bool): If any native Health Checks requested.
+    """
+    ProviderHealthCheck = collections.namedtuple('ProviderHealthCheck', ['providers', 'has_healthcheck'])
+    health_checks = ProviderHealthCheck(providers=[], has_healthcheck=False)
 
     eureka_enabled = settings['app']['eureka_enabled']
     providers = settings['asg']['provider_healthcheck']
@@ -42,13 +50,13 @@ def check_provider_healthcheck(settings, default_provider='Amazon'):
 
     for provider, active in providers.items():
         if active:
-            provider_healthcheck.append(provider.capitalize())
-    LOG.info('Provider healthchecks: {0}'.format(provider_healthcheck))
+            health_checks.providers.append(provider.capitalize())
+    LOG.info('Provider healthchecks: {0}'.format(health_checks.providers))
 
-    if len(provider_healthcheck) > 0:
-        has_provider_healthcheck = True
+    if len(health_checks.providers) > 0:
+        health_checks.has_healthcheck = True
 
-    return provider_healthcheck, has_provider_healthcheck
+    return health_checks
 
 
 def construct_pipeline_block(env='',
