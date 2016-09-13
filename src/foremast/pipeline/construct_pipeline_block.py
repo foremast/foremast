@@ -36,10 +36,12 @@ def check_provider_healthcheck(settings, default_provider='Amazon'):
             * has_healthcheck (bool): If any native Health Checks requested.
     """
     ProviderHealthCheck = collections.namedtuple('ProviderHealthCheck', ['providers', 'has_healthcheck'])
-    health_checks = ProviderHealthCheck(providers=[], has_healthcheck=False)
 
     eureka_enabled = settings['app']['eureka_enabled']
     providers = settings['asg']['provider_healthcheck']
+
+    health_check_providers = []
+    has_healthcheck = False
 
     if eureka_enabled:
         for provider in providers.keys():
@@ -50,13 +52,13 @@ def check_provider_healthcheck(settings, default_provider='Amazon'):
 
     for provider, active in providers.items():
         if active:
-            health_checks.providers.append(provider.capitalize())
-    LOG.info('Provider healthchecks: {0}'.format(health_checks.providers))
+            health_check_providers.append(provider.capitalize())
+    LOG.info('Provider healthchecks: %s', health_check_providers)
 
-    if len(health_checks.providers) > 0:
-        health_checks.has_healthcheck = True
+    if len(health_check_providers) > 0:
+        has_healthcheck = True
 
-    return health_checks
+    return ProviderHealthCheck(providers=health_check_providers, has_healthcheck=has_healthcheck)
 
 
 def construct_pipeline_block(env='',
