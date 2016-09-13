@@ -23,7 +23,7 @@ def test_setting_eureka_enabled():
     assert health_checks.has_healthcheck is True
 
 
-def test_additional_provider():
+def test_additional_provider_with_eureka():
     """Default Provider should be added to providers in settings."""
     eureka_enabled_with_provider_settings = copy.copy(TEST_SETTINGS)
     eureka_enabled_with_provider_settings['app']['eureka_enabled'] = True
