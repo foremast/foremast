@@ -1,15 +1,17 @@
 Spinnaker Foremast
 ==================
+
 .. image:: https://travis-ci.org/gogoair/foremast.svg?branch=master
     :target: https://travis-ci.org/gogoair/foremast
-    
+
 .. image:: https://badges.gitter.im/gogoair/foremast.svg
    :alt: Join the chat at https://gitter.im/gogoair/foremast
    :target: https://gitter.im/gogoair/foremast?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 
-Foremast is a Spinnaker pipeline and infrastructure configuration and templating tool.
-Just create a couple JSON configuration files and then manually creating Spinnaker pipelines becomes a thing of the past.
+Foremast is a Spinnaker pipeline and infrastructure configuration and
+templating tool.  Just create a couple JSON configuration files and then
+manually creating Spinnaker pipelines becomes a thing of the past.
 
 
 Why Foremast?
@@ -20,16 +22,18 @@ Why Foremast?
 - Standardized pipelines with flexibilty for application specific needs
 
 With Foremast, Developers create a couple simple JSON configs per application.
-These configs provide details on the pipeline and infrastructure specific to the application's needs.
-Foremast takes those configs, renders some Jinja2 templates, and then acts as a client for the
-Spinnaker Gate API. Foremast comes with generic templates for creating a simple pipeline but it can also
-point to external templates for custom pipelines that fit any workflow.
+These configs provide details on the pipeline and infrastructure specific to
+the application's needs.  Foremast takes those configs, renders some Jinja2
+templates, and then acts as a client for the Spinnaker Gate API. Foremast comes
+with generic templates for creating a simple pipeline but it can also point to
+external templates for custom pipelines that fit any workflow.
 
 Foremast Features
 -----------------
 
 - Dynamically generate Spinnaker pipelines based on JSON configs
-- Customizable pipelines through external Jinja2 Templates, see `Foremast templates`_ for examples
+- Customizable pipelines through external Jinja2 Templates, see `Foremast
+  templates`_ for examples
 - Dynamically generate AWS infrastructure based on pipeline configs
 - Set up resources not defined in Spinnaker, such as S3 buckets and IAM roles
 - Support for AWS Lambda pipelines
@@ -37,17 +41,20 @@ Foremast Features
 Getting Started
 ---------------
 
-Take a look at `quick start guide`_ for a quick introduction on how to use Foremast.
+Take a look at `quick start guide`_ for a quick introduction on how to use
+Foremast.
 
 Documentation
 ~~~~~~~~~~~~~
 
-All the documentation can be viewed on `Read the Docs`_. You can find all configuration options, code information, and better examples there.
+All the documentation can be viewed on `Read the Docs`_. You can find all
+configuration options, code information, and better examples there.
 
 Development
 ~~~~~~~~~~~
 
-See the `contribution guide`_ for information on code style, contributing, and testing.
+See the `contribution guide`_ for information on code style, contributing, and
+testing.
 
 Getting Help
 ~~~~~~~~~~~~~
@@ -73,14 +80,15 @@ Entry Points
 
 Foremast has a few easy to use CLI endpoints.
 
--  ``foremast-pipeline`` - Creates an application and pipeline Spinnaker
--  ``foremast-infrastructure`` - Sets up AWS infrastructure like s3, iam, elb,
-   and security groups
--  ``foremast-pipeline-onetime`` - Generates a pipeline for deploying to one
-   specific account
--  ``foremast-scaling-policy`` - Creates and attaches a scaling policy to an
-   application server group.
--  ``foremast-pipeline-rebuild`` - rebuild pipelines after changes have been made
+- ``foremast-pipeline`` - Creates an application and pipeline Spinnaker
+- ``foremast-infrastructure`` - Sets up AWS infrastructure like s3, iam, elb,
+  and security groups
+- ``foremast-pipeline-onetime`` - Generates a pipeline for deploying to one
+  specific account
+- ``foremast-scaling-policy`` - Creates and attaches a scaling policy to an
+  application server group.
+- ``foremast-pipeline-rebuild`` - rebuild pipelines after changes have been
+  made
 
 You can run any of these entries points from the command line. They rely on
 environment variables and are ideal for running in a Jenkins job
@@ -92,7 +100,8 @@ environment variables and are ideal for running in a Jenkins job
 Foremast Configuration
 ~~~~~~~~~~~~~~~~~~~~~~
 
-A file at ``{pwd}/.foremast/foremast.cfg``, ``~/.foremast/foremast.cfg``, or ``/etc/foremast/foremast.cfg`` needs to exist in order to run foremast.
+A file at ``{pwd}/.foremast/foremast.cfg``, ``~/.foremast/foremast.cfg``, or
+``/etc/foremast/foremast.cfg`` needs to exist in order to run foremast.
 
 .. code-block:: bash
 
@@ -111,9 +120,9 @@ for each application
 pipeline.json
 ^^^^^^^^^^^^^
 
-This file will be needed for each application. Foremast has a lot of
-defaults in place for ``pipeline.json``, take a look at the `pipeline.json`_
-docs for all options.
+This file will be needed for each application. Foremast has a lot of defaults
+in place for ``pipeline.json``, take a look at the `pipeline.json`_ docs for
+all options.
 
 *Minimum*
 
@@ -125,9 +134,10 @@ docs for all options.
 
 *Example Deployment Environments Override*
 
-Custom deployment environment order and selection can be provided in the ``env``
-key. When missing, the default provided is ``{"env": ["stage", "prod"]}``. Here,
-the order matters and Pipeline will be generated in the given order.
+Custom deployment environment order and selection can be provided in the
+``env`` key. When missing, the default provided is ``{"env": ["stage",
+"prod"]}``. Here, the order matters and Pipeline will be generated in the given
+order.
 
 .. code-block:: json
 
@@ -141,8 +151,8 @@ the order matters and Pipeline will be generated in the given order.
 application-master-{env}.json
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Each deployment environment specified in the ``pipeline.json`` file will need an
-accompanying ``application-master-{env}.json`` file in the same directory.
+Each deployment environment specified in the ``pipeline.json`` file will need
+an accompanying ``application-master-{env}.json`` file in the same directory.
 
 The \`application-master-{env} files have a lot of exposed values with sane
 defaults. Please take a look at the `application.json`_ docs for all options.
