@@ -117,14 +117,13 @@ def construct_pipeline_block(env='',
         elb = ['{0}'.format(gen_app_name)]
     LOG.info('Attaching the following ELB: {0}'.format(elb))
 
-    provider_healthcheck, has_provider_healthcheck = check_provider_healthcheck(settings)
+    health_checks = check_provider_healthcheck(settings)
 
     data = copy.deepcopy(settings)
 
     # Use EC2 Health Check for DEV or Eureka enabled
     if env == 'dev' or settings['app']['eureka_enabled']:
         data['asg'].update({'hc_type': 'EC2'})
-        has_provider_healthcheck = True
         LOG.info('Switching health check type to: EC2')
 
     LOG.info('White listed dev asg apps: {0}'.format(ASG_WHITELIST))
@@ -150,8 +149,8 @@ def construct_pipeline_block(env='',
 
     data['asg'].update({
         'hc_type': data['asg'].get('hc_type').upper(),
-        'provider_healthcheck': json.dumps(provider_healthcheck),
-        "has_provider_healthcheck": has_provider_healthcheck,
+        'provider_healthcheck': json.dumps(health_checks.providers),
+        "has_provider_healthcheck": health_checks.has_healthcheck,
     })
 
     LOG.debug('Block data:\n%s', pformat(data))
