@@ -14,6 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Construct a block section of Stages in a Spinnaker Pipeline."""
+import collections
 import copy
 import json
 import logging
@@ -23,6 +24,41 @@ from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
 from ..utils import generate_encoded_user_data, get_template
 
 LOG = logging.getLogger(__name__)
+
+
+def check_provider_healthcheck(settings, default_provider='Amazon'):
+    """Set Provider Health Check when specified.
+
+    Returns:
+        collections.namedtuple: **ProviderHealthCheck** with attributes:
+
+            * providers (list): Providers set to use native Health Check.
+            * has_healthcheck (bool): If any native Health Checks requested.
+    """
+    ProviderHealthCheck = collections.namedtuple('ProviderHealthCheck', ['providers', 'has_healthcheck'])
+
+    eureka_enabled = settings['app']['eureka_enabled']
+    providers = settings['asg']['provider_healthcheck']
+
+    health_check_providers = []
+    has_healthcheck = False
+
+    if eureka_enabled:
+        for provider in providers.keys():
+            if provider.lower() == default_provider.lower():
+                break
+        else:
+            providers[default_provider] = True
+
+    for provider, active in providers.items():
+        if active:
+            health_check_providers.append(provider.capitalize())
+    LOG.info('Provider healthchecks: %s', health_check_providers)
+
+    if len(health_check_providers) > 0:
+        has_healthcheck = True
+
+    return ProviderHealthCheck(providers=health_check_providers, has_healthcheck=has_healthcheck)
 
 
 def construct_pipeline_block(env='',
@@ -83,20 +119,11 @@ def construct_pipeline_block(env='',
         elb = ['{0}'.format(gen_app_name)]
     LOG.info('Attaching the following ELB: {0}'.format(elb))
 
-    provider_healthcheck = []
-    for provider, active in settings['asg']['provider_healthcheck'].items():
-        if active:
-            provider_healthcheck.append(provider.capitalize())
-    LOG.info('Provider healthchecks: {0}'.format(provider_healthcheck))
-
-    has_provider_healthcheck = False
-    if len(provider_healthcheck) > 0:
-        has_provider_healthcheck = True
+    health_checks = check_provider_healthcheck(settings)
 
     data = copy.deepcopy(settings)
 
-    # Default HC type in DEV to EC2, default to EC2 if eureka enabled
-    # FIXME: Need to also set `provider_healthcheck` when `eureka_enabled`
+    # Use EC2 Health Check for DEV or Eureka enabled
     if env == 'dev' or settings['app']['eureka_enabled']:
         data['asg'].update({'hc_type': 'EC2'})
         LOG.info('Switching health check type to: EC2')
@@ -124,8 +151,8 @@ def construct_pipeline_block(env='',
 
     data['asg'].update({
         'hc_type': data['asg'].get('hc_type').upper(),
-        'provider_healthcheck': json.dumps(provider_healthcheck),
-        "has_provider_healthcheck": has_provider_healthcheck,
+        'provider_healthcheck': json.dumps(health_checks.providers),
+        "has_provider_healthcheck": health_checks.has_healthcheck,
     })
 
     LOG.debug('Block data:\n%s', pformat(data))
