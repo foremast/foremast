@@ -36,6 +36,24 @@ from ..utils import get_env_credential, get_template
 LOG = logging.getLogger(__name__)
 
 
+def auto_service(pipeline_settings={}, services={}):  # pylint: disable=W0102
+    """Automatically enable service for deployment types.
+
+    Args:
+        services (dict): Services to enable in IAM Policy.
+        pipeline_settings (dict): Settings from *pipeline.json*.
+
+    Returns:
+        dict: Services.
+    """
+    deployment_type = pipeline_settings['type']
+
+    if deployment_type == 'lambda':
+        services['lambda'] = True
+
+    return services
+
+
 def construct_policy(app='coreforrest', env='dev', group='forrest', region='us-east-1', pipeline_settings=None):
     """Assemble IAM Policy for _app_.
 
@@ -54,6 +72,8 @@ def construct_policy(app='coreforrest', env='dev', group='forrest', region='us-e
 
     services = pipeline_settings.get('services', {})
     LOG.debug('Found requested services: %s', services)
+
+    services = auto_service(pipeline_settings=pipeline_settings, services=services)
 
     if services:
         credential = get_env_credential(env=env)
