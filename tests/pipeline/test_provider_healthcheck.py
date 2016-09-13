@@ -21,3 +21,17 @@ def test_setting_eureka_enabled():
     health_checks = check_provider_healthcheck(settings=eureka_enabled_settings)
     assert health_checks.providers == ['Amazon']
     assert health_checks.has_healthcheck is True
+
+
+def test_additional_provider():
+    """Default Provider should be added to providers in settings."""
+    eureka_enabled_with_provider_settings = copy.copy(TEST_SETTINGS)
+    eureka_enabled_with_provider_settings['app']['eureka_enabled'] = True
+    eureka_enabled_with_provider_settings['asg']['provider_healthcheck']['cloud'] = True
+
+    health_checks = check_provider_healthcheck(settings=eureka_enabled_with_provider_settings)
+    assert len(health_checks.providers) == 2
+    assert 'Amazon' in health_checks.providers
+    assert 'cloud' not in health_checks.providers
+    assert 'Cloud' in health_checks.providers
+    assert health_checks.has_healthcheck is True
