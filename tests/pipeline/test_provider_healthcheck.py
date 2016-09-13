@@ -23,6 +23,19 @@ def test_setting_eureka_enabled():
     assert health_checks.has_healthcheck is True
 
 
+def test_defined_provider():
+    """Provider defined in settings should be returned with capitalization."""
+    provider_settings = copy.deepcopy(TEST_SETTINGS)
+    provider_settings['asg']['provider_healthcheck']['cloud'] = True
+    print(provider_settings)
+
+    health_checks = check_provider_healthcheck(settings=provider_settings)
+    assert len(health_checks.providers) == 1
+    assert 'cloud' not in health_checks.providers
+    assert 'Cloud' in health_checks.providers
+    assert health_checks.has_healthcheck is True
+
+
 def test_additional_provider_with_eureka():
     """Default Provider should be added to providers in settings."""
     eureka_enabled_with_provider_settings = copy.deepcopy(TEST_SETTINGS)
