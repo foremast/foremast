@@ -46,12 +46,13 @@ All the documentation can be viewed on `Read the Docs`_. You can find all config
 
 Development
 ~~~~~~~~~~~
+
 See the `contribution guide`_ for information on code style, contributing, and testing.
 
 Getting Help
 ~~~~~~~~~~~~~
 
-For questions, support, or friendly conversation you can find us on Gitter_.
+For questions, support, or friendly conversation you can find us on `Gitter`_.
 
 More Details
 ------------
@@ -190,6 +191,6 @@ defaults. Please take a look at the `application.json`_ docs for all options.
 .. _`quick start guide`: http://foremast.readthedocs.io/en/latest/getting_started.html#quick-start-guide
 .. _`Read the Docs`: http://foremast.readthedocs.io/en/latest/
 .. _`contribution guide`: http://foremast.readthedocs.io/en/latest/CONTRIBUTING.html
-.. _Gitter: https://gitter.im/gogoair/foremast
+.. _`Gitter`: https://gitter.im/gogoair/foremast
 .. _`pipeline.json`: http://foremast.readthedocs.io/en/latest/configuration_files/pipeline_json/index.html
 .. _`application.json`: http://foremast.readthedocs.io/en/latest/configuration_files/application_json.html
