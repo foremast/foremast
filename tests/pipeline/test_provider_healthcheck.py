@@ -15,7 +15,7 @@ def test_provider_healthcheck():
 
 def test_setting_eureka_enabled():
     """When Eureka is enabled, default Helath Check should be used."""
-    eureka_enabled_settings = copy.copy(TEST_SETTINGS)
+    eureka_enabled_settings = copy.deepcopy(TEST_SETTINGS)
     eureka_enabled_settings['app']['eureka_enabled'] = True
 
     health_checks = check_provider_healthcheck(settings=eureka_enabled_settings)
@@ -25,7 +25,7 @@ def test_setting_eureka_enabled():
 
 def test_additional_provider_with_eureka():
     """Default Provider should be added to providers in settings."""
-    eureka_enabled_with_provider_settings = copy.copy(TEST_SETTINGS)
+    eureka_enabled_with_provider_settings = copy.deepcopy(TEST_SETTINGS)
     eureka_enabled_with_provider_settings['app']['eureka_enabled'] = True
     eureka_enabled_with_provider_settings['asg']['provider_healthcheck']['cloud'] = True
 
