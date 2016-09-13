@@ -119,6 +119,7 @@ class LambdaFunction(object):
 
         LOG.info("Successfully updated Lambda function")
 
+    @retries(max_attempts=3, wait=1, exceptions=(SystemExit))
     def create_function(self, vpc_config):
         """Create lambda function, configures lambda parameters.
 
