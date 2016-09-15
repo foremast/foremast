@@ -40,15 +40,24 @@ def check_provider_healthcheck(settings, default_provider='Amazon'):
     eureka_enabled = settings['app']['eureka_enabled']
     providers = settings['asg']['provider_healthcheck']
 
+    LOG.debug('Template defined Health Check Providers: %s', providers)
+
     health_check_providers = []
     has_healthcheck = False
 
+    normalized_default_provider = default_provider.capitalize()
+
     if eureka_enabled:
-        for provider in providers.keys():
-            if provider.lower() == default_provider.lower():
+        LOG.info('Eureka enabled, enabling default Provider Health Check: %s', normalized_default_provider)
+
+        for provider, active in providers.items():
+            if provider.lower() == normalized_default_provider.lower():
+                providers[provider] = True
+                LOG.debug('Override defined Provider Health Check: %s -> %s', active, providers[provider])
                 break
         else:
-            providers[default_provider] = True
+            LOG.debug('Adding default Provider Health Check: %s', normalized_default_provider)
+            providers[normalized_default_provider] = True
 
     for provider, active in providers.items():
         if active:
