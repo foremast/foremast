@@ -20,7 +20,7 @@ class LambdaFunction(object):
             app (str): Application name
             env (str): Environment/Account
             region (str): AWS Region
-            prop_path (dict): Path of environment property file
+            prop_path (str): Path of environment property file
         """
         self.app_name = app
         self.env = env
@@ -61,6 +61,22 @@ class LambdaFunction(object):
             pass
         return exists
 
+    def _check_lambda_alias(self):
+        """ Checks if lambda alias exists
+        Returns:
+            True if alias exists
+            False if alias does not exist
+        """
+        aliases = self.lambda_client.list_aliases(FunctionName=self.app_name)
+
+        for alias in aliases['Aliases']:
+            if alias['Name'] == self.env:
+                LOG.info('Found alias %s for function %s', self.env, self.app_name)
+                return True
+        else:
+            LOG.info('No alias %s found for function %s', self.env, self.app_name)
+            return False
+
     def _vpc_config(self):
         """Get VPC config."""
         if self.vpc_enabled:
@@ -91,6 +107,39 @@ class LambdaFunction(object):
             sg_ids.append(sg_id)
         return sg_ids
 
+    @retries(max_attempts=3, wait=1)
+    def create_alias(self):
+        """Create lambda alias with env name and points it to $LATEST"""
+
+        try:
+            LOG.info('Creating alias %s', self.env)
+            self.lambda_client.create_alias(
+                FunctionName=self.app_name,
+                Name=self.env,
+                FunctionVersion='$LATEST',
+                Description='Alias for {}'.format(self.env)
+            )
+        except boto3.exceptions.botocore.exceptions.ClientError as error:
+            LOG.debug(str(error))
+            LOG.info("Alias creation failed. Retrying...")
+            raise
+
+    @retries(max_attempts=3, wait=1)
+    def update_alias(self):
+        """Updates lambda alias to point to $LATEST"""
+
+        try:
+            LOG.info('Updating alias to point to $LATEST', self.env)
+            self.lambda_client.update_alias(
+                FunctionName=self.app_name,
+                Name=self.env,
+                FunctionVersion='$LATEST'
+            )
+        except boto3.exceptions.botocore.exceptions.ClientError as error:
+            LOG.debug(str(error))
+            LOG.info("Alias update failed. Retrying...")
+            raise
+
     @retries(max_attempts=3, wait=1, exceptions=(SystemExit))
     def update_function_configuration(self, vpc_config):
         """Update existing Lambda function configuration.
@@ -100,6 +149,8 @@ class LambdaFunction(object):
                                a VPC in lambda
         """
         try:
+            LOG.info('Updating code for lambda function: %s', self.app_name)
+
             self.lambda_client.update_function_configuration(
                 FunctionName=self.app_name,
                 Runtime=self.runtime,
@@ -117,7 +168,7 @@ class LambdaFunction(object):
 
             raise
 
-        LOG.info("Successfully updated Lambda function")
+        LOG.info("Successfully updated Lambda function and alias")
 
     @retries(max_attempts=3, wait=1, exceptions=(SystemExit))
     def create_function(self, vpc_config):
@@ -140,6 +191,8 @@ class LambdaFunction(object):
             contents = openfile.read()
 
         try:
+            LOG.info('Creating lambda function: %s', self.app_name)
+
             self.lambda_client.create_function(
                 FunctionName=self.app_name,
                 Runtime=self.runtime,
@@ -161,12 +214,18 @@ class LambdaFunction(object):
 
             raise
 
-        LOG.info("Successfully created Lambda function")
+        LOG.info("Successfully created Lambda function and alias")
 
     def create_lambda_function(self):
         """Create or update Lambda function."""
         vpc_config = self._vpc_config()
         if self._check_lambda():
             self.update_function_configuration(vpc_config)
+
+            if self._check_lambda_alias():
+                self.update_alias()
+            else:
+                self.create_alias()
         else:
             self.create_function(vpc_config)
+            self.create_alias()
