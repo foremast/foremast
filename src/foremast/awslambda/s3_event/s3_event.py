@@ -4,7 +4,7 @@ import json
 import boto3
 
 from ...exceptions import InvalidEventConfiguration
-from ...utils import (get_template, get_lambda_arn, add_lambda_permissions)
+from ...utils import (get_template, get_lambda_alias_arn, add_lambda_permissions)
 
 LOG = logging.getLogger(__name__)
 
@@ -20,9 +20,9 @@ def create_s3_event(app_name, env, region, rules):
     prefix = rules.get('prefix')
     suffix = rules.get('suffix')
 
-    lambda_arn = get_lambda_arn(app_name, env, region)
+    lambda_alias_arn = get_lambda_alias_arn(app_name, env, region)
 
-    LOG.debug("Lambda ARN for lambda function %s is %s.", app_name, lambda_arn)
+    LOG.debug("Lambda ARN for lambda function %s is %s.", app_name, lambda_alias_arn)
     LOG.debug("Creating S3 event for bucket %s with events %s", bucket, events)
 
     if None in (bucket, events):
@@ -44,7 +44,7 @@ def create_s3_event(app_name, env, region, rules):
     else:
         json_filters = None
 
-    template_kwargs = {"lambda_arn": lambda_arn, "events": json.dumps(events), "filters": json_filters}
+    template_kwargs = {"lambda_arn": lambda_alias_arn, "events": json.dumps(events), "filters": json_filters}
 
     config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
 

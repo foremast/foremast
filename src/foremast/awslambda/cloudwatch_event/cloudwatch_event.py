@@ -4,7 +4,7 @@ import logging
 import boto3
 
 from ...exceptions import InvalidEventConfiguration
-from ...utils import add_lambda_permissions, get_env_credential, get_lambda_arn
+from ...utils import add_lambda_permissions, get_env_credential, get_lambda_alias_arn
 
 LOG = logging.getLogger(__name__)
 
@@ -19,7 +19,6 @@ def create_cloudwatch_event(app_name, env, region, rules):
     schedule = rules.get('schedule')
     rule_description = rules.get('rule_description')
     json_input = rules.get('json_input', {})
-
 
     if schedule is None:
         LOG.critical('Schedule is required and no schedule is defined!')
@@ -54,13 +53,13 @@ def create_cloudwatch_event(app_name, env, region, rules):
                                State='ENABLED',
                                Description=rule_description)
 
-    lambda_arn = get_lambda_arn(app=app_name, account=env, region=region)
+    lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
 
     targets = []
     # TODO: read this one from file event-config-*.json
     json_payload = '{}'.format(json.dumps(json_input))
 
-    target = {"Id": app_name, "Arn": lambda_arn, "Input": json_payload}
+    target = {"Id": app_name, "Arn": lambda_alias_arn, "Input": json_payload}
 
     targets.append(target)
 
