@@ -1,7 +1,7 @@
 import boto3
 import logging
 
-from ..exceptions import LambdaFunctionDoesNotExist
+from ..exceptions import LambdaFunctionDoesNotExist, LambdaAliasDoesNotExist
 
 LOG = logging.getLogger(__name__)
 
@@ -33,6 +33,32 @@ def get_lambda_arn(app, account, region):
                                                                                                      region))
 
 
+def get_lambda_alias_arn(app, account, region):
+    """Get lambda alias ARN. Assumes that account name is equal to alias name.
+
+    Args:
+        account (str): AWS account name.
+        region (str): Region name, e.g. us-east-1
+        app (str): Lambda function name
+
+    Returns:
+        str: ARN for requested lambda alias
+    """
+    session = boto3.Session(profile_name=account, region_name=region)
+    lambda_client = session.client('lambda')
+
+    lambda_aliases = lambda_client.list_aliases(FunctionName=app)
+
+    for alias in lambda_aliases['Aliases']:
+        if alias['Name'] == account:
+            lambda_alias_arn = alias['AliasArn']
+            LOG.info('Found ARN for alias %s for function %s', account, app)
+            return lambda_alias_arn
+    else:
+        LOG.fatal('Lambda alias %s of function %s not found', account, app)
+        raise LambdaAliasDoesNotExist('Lambda alias %s of function %s not found'.format(account, app))
+
+
 def add_lambda_permissions(function='',
                            statement_id='',
                            action='lambda:InvokeFunction',
@@ -44,6 +70,7 @@ def add_lambda_permissions(function='',
 
     Args:
         function (str): Lambda function name
+        statement_id (str): IAM policy statement (principal) id
         action (str): Lambda action to allow
         principal (str): AWS principal to add permissions
         source_arn (str): ARN of the source of the event. Only needed for S3
