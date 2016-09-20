@@ -44,6 +44,8 @@ Getting Started
 Take a look at `quick start guide`_ for a quick introduction on how to use
 Foremast.
 
+We also have a blog post to help you get started: `Automate Spinnaker Pipeline Creation`_
+
 Documentation
 ~~~~~~~~~~~~~
 
@@ -200,6 +202,7 @@ defaults. Please take a look at the `application.json`_ docs for all options.
 
 .. _`Foremast templates`: https://github.com/gogoair/foremast-template-examples/
 .. _`quick start guide`: http://foremast.readthedocs.io/en/latest/getting_started.html#quick-start-guide
+.. _`automate spinnaker pipeline creation`: https://tech.gogoair.com/foremast-automate-spinnaker-pipeline-creation-2b2aa7b2c5e4#.qplfw19cg
 .. _`Read the Docs`: http://foremast.readthedocs.io/en/latest/
 .. _`contribution guide`: http://foremast.readthedocs.io/en/latest/CONTRIBUTING.html
 .. _`Gitter`: https://gitter.im/gogoair/foremast
