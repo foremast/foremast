@@ -63,7 +63,7 @@ def test_add_lambda_permission_failure(LOG, session):
 @mock.patch('foremast.utils.awslambda.boto3.Session')
 @mock.patch('foremast.utils.awslambda.LOG')
 def test_get_lambda_alias_arn_success(LOG, mock_boto3):
-    """Check get lambda alias arn"""
+    """Check get lambda alias arn."""
     client = mock_boto3.return_value.client.return_value
     client.list_aliases.return_value = lambda_alias_list_mock()
 
@@ -77,7 +77,7 @@ def test_get_lambda_alias_arn_success(LOG, mock_boto3):
 
 @mock.patch('foremast.utils.awslambda.boto3.Session')
 def test_get_lambda_alias_arn_failure(mock_boto3):
-    """Check get lambda alias arn"""
+    """Check get lambda alias arn failure."""
     client = mock_boto3.return_value.client.return_value
     client.list_aliases.return_value = lambda_no_alias_list_mock()
 

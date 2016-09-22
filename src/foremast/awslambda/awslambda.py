@@ -62,7 +62,8 @@ class LambdaFunction(object):
         return exists
 
     def _check_lambda_alias(self):
-        """ Checks if lambda alias exists
+        """Check if lambda alias exists.
+
         Returns:
             True if alias exists
             False if alias does not exist
@@ -107,12 +108,12 @@ class LambdaFunction(object):
             sg_ids.append(sg_id)
         return sg_ids
 
-    @retries(max_attempts=3, wait=1)
+    @retries(max_attempts=3, wait=1, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
     def create_alias(self):
-        """Create lambda alias with env name and points it to $LATEST"""
+        """Create lambda alias with env name and points it to $LATEST."""
+        LOG.info('Creating alias %s', self.env)
 
         try:
-            LOG.info('Creating alias %s', self.env)
             self.lambda_client.create_alias(
                 FunctionName=self.app_name,
                 Name=self.env,
@@ -120,23 +121,23 @@ class LambdaFunction(object):
                 Description='Alias for {}'.format(self.env)
             )
         except boto3.exceptions.botocore.exceptions.ClientError as error:
-            LOG.debug(str(error))
+            LOG.debug('Create alias error: %s', error)
             LOG.info("Alias creation failed. Retrying...")
             raise
 
-    @retries(max_attempts=3, wait=1)
+    @retries(max_attempts=3, wait=1, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
     def update_alias(self):
-        """Updates lambda alias to point to $LATEST"""
+        """Update lambda alias to point to $LATEST."""
+        LOG.info('Updating alias to point to $LATEST', self.env)
 
         try:
-            LOG.info('Updating alias to point to $LATEST', self.env)
             self.lambda_client.update_alias(
                 FunctionName=self.app_name,
                 Name=self.env,
                 FunctionVersion='$LATEST'
             )
         except boto3.exceptions.botocore.exceptions.ClientError as error:
-            LOG.debug(str(error))
+            LOG.debug('Update alias error: %s', error)
             LOG.info("Alias update failed. Retrying...")
             raise
 
@@ -148,9 +149,9 @@ class LambdaFunction(object):
             vpc_config (dict): Dictionary of SubnetIds and SecurityGroupsIds for using
                                a VPC in lambda
         """
-        try:
-            LOG.info('Updating code for lambda function: %s', self.app_name)
+        LOG.info('Updating code for lambda function: %s', self.app_name)
 
+        try:
             self.lambda_client.update_function_configuration(
                 FunctionName=self.app_name,
                 Runtime=self.runtime,
@@ -190,9 +191,9 @@ class LambdaFunction(object):
         with open('lambda-holder.zip', 'rb') as openfile:
             contents = openfile.read()
 
-        try:
-            LOG.info('Creating lambda function: %s', self.app_name)
+        LOG.info('Creating lambda function: %s', self.app_name)
 
+        try:
             self.lambda_client.create_function(
                 FunctionName=self.app_name,
                 Runtime=self.runtime,
@@ -219,13 +220,13 @@ class LambdaFunction(object):
     def create_lambda_function(self):
         """Create or update Lambda function."""
         vpc_config = self._vpc_config()
+
         if self._check_lambda():
             self.update_function_configuration(vpc_config)
-
-            if self._check_lambda_alias():
-                self.update_alias()
-            else:
-                self.create_alias()
         else:
             self.create_function(vpc_config)
+
+        if self._check_lambda_alias():
+            self.update_alias()
+        else:
             self.create_alias()
