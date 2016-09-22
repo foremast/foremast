@@ -11,23 +11,22 @@ ERROR_RESPONSE = {'Error': {}}
 
 
 def lambda_alias_list_mock():
-    return_dict = \
-        {
-            'Aliases': [
-                {
-                    'Description': '',
-                    'AliasArn': 'arn:aws:lambda:us-east-1:222572804561:function:lambdatest2:stage',
-                    'FunctionVersion': '$LATEST',
-                    'Name': 'stage'
-                },
-                {
-                    'Description': '',
-                    'AliasArn': 'arn:aws:lambda:us-east-1:222572804561:function:lambdatest2:dev',
-                    'FunctionVersion': '$LATEST',
-                    'Name': 'dev'
-                }
-            ]
-        }
+    return_dict = {
+        'Aliases': [
+            {
+                'Description': '',
+                'AliasArn': 'arn:aws:lambda:us-east-1:222572804561:function:lambdatest2:stage',
+                'FunctionVersion': '$LATEST',
+                'Name': 'stage'
+            },
+            {
+                'Description': '',
+                'AliasArn': 'arn:aws:lambda:us-east-1:222572804561:function:lambdatest2:dev',
+                'FunctionVersion': '$LATEST',
+                'Name': 'dev'
+            }
+        ]
+    }
     return return_dict
 
 
