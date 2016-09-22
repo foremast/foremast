@@ -161,6 +161,7 @@ def construct_pipeline_block(env='',
     data['asg'].update({
         'hc_type': data['asg'].get('hc_type').upper(),
         'provider_healthcheck': json.dumps(health_checks.providers),
+        'enable_public_ips': json.dumps(settings['asg']['enable_public_ips']),
         "has_provider_healthcheck": health_checks.has_healthcheck,
     })
 

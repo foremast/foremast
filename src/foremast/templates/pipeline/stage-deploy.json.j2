@@ -43,7 +43,7 @@
           "loadBalancers": {{ data.app.elb }},
           "instanceType": "{{ data.app.instance_type }}",
           "useSourceCapacity": false,
-          "associatePublicIpAddress": null,
+          "associatePublicIpAddress": {{ data.asg.enable_public_ips }},
           "provider": "aws",
           "cloudProvider": "aws",
           "account": "{{ data.app.environment }}"
