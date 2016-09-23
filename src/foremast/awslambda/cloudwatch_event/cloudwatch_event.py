@@ -57,12 +57,14 @@ def create_cloudwatch_event(app_name, env, region, rules):
     if rule_description is None:
         rule_description = "{} - {}".format(app_name, rule_name)
 
+    lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
+
     #Add lambda permissions
     account_id = get_env_credential(env=env)['accountId']
     principal = "events.amazonaws.com"
     statement_id = '{}_cloudwatch_{}'.format(app_name, rule_name)
     source_arn = 'arn:aws:events:{}:{}:rule/{}'.format(region, account_id, rule_name)
-    add_lambda_permissions(function=app_name,
+    add_lambda_permissions(function=lambda_alias_arn,
                            statement_id=statement_id,
                            action='lambda:InvokeFunction',
                            principal=principal,
@@ -75,8 +77,6 @@ def create_cloudwatch_event(app_name, env, region, rules):
                                ScheduleExpression=schedule,
                                State='ENABLED',
                                Description=rule_description)
-
-    lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
 
     targets = []
     # TODO: read this one from file event-config-*.json

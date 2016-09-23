@@ -74,7 +74,7 @@ def create_s3_event(app_name, env, region, rules):
     principal = 's3.amazonaws.com'
     statement_id = "{}_s3_{}".format(app_name, bucket)
     source_arn = "arn:aws:s3:::{}".format(bucket)
-    add_lambda_permissions(function=app_name,
+    add_lambda_permissions(function=lambda_alias_arn,
                            env=env,
                            region=region,
                            principal=principal,
