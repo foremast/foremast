@@ -119,6 +119,18 @@ Determines if the instances should be public (external) or non-public (internal)
        - ``"internal"``
        -  ``"external"``
 
+``enable_public_ips``
+******************
+
+Determines if instances in an cluster should have public IPs associated. By default, this is set to null which means it uses default behavior configured for your subnets in your cloud provider.
+
+    | *Type*: boolean
+    | *Default*: `null`
+    | *Options*
+
+       - ``true``
+       - ``false``
+    `
 ``scaling_policy``
 ******************
 
