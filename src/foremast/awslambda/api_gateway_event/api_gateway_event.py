@@ -15,15 +15,13 @@
 #   limitations under the License.
 
 import logging
-import uuid
 
 import boto3
 import botocore
 from tryagain import retries
 
-from foremast.exceptions import InvalidEventConfiguration
-from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids, update_dns_zone_record, get_properties,
-                            add_lambda_permissions, get_lambda_alias_arn)
+from foremast.utils import (get_details, get_env_credential, get_properties, add_lambda_permissions,
+                            get_lambda_alias_arn)
 
 LOG = logging.getLogger(__name__)
 
@@ -237,7 +235,6 @@ class APIGateway:
             self.log.info("Successfully attached method: %s", self.trigger_settings['method'])
         except botocore.exceptions.ClientError:
             self.log.info("Method %s already exists", self.trigger_settings['method'])
-
 
     def setup_lambda_api(self):
         """A wrapper for all the steps needed to setup the integration."""
