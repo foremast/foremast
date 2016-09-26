@@ -9,6 +9,7 @@
           "base64UserData": "{{ data.app.encoded_user_data }}",
           "application": "{{ data.app.appname }}",
           "strategy": "{{ data.deploy_strategy }}",
+          "maxRemainingAsgs": 2,
           "scaleDown": true,
           "capacity": {
             "min": {{ data.asg.min_inst }},
