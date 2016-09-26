@@ -59,7 +59,7 @@ def create_cloudwatch_log_event(app_name, env, region, rules):
     principal = 'logs.{}.amazonaws.com'.format(region)
     account_id = get_env_credential(env=env)['accountId']
     source_arn = "arn:aws:logs:{0}:{1}:log-group:{2}:*".format(region, account_id, log_group)
-    add_lambda_permissions(function=app_name,
+    add_lambda_permissions(function=lambda_alias_arn,
                            statement_id=statement_id,
                            action='lambda:InvokeFunction',
                            principal=principal,

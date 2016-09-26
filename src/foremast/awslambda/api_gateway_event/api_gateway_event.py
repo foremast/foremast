@@ -15,14 +15,13 @@
 #   limitations under the License.
 
 import logging
-import uuid
 
 import boto3
 import botocore
 from tryagain import retries
 
-from foremast.exceptions import InvalidEventConfiguration
-from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids, update_dns_zone_record, get_properties, add_lambda_permissions)
+from foremast.utils import (get_details, get_env_credential, get_properties, add_lambda_permissions,
+                            get_lambda_alias_arn)
 
 LOG = logging.getLogger(__name__)
 
@@ -53,7 +52,7 @@ class APIGateway:
         self.lambda_client = session.client('lambda')
         self.api_version = self.lambda_client.meta.service_model.api_version
 
-        self.api_id  = self.find_api_id()
+        self.api_id = self.find_api_id()
         self.resource_id = self.find_resource_id()
 
     def find_api_id(self):
@@ -114,7 +113,8 @@ class APIGateway:
         """Add permission to Lambda for the API Trigger."""
         statement_id = '{}_api_{}'.format(self.app_name, self.trigger_settings['api_name'])
         principal = 'apigateway.amazonaws.com'
-        add_lambda_permissions(function=self.app_name,
+        lambda_alias_arn = get_lambda_alias_arn(self.app_name, self.env, self.region)
+        add_lambda_permissions(function=lambda_alias_arn,
                                statement_id=statement_id,
                                action='lambda:InvokeFunction',
                                principal=principal,
@@ -235,7 +235,6 @@ class APIGateway:
             self.log.info("Successfully attached method: %s", self.trigger_settings['method'])
         except botocore.exceptions.ClientError:
             self.log.info("Method %s already exists", self.trigger_settings['method'])
-
 
     def setup_lambda_api(self):
         """A wrapper for all the steps needed to setup the integration."""

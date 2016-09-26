@@ -144,7 +144,7 @@ class LambdaFunction(object):
     @retries(max_attempts=3, wait=1, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
     def update_alias(self):
         """Update lambda alias to point to $LATEST."""
-        LOG.info('Updating alias to point to $LATEST', self.env)
+        LOG.info('Updating alias %s to point to $LATEST', self.env)
 
         try:
             self.lambda_client.update_alias(
