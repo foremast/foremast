@@ -12,7 +12,7 @@ Foremast is a Spinnaker pipeline and infrastructure configuration and
 templating tool.  Just create a couple JSON configuration files and then
 manually creating Spinnaker pipelines becomes a thing of the past.
 
-.. image:: https://s3.amazonaws.com/gogo-oss-logos/Foremast/Foremast+Logo+75x75.png
+.. image:: https://s3.amazonaws.com/gogo-oss-logos/Foremast/Foremast+Logo-text-300.png
    :align: center
 
 
