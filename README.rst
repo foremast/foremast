@@ -8,10 +8,12 @@ Spinnaker Foremast
    :alt: Join the chat at https://gitter.im/gogoair/foremast
    :target: https://gitter.im/gogoair/foremast?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-
 Foremast is a Spinnaker pipeline and infrastructure configuration and
 templating tool.  Just create a couple JSON configuration files and then
 manually creating Spinnaker pipelines becomes a thing of the past.
+
+.. image:: https://s3.amazonaws.com/gogo-oss-logos/Foremast/ForemastLogo-text-250.png
+   :align: center
 
 
 Why Foremast?
