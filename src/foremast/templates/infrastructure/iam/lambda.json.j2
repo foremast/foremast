@@ -4,7 +4,10 @@
             {% if settings.lambda.vpc_enabled %}
                 "ec2:CreateNetworkInterface",
             {% endif %}
-                "lambda:*"
+                "lambda:*",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
             ],
             "Effect": "Allow",
             "Resource": "*"
