@@ -63,3 +63,67 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
     LOG.info('Using AMI: %s', ami_id)
 
     return ami_id
+
+
+class GitLookup():
+    """Retrieve files from a GitLab Server.
+
+    Args:
+        git_short (str): Short Git representation of repository, e.g.
+            forrest/core.
+    """
+
+    def __init__(self, git_short=''):
+        self.git_short = git_short
+        self.server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
+        self.project_id = self.server.getproject(self.git_short)['id']
+
+    def get(self, branch='master', filename=''):
+        """Retrieve _filename_ from GitLab.
+
+        Args:
+            branch (str): Git Branch to find file.
+            filename (str): Name of file to retrieve.
+
+        Returns:
+            str: Contents of file.
+        """
+        LOG.info('Retrieving "%s" from "%s".', filename, self.project_id)
+
+        file_blob = self.server.getfile(self.project_id, filename, branch)
+        LOG.debug('GitLab file response:\n%s', file_blob)
+
+        file_contents = ''
+
+        if not file_blob:
+            LOG.warning('"%s" Branch "%s" missing file "%s".', self.git_short, branch, filename)
+        else:
+            file_contents = b64decode(file_blob['content'])
+
+        LOG.debug('File contents:\n%s', file_contents)
+        return file_contents
+
+    def json(self, branch='master', filename=''):
+        """Retrieve _filename_ from GitLab.
+
+        Args:
+            branch (str): Git Branch to find file.
+            filename (str): Name of file to retrieve.
+
+        Returns:
+            dict: Decoded JSON.
+        """
+        file_contents = self.get(branch=branch, filename=filename)
+
+        try:
+            json_dict = json.loads(file_contents.decode())
+        except json.JSONDecodeError as error:
+            msg = ('"{filename}" appears to be invalid json. '
+                   'Please validate it with http://jsonlint.com. '
+                   'JSON decoder error:\n'
+                   '{error}').format(
+                       filename=filename, error=error)
+            raise SystemExit(msg)
+
+        LOG.debug('JSON object:\n%s', json_dict)
+        return json_dict
