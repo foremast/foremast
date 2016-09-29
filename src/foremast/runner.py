@@ -105,6 +105,8 @@ class ForemastRunner(object):
                 spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
             elif pipeline_type == 'lambda':
                 spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
+            elif pipeline_type == 'manual':
+                spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             else:
                 raise NotImplementedError("Pipeline type is not implemented.")
         else:
