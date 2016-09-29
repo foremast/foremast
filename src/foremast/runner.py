@@ -97,6 +97,9 @@ class ForemastRunner(object):
 
         pipeline_type = self.configs['pipeline']['type']
 
+        if pipeline_type not in consts.ALLOWED_TYPES:
+            raise NotImplementedError('Pipeline type "{0}" not permitted.'.format(pipeline_type))
+
         if not onetime:
             if pipeline_type == 'ec2':
                 spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)

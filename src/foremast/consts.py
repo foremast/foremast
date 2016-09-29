@@ -112,6 +112,7 @@ GIT_URL = validate_key_values(config, 'base', 'git_url')
 DOMAIN = validate_key_values(config, 'base', 'domain', default='example.com')
 ENVS = set(validate_key_values(config, 'base', 'envs', default='').split(','))
 REGIONS = set(validate_key_values(config, 'base', 'regions', default='').split(','))
+ALLOWED_TYPES = set(validate_key_values(config, 'base', 'types', default='ec2,lambda').split(','))
 TEMPLATES_PATH = validate_key_values(config, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(config, 'base', 'ami_json_url')
 DEFAULT_EC2_SECURITYGROUPS = set(validate_key_values(config, 'base', 'default_ec2_securitygroups',
