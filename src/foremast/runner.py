@@ -245,17 +245,19 @@ def rebuild_pipelines():
         if 'repoProjectKey' not in apps:
             LOG.info("Skipping {}. No project key found".format(apps['name']))
             continue
+
+        app_name = '{}/{}'.format(apps['repoProjectKey'], apps['repoSlug'])
         if (apps['repoProjectKey'].lower() == rebuild_project.lower() or rebuild_project == 'ALL'):
             os.environ["PROJECT"] = apps['repoProjectKey']
             os.environ["GIT_REPO"] = apps['repoSlug']
-            LOG.info('Rebuilding pipelines for {}/{}'.format(apps['repoProjectKey'], apps['repoSlug']))
+            LOG.info('Rebuilding pipelines for %s', app_name)
             runner = ForemastRunner()
             try:
                 runner.write_configs()
                 runner.create_pipeline()
                 runner.cleanup()
             except Exception as error:
-                print(error)
+                LOG.warning('Error updating pipeline for %s', app_name)
 
 
 def debug_flag():
