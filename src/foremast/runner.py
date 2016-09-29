@@ -95,10 +95,12 @@ class ForemastRunner(object):
             'base': None,
         }
 
+        pipeline_type = self.configs['pipeline']['type']
+
         if not onetime:
-            if self.configs['pipeline']['type'] == 'ec2':
+            if pipeline_type == 'ec2':
                 spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
-            elif self.configs['pipeline']['type'] == 'lambda':
+            elif pipeline_type == 'lambda':
                 spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
             else:
                 raise NotImplementedError("Pipeline type is not implemented.")
