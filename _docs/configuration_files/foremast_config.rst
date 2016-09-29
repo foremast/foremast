@@ -48,6 +48,16 @@ Comma delimiated list of environments/applications that will be managed with For
     | *Example*: ``dev,stage,prod``
     | *Required*: Yes
 
+``types``
+~~~~~~~~~
+
+List of foremast managed Pipeline types to allow.
+
+    | *Type*: str
+    | *Example*: ``ec2,lambda,manual``
+    | *Default*: ``ec2,lambda``
+    | *Required*: No
+
 ``regions``
 ***********
 
