@@ -14,9 +14,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Test Git file lookups."""
+import base64
 from unittest import mock
 
 from foremast.utils import GitLookup
+
+TEST_JSON = b'''{
+    "ship": "pirate"
+}'''
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
@@ -27,3 +32,24 @@ def test_init(gitlab):
     assert my_git.git_short == ''
     assert my_git.server == gitlab.Gitlab.return_value
     my_git.server.getproject.assert_called_with(my_git.git_short)
+
+
+@mock.patch('foremast.utils.lookups.gitlab')
+def test_get(gitlab):
+    """Check _get_ method."""
+    my_git = GitLookup()
+
+    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON)}
+
+    assert TEST_JSON == my_git.get()
+
+
+@mock.patch('foremast.utils.lookups.gitlab')
+def test_json(gitlab):
+    """Check _json_ method."""
+    my_git = GitLookup()
+
+    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON)}
+
+    result = my_git.json()
+    assert result['ship'] == 'pirate'
