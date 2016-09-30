@@ -17,6 +17,7 @@
 import base64
 from unittest import mock
 
+import pytest
 from foremast.utils import GitLookup
 
 TEST_JSON = b'''{
@@ -53,3 +54,14 @@ def test_json(gitlab):
 
     result = my_git.json()
     assert result['ship'] == 'pirate'
+
+
+@mock.patch('foremast.utils.lookups.gitlab')
+def test_invalid_json(gitlab):
+    """Check invalid JSON."""
+    my_git = GitLookup()
+
+    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON + b'}')}
+
+    with pytest.raises(SystemExit):
+        my_git.json()
