@@ -15,7 +15,8 @@
 #   limitations under the License.
 
 from configparser import ConfigParser
-from foremast.consts import extract_formats
+
+from foremast.consts import ALLOWED_TYPES, extract_formats
 
 
 def test_consts_extract_formats():
@@ -31,3 +32,9 @@ def test_consts_extract_formats():
 
     results = extract_formats(config)
     assert 'example.com' == results['domain']
+
+
+def test_consts_pipeline_types():
+    """Default types should be set."""
+    assert 'ec2' in ALLOWED_TYPES
+    assert 'lambda' in ALLOWED_TYPES
