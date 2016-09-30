@@ -1,0 +1,25 @@
+        {
+            "Sid": "KinesisFirehoseReadWrite",
+            "Action": [
+                "firehose:*"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+            {%- for stream in items %}
+                "arn:aws:dynamodb:{{ region }}:{{ account_number }}:deliverystream/{{ stream }}"
+                {%- if not loop.last -%}
+                ,
+                {%- endif -%}
+            {% endfor %}
+            ]
+        },
+        {
+            "Sid": "KinesisFirehoseLogs",
+            "Effect": "Allow",
+            "Action": [
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:{{ region }}:{{ account_number }}:log-group:/aws/kinesisfirehose/{{ app }}:log-stream:*"
+            ]
+        }
