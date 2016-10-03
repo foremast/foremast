@@ -113,6 +113,29 @@ class GitLookup():
 
         return file_contents
 
+    def remote_file(self, branch='master', filename=''):
+        """Read the remote file on Git Server.
+
+        Args:
+            branch (str): Git Branch to find file.
+            filename (str): Name of file to retrieve relative to root of
+                repository.
+
+        Returns:
+            str: Contents of remote file.
+        """
+        file_contents = ''
+
+        file_blob = self.server.getfile(self.project_id, filename, branch)
+        LOG.debug('GitLab file response:\n%s', file_blob)
+
+        if not file_blob:
+            LOG.warning('"%s" Branch "%s" missing file "%s".', self.git_short, branch, filename)
+        else:
+            file_contents = b64decode(file_blob['content']).decode()
+
+        return file_contents
+
     def get(self, branch='master', filename=''):
         """Retrieve _filename_ from GitLab.
 
@@ -131,15 +154,7 @@ class GitLookup():
         if self.runway_dir:
             file_contents = self.local_file(filename=filename)
         else:
-            file_blob = self.server.getfile(self.project_id, filename, branch)
-            LOG.debug('GitLab file response:\n%s', file_blob)
-
-            file_contents = ''
-
-            if not file_blob:
-                LOG.warning('"%s" Branch "%s" missing file "%s".', self.git_short, branch, filename)
-            else:
-                file_contents = b64decode(file_blob['content']).decode()
+            file_contents = self.remote_file(branch=branch, filename=filename)
 
         LOG.debug('File contents:\n%s', file_contents)
         return file_contents
