@@ -23,6 +23,7 @@ from base64 import b64decode
 import gitlab
 
 from ..consts import ENVS, GIT_URL, GITLAB_TOKEN
+from ..utils import GitLookup
 
 LOG = logging.getLogger(__name__)
 JSON_ERROR_MSG = '"{0}" appears to be invalid json. Please validate it with http://jsonlint.com.'
@@ -41,48 +42,31 @@ def process_git_configs(git_short=''):
     """
     LOG.info('Processing application.json files from GitLab "%s".', git_short)
 
-    server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
-
-    project_id = server.getproject(git_short)['id']
+    file_lookup = GitLookup(git_short=git_short)
 
     app_configs = collections.defaultdict(dict)
     for env in ENVS:
         app_json = 'runway/application-master-{env}.json'.format(env=env)
-        file_blob = server.getfile(project_id, app_json, 'master')
-        LOG.debug('GitLab file response:\n%s', file_blob)
-
-        if not file_blob:
+        try:
+            app_dict = file_lookup.json(filename=app_json)
+            app_configs[env] = app_dict
+        except FileNotFoundError:
             LOG.debug('Application configuration not available for %s.', env)
             # TODO: Use default configs anyways?
             continue
-        else:
-            file_contents = b64decode(file_blob['content'])
-            try:
-                app_configs[env] = json.loads(file_contents.decode())
-            except ValueError:
-                msg = JSON_ERROR_MSG.format(app_json)
-                raise SystemExit(msg)
 
     LOG.info('Processing pipeline.json from GitLab.')
-    pipeline_json = 'runway/pipeline.json'
-    pipeline_blob = server.getfile(project_id,
-                                   pipeline_json,
-                                   'master', )
 
-    if not pipeline_blob:
+    pipeline_json = 'runway/pipeline.json'
+    try:
+        pipeline_dict = file_lookup.json(filename=pipeline_json)
+        LOG.info('Pipeline configuration found.')
+        app_configs['pipeline'] = pipeline_dict
+    except FileNotFoundError:
         LOG.info('Pipeline configuration not available, using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
-    else:
-        LOG.info('Pipeline configuration found.')
-        pipeline_contents = b64decode(pipeline_blob['content'])
-        try:
-            LOG.info(pipeline_contents.decode())
-            app_configs['pipeline'] = json.loads(pipeline_contents.decode())
-        except ValueError:
-            msg = JSON_ERROR_MSG.format(pipeline_json)
-            raise SystemExit(msg)
 
-    config_commit = server.getbranch(project_id, 'master')['commit']['id']
+    config_commit = file_lookup.server.getbranch(file_lookup.roject_id, 'master')['commit']['id']
     LOG.info('Commit ID used: %s', config_commit)
     app_configs['pipeline']['config_commit'] = config_commit
 
