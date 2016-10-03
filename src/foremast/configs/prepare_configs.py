@@ -76,7 +76,7 @@ def process_runway_configs(runway_dir=''):
         collections.defaultdict: Configurations stored for each environment
         found.
     """
-    LOG.info('Processing application.json files from local directory.')
+    LOG.info('Processing application.json files from local directory "%s".', runway_dir)
 
     file_lookup = GitLookup(runway_dir=runway_dir)
 
