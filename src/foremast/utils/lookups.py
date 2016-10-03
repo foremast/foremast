@@ -103,8 +103,13 @@ class GitLookup():
         LOG.info('Retrieving "%s" from "%s".', filename, self.runway_dir or self.git_short)
 
         if self.runway_dir:
-            with open(os.path.join(self.runway_dir, filename), 'rt') as lookup_file:
-                file_contents = lookup_file.read()
+            try:
+                file_path = os.path.join(self.runway_dir, filename)
+                with open(file_path, 'rt') as lookup_file:
+                    file_contents = lookup_file.read()
+            except FileNotFoundError:
+                LOG.warning('File missing "%s".', file_path)
+                raise
         else:
             file_blob = self.server.getfile(self.project_id, filename, branch)
             LOG.debug('GitLab file response:\n%s', file_blob)
