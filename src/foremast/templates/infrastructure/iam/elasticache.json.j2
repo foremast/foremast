@@ -1,0 +1,15 @@
+        {
+            "Sid": "ElasticacheFullAccess",
+            "Effect": "Allow",
+            "Action": [
+                "elasticache:*"
+            ],
+            "Resource": [
+            {%- for cluster_name in items %}
+                "arn:aws:elasticace:{{ region }}:{{ account_number }}:cluster/{{ cluster_name }}"
+                {%- if not loop.last -%}
+                ,
+                {%- endif -%}
+            {% endfor %} 
+            ]
+        }
