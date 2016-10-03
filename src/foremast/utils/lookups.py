@@ -95,7 +95,7 @@ class GitLookup():
         """
         file_contents = ''
 
-        LOG.info('Retrieving "%s" from "%s".', filename, self.runway_dir or self.project_id)
+        LOG.info('Retrieving "%s" from "%s".', filename, self.runway_dir or self.git_short)
 
         if self.runway_dir:
             with open(os.path.join(self.runway_dir, filename), 'rt') as lookup_file:
