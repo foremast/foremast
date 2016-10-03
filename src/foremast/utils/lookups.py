@@ -100,6 +100,8 @@ class GitLookup():
         Raises:
             FileNotFoundError: Requested file missing.
         """
+        LOG.info('Retrieving "%s" from "%s".', filename, self.runway_dir)
+
         file_contents = ''
 
         file_path = os.path.join(self.runway_dir, filename)
@@ -111,6 +113,7 @@ class GitLookup():
             LOG.warning('File missing "%s".', file_path)
             raise
 
+        LOG.debug('Local file contents:\n%s', file_contents)
         return file_contents
 
     def remote_file(self, branch='master', filename=''):
@@ -124,6 +127,8 @@ class GitLookup():
         Returns:
             str: Contents of remote file.
         """
+        LOG.info('Retrieving "%s" from "%s".', filename, self.git_short)
+
         file_contents = ''
 
         file_blob = self.server.getfile(self.project_id, filename, branch)
@@ -134,6 +139,7 @@ class GitLookup():
         else:
             file_contents = b64decode(file_blob['content']).decode()
 
+        LOG.debug('Remote file contents:\n%s', file_contents)
         return file_contents
 
     def get(self, branch='master', filename=''):
@@ -149,14 +155,11 @@ class GitLookup():
         """
         file_contents = ''
 
-        LOG.info('Retrieving "%s" from "%s".', filename, self.runway_dir or self.git_short)
-
         if self.runway_dir:
             file_contents = self.local_file(filename=filename)
         else:
             file_contents = self.remote_file(branch=branch, filename=filename)
 
-        LOG.debug('File contents:\n%s', file_contents)
         return file_contents
 
     def json(self, branch='master', filename=''):
