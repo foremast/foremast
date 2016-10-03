@@ -39,17 +39,21 @@ class SpinnakerPipeline:
         trigger_job (str): Jenkins trigger job.
         base (str): Base image name (i.e: fedora).
         prop_path (str): Path to the raw.properties.json.
+        runway_dir (str): Path to local runway directory.
     """
 
     def __init__(self,
                  app='',
                  trigger_job='',
                  prop_path='',
-                 base=''):
+                 base='',
+                 runway_dir=''):
         self.log = logging.getLogger(__name__)
 
         self.header = {'content-type': 'application/json'}
         self.here = os.path.dirname(os.path.realpath(__file__))
+
+        self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir))
 
         self.base = base
         self.trigger_job = trigger_job
