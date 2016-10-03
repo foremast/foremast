@@ -20,9 +20,10 @@ from unittest import mock
 import pytest
 from foremast.utils import GitLookup
 
-TEST_JSON = b'''{
+TEST_JSON = '''{
     "ship": "pirate"
 }'''
+TEST_JSON_BYTES = TEST_JSON.encode()
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
@@ -40,7 +41,7 @@ def test_get(gitlab):
     """Check _get_ method."""
     my_git = GitLookup()
 
-    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON)}
+    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES)}
 
     assert TEST_JSON == my_git.get()
 
@@ -50,7 +51,7 @@ def test_json(gitlab):
     """Check _json_ method."""
     my_git = GitLookup()
 
-    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON)}
+    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES)}
 
     result = my_git.json()
     assert result['ship'] == 'pirate'
@@ -61,7 +62,7 @@ def test_invalid_json(gitlab):
     """Check invalid JSON."""
     my_git = GitLookup()
 
-    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON + b'}')}
+    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES + b'}')}
 
     with pytest.raises(SystemExit):
         my_git.json()
