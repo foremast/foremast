@@ -43,6 +43,8 @@ def test_get(gitlab):
 
     my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES)}
 
+    result = my_git.get()
+    assert isinstance(result, str)
     assert TEST_JSON == my_git.get()
 
 
@@ -54,6 +56,7 @@ def test_json(gitlab):
     my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES)}
 
     result = my_git.json()
+    assert isinstance(result, dict)
     assert result['ship'] == 'pirate'
 
 
