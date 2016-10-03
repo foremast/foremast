@@ -69,3 +69,18 @@ def test_invalid_json(gitlab):
 
     with pytest.raises(SystemExit):
         my_git.json()
+
+
+@mock.patch('foremast.utils.lookups.gitlab')
+def test_runway_get(gitlab, tmpdir):
+    """Make sure Git is not called when runway is specified."""
+    filename = 'test.json'
+
+    tmpdir.join(filename).write(TEST_JSON)
+
+    my_git = GitLookup(runway_dir=str(tmpdir))
+    result = my_git.get(filename=filename)
+
+    assert isinstance(result, str)
+    assert result == TEST_JSON
+    my_git.server.getfile.assert_not_called()
