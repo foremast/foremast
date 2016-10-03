@@ -123,6 +123,9 @@ class GitLookup():
 
         Returns:
             dict: Decoded JSON.
+
+        Raises:
+            SystemExit: Invalid JSON provided.
         """
         file_contents = self.get(branch=branch, filename=filename)
 
