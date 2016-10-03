@@ -109,7 +109,7 @@ class GitLookup():
             if not file_blob:
                 LOG.warning('"%s" Branch "%s" missing file "%s".', self.git_short, branch, filename)
             else:
-                file_contents = b64decode(file_blob['content'])
+                file_contents = b64decode(file_blob['content']).decode()
 
         LOG.debug('File contents:\n%s', file_contents)
         return file_contents
@@ -127,7 +127,7 @@ class GitLookup():
         file_contents = self.get(branch=branch, filename=filename)
 
         try:
-            json_dict = json.loads(file_contents.decode())
+            json_dict = json.loads(file_contents)
         except json.JSONDecodeError as error:
             msg = ('"{filename}" appears to be invalid json. '
                    'Please validate it with http://jsonlint.com. '
