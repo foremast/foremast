@@ -102,8 +102,9 @@ class GitLookup():
         """
         file_contents = ''
 
+        file_path = os.path.join(self.runway_dir, filename)
+
         try:
-            file_path = os.path.join(self.runway_dir, filename)
             with open(file_path, 'rt') as lookup_file:
                 file_contents = lookup_file.read()
         except FileNotFoundError:
