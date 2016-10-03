@@ -83,4 +83,6 @@ def test_runway_get(gitlab, tmpdir):
 
     assert isinstance(result, str)
     assert result == TEST_JSON
-    my_git.server.getfile.assert_not_called()
+
+    with pytest.raises(FileNotFoundError):
+        my_git.get(filename='parrot')
