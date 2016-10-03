@@ -15,18 +15,12 @@
 #   limitations under the License.
 """Prepare the Application Configurations."""
 import collections
-import json
 import logging
-import os
-from base64 import b64decode
 
-import gitlab
-
-from ..consts import ENVS, GIT_URL, GITLAB_TOKEN
+from ..consts import ENVS
 from ..utils import GitLookup
 
 LOG = logging.getLogger(__name__)
-JSON_ERROR_MSG = '"{0}" appears to be invalid json. Please validate it with http://jsonlint.com.'
 
 
 def process_git_configs(git_short=''):
