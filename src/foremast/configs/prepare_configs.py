@@ -44,7 +44,7 @@ def process_git_configs(git_short=''):
         try:
             app_configs[env] = file_lookup.json(filename=app_json)
         except FileNotFoundError:
-            LOG.debug('Application configuration not available for %s.', env)
+            LOG.critical('Application configuration not available for %s.', env)
             # TODO: Use default configs anyways?
             continue
 
@@ -86,6 +86,7 @@ def process_runway_configs(runway_dir=''):
         try:
             app_configs[env] = file_lookup.json(filename=file_json)
         except FileNotFoundError:
+            LOG.critical('Application configuration not available for %s.', env)
             continue
 
     LOG.info('Processing pipeline.json from local directory')
