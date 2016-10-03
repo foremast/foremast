@@ -24,7 +24,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
     def create_pipeline(self):
         """Use JSON files to create Pipelines."""
         self.log.info('Uploading manual Pipelines: %s')
-        lookup = GitLookup(git_short=self.generated.gitlab()['main'])
+        lookup = GitLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
 
         for json_file in self.settings['pipeline']['pipeline_files']:
             json_text = lookup.get(filename=json_file)
