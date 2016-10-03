@@ -42,8 +42,7 @@ def process_git_configs(git_short=''):
     for env in ENVS:
         app_json = 'runway/application-master-{env}.json'.format(env=env)
         try:
-            app_dict = file_lookup.json(filename=app_json)
-            app_configs[env] = app_dict
+            app_configs[env] = file_lookup.json(filename=app_json)
         except FileNotFoundError:
             LOG.debug('Application configuration not available for %s.', env)
             # TODO: Use default configs anyways?
@@ -53,9 +52,8 @@ def process_git_configs(git_short=''):
 
     pipeline_json = 'runway/pipeline.json'
     try:
-        pipeline_dict = file_lookup.json(filename=pipeline_json)
+        app_configs['pipeline'] = file_lookup.json(filename=pipeline_json)
         LOG.info('Pipeline configuration found.')
-        app_configs['pipeline'] = pipeline_dict
     except FileNotFoundError:
         LOG.info('Pipeline configuration not available, using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
