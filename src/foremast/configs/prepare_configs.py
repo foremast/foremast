@@ -94,7 +94,6 @@ def process_runway_configs(runway_dir=''):
 
     try:
         app_configs['pipeline'] = file_lookup.json(filename='pipeline.json')
-        LOG.info(app_configs['pipeline'])
     except FileNotFoundError:
         LOG.warning('Unable to process pipeline.json. Using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
