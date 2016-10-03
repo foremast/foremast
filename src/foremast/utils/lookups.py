@@ -67,7 +67,10 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
 
 
 class GitLookup():
-    """Retrieve files from a GitLab Server.
+    """Retrieve files from a local filesystem or remote GitLab Server.
+
+    When _runway_dir_ is specified, the local directory is given priority and
+    remote Git Server will not be used.
 
     Args:
         git_short (str): Short Git representation of repository, e.g.
