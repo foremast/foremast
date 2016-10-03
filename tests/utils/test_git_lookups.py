@@ -72,6 +72,16 @@ def test_invalid_json(gitlab):
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
+def test_runway_get(gitlab):
+    """Make sure Git related attributes are missing when runway is specified."""
+    my_git = GitLookup(runway_dir='/poop_deck')
+
+    assert getattr(my_git, 'git_short') is None
+    assert getattr(my_git, 'server') is None
+    assert getattr(my_git, 'project_id') is None
+
+
+@mock.patch('foremast.utils.lookups.gitlab')
 def test_runway_get(gitlab, tmpdir):
     """Make sure Git is not called when runway is specified."""
     filename = 'test.json'
