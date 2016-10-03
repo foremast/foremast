@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Prepare the Application Configurations."""
 import collections
 import json
@@ -49,10 +48,7 @@ def process_git_configs(git_short=''):
     app_configs = collections.defaultdict(dict)
     for env in ENVS:
         app_json = 'runway/application-master-{env}.json'.format(env=env)
-        file_blob = server.getfile(
-            project_id,
-            app_json,
-            'master')
+        file_blob = server.getfile(project_id, app_json, 'master')
         LOG.debug('GitLab file response:\n%s', file_blob)
 
         if not file_blob:
@@ -108,10 +104,8 @@ def process_runway_configs(runway_dir=''):
 
     app_configs = collections.defaultdict(dict)
     for env in ENVS:
-        file_json = 'application-master-{env}.json'.format(
-            env=env)
-        file_name = os.path.join(runway_dir,
-                                 file_json)
+        file_json = 'application-master-{env}.json'.format(env=env)
+        file_name = os.path.join(runway_dir, file_json)
         LOG.debug('File to read: %s', file_name)
 
         try:
