@@ -86,35 +86,24 @@ def process_runway_configs(runway_dir=''):
     """
     LOG.info('Processing application.json files from local directory.')
 
+    file_lookup = GitLookup(runway_dir=runway_dir)
+
     app_configs = collections.defaultdict(dict)
     for env in ENVS:
         file_json = 'application-master-{env}.json'.format(env=env)
-        file_name = os.path.join(runway_dir, file_json)
-        LOG.debug('File to read: %s', file_name)
-
         try:
-            with open(file_name, 'rt') as json_file:
-                LOG.info('Processing %s.', file_name)
-                app_configs[env] = json.load(json_file)
+            app_configs[env] = file_lookup.json(filename=file_json)
         except FileNotFoundError:
             continue
-        except ValueError:
-            msg = JSON_ERROR_MSG.format(file_json)
-            raise SystemExit(msg)
 
     LOG.info('Processing pipeline.json from local directory')
+
     try:
-        pipeline_file = os.path.join(runway_dir, 'pipeline.json')
-        LOG.debug('Reading pipeline.json from %s', pipeline_file)
-        with open(pipeline_file) as pipeline:
-            app_configs['pipeline'] = json.load(pipeline)
-            LOG.info(app_configs['pipeline'])
+        app_configs['pipeline'] = file_lookup.json(filename='pipeline.json')
+        LOG.info(app_configs['pipeline'])
     except FileNotFoundError:
         LOG.warning('Unable to process pipeline.json. Using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
-    except ValueError:
-        msg = JSON_ERROR_MSG.format(pipeline_file)
-        raise SystemExit(msg)
 
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
