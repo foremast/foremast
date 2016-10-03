@@ -78,9 +78,11 @@ class GitLookup():
 
     def __init__(self, git_short='', runway_dir=''):
         self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir))
-        self.git_short = git_short
-        self.server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
-        self.project_id = self.server.getproject(self.git_short)['id']
+
+        if not self.runway_dir:
+            self.git_short = git_short
+            self.server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
+            self.project_id = self.server.getproject(self.git_short)['id']
 
     def get(self, branch='master', filename=''):
         """Retrieve _filename_ from GitLab.
