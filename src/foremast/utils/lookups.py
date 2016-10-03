@@ -126,6 +126,9 @@ class GitLookup():
 
         Returns:
             str: Contents of remote file.
+
+        Raises:
+            FileNotFoundError: Requested file missing.
         """
         LOG.info('Retrieving "%s" from "%s".', filename, self.git_short)
 
@@ -135,7 +138,9 @@ class GitLookup():
         LOG.debug('GitLab file response:\n%s', file_blob)
 
         if not file_blob:
-            LOG.warning('"%s" Branch "%s" missing file "%s".', self.git_short, branch, filename)
+            msg = '"{0}" Branch "{1}" missing file "{2}".'.format(self.git_short, branch, filename)
+            LOG.warning(msg)
+            raise FileNotFoundError(msg)
         else:
             file_contents = b64decode(file_blob['content']).decode()
 
