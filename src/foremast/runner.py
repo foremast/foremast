@@ -93,6 +93,7 @@ class ForemastRunner(object):
             'trigger_job': self.trigger_job,
             'prop_path': self.json_path,
             'base': None,
+            'runway_dir': self.runway_dir,
         }
 
         pipeline_type = self.configs['pipeline']['type']
