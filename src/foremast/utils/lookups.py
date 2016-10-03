@@ -87,6 +87,31 @@ class GitLookup():
             self.server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
             self.project_id = self.server.getproject(self.git_short)['id']
 
+    def local_file(self, filename):
+        """Read the local file in _self.runway_dir_.
+
+        Args:
+            filename (str): Name of file to retrieve relative to root of
+                _runway_dir_.
+
+        Returns:
+            str: Contents of local file.
+
+        Raises:
+            FileNotFoundError: Requested file missing.
+        """
+        file_contents = ''
+
+        try:
+            file_path = os.path.join(self.runway_dir, filename)
+            with open(file_path, 'rt') as lookup_file:
+                file_contents = lookup_file.read()
+        except FileNotFoundError:
+            LOG.warning('File missing "%s".', file_path)
+            raise
+
+        return file_contents
+
     def get(self, branch='master', filename=''):
         """Retrieve _filename_ from GitLab.
 
@@ -103,13 +128,7 @@ class GitLookup():
         LOG.info('Retrieving "%s" from "%s".', filename, self.runway_dir or self.git_short)
 
         if self.runway_dir:
-            try:
-                file_path = os.path.join(self.runway_dir, filename)
-                with open(file_path, 'rt') as lookup_file:
-                    file_contents = lookup_file.read()
-            except FileNotFoundError:
-                LOG.warning('File missing "%s".', file_path)
-                raise
+            file_contents = self.local_file(filename=filename)
         else:
             file_blob = self.server.getfile(self.project_id, filename, branch)
             LOG.debug('GitLab file response:\n%s', file_blob)
