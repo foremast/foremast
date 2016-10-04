@@ -18,7 +18,7 @@ import collections
 import logging
 
 from ..consts import ENVS
-from ..utils import GitLookup
+from ..utils import FileLookup
 
 LOG = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ def process_git_configs(git_short=''):
     """
     LOG.info('Processing application.json files from GitLab "%s".', git_short)
 
-    file_lookup = GitLookup(git_short=git_short)
+    file_lookup = FileLookup(git_short=git_short)
 
     app_configs = collections.defaultdict(dict)
     for env in ENVS:
@@ -78,7 +78,7 @@ def process_runway_configs(runway_dir=''):
     """
     LOG.info('Processing application.json files from local directory "%s".', runway_dir)
 
-    file_lookup = GitLookup(runway_dir=runway_dir)
+    file_lookup = FileLookup(runway_dir=runway_dir)
 
     app_configs = collections.defaultdict(dict)
     for env in ENVS:
