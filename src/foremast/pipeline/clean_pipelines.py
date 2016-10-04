@@ -13,14 +13,13 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Clean removed Pipelines."""
 import logging
 
 import murl
 import requests
 
-from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import check_managed_pipeline, get_all_pipelines
 
@@ -56,8 +55,7 @@ def clean_pipelines(app='', settings=None):
         try:
             regions.update(settings[env]['regions'])
         except KeyError:
-            raise SpinnakerPipelineCreationFailed(
-                'Missing "runway/application-master-{0}.json".'.format(env))
+            raise SpinnakerPipelineCreationFailed('Missing "runway/application-master-{0}.json".'.format(env))
     LOG.debug('Regions defined: %s', regions)
 
     for pipeline in pipelines:
@@ -74,13 +72,9 @@ def clean_pipelines(app='', settings=None):
         if region not in regions:
             LOG.warning('Deleting Pipeline: %s', pipeline_name)
 
-            url.path = 'pipelines/{app}/{pipeline}'.format(
-                app=app, pipeline=pipeline_name)
-            response = requests.delete(url.url,
-                                       verify=GATE_CA_BUNDLE,
-                                       cert=GATE_CLIENT_CERT)
+            url.path = 'pipelines/{app}/{pipeline}'.format(app=app, pipeline=pipeline_name)
+            response = requests.delete(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
-            LOG.debug('Deleted "%s" Pipeline response:\n%s', pipeline_name,
-                      response.text)
+            LOG.debug('Deleted "%s" Pipeline response:\n%s', pipeline_name, response.text)
 
     return True
