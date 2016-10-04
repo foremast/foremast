@@ -66,7 +66,7 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
     return ami_id
 
 
-class GitLookup():
+class FileLookup():
     """Retrieve files from a local filesystem or remote GitLab Server.
 
     When _runway_dir_ is specified, the local directory is given priority and

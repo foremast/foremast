@@ -18,7 +18,7 @@ import base64
 from unittest import mock
 
 import pytest
-from foremast.utils import GitLookup
+from foremast.utils import FileLookup
 
 TEST_JSON = '''{
     "ship": "pirate"
@@ -29,7 +29,7 @@ TEST_JSON_BYTES = TEST_JSON.encode()
 @mock.patch('foremast.utils.lookups.gitlab')
 def test_init(gitlab):
     """Check init."""
-    my_git = GitLookup()
+    my_git = FileLookup()
 
     assert my_git.git_short == ''
     assert my_git.server == gitlab.Gitlab.return_value
@@ -39,7 +39,7 @@ def test_init(gitlab):
 @mock.patch('foremast.utils.lookups.gitlab')
 def test_get(gitlab):
     """Check _get_ method."""
-    my_git = GitLookup()
+    my_git = FileLookup()
 
     my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES)}
 
@@ -51,7 +51,7 @@ def test_get(gitlab):
 @mock.patch('foremast.utils.lookups.gitlab')
 def test_json(gitlab):
     """Check _json_ method."""
-    my_git = GitLookup()
+    my_git = FileLookup()
 
     my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES)}
 
@@ -63,7 +63,7 @@ def test_json(gitlab):
 @mock.patch('foremast.utils.lookups.gitlab')
 def test_invalid_json(gitlab):
     """Check invalid JSON."""
-    my_git = GitLookup()
+    my_git = FileLookup()
 
     my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES + b'}')}
 
@@ -74,7 +74,7 @@ def test_invalid_json(gitlab):
 @mock.patch('foremast.utils.lookups.gitlab')
 def test_runway_get(gitlab):
     """Make sure Git related attributes are missing when runway is specified."""
-    my_git = GitLookup(runway_dir='/poop_deck')
+    my_git = FileLookup(runway_dir='/poop_deck')
 
     assert getattr(my_git, 'git_short') is None
     assert getattr(my_git, 'server') is None
@@ -88,7 +88,7 @@ def test_runway_get(gitlab, tmpdir):
 
     tmpdir.join(filename).write(TEST_JSON)
 
-    my_git = GitLookup(runway_dir=str(tmpdir))
+    my_git = FileLookup(runway_dir=str(tmpdir))
     result = my_git.get(filename=filename)
 
     assert isinstance(result, str)
