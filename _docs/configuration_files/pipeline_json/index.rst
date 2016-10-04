@@ -19,6 +19,7 @@ Example Configuration
 Configuration Details
 ----------------------
 
+.. _pipeline_type:
 
 ``type``
 ~~~~~~~~
@@ -30,6 +31,7 @@ Specifies what type of pipeline to use for the application.
 
         - ``"lambda"`` - Sets up the AWS Lambda pipeline and infrastructure
         - ``"ec2"`` - Sets up the AWS EC2 pipeline and infrastructure
+        - ``"manual"`` - Create Pipelines from raw JSON, use with :ref:`pipeline_files`.
 
 ``owner_email``
 ~~~~~~~~~~~~~~~
@@ -74,6 +76,7 @@ List of accounts that the application will be deployed to. Order matters as it d
     | *Type*: List of strings
     | *Default*: ``["stage", "prod"]``
 
+.. include:: manual.rest
 .. include:: image.rest
 .. include:: lambda.rest
 .. include:: services.rest
