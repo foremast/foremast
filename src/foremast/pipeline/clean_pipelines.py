@@ -26,6 +26,20 @@ from ..utils import check_managed_pipeline, get_all_pipelines
 LOG = logging.getLogger(__name__)
 
 
+def delete_pipeline(app='', pipeline_name=''):
+    """Delete _pipeline_name_ from _app_."""
+    url = murl.Url(API_URL)
+
+    LOG.warning('Deleting Pipeline: %s', pipeline_name)
+
+    url.path = 'pipelines/{app}/{pipeline}'.format(app=app, pipeline=pipeline_name)
+    response = requests.delete(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+
+    LOG.debug('Deleted "%s" Pipeline response:\n%s', pipeline_name, response.text)
+
+    return response.text
+
+
 def clean_pipelines(app='', settings=None):
     """Delete Pipelines for regions not defined in application.json files.
 
@@ -44,7 +58,6 @@ def clean_pipelines(app='', settings=None):
         SpinnakerPipelineCreationFailed: Missing application.json file from
         `create-configs`.
     """
-    url = murl.Url(API_URL)
     pipelines = get_all_pipelines(app=app)
     envs = settings['pipeline']['env']
 
@@ -70,11 +83,6 @@ def clean_pipelines(app='', settings=None):
         LOG.debug('Check "%s" in defined Regions.', region)
 
         if region not in regions:
-            LOG.warning('Deleting Pipeline: %s', pipeline_name)
-
-            url.path = 'pipelines/{app}/{pipeline}'.format(app=app, pipeline=pipeline_name)
-            response = requests.delete(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
-
-            LOG.debug('Deleted "%s" Pipeline response:\n%s', pipeline_name, response.text)
+            delete_pipeline(app=app, pipeline_name=pipeline_name)
 
     return True
