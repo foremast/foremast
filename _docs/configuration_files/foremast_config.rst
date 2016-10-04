@@ -88,6 +88,8 @@ FQDN Of your spinnaker Gate instance. This is where all API calls to Spinnaker w
 
     | *Required*: Yes
 
+.. _templates_path:
+
 ``templates_path``
 ******************
 

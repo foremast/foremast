@@ -40,9 +40,9 @@ Add Lambda access.
 ``s3``
 ******
 
-Add S3 access.
+Add S3 access. You may need to override default templates, see :ref:`templates_path`. Alternatively, you can rovide a list of s3 bucket names to be added to the instance profile.
 
-   | *Type*: bool
+   | *Type*: bool -or- list
    | *Default*: ``false``
 
 ``ses``
