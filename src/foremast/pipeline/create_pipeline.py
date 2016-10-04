@@ -54,7 +54,7 @@ class SpinnakerPipeline:
         self.header = {'content-type': 'application/json'}
         self.here = os.path.dirname(os.path.realpath(__file__))
 
-        self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir))
+        self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir or ''))
 
         self.base = base
         self.trigger_job = trigger_job
