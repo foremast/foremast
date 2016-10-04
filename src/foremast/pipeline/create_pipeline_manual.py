@@ -27,7 +27,8 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         lookup = FileLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
 
         for json_file in self.settings['pipeline']['pipeline_files']:
-            json_text = lookup.get(filename=json_file)
-            self.post_pipeline(json_text)
+            json_dict = lookup.json(filename=json_file)
+            json_dict['name'] = json_file
+            self.post_pipeline(json_dict)
 
         return True
