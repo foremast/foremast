@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Create manual Pipeline for Spinnaker."""
-from ..utils.lookups import GitLookup
+from ..utils.lookups import FileLookup
 from .create_pipeline import SpinnakerPipeline
 
 
@@ -24,7 +24,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
     def create_pipeline(self):
         """Use JSON files to create Pipelines."""
         self.log.info('Uploading manual Pipelines: %s')
-        lookup = GitLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
+        lookup = FileLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
 
         for json_file in self.settings['pipeline']['pipeline_files']:
             json_text = lookup.get(filename=json_file)
