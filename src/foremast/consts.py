@@ -124,8 +124,8 @@ SLACK_TOKEN = validate_key_values(config, 'credentials', 'slack_token')
 
 ASG_WHITELIST = set(validate_key_values(config, 'whitelists', 'asg_whitelist', default='').split(','))
 APP_FORMATS = extract_formats(config)
-GATE_CLIENT_CERT = expandvars(expanduser(validate_key_values(config, 'base', 'gate_client_cert')))
-GATE_CA_BUNDLE = expandvars(expanduser(validate_key_values(config, 'base', 'gate_ca_bundle')))
+GATE_CLIENT_CERT = expandvars(expanduser(validate_key_values(config, 'base', 'gate_client_cert', default='')))
+GATE_CA_BUNDLE = expandvars(expanduser(validate_key_values(config, 'base', 'gate_ca_bundle', default='')))
 
 HEADERS = {
     'accept': '*/*',
