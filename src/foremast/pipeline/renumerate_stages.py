@@ -22,32 +22,9 @@ LOG = logging.getLogger(__name__)
 
 def renumerate_stages(pipeline):
     """Renumber Pipeline Stage reference IDs to account for dependencies.
-
-    +---------+------------------------+------------+
-    | refId   | stage                  | requires   |
-    +=========+========================+============+
-    | 0       | config                 |            |
-    +---------+------------------------+------------+
-    | 1       | bake                   |            |
-    +---------+------------------------+------------+
-    | 100     | git tagger packaging   | 1          |
-    +---------+------------------------+------------+
-    | 2       | deploy dev             | 1          |
-    +---------+------------------------+------------+
-    | 3       | QE dev                 | 2          |
-    +---------+------------------------+------------+
-    | 202     | Attach Scaling Policy  | 2          |
-    +---------+------------------------+------------+
-    | 200     | git tagger dev         | 2          |
-    +---------+------------------------+------------+
-    | 4       | judgement              | 3          |
-    +---------+------------------------+------------+
-    | 5       | deploy stage           | 4          |
-    +---------+------------------------+------------+
-    | 6       | QE stage               | 5          |
-    +---------+------------------------+------------+
-    | 500     | git tagger stage       | 5          |
-    +---------+------------------------+------------+
+       stage order is defined in the templates.
+       refId == 'a' - Any mainline required stage
+       refId == 'b' - Any secondary stage that should be ran in parallel
 
     Args:
         pipeline (dict): Completed Pipeline ready for renumeration.
@@ -57,24 +34,18 @@ def renumerate_stages(pipeline):
     """
     stages = pipeline['stages']
 
-    main_index = 1
-    for idx, stage in enumerate(stages):
-        if stage['name'].startswith('Git Tag'):
-            stage['requisiteStageRefIds'] = [str(main_index)]
-            stage['refId'] = str(main_index * 100)
-        elif stage['name'].startswith('Attach Scaling'):
-            stage['requisiteStageRefIds'] = [str(main_index)]
-            stage['refId'] = str(main_index * 101)
-        elif stage['name'].startswith('ServiceNow'):
-            stage['requisiteStageRefIds'] = [str(main_index)]
-            stage['refId'] = str(main_index * 102)
-        elif stage['type'] == 'bake' or idx == 0:
-            stage['requisiteStageRefIds'] = []
-            stage['refId'] = str(main_index)
-        else:
-            stage['requisiteStageRefIds'] = [str(main_index)]
+    main_index = 0
+    for stage in stages:
+        if stage['refId'] == 'a':
+            if main_index == 0:
+                stage['requisiteStageRefIds'] = []
+            else:
+                stage['requisiteStageRefIds'] = [str(main_index)]
             main_index += 1
             stage['refId'] = str(main_index)
+        elif stage['refId'] == 'b':
+            stage['refId'] = str(main_index*100)
+            stage['requisiteStageRefIds'] = [str(main_index)]
 
         LOG.debug('step=%(name)s\trefId=%(refId)s\t'
                   'requisiteStageRefIds=%(requisiteStageRefIds)s', stage)
