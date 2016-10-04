@@ -16,6 +16,7 @@
 """Lookup AMI ID from a simple name."""
 import json
 import logging
+import os
 from base64 import b64decode
 
 import gitlab
@@ -63,3 +64,134 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
     LOG.info('Using AMI: %s', ami_id)
 
     return ami_id
+
+
+class FileLookup():
+    """Retrieve files from a local filesystem or remote GitLab Server.
+
+    When _runway_dir_ is specified, the local directory is given priority and
+    remote Git Server will not be used.
+
+    Args:
+        git_short (str): Short Git representation of repository, e.g.
+            forrest/core.
+        runway_dir (str): Root of local runway directory to use instead of
+            accessing Git.
+    """
+
+    def __init__(self, git_short='', runway_dir=''):
+        self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir))
+
+        if not self.runway_dir:
+            self.git_short = git_short
+            self.server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
+            self.project_id = self.server.getproject(self.git_short)['id']
+
+    def local_file(self, filename):
+        """Read the local file in _self.runway_dir_.
+
+        Args:
+            filename (str): Name of file to retrieve relative to root of
+                _runway_dir_.
+
+        Returns:
+            str: Contents of local file.
+
+        Raises:
+            FileNotFoundError: Requested file missing.
+        """
+        LOG.info('Retrieving "%s" from "%s".', filename, self.runway_dir)
+
+        file_contents = ''
+
+        file_path = os.path.join(self.runway_dir, filename)
+
+        try:
+            with open(file_path, 'rt') as lookup_file:
+                file_contents = lookup_file.read()
+        except FileNotFoundError:
+            LOG.warning('File missing "%s".', file_path)
+            raise
+
+        LOG.debug('Local file contents:\n%s', file_contents)
+        return file_contents
+
+    def remote_file(self, branch='master', filename=''):
+        """Read the remote file on Git Server.
+
+        Args:
+            branch (str): Git Branch to find file.
+            filename (str): Name of file to retrieve relative to root of
+                repository.
+
+        Returns:
+            str: Contents of remote file.
+
+        Raises:
+            FileNotFoundError: Requested file missing.
+        """
+        LOG.info('Retrieving "%s" from "%s".', filename, self.git_short)
+
+        file_contents = ''
+
+        file_blob = self.server.getfile(self.project_id, filename, branch)
+        LOG.debug('GitLab file response:\n%s', file_blob)
+
+        if not file_blob:
+            msg = '"{0}" Branch "{1}" missing file "{2}".'.format(self.git_short, branch, filename)
+            LOG.warning(msg)
+            raise FileNotFoundError(msg)
+        else:
+            file_contents = b64decode(file_blob['content']).decode()
+
+        LOG.debug('Remote file contents:\n%s', file_contents)
+        return file_contents
+
+    def get(self, branch='master', filename=''):
+        """Retrieve _filename_ from GitLab.
+
+        Args:
+            branch (str): Git Branch to find file.
+            filename (str): Name of file to retrieve relative to root of Git
+                repository, or _runway_dir_ if specified.
+
+        Returns:
+            str: Contents of file.
+        """
+        file_contents = ''
+
+        if self.runway_dir:
+            file_contents = self.local_file(filename=filename)
+        else:
+            file_contents = self.remote_file(branch=branch, filename=filename)
+
+        return file_contents
+
+    def json(self, branch='master', filename=''):
+        """Retrieve _filename_ from GitLab.
+
+        Args:
+            branch (str): Git Branch to find file.
+            filename (str): Name of file to retrieve.
+
+        Returns:
+            dict: Decoded JSON.
+
+        Raises:
+            SystemExit: Invalid JSON provided.
+        """
+        file_contents = self.get(branch=branch, filename=filename)
+
+        try:
+            json_dict = json.loads(file_contents)
+        # TODO: Use json.JSONDecodeError when Python 3.4 has been deprecated
+        except ValueError as error:
+            msg = ('"{filename}" appears to be invalid json. '
+                   'Please validate it with http://jsonlint.com. '
+                   'JSON decoder error:\n'
+                   '{error}').format(
+                       filename=filename, error=error)
+            raise SystemExit(msg)
+
+        LOG.debug('JSON object:\n%s', json_dict)
+        return json_dict
