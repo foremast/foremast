@@ -184,7 +184,8 @@ class GitLookup():
 
         try:
             json_dict = json.loads(file_contents)
-        except json.JSONDecodeError as error:
+        # TODO: Use json.JSONDecodeError when Python 3.4 has been deprecated
+        except ValueError as error:
             msg = ('"{filename}" appears to be invalid json. '
                    'Please validate it with http://jsonlint.com. '
                    'JSON decoder error:\n'
