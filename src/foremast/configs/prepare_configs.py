@@ -58,7 +58,7 @@ def process_git_configs(git_short=''):
         LOG.info('Pipeline configuration not available, using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
 
-    config_commit = file_lookup.server.getbranch(file_lookup.roject_id, 'master')['commit']['id']
+    config_commit = file_lookup.server.getbranch(file_lookup.project_id, 'master')['commit']['id']
     LOG.info('Commit ID used: %s', config_commit)
     app_configs['pipeline']['config_commit'] = config_commit
 
