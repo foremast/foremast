@@ -53,7 +53,7 @@ def renumerate_stages(pipeline):
             stage['requisiteStageRefIds'] = [str(main_index)]
         elif current_refId == 'merge':
             # ToDo: Added logic to handle merge stages.
-            continue
+            pass
 
         LOG.debug('step=%(name)s\trefId=%(refId)s\t'
                   'requisiteStageRefIds=%(requisiteStageRefIds)s', stage)
