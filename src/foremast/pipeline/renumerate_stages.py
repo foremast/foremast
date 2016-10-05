@@ -22,9 +22,13 @@ LOG = logging.getLogger(__name__)
 
 def renumerate_stages(pipeline):
     """Renumber Pipeline Stage reference IDs to account for dependencies.
-       stage order is defined in the templates.
-       refId == 'a' - Any mainline required stage
-       refId == 'b' - Any secondary stage that should be ran in parallel
+
+    stage order is defined in the templates. The ``refId`` field dictates
+    if a stage should be mainline or parallel to other stages.
+
+        * ``master`` - A mainline required stage. Other stages depend on it
+        * ``branch`` - A stage that should be ran in parallel to master stages.
+        * ``merge`` - A stage thatis parallel but other stages still depend on it.
 
     Args:
         pipeline (dict): Completed Pipeline ready for renumeration.
@@ -36,16 +40,20 @@ def renumerate_stages(pipeline):
 
     main_index = 0
     for stage in stages:
-        if stage['refId'].lower() == 'master':
+        current_refId = stage['refId'].lower()
+        if current_refId == 'master':
             if main_index == 0:
                 stage['requisiteStageRefIds'] = []
             else:
                 stage['requisiteStageRefIds'] = [str(main_index)]
             main_index += 1
             stage['refId'] = str(main_index)
-        elif stage['refId'].lower() == 'branch':
+        elif current_refId == 'branch':
             stage['refId'] = str(main_index*100)
             stage['requisiteStageRefIds'] = [str(main_index)]
+        elif current_refId == 'merge':
+            # ToDo: Added logic to handle merge stages.
+            continue
 
         LOG.debug('step=%(name)s\trefId=%(refId)s\t'
                   'requisiteStageRefIds=%(requisiteStageRefIds)s', stage)
