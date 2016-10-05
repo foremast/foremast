@@ -40,7 +40,7 @@ setup(
     description='Tools for creating infrastructure and Spinnaker Pipelines.',
     long_description=open('README.rst').read(),
     author='Gogo DevOps',
-    author_email='ps-devops-tooling@example.com',
+    author_email='PS-DevOpsTooling@gogoair.com',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     install_requires=reqs_list,
