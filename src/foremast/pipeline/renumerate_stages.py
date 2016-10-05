@@ -36,14 +36,14 @@ def renumerate_stages(pipeline):
 
     main_index = 0
     for stage in stages:
-        if stage['refId'] == 'a':
+        if stage['refId'].lower() == 'master':
             if main_index == 0:
                 stage['requisiteStageRefIds'] = []
             else:
                 stage['requisiteStageRefIds'] = [str(main_index)]
             main_index += 1
             stage['refId'] = str(main_index)
-        elif stage['refId'] == 'b':
+        elif stage['refId'].lower() == 'branch':
             stage['refId'] = str(main_index*100)
             stage['requisiteStageRefIds'] = [str(main_index)]
 
