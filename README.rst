@@ -99,7 +99,7 @@ environment variables and are ideal for running in a Jenkins job
 
 .. code-block:: bash
 
-    PROJECT=forrest GIT_REPO=core foremast-pipeline
+    PROJECT=forrest GIT_REPO=core RUNWAY_DIR=path/to/pipeline_configs foremast-pipeline
 
 Foremast Configuration
 ~~~~~~~~~~~~~~~~~~~~~~
