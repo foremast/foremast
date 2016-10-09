@@ -244,11 +244,20 @@ def rebuild_pipelines():
 
     Use to rebuild all pipelines or a specific group.
     """
+    rebuild_all = False
     rebuild_project = os.getenv("REBUILD_PROJECT")
+
     if rebuild_project is None:
         msg = 'No REBUILD_PROJECT variable found'
         LOG.fatal(msg)
         raise SystemExit('Error: {0}'.format(msg))
+    elif rebuild_project == 'ALL':
+        rebuild_all = True
+
+    if rebuild_all:
+        LOG.info('Rebuilding all projects.')
+    else:
+        LOG.info('Rebuilding project: %s', rebuild_project)
 
     all_apps = utils.get_all_apps()
 
@@ -258,7 +267,7 @@ def rebuild_pipelines():
             continue
 
         app_name = '{}/{}'.format(apps['repoProjectKey'], apps['repoSlug'])
-        if (apps['repoProjectKey'].lower() == rebuild_project.lower() or rebuild_project == 'ALL'):
+        if (apps['repoProjectKey'].lower() == rebuild_project.lower() or rebuild_all):
             os.environ["PROJECT"] = apps['repoProjectKey']
             os.environ["GIT_REPO"] = apps['repoSlug']
             LOG.info('Rebuilding pipelines for %s', app_name)
