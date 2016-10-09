@@ -240,8 +240,10 @@ def create_scaling_policy():
 
 
 def rebuild_pipelines():
-    """ Entry point for rebuilding pipelines. Can be used to rebuild all pipelines
-        or a specific group """
+    """Entry point for rebuilding pipelines.
+
+    Use to rebuild all pipelines or a specific group.
+    """
     all_apps = utils.get_all_apps()
     rebuild_project = os.getenv("REBUILD_PROJECT")
     if rebuild_project is None:
