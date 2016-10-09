@@ -1,6 +1,7 @@
 """Foremast CLI commands."""
 import argparse
 import logging
+import os
 
 from . import runner
 from .args import add_debug, add_env
@@ -39,6 +40,8 @@ def add_rebuild(subparsers):
         'rebuild', help=runner.rebuild_pipelines.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     rebuild_parser.set_defaults(func=runner.rebuild_pipelines)
     rebuild_parser.add_argument('-a', '--all', action='store_true', help='Rebuild all Pipelines')
+    rebuild_parser.add_argument(
+        'project', nargs='?', default=os.getenv('REBUILD_PROJECT'), help='Project to rebuild, overrides $REBUILD_PROJECT')
 
 
 def add_autoscaling(subparsers):

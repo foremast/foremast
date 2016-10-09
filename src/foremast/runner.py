@@ -239,7 +239,7 @@ def create_scaling_policy():
     runner.cleanup()
 
 
-def rebuild_pipelines():
+def rebuild_pipelines(*args):
     """Entry point for rebuilding pipelines.
 
     Use to rebuild all pipelines or a specific group.
