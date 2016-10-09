@@ -21,7 +21,7 @@ def add_pipeline(subparsers):
         'pipeline', help=add_pipeline.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     pipeline_parser.set_defaults(func=pipeline_parser.print_help)
 
-    pipeline_subparsers = pipeline_parser.add_subparsers(title='Preparers')
+    pipeline_subparsers = pipeline_parser.add_subparsers(title='Pipelines')
 
     pipeline_full_parser = pipeline_subparsers.add_parser(
         'app', help='Create Pipelines for an application', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
