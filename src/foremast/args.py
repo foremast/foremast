@@ -45,7 +45,7 @@ def add_env(parser):
                         '--env',
                         choices=ENVS,
                         default=os.getenv('ENV', default='dev'),
-                        help='Deploy environment')
+                        help='Deploy environment, overrides $ENV')
 
 
 def add_gitlab_token(parser):
