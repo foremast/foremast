@@ -2,6 +2,7 @@
 import argparse
 import logging
 
+from . import runner
 from .args import add_debug, add_env
 from .consts import LOGGING_FORMAT
 
@@ -10,8 +11,8 @@ LOG = logging.getLogger(__name__)
 
 def add_infra(subparsers):
     """Infrastructure subcommands."""
-    infra_parser = subparsers.add_parser('infra', help=add_infra.__doc__)
-    infra_parser.set_defaults(func=infra_parser.print_help)
+    infra_parser = subparsers.add_parser('infra', help=runner.prepare_infrastructure.__doc__)
+    infra_parser.set_defaults(func=runner.prepare_infrastructure)
 
 
 def add_pipeline(subparsers):
