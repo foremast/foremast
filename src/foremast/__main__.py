@@ -73,7 +73,7 @@ def main(manual_args=None):
 
     try:
         args.func(args)
-    except AttributeError:
+    except (AttributeError, TypeError):
         args.func()
 
 
