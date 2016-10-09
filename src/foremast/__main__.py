@@ -36,8 +36,8 @@ def add_pipeline(subparsers):
 def add_rebuild(subparsers):
     """Rebuild Pipeline subcommands."""
     rebuild_parser = subparsers.add_parser(
-        'rebuild', help=add_rebuild.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    rebuild_parser.set_defaults(func=rebuild_parser.print_help)
+        'rebuild', help=runner.rebuild_pipelines.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    rebuild_parser.set_defaults(func=runner.rebuild_pipelines)
     rebuild_parser.add_argument('-a', '--all', help='Rebuild all Pipelines')
 
 
