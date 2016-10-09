@@ -232,6 +232,7 @@ def prepare_onetime_pipeline():
 
 
 def create_scaling_policy():
+    """Create Auto Scaling Policy for an Auto Scaling Group."""
     runner = ForemastRunner()
     runner.write_configs()
     runner.create_autoscaling_policy()

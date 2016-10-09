@@ -44,8 +44,10 @@ def add_rebuild(subparsers):
 def add_autoscaling(subparsers):
     """Auto Scaling Group Policy subcommands."""
     autoscaling_parser = subparsers.add_parser(
-        'autoscaling', help=add_autoscaling.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    autoscaling_parser.set_defaults(func=autoscaling_parser.print_help)
+        'autoscaling',
+        help=runner.create_scaling_policy.__doc__,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    autoscaling_parser.set_defaults(func=runner.create_scaling_policy)
 
 
 def main(manual_args=None):
