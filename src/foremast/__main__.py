@@ -28,8 +28,8 @@ def add_pipeline(subparsers):
     pipeline_full_parser.set_defaults(func=runner.prepare_app_pipeline)
 
     pipeline_onetime_parser = pipeline_subparsers.add_parser(
-        'onetime', help='Create onetime Pipeline', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    pipeline_onetime_parser.set_defaults(func=pipeline_onetime_parser.print_help)
+        'onetime', help=runner.prepare_onetime_pipeline.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    pipeline_onetime_parser.set_defaults(func=runner.prepare_onetime_pipeline)
     add_env(pipeline_onetime_parser)
 
 
