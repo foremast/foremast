@@ -16,29 +16,34 @@ def add_infra(subparsers):
 
 def add_pipeline(subparsers):
     """Pipeline subcommands."""
-    pipeline_parser = subparsers.add_parser('pipeline', help=add_pipeline.__doc__)
+    pipeline_parser = subparsers.add_parser(
+        'pipeline', help=add_pipeline.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     pipeline_parser.set_defaults(func=pipeline_parser.print_help)
 
     pipeline_subparsers = pipeline_parser.add_subparsers(title='Preparers')
 
-    pipeline_full_parser = pipeline_subparsers.add_parser('app', help='Create Pipelines for an application')
+    pipeline_full_parser = pipeline_subparsers.add_parser(
+        'app', help='Create Pipelines for an application', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     pipeline_full_parser.set_defaults(func=pipeline_full_parser.print_help)
 
-    pipeline_onetime_parser = pipeline_subparsers.add_parser('onetime', help='Create onetime Pipeline')
+    pipeline_onetime_parser = pipeline_subparsers.add_parser(
+        'onetime', help='Create onetime Pipeline', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     pipeline_onetime_parser.set_defaults(func=pipeline_onetime_parser.print_help)
     add_env(pipeline_onetime_parser)
 
 
 def add_rebuild(subparsers):
     """Rebuild Pipeline subcommands."""
-    rebuild_parser = subparsers.add_parser('rebuild', help=add_rebuild.__doc__)
+    rebuild_parser = subparsers.add_parser(
+        'rebuild', help=add_rebuild.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     rebuild_parser.set_defaults(func=rebuild_parser.print_help)
     rebuild_parser.add_argument('-a', '--all', help='Rebuild all Pipelines')
 
 
 def add_autoscaling(subparsers):
     """Auto Scaling Group Policy subcommands."""
-    autoscaling_parser = subparsers.add_parser('autoscaling', help=add_autoscaling.__doc__)
+    autoscaling_parser = subparsers.add_parser(
+        'autoscaling', help=add_autoscaling.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     autoscaling_parser.set_defaults(func=autoscaling_parser.print_help)
 
 
@@ -46,7 +51,7 @@ def main(manual_args=None):
     """Foremast, your ship's support."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
-    parser = argparse.ArgumentParser(description=main.__doc__)
+    parser = argparse.ArgumentParser(description=main.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.set_defaults(func=parser.print_help)
     add_debug(parser)
 
