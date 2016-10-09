@@ -16,6 +16,7 @@
 
 """Common _argparse_ arguments."""
 import logging
+import os
 
 from .consts import ENVS
 
@@ -43,7 +44,7 @@ def add_env(parser):
     parser.add_argument('-e',
                         '--env',
                         choices=ENVS,
-                        default='dev',
+                        default=os.getenv('ENV', default='dev'),
                         help='Deploy environment')
 
 
