@@ -38,7 +38,7 @@ def add_rebuild(subparsers):
     rebuild_parser = subparsers.add_parser(
         'rebuild', help=runner.rebuild_pipelines.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     rebuild_parser.set_defaults(func=runner.rebuild_pipelines)
-    rebuild_parser.add_argument('-a', '--all', help='Rebuild all Pipelines')
+    rebuild_parser.add_argument('-a', '--all', action='store_true', help='Rebuild all Pipelines')
 
 
 def add_autoscaling(subparsers):
