@@ -29,6 +29,13 @@ def add_pipeline(subparsers):
     add_env(pipeline_onetime_parser)
 
 
+def add_rebuild(subparsers):
+    """Rebuild Pipeline subcommands."""
+    rebuild_parser = subparsers.add_parser('rebuild', help=add_rebuild.__doc__)
+    rebuild_parser.set_defaults(func=rebuild_parser.print_help)
+    rebuild_parser.add_argument('-a', '--all', help='Rebuild all Pipelines')
+
+
 def main(manual_args=None):
     """Foremast, your ship's support."""
     logging.basicConfig(format=LOGGING_FORMAT)
@@ -41,6 +48,7 @@ def main(manual_args=None):
 
     add_infra(subparsers)
     add_pipeline(subparsers)
+    add_rebuild(subparsers)
 
     args, args_list = parser.parse_known_args(args=manual_args)
 
