@@ -36,6 +36,12 @@ def add_rebuild(subparsers):
     rebuild_parser.add_argument('-a', '--all', help='Rebuild all Pipelines')
 
 
+def add_autoscaling(subparsers):
+    """Auto Scaling Group Policy subcommands."""
+    autoscaling_parser = subparsers.add_parser('autoscaling', help=add_autoscaling.__doc__)
+    autoscaling_parser.set_defaults(func=autoscaling_parser.print_help)
+
+
 def main(manual_args=None):
     """Foremast, your ship's support."""
     logging.basicConfig(format=LOGGING_FORMAT)
@@ -49,6 +55,7 @@ def main(manual_args=None):
     add_infra(subparsers)
     add_pipeline(subparsers)
     add_rebuild(subparsers)
+    add_autoscaling(subparsers)
 
     args, args_list = parser.parse_known_args(args=manual_args)
 
