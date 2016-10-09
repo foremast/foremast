@@ -247,15 +247,21 @@ def rebuild_pipelines(*args):
     rebuild_all = False
     rebuild_project = os.getenv("REBUILD_PROJECT")
 
-    if rebuild_project is None:
-        msg = 'No REBUILD_PROJECT variable found'
-        LOG.fatal(msg)
-        raise SystemExit('Error: {0}'.format(msg))
-    elif rebuild_project == 'ALL':
+    if args:
+        LOG.debug('Incoming arguments: %s', args)
+        command_args, *_ = args
+        rebuild_all = command_args.all
+        rebuild_project = command_args.project
+
+    if rebuild_project == 'ALL':
         rebuild_all = True
 
     if rebuild_all:
         LOG.info('Rebuilding all projects.')
+    elif rebuild_project is None:
+        msg = 'No REBUILD_PROJECT variable found'
+        LOG.fatal(msg)
+        raise SystemExit('Error: {0}'.format(msg))
     else:
         LOG.info('Rebuilding project: %s', rebuild_project)
 
