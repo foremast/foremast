@@ -244,12 +244,13 @@ def rebuild_pipelines():
 
     Use to rebuild all pipelines or a specific group.
     """
-    all_apps = utils.get_all_apps()
     rebuild_project = os.getenv("REBUILD_PROJECT")
     if rebuild_project is None:
         msg = 'No REBUILD_PROJECT variable found'
         LOG.fatal(msg)
         raise SystemExit('Error: {0}'.format(msg))
+
+    all_apps = utils.get_all_apps()
 
     for apps in all_apps:
         if 'repoProjectKey' not in apps:
