@@ -69,6 +69,10 @@ def add_tester(subparsers):
         'all', help=tester.all_testers.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     tester_all_parser.set_defaults(func=tester.all_testers)
 
+    tester_gate_parser = tester_subparsers.add_parser(
+        'gate', help=tester.gate_tester.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    tester_gate_parser.set_defaults(func=tester.gate_tester)
+
 
 def main(manual_args=None):
     """Foremast, your ship's support."""
