@@ -42,7 +42,10 @@ def add_rebuild(subparsers):
     rebuild_parser.set_defaults(func=runner.rebuild_pipelines)
     rebuild_parser.add_argument('-a', '--all', action='store_true', help='Rebuild all Pipelines')
     rebuild_parser.add_argument(
-        'project', nargs='?', default=os.getenv('REBUILD_PROJECT'), help='Project to rebuild, overrides $REBUILD_PROJECT')
+        'project',
+        nargs='?',
+        default=os.getenv('REBUILD_PROJECT'),
+        help='Project to rebuild, overrides $REBUILD_PROJECT')
 
 
 def add_autoscaling(subparsers):
