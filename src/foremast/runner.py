@@ -250,8 +250,8 @@ def rebuild_pipelines(*args):
     if args:
         LOG.debug('Incoming arguments: %s', args)
         command_args, *_ = args
-        rebuild_all = command_args.all
-        rebuild_project = command_args.project
+        rebuild_all = command_args.parsed.all
+        rebuild_project = command_args.parsed.project
 
     if rebuild_project == 'ALL':
         rebuild_all = True
