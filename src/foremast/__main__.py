@@ -61,7 +61,13 @@ def add_tester(subparsers):
     """Test Spinnaker setup."""
     tester_parser = subparsers.add_parser(
         'tester', help=add_tester.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    tester_parser.set_defaults(func=tester.all_tests)
+    tester_parser.set_defaults(func=tester_parser.print_help)
+
+    tester_subparsers = tester_parser.add_subparsers(title='Testers')
+
+    tester_all_parser = tester_subparsers.add_parser(
+        'all', help=tester.all_tests.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    tester_all_parser.set_defaults(func=tester.all_tests)
 
 
 def main(manual_args=None):
