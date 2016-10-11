@@ -4,7 +4,7 @@ import collections
 import logging
 import os
 
-from . import runner
+from . import runner, tester
 from .args import add_debug, add_env
 from .consts import LOGGING_FORMAT, SHORT_LOGGING_FORMAT
 
@@ -57,6 +57,13 @@ def add_autoscaling(subparsers):
     autoscaling_parser.set_defaults(func=runner.create_scaling_policy)
 
 
+def add_tester(subparsers):
+    """Test Spinnaker setup."""
+    tester_parser = subparsers.add_parser(
+        'tester', help=add_tester.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    tester_parser.set_defaults(func=tester.all_tests)
+
+
 def main(manual_args=None):
     """Foremast, your ship's support."""
     parser = argparse.ArgumentParser(description=main.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -76,6 +83,7 @@ def main(manual_args=None):
     add_pipeline(subparsers)
     add_rebuild(subparsers)
     add_autoscaling(subparsers)
+    add_tester(subparsers)
 
     CliArgs = collections.namedtuple('CliArgs', ['parsed', 'extra'])
 
