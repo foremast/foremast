@@ -1,5 +1,6 @@
 """Foremast CLI commands."""
 import argparse
+import collections
 import logging
 import os
 
@@ -73,20 +74,22 @@ def main(manual_args=None):
     add_rebuild(subparsers)
     add_autoscaling(subparsers)
 
-    args, extra_args = parser.parse_known_args(args=manual_args)
+    CliArgs = collections.namedtuple('CliArgs', ['parsed', 'extra'])
 
-    logging.basicConfig(format=args.short_log)
+    parsed, extra = parser.parse_known_args(args=manual_args)
+    args = CliArgs(parsed, extra)
+
+    logging.basicConfig(format=args.parsed.short_log)
 
     package, *_ = __package__.split('.')
-    logging.getLogger(package).setLevel(args.debug)
+    logging.getLogger(package).setLevel(args.parsed.debug)
 
     LOG.debug('Arguments: %s', args)
-    LOG.debug('Extra arguments: %s', extra_args)
 
     try:
-        args.func(args)
+        args.parsed.func(args)
     except (AttributeError, TypeError):
-        args.func()
+        args.parsed.func()
 
 
 if __name__ == '__main__':
