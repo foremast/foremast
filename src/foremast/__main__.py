@@ -68,13 +68,13 @@ def main(manual_args=None):
     add_rebuild(subparsers)
     add_autoscaling(subparsers)
 
-    args, args_list = parser.parse_known_args(args=manual_args)
+    args, extra_args = parser.parse_known_args(args=manual_args)
 
     package, *_ = __package__.split('.')
     logging.getLogger(package).setLevel(args.debug)
 
     LOG.debug('Arguments: %s', args)
-    LOG.debug('Leftover arguments: %s', args_list)
+    LOG.debug('Extra arguments: %s', extra_args)
 
     try:
         args.func(args)
