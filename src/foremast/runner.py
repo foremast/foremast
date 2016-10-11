@@ -292,7 +292,7 @@ def debug_flag():
 
     parser = argparse.ArgumentParser(description=debug_flag.__doc__)
     add_debug(parser)
-    args = parser.parse_args()
+    args, extra_args = parser.parse_known_args()
 
     package, *_ = __package__.split('.')
     logging.getLogger(package).setLevel(args.debug)
