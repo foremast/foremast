@@ -5,7 +5,7 @@ import os
 
 from . import runner
 from .args import add_debug, add_env
-from .consts import LOGGING_FORMAT
+from .consts import LOGGING_FORMAT, SHORT_LOGGING_FORMAT
 
 LOG = logging.getLogger(__name__)
 
@@ -55,11 +55,16 @@ def add_autoscaling(subparsers):
 
 def main(manual_args=None):
     """Foremast, your ship's support."""
-    logging.basicConfig(format=LOGGING_FORMAT)
-
     parser = argparse.ArgumentParser(description=main.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.set_defaults(func=parser.print_help)
     add_debug(parser)
+    parser.add_argument(
+        '-s',
+        '--short-log',
+        action='store_const',
+        const=SHORT_LOGGING_FORMAT,
+        default=LOGGING_FORMAT,
+        help='Truncated logging format')
 
     subparsers = parser.add_subparsers(title='Commands', description='Available activies')
 
@@ -69,6 +74,8 @@ def main(manual_args=None):
     add_autoscaling(subparsers)
 
     args, extra_args = parser.parse_known_args(args=manual_args)
+
+    logging.basicConfig(format=args.short_log)
 
     package, *_ = __package__.split('.')
     logging.getLogger(package).setLevel(args.debug)
