@@ -66,8 +66,8 @@ def add_tester(subparsers):
     tester_subparsers = tester_parser.add_subparsers(title='Testers')
 
     tester_all_parser = tester_subparsers.add_parser(
-        'all', help=tester.all_tests.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    tester_all_parser.set_defaults(func=tester.all_tests)
+        'all', help=tester.all_testers.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    tester_all_parser.set_defaults(func=tester.all_testers)
 
 
 def main(manual_args=None):
