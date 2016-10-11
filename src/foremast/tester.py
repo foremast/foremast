@@ -17,7 +17,11 @@ def gate_tester():
         LOG.fatal('Gate connection not valid: API_URL = %s', API_URL)
 
 
-def all_testers():
-    """Run all tests."""
+def all_testers(args):
+    """Run all tests.
+
+    Args:
+        args (CliArgs): Arguments from CLI.
+    """
     LOG.info('Running all tests.')
     gate_tester()
