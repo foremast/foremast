@@ -21,7 +21,7 @@ import os
 import jinja2
 
 from ..consts import TEMPLATES_PATH
-from ..exceptions import ForemastError
+from ..exceptions import ForemastTemplateNotFound
 
 LOG = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ def get_template_object(template_file=''):
         LOG.error("Unable to find template {0} in specified template path {1}".format(
             template_file, TEMPLATES_PATH
         ))
-        raise ForemastError
+        raise ForemastTemplateNotFound
 
     return template
 
@@ -72,7 +72,7 @@ def get_template(template_file='', **kwargs):
     """
     try:
         template = get_template_object(template_file)
-    except ForemastError:
+    except ForemastTemplateNotFound:
         raise
 
     LOG.info('Rendering template %s', template.filename)
