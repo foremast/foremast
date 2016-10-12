@@ -15,9 +15,11 @@
 #   limitations under the License.
 
 """Add the appropriate ELB Listeners."""
+import json
 import logging
 
-from ..utils import get_env_credential
+from ..utils import get_env_credential, get_template
+from ..exceptions import ForemastError
 
 LOG = logging.getLogger(__name__)
 
@@ -81,9 +83,7 @@ def format_listeners(elb_settings=None, env='dev'):
 
     if 'ports' in elb_settings:
         for listener in elb_settings['ports']:
-            cert_name = format_cert_name(account=account,
-                                         certificate=listener.get(
-                                             'certificate', None))
+            cert_name = format_cert_name(env=env, account=account, certificate=listener.get('certificate', None))
 
             lb_proto, lb_port = listener['loadbalancer'].split(':')
             i_proto, i_port = listener['instance'].split(':')
@@ -118,16 +118,17 @@ def format_listeners(elb_settings=None, env='dev'):
     return listeners
 
 
-def format_cert_name(account='', certificate=None):
+def format_cert_name(env='', account='', certificate=None):
     """Format the SSL certificate name into ARN for ELB.
 
     Args:
-        account (str): Account number for ARN.
-        certificate (str): Name of SSL certificate.
+        env (str): Account environment name
+        account (str): Account number for ARN
+        certificate (str): Name of SSL certificate
 
     Returns:
-        None: Certificate is not desired.
-        str: Fully qualified ARN for SSL certificate.
+        str: Fully qualified ARN for SSL certificate
+        None: Certificate is not desired
     """
     cert_name = None
 
@@ -135,9 +136,45 @@ def format_cert_name(account='', certificate=None):
         if certificate.startswith('arn'):
             cert_name = certificate
         else:
-            cert_name = ('arn:aws:iam::{account}:server-certificate/'
-                         '{name}'.format(account=account,
-                                         name=certificate))
+            generated_cert_name = generate_custom_cert_name(env, account, certificate)
+            if generated_cert_name:
+                cert_name = generated_cert_name
+            else:
+                cert_name = ('arn:aws:iam::{account}:server-certificate/{name}'.format(account=account,
+                                                                                       name=certificate))
     LOG.debug('Certificate name: %s', cert_name)
+
+    return cert_name
+
+
+def generate_custom_cert_name(env='', account='', certificate=None):
+    """Generate a custom TLS Cert name based on a template.
+
+    Args:
+        env (str): Account environment name
+        account (str): Account number for ARN.
+        certificate (str): Name of SSL certificate.
+
+    Returns:
+        str: Fully qualified ARN for SSL certificate.
+        None: Template doesn't exist.
+    """
+    cert_name = None
+    template_kwargs = {
+        'account': account,
+        'name': certificate
+    }
+
+    # TODO: Investigate moving this to a remote API, then fallback to local file if unable to connect
+    try:
+        rendered_template = get_template(template_file='infrastructure/tlscert_naming.json.j2', **template_kwargs)
+    except ForemastError:
+        LOG.info('Unable to find TLS Cert Template; Falling back to default logic...')
+        return cert_name
+
+    try:
+        cert_name = json.loads(rendered_template)[env][certificate]
+    except KeyError:
+        LOG.error("Unable to find TLS certificate named {0} under {1} in TLS Cert Template".format(certificate, env))
 
     return cert_name
