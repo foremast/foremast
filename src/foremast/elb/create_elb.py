@@ -21,8 +21,7 @@ import logging
 import boto3
 
 from ..consts import DEFAULT_ELB_SECURITYGROUPS
-from ..utils import (check_task, get_properties, get_subnets, get_template,
-                     get_vpc_id, post_task)
+from ..utils import check_task, get_properties, get_subnets, get_template, get_vpc_id, post_task
 from .format_listeners import format_listeners
 from .splay_health import splay_health
 

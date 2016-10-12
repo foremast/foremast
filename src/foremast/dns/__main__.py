@@ -21,7 +21,7 @@ Help: ``python -m src.foremast.dns -h``
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_env, add_region, add_properties
+from ..args import add_app, add_debug, add_env, add_properties, add_region
 from ..consts import LOGGING_FORMAT
 from .create_dns import SpinnakerDns
 

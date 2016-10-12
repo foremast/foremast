@@ -20,7 +20,7 @@ import logging
 import murl
 import requests
 
-from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import check_managed_pipeline, get_all_pipelines
 

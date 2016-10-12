@@ -19,8 +19,7 @@ import logging
 from pprint import pformat
 
 from ..consts import DOMAIN
-from ..utils import (find_elb, get_details, get_properties, get_dns_zone_ids,
-                     update_dns_zone_record)
+from ..utils import find_elb, get_details, get_dns_zone_ids, get_properties, update_dns_zone_record
 
 
 class SpinnakerDns:

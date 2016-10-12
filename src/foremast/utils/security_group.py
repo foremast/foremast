@@ -20,7 +20,7 @@ import logging
 import requests
 from tryagain import retries
 
-from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerSecurityGroupError
 from .vpc import get_vpc_id
 

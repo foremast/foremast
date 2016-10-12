@@ -15,6 +15,7 @@
 #   limitations under the License.
 
 import logging
+
 import boto3
 
 from ....utils.get_sns_subscriptions import get_sns_subscriptions

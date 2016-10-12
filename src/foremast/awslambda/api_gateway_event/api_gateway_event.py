@@ -18,10 +18,8 @@ import logging
 
 import boto3
 import botocore
+from foremast.utils import add_lambda_permissions, get_details, get_env_credential, get_lambda_alias_arn, get_properties
 from tryagain import retries
-
-from foremast.utils import (get_details, get_env_credential, get_properties, add_lambda_permissions,
-                            get_lambda_alias_arn)
 
 LOG = logging.getLogger(__name__)
 

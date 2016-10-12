@@ -24,8 +24,8 @@ import os
 
 import requests
 
-from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
-from ..utils import (get_properties, get_template, check_task, post_task)
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..utils import check_task, get_properties, get_template, post_task
 
 
 class AutoScalingPolicy:

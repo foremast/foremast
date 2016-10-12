@@ -46,10 +46,8 @@ import logging
 import boto3
 from boto3.exceptions import botocore
 
-from ..exceptions import (SpinnakerSecurityGroupCreationFailed,
-                          SpinnakerSecurityGroupError)
-from ..utils import (check_task, post_task, get_properties, get_security_group_id,
-                     get_template, get_vpc_id, warn_user)
+from ..exceptions import SpinnakerSecurityGroupCreationFailed, SpinnakerSecurityGroupError
+from ..utils import check_task, get_properties, get_security_group_id, get_template, get_vpc_id, post_task, warn_user
 
 
 class SpinnakerSecurityGroup(object):

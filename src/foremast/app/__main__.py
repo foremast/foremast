@@ -24,7 +24,7 @@ import logging
 import gogoutils
 
 from ..args import add_app, add_debug
-from ..consts import LOGGING_FORMAT, APP_FORMATS
+from ..consts import APP_FORMATS, LOGGING_FORMAT
 from .create_app import SpinnakerApp
 
 

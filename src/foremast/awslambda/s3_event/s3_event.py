@@ -14,13 +14,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import logging
 import json
+import logging
 
 import boto3
 
 from ...exceptions import InvalidEventConfiguration
-from ...utils import (get_template, get_lambda_alias_arn, add_lambda_permissions)
+from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_template
 
 LOG = logging.getLogger(__name__)
 

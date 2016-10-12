@@ -24,7 +24,7 @@ import logging
 import gogoutils
 
 from ..args import add_debug
-from ..consts import LOGGING_FORMAT, APP_FORMATS
+from ..consts import APP_FORMATS, LOGGING_FORMAT
 from .outputs import write_variables
 from .prepare_configs import process_git_configs, process_runway_configs
 
