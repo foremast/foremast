@@ -134,12 +134,15 @@ def format_cert_name(env='', account='', certificate=None):
 
     if certificate:
         if certificate.startswith('arn'):
+            LOG.info("Full ARN provided...skipping lookup.")
             cert_name = certificate
         else:
             generated_cert_name = generate_custom_cert_name(env, account, certificate)
             if generated_cert_name:
+                LOG.info("Found generated certificate %s from template", generated_cert_name)
                 cert_name = generated_cert_name
             else:
+                LOG.info("Using default certificate name logic")
                 cert_name = ('arn:aws:iam::{account}:server-certificate/{name}'.format(account=account,
                                                                                        name=certificate))
     LOG.debug('Certificate name: %s', cert_name)
@@ -167,9 +170,9 @@ def generate_custom_cert_name(env='', account='', certificate=None):
 
     # TODO: Investigate moving this to a remote API, then fallback to local file if unable to connect
     try:
-        rendered_template = get_template(template_file='infrastructure/tlscert_naming.json.j2', **template_kwargs)
+        rendered_template = get_template(template_file='infrastructure/iam/tlscert_naming.json.j2', **template_kwargs)
     except ForemastTemplateNotFound:
-        LOG.info('Unable to find TLS Cert Template; Falling back to default logic...')
+        LOG.info('Unable to find TLS Cert Template...falling back to default logic...')
         return cert_name
 
     try:
