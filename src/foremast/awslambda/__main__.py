@@ -23,8 +23,8 @@ import logging
 
 from ..args import add_app, add_debug, add_env, add_properties, add_region
 from ..consts import LOGGING_FORMAT
-from .awslambdaevent import LambdaEvent
 from .awslambda import LambdaFunction
+from .awslambdaevent import LambdaEvent
 
 
 def main():

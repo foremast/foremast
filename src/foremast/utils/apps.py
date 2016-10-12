@@ -16,12 +16,12 @@
 
 """Application related utilities"""
 import logging
+
+import gogoutils
 import murl
 import requests
 
-import gogoutils
-
-from ..consts import API_URL, APP_FORMATS, GATE_CLIENT_CERT, GATE_CA_BUNDLE
+from ..consts import API_URL, APP_FORMATS, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerAppNotFound
 
 LOG = logging.getLogger(__name__)

@@ -16,10 +16,11 @@
 
 """Check Pipeline name to match format."""
 import logging
-import requests
-import murl
 
-from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
+import murl
+import requests
+
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 
 LOG = logging.getLogger(__name__)
 

@@ -1,5 +1,6 @@
-import boto3
 import logging
+
+import boto3
 
 from ..utils.awslambda import get_lambda_alias_arn
 

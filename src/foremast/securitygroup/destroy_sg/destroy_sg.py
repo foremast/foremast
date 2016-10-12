@@ -19,8 +19,8 @@ import logging
 
 import requests
 
-from ...consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
-from ...utils import Gate, check_task, post_task, get_template, get_vpc_id
+from ...consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ...utils import Gate, check_task, get_template, get_vpc_id, post_task
 
 LOG = logging.getLogger(__name__)
 

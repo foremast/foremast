@@ -22,7 +22,7 @@ from pprint import pformat
 import requests
 from tryagain import retries
 
-from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerSubnetError, SpinnakerTimeout
 
 LOG = logging.getLogger(__name__)

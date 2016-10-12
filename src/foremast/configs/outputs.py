@@ -21,8 +21,8 @@ from pprint import pformat
 
 import gogoutils
 
-from ..utils import DeepChainMap, get_template
 from ..consts import APP_FORMATS
+from ..utils import DeepChainMap, get_template
 
 LOG = logging.getLogger(__name__)
 

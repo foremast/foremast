@@ -31,9 +31,8 @@ import logging
 import os
 
 import gogoutils
-from foremast import (app, autoscaling_policy, awslambda, configs, consts, dns,
-                      elb, iam, pipeline, s3, securitygroup, slacknotify,
-                      utils)
+from foremast import (app, autoscaling_policy, awslambda, configs, consts, dns, elb, iam, pipeline, s3, securitygroup,
+                      slacknotify, utils)
 
 from .args import add_debug
 

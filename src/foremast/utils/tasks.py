@@ -15,13 +15,13 @@
 #   limitations under the License.
 
 """POST a new task or check status of running task"""
+import json
 import logging
 
-import json
 import requests
 from tryagain import retries
 
-from ..consts import API_URL, HEADERS, GATE_CLIENT_CERT, GATE_CA_BUNDLE
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, HEADERS
 from ..exceptions import SpinnakerTaskError
 
 LOG = logging.getLogger(__name__)

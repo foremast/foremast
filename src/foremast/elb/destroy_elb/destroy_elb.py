@@ -16,7 +16,7 @@
 
 """Destroy any ELB Resources."""
 
-from ...utils import check_task, post_task, get_template, get_vpc_id
+from ...utils import check_task, get_template, get_vpc_id, post_task
 
 
 def destroy_elb(app='', env='dev', region='us-east-1', **_):

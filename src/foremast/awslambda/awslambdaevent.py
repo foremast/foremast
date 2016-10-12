@@ -18,11 +18,12 @@
 import logging
 
 from foremast.utils import get_properties
-from .s3_event import create_s3_event
-from .sns_event import create_sns_event
+
+from .api_gateway_event import APIGateway
 from .cloudwatch_event import create_cloudwatch_event
 from .cloudwatch_log_event import create_cloudwatch_log_event
-from .api_gateway_event import APIGateway
+from .s3_event import create_s3_event
+from .sns_event import create_sns_event
 
 
 class LambdaEvent(object):

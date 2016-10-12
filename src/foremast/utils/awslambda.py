@@ -15,10 +15,11 @@
 #   limitations under the License.
 
 """Lambda related utilities"""
-import boto3
 import logging
 
-from ..exceptions import LambdaFunctionDoesNotExist, LambdaAliasDoesNotExist
+import boto3
+
+from ..exceptions import LambdaAliasDoesNotExist, LambdaFunctionDoesNotExist
 
 LOG = logging.getLogger(__name__)
 

@@ -22,7 +22,7 @@ Help: ```python -m src.foremast.autoscaling_policy -h```
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_region, add_properties, add_env
+from ..args import add_app, add_debug, add_env, add_properties, add_region
 from ..consts import LOGGING_FORMAT
 from .create_policy import AutoScalingPolicy
 

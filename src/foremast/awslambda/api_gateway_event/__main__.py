@@ -18,7 +18,7 @@
 import argparse
 import logging
 
-from ...args import add_app, add_debug, add_env, add_region, add_properties
+from ...args import add_app, add_debug, add_env, add_properties, add_region
 from ...consts import LOGGING_FORMAT
 from .api_gateway_event import APIGateway
 

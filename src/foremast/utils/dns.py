@@ -15,8 +15,8 @@
 #   limitations under the License.
 
 """Retrieve Route 53 Hosted Zone IDs."""
-import logging
 import json
+import logging
 
 import boto3
 

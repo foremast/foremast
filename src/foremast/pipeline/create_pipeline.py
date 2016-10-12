@@ -23,10 +23,9 @@ from pprint import pformat
 
 import requests
 
-from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import (ami_lookup, get_details, get_properties, get_subnets,
-                     get_template, generate_packer_filename)
+from ..utils import ami_lookup, generate_packer_filename, get_details, get_properties, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block import construct_pipeline_block
 from .renumerate_stages import renumerate_stages
