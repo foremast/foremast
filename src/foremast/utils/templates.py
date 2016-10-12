@@ -21,19 +21,19 @@ import os
 import jinja2
 
 from ..consts import TEMPLATES_PATH
+from ..exceptions import ForemastError
 
 LOG = logging.getLogger(__name__)
 
 
-def get_template(template_file='', **kwargs):
-    """Get the Jinja2 template and renders with dict _kwargs_.
+def get_template_object(template_file=''):
+    """Get the Jinja2 template and returns Template object
 
     Args:
         template_file (str): name of the template file
-        kwargs: Keywords to use for rendering the Jinja2 template.
 
     Returns:
-        String of rendered JSON template.
+        template (Template): Template jinja2 object
     """
 
     here = os.path.dirname(os.path.realpath(__file__))
@@ -48,11 +48,38 @@ def get_template(template_file='', **kwargs):
     jinja_lst.append(local_templates)
 
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_lst))
-    template = jinjaenv.get_template(template_file)
+
+    try:
+        template = jinjaenv.get_template(template_file)
+    except jinja2.TemplateNotFound:
+        LOG.error("Unable to find template {0} in specified template path {1}".format(
+            template_file, TEMPLATES_PATH
+        ))
+        raise ForemastError
+
+    return template
+
+
+def get_template(template_file='', **kwargs):
+    """Get the Jinja2 template and renders with dict _kwargs_.
+
+    Args:
+        template_file (str): name of the template file
+        kwargs: Keywords to use for rendering the Jinja2 template.
+
+    Returns:
+        String of rendered JSON template.
+    """
+    try:
+        template = get_template_object(template_file)
+    except ForemastError:
+        raise
+
     LOG.info('Rendering template %s', template.filename)
     for key, value in kwargs.items():
         LOG.debug('%s => %s', key, value)
-    rendered_json = template.render(**kwargs)
 
+    rendered_json = template.render(**kwargs)
     LOG.debug('Rendered JSON:\n%s', rendered_json)
+
     return rendered_json
