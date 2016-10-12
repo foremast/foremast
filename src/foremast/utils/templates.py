@@ -33,9 +33,8 @@ def get_template_object(template_file=''):
         template_file (str): name of the template file
 
     Returns:
-        template (Template): Template jinja2 object
+        jinja2.Template: Template jinja2 object
     """
-
     here = os.path.dirname(os.path.realpath(__file__))
     local_templates = '{0}/../templates/'.format(here)
     jinja_lst = []
@@ -52,8 +51,9 @@ def get_template_object(template_file=''):
     try:
         template = jinjaenv.get_template(template_file)
     except jinja2.TemplateNotFound:
-        LOG.error("Unable to find template %s in specified template path %s", template_file, TEMPLATES_PATH)
-        raise ForemastTemplateNotFound
+        LOG.debug("Unable to find template %s in specified template path %s", template_file, TEMPLATES_PATH)
+        raise ForemastTemplateNotFound("Unable to find template %s in specified template path %s",
+                                       template_file, TEMPLATES_PATH)
 
     return template
 
