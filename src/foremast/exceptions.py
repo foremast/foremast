@@ -21,6 +21,11 @@ class ForemastError(Exception):
     pass
 
 
+class ForemastTemplateNotFound(Exception):
+    """Foremast Template was not found."""
+    pass
+
+
 class SpinnakerError(ForemastError):
     """Spinnaker related error."""
     pass

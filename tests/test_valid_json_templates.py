@@ -18,14 +18,13 @@
 import pytest
 import json
 
-from jinja2 import Template
-from jinja2.exceptions import TemplateNotFound
+from foremast.exceptions import ForemastTemplateNotFound
 
 from foremast.utils import get_template
 
 
 def test_get_template():
-    with pytest.raises(TemplateNotFound):
+    with pytest.raises(ForemastTemplateNotFound):
         template = get_template(template_file='doesnotexist.json.j2')
 
 

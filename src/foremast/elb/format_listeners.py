@@ -19,7 +19,7 @@ import json
 import logging
 
 from ..utils import get_env_credential, get_template
-from ..exceptions import ForemastError
+from ..exceptions import ForemastTemplateNotFound
 
 LOG = logging.getLogger(__name__)
 
@@ -168,7 +168,7 @@ def generate_custom_cert_name(env='', account='', certificate=None):
     # TODO: Investigate moving this to a remote API, then fallback to local file if unable to connect
     try:
         rendered_template = get_template(template_file='infrastructure/tlscert_naming.json.j2', **template_kwargs)
-    except ForemastError:
+    except ForemastTemplateNotFound:
         LOG.info('Unable to find TLS Cert Template; Falling back to default logic...')
         return cert_name
 
