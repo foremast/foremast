@@ -18,8 +18,8 @@
 import json
 import logging
 
-from ..utils import get_env_credential, get_template
 from ..exceptions import ForemastTemplateNotFound
+from ..utils import get_env_credential, get_template
 
 LOG = logging.getLogger(__name__)
 
@@ -175,6 +175,6 @@ def generate_custom_cert_name(env='', account='', certificate=None):
     try:
         cert_name = json.loads(rendered_template)[env][certificate]
     except KeyError:
-        LOG.error("Unable to find TLS certificate named {0} under {1} in TLS Cert Template".format(certificate, env))
+        LOG.error("Unable to find TLS certificate named %s under %s in TLS Cert Template", certificate, env)
 
     return cert_name
