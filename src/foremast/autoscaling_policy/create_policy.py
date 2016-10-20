@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Manages AWS scaling policies in Spinnaker. Can find, create, and delete.
 
 This module also creates an inverse policy for scaling down
@@ -62,44 +61,32 @@ class AutoScalingPolicy:
             period_sec (int): Period of time to look at metrics for determining scale
             server_group (str): The name of the server group to render template for
         """
-        template_kwargs = {}
+        template_kwargs = {
+            'app': self.app,
+            'env': self.env,
+            'region': self.region,
+            'server_group': server_group,
+            'period_sec': period_sec,
+            'scaling_policy': self.settings['asg']['scaling_policy'],
+        }
         if scaling_type == 'scale_up':
-            template_kwargs = {
-                'app': self.app,
-                'env': self.env,
-                'region': self.region,
-                'server_group': server_group,
-                'period_sec': period_sec,
-                'scaling_policy': self.settings['asg']['scaling_policy'],
-                'operation': 'increase',
-                'comparisonOperator': 'GreaterThanThreshold',
-                'scalingAdjustment': 1
-            }
+            template_kwargs['operation'] = 'increase'
+            template_kwargs['comparisonOperator'] = 'GreaterThanThreshold'
+            template_kwargs['scalingAdjustment'] = 1
+
         elif scaling_type == 'scale_down':
             self.settings['asg']['scaling_policy']['threshold'] = self.settings[
                 'asg']['scaling_policy']['threshold'] * 0.5
-            template_kwargs = {
-                'app': self.app,
-                'env': self.env,
-                'region': self.region,
-                'server_group': server_group,
-                'period_sec': period_sec,
-                'scaling_policy': self.settings['asg']['scaling_policy'],
-                'operation': 'decrease',
-                'comparisonOperator': 'LessThanThreshold',
-                'scalingAdjustment': -1
-            }
+            template_kwargs['operation'] = 'decrease'
+            template_kwargs['comparisonOperator'] = 'LessThanThreshold'
+            template_kwargs['scalingAdjustment'] = -1
 
-        self.log.info('Rendering Scaling Policy Template: {0}'.format(
-            template_kwargs))
-        rendered_template = get_template(
-            template_file='infrastructure/autoscaling_policy.json.j2',
-            **template_kwargs)
+        self.log.info('Rendering Scaling Policy Template: {0}'.format(template_kwargs))
+        rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
         print(rendered_template)
         taskid = post_task(rendered_template)
         check_task(taskid)
-        self.log.info('Successfully created scaling policy in {0}'.format(
-            self.env))
+        self.log.info('Successfully created scaling policy in {0}'.format(self.env))
 
     def create_policy(self):
         """Wrapper function. Gets the server group, sets sane defaults,
@@ -114,7 +101,7 @@ class AutoScalingPolicy:
         server_group = self.get_server_group()
 
         # Find all existing and remove them
-        scaling_policies = self.get_all_existing()
+        scaling_policies = self.get_all_existing(server_group)
         for policy in scaling_policies:
             for subpolicy in policy:
                 self.delete_existing_policy(subpolicy, server_group)
@@ -134,9 +121,7 @@ class AutoScalingPolicy:
             server_group (str): Name of the newest server group
         """
         api_url = "{0}/applications/{1}".format(API_URL, self.app)
-        response = requests.get(api_url,
-                                verify=GATE_CA_BUNDLE,
-                                cert=GATE_CLIENT_CERT)
+        response = requests.get(api_url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
         for server_group in response.json()['clusters'][self.env]:
             return server_group['serverGroups'][-1]
 
@@ -148,7 +133,7 @@ class AutoScalingPolicy:
             scaling_policy (json): the scaling_policy json from Spinnaker that should be deleted
             server_group (str): the affected server_group
         """
-        self.log.info("Deleting policy {}".format(scaling_policy['policyName']))
+        self.log.info("Deleting policy %s on %s", scaling_policy['policyName'], server_group)
         delete_dict = {
             "application": self.app,
             "description": "Delete scaling policy",
@@ -161,27 +146,27 @@ class AutoScalingPolicy:
                     "provider": "aws",
                     "type": "deleteScalingPolicy",
                     "user": "pipes-autoscaling-policy"
-                }]}
+                }
+            ]
+        }
         taskid = post_task(json.dumps(delete_dict))
         check_task(taskid)
 
-    def get_all_existing(self):
+    def get_all_existing(self, server_group):
         """Finds all existing scaling policies for an application
 
         Returns:
             scalingpolicies (list): List of all existing scaling policies for the application
         """
         self.log.info("Checking for existing scaling policy")
-        url = "{0}/applications/{1}/clusters/{2}/{1}/serverGroups".format(
-            API_URL, self.app, self.env)
-        response = requests.get(url,
-                                verify=GATE_CA_BUNDLE,
-                                cert=GATE_CLIENT_CERT)
-        assert response.ok, "Error looking for existing Autoscaling Policy for {0}: {1}".format(
-            self.app, response.text)
+        url = "{0}/applications/{1}/clusters/{2}/{1}/serverGroups".format(API_URL, self.app, self.env)
+        response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+        assert response.ok, "Error looking for existing Autoscaling Policy for {0}: {1}".format(self.app, response.text)
 
         scalingpolicies = []
         for servergroup in response.json():
-            if servergroup['scalingPolicies']:
+            if servergroup['scalingPolicies'] and servergroup['asg']['autoScalingGroupName'] == server_group:
+                self.log.info("Found policies on %s", server_group)
                 scalingpolicies.append(servergroup['scalingPolicies'])
+        self.log.debug("scaling policys: %s", scalingpolicies)
         return scalingpolicies
