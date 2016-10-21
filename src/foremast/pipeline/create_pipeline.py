@@ -175,7 +175,7 @@ class SpinnakerPipeline:
             str: pipeline_id if existing, empty string of not.
         """
         pipelines = self.get_existing_pipelines()
-        pipeline_id = ''
+        pipeline_id = None
         for pipeline in pipelines:
             if (pipeline['application'] == self.app_name) and (region in pipeline['name']):
                 self.log.info('Existing pipeline found - %s', pipeline['name'])
