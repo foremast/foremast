@@ -19,7 +19,7 @@ def test_setting_eureka_enabled():
     eureka_enabled_settings['app']['eureka_enabled'] = True
 
     health_checks = check_provider_healthcheck(settings=eureka_enabled_settings)
-    assert health_checks.providers == ['Amazon']
+    assert health_checks.providers == ['Discovery']
     assert health_checks.has_healthcheck is True
 
 
@@ -44,7 +44,7 @@ def test_additional_provider_with_eureka():
 
     health_checks = check_provider_healthcheck(settings=eureka_enabled_with_provider_settings)
     assert len(health_checks.providers) == 2
-    assert 'Amazon' in health_checks.providers
+    assert 'Discovery' in health_checks.providers
     assert 'cloud' not in health_checks.providers
     assert 'Cloud' in health_checks.providers
     assert health_checks.has_healthcheck is True
