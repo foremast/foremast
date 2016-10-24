@@ -26,7 +26,7 @@ from ..utils import generate_encoded_user_data, get_template
 LOG = logging.getLogger(__name__)
 
 
-def check_provider_healthcheck(settings, default_provider='Amazon'):
+def check_provider_healthcheck(settings, default_provider='Discovery'):
     """Set Provider Health Check when specified.
 
     Returns:
