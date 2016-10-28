@@ -16,6 +16,10 @@
 """Ensure Security Groups get created properly"""
 import json
 from unittest.mock import patch
+
+import pytest
+
+from foremast.exceptions import SpinnakerSecurityGroupError
 from foremast.securitygroup import SpinnakerSecurityGroup
 
 SAMPLE_JSON = """{"security_group": {
@@ -51,3 +55,25 @@ def test_create_crossaccount_securitygroup(pipeline_config, post_task, get_vpc_i
 
     x = SpinnakerSecurityGroup(app='edgeforrest', env='dev', region='us-east-1')
     assert x.create_security_group() is True
+
+
+@patch('foremast.securitygroup.create_securitygroup.get_properties')
+def test_missing_configuration(get_properties):
+    """Make missing Security Group configurations more apparent."""
+    get_properties.return_value = {}
+
+    security_group = SpinnakerSecurityGroup()
+
+    with pytest.raises(SpinnakerSecurityGroupError):
+        security_group.create_security_group()
+
+
+@patch('foremast.securitygroup.create_securitygroup.get_properties')
+def test_misconfiguration(get_properties):
+    """Make bad Security Group definitions more apparent."""
+    get_properties.return_value = {'security_group': {}}
+
+    security_group = SpinnakerSecurityGroup()
+
+    with pytest.raises(SpinnakerSecurityGroupError):
+        security_group.create_security_group()
