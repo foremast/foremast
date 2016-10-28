@@ -172,10 +172,19 @@ class SpinnakerSecurityGroup(object):
 
         Returns:
             boolean: True if created successfully
-        """
 
-        ingress = self.properties['security_group']['ingress']
+        Raises:
+            SpinnakerSecurityGroupError: Missing environment configuration or
+                misconfigured Security Group definition.
+        """
         ingress_rules = []
+
+        try:
+            ingress = self.properties['security_group']['ingress']
+        except KeyError:
+            msg = 'Possible missing configuration for "{0}".'.format(self.env)
+            self.log.error(msg)
+            raise SpinnakerSecurityGroupError(msg)
 
         for app in ingress:
             rules = ingress[app]
