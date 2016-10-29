@@ -19,7 +19,7 @@ from unittest.mock import patch
 
 import pytest
 
-from foremast.exceptions import SpinnakerSecurityGroupError
+from foremast.exceptions import ForemastConfigurationFileError
 from foremast.securitygroup import SpinnakerSecurityGroup
 
 SAMPLE_JSON = """{"security_group": {
@@ -64,7 +64,7 @@ def test_missing_configuration(get_properties):
 
     security_group = SpinnakerSecurityGroup()
 
-    with pytest.raises(SpinnakerSecurityGroupError):
+    with pytest.raises(ForemastConfigurationFileError):
         security_group.create_security_group()
 
 
@@ -75,5 +75,5 @@ def test_misconfiguration(get_properties):
 
     security_group = SpinnakerSecurityGroup()
 
-    with pytest.raises(SpinnakerSecurityGroupError):
+    with pytest.raises(ForemastConfigurationFileError):
         security_group.create_security_group()
