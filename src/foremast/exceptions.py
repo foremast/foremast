@@ -26,6 +26,10 @@ class ForemastTemplateNotFound(Exception):
     pass
 
 
+class ForemastConfigurationFileError(ForemastError):
+    """Foremast configuration file misconfigured."""
+
+
 class SpinnakerError(ForemastError):
     """Spinnaker related error."""
     pass
