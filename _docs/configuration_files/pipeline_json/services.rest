@@ -29,6 +29,14 @@ Add DynamoDB access to tables listed.
    | *Type*: list
    | *Default*: ``[]``
 
+``elasticsearch``
+************
+
+Add ElasticSearch access to domains listed.
+
+   | *Type*: list
+   | *Default*: ``[]``
+
 ``lambda``
 **********
 
