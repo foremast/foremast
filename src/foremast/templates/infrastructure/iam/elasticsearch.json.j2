@@ -1,9 +1,12 @@
         {
-            "Sid": "ElasticSearchCreateDelete",
-            "Action": [
-                "es:CreateElasticsearchDomain",
-                "es:DeleteElasticsearchDomain"
-            ],
+            "Sid": "ElasticSearchFullAccess",
+            "Action": ["es:*"],
             "Effect": "Allow",
-            "Resource": "*"
+            "Resource": [
+            {%- for esdomain in items %}
+                "arn:aws:es:{{ region }}:{{ account_number }}:domain/{{ esdomain }}/*"
+                {%- if not loop.last -%}
+                ,
+                {%- endif -%}
+            {% endfor %}
         }
