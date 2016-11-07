@@ -37,6 +37,14 @@ Add ElasticSearch access to domains listed.
    | *Type*: list
    | *Default*: ``[]``
 
+``firehose``
+************
+
+Add Firehose access to streams listed.
+
+   | *Type*: list
+   | *Default*: ``[]``
+
 ``lambda``
 **********
 
