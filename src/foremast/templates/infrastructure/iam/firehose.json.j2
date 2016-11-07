@@ -6,7 +6,7 @@
             "Effect": "Allow",
             "Resource": [
             {%- for stream in items %}
-                "arn:aws:dynamodb:{{ region }}:{{ account_number }}:deliverystream/{{ stream }}"
+                "arn:aws:firehose:{{ region }}:{{ account_number }}:deliverystream/{{ stream }}"
                 {%- if not loop.last -%}
                 ,
                 {%- endif -%}
