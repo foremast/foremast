@@ -75,8 +75,8 @@ class AutoScalingPolicy:
             template_kwargs['scalingAdjustment'] = 1
 
         elif scaling_type == 'scale_down':
-            self.settings['asg']['scaling_policy']['threshold'] = self.settings[
-                'asg']['scaling_policy']['threshold'] * 0.5
+            self.settings['asg']['scaling_policy']['threshold'] = int(
+                self.settings['asg']['scaling_policy']['threshold']) * 0.5
             template_kwargs['operation'] = 'decrease'
             template_kwargs['comparisonOperator'] = 'LessThanThreshold'
             template_kwargs['scalingAdjustment'] = -1
@@ -107,7 +107,7 @@ class AutoScalingPolicy:
                 self.delete_existing_policy(subpolicy, server_group)
 
         if self.settings['asg']['scaling_policy']['period_minutes']:
-            period_sec = self.settings['asg']['scaling_policy']['period_minutes'] * 60
+            period_sec = int(self.settings['asg']['scaling_policy']['period_minutes']) * 60
         else:
             period_sec = 1800
         self.prepare_policy_template('scale_up', period_sec, server_group)
