@@ -70,13 +70,20 @@ def update_dns_zone_record(env, zone_id, **kwargs):
     """
     client = boto3.Session(profile_name=env).client('route53')
 
-    # This is what will be added to DNS
-    dns_json = get_template(template_file='infrastructure/dns_upsert.json.j2',
-                            **kwargs)
+    hosted_zone_info = client.get_hosted_zone(Id=zone_id)
+    zone_name = hosted_zone_info['HostedZone']['Name'].rstrip('.')
+    dns_name = kwargs.get('dns_name')
 
-    # TODO: boto3 call can fail with botocore.exceptions.ClientError,
-    response = client.change_resource_record_sets(
-        HostedZoneId=zone_id,
-        ChangeBatch=json.loads(dns_json), )
+    if dns_name and dns_name.endswith(zone_name):
+        # This is what will be added to DNS
+        dns_json = get_template(template_file='infrastructure/dns_upsert.json.j2',
+                                **kwargs)
+
+        # TODO: boto3 call can fail with botocore.exceptions.ClientError,
+        response = client.change_resource_record_sets(
+            HostedZoneId=zone_id,
+            ChangeBatch=json.loads(dns_json), )
+    else:
+        print("something nice here?")
 
     return response
