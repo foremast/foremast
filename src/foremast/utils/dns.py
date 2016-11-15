@@ -17,6 +17,7 @@
 """Retrieve Route 53 Hosted Zone IDs."""
 import json
 import logging
+from pprint import pformat
 
 import boto3
 
@@ -24,7 +25,6 @@ from ..consts import DOMAIN
 from ..utils import get_template
 
 LOG = logging.getLogger(__name__)
-
 
 def get_dns_zone_ids(env='dev', facing='internal'):
     """Get Route 53 Hosted Zone IDs for _env_.
@@ -64,19 +64,31 @@ def update_dns_zone_record(env, zone_id, **kwargs):
         dns_name (str): FQDN of application's dns entry to add/update.
         dns_name_aws (str): FQDN of AWS resource
         dns_ttl (int): DNS time-to-live (ttl)
-
-    Returns:
-        str: Route53 client response.
     """
     client = boto3.Session(profile_name=env).client('route53')
+    response = {}
 
-    # This is what will be added to DNS
-    dns_json = get_template(template_file='infrastructure/dns_upsert.json.j2',
-                            **kwargs)
+    hosted_zone_info = client.get_hosted_zone(Id=zone_id)
+    zone_name = hosted_zone_info['HostedZone']['Name'].rstrip('.')
+    dns_name = kwargs.get('dns_name')
+    dns_name_aws = kwargs.get('dns_name_aws')
 
-    # TODO: boto3 call can fail with botocore.exceptions.ClientError,
-    response = client.change_resource_record_sets(
-        HostedZoneId=zone_id,
-        ChangeBatch=json.loads(dns_json), )
+    LOG.info('Attempting to create DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id, zone_name)
 
-    return response
+    if dns_name and dns_name.endswith(zone_name):
+        # This is what will be added to DNS
+        dns_json = get_template(template_file='infrastructure/dns_upsert.json.j2',
+                                **kwargs)
+
+        try:
+            response = client.change_resource_record_sets(
+                HostedZoneId=zone_id,
+                ChangeBatch=json.loads(dns_json), )
+            LOG.info('Upserted DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id, zone_name)
+        except botocore.exceptions.ClientError as e:
+            LOG.info('Error creating DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id, zone_name)
+            LOG.debug(e)
+    else:
+        LOG.info('Skipping creating DNS record %s (%s) in non-matching Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id, zone_name)
+
+    LOG.debug('Route53 JSON Response: \n%s', pformat(response))

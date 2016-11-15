@@ -16,7 +16,6 @@
 
 """Module to create dynamically generated DNS record in route53"""
 import logging
-from pprint import pformat
 
 from ..consts import DOMAIN
 from ..utils import find_elb, get_details, get_dns_zone_ids, get_properties, update_dns_zone_record
@@ -72,13 +71,8 @@ class SpinnakerDns:
             'dns_ttl': dns_ttl,
         }
 
-        # TODO: Verify zone_id matches the domain we are updating There are
-        # cases where more than 2 zones are in the account and we need to
-        # account for that.
         for zone_id in zone_ids:
             self.log.debug('zone_id: %s', zone_id)
-
-            response = update_dns_zone_record(self.env, zone_id, **dns_kwargs)
-            self.log.debug('Dns upsert response: %s', pformat(response))
+            update_dns_zone_record(self.env, zone_id, **dns_kwargs)
 
         return dns_elb
