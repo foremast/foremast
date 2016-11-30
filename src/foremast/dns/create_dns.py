@@ -43,23 +43,29 @@ class SpinnakerDns:
         self.region = region
         self.elb_subnet = elb_subnet
 
-        self.generated = get_details(app, env=self.env)
+        self.generated = get_details(app, env=self.env, region=self.region)
         self.app_name = self.generated.app_name()
 
         self.properties = get_properties(properties_file=prop_path, env=self.env)
+        self.dns_ttl = self.properties['dns']['ttl']
         self.header = {'content-type': 'application/json'}
 
-    def create_elb_dns(self):
+    def create_elb_dns(self, hasregion=False):
         """Create dns entries in route53.
 
+        Args:
+            hasregion (bool): The DNS entry should have region on it
         Returns:
             Auto-generated DNS name for the Elastic Load Balancer.
         """
-        dns_elb = self.generated.dns()['elb']
+        if hasregion:
+            dns_elb = self.generated.dns()['elb_region']
+        else:
+            dns_elb = self.generated.dns()['elb']
+
         dns_elb_aws = find_elb(name=self.app_name,
                                env=self.env,
                                region=self.region)
-        dns_ttl = self.properties['dns']['ttl']
 
         zone_ids = get_dns_zone_ids(env=self.env, facing=self.elb_subnet)
 
@@ -68,7 +74,7 @@ class SpinnakerDns:
         dns_kwargs = {
             'dns_name': dns_elb,
             'dns_name_aws': dns_elb_aws,
-            'dns_ttl': dns_ttl,
+            'dns_ttl': self.dns_ttl,
         }
 
         for zone_id in zone_ids:
@@ -76,3 +82,33 @@ class SpinnakerDns:
             update_dns_zone_record(self.env, zone_id, **dns_kwargs)
 
         return dns_elb
+
+    def create_failover_dns(self):
+        """Create dns entries in route53 for multiregion failover setupts
+
+        Returns:
+            Auto-generated DNS name.
+        """
+        dns_record = self.generated.dns()['no_region']
+        zone_ids = get_dns_zone_ids(env=self.env, facing=self.elb_subnet)
+
+        #put together list of expected ELB records
+        elb_records = []
+        regions = self.properties['app']['regions']
+        for region in regions:
+            gen = get_details(app, env=self.env, region=region)
+            elb_records.append(gen.dns()['elb_region'])
+
+        self.log.info('Updating Application URL: %s', dns_elb)
+
+        dns_kwargs = {
+            'dns_name': dns_record,
+            'elb_records': elb_records,
+            'dns_ttl': self.dns_ttl,
+        }
+
+        for zone_id in zone_ids:
+            self.log.debug('zone_id: %s', zone_id)
+            update_dns_zone_record(self.env, zone_id, failover_record=True, **dns_kwargs)
+
+        return dns_record
