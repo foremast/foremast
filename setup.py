@@ -85,5 +85,6 @@ setup(
             'rebuild_pipelines=foremast.runner:rebuild_pipelines',
             'foremast-pipeline-rebuild=foremast.runner:rebuild_pipelines',
             'slack-notify=foremast.slacknotify.__main__:main',
+            'foremast=foremast.__main__:main',
         ]
     }, )

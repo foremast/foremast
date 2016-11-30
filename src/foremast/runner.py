@@ -232,21 +232,40 @@ def prepare_onetime_pipeline():
 
 
 def create_scaling_policy():
+    """Create Auto Scaling Policy for an Auto Scaling Group."""
     runner = ForemastRunner()
     runner.write_configs()
     runner.create_autoscaling_policy()
     runner.cleanup()
 
 
-def rebuild_pipelines():
-    """ Entry point for rebuilding pipelines. Can be used to rebuild all pipelines
-        or a specific group """
-    all_apps = utils.get_all_apps()
+def rebuild_pipelines(*args):
+    """Entry point for rebuilding pipelines.
+
+    Use to rebuild all pipelines or a specific group.
+    """
+    rebuild_all = False
     rebuild_project = os.getenv("REBUILD_PROJECT")
-    if rebuild_project is None:
+
+    if args:
+        LOG.debug('Incoming arguments: %s', args)
+        command_args, *_ = args
+        rebuild_all = command_args.parsed.all
+        rebuild_project = command_args.parsed.project
+
+    if rebuild_project == 'ALL':
+        rebuild_all = True
+
+    if rebuild_all:
+        LOG.info('Rebuilding all projects.')
+    elif rebuild_project is None:
         msg = 'No REBUILD_PROJECT variable found'
         LOG.fatal(msg)
         raise SystemExit('Error: {0}'.format(msg))
+    else:
+        LOG.info('Rebuilding project: %s', rebuild_project)
+
+    all_apps = utils.get_all_apps()
 
     for apps in all_apps:
         if 'repoProjectKey' not in apps:
@@ -254,7 +273,7 @@ def rebuild_pipelines():
             continue
 
         app_name = '{}/{}'.format(apps['repoProjectKey'], apps['repoSlug'])
-        if (apps['repoProjectKey'].lower() == rebuild_project.lower() or rebuild_project == 'ALL'):
+        if (apps['repoProjectKey'].lower() == rebuild_project.lower() or rebuild_all):
             os.environ["PROJECT"] = apps['repoProjectKey']
             os.environ["GIT_REPO"] = apps['repoSlug']
             LOG.info('Rebuilding pipelines for %s', app_name)
@@ -273,7 +292,7 @@ def debug_flag():
 
     parser = argparse.ArgumentParser(description=debug_flag.__doc__)
     add_debug(parser)
-    args = parser.parse_args()
+    args, extra_args = parser.parse_known_args()
 
     package, *_ = __package__.split('.')
     logging.getLogger(package).setLevel(args.debug)
