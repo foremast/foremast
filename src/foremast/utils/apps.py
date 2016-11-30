@@ -48,7 +48,7 @@ def get_all_apps():
     return pipelines
 
 
-def get_details(app='groupproject', env='dev'):
+def get_details(app='groupproject', env='dev', region='us-east-1'):
     """Extract details for Application.
 
     Args:
@@ -75,7 +75,7 @@ def get_details(app='groupproject', env='dev'):
     group = app_details['attributes'].get('repoProjectKey')
     project = app_details['attributes'].get('repoSlug')
     generated = gogoutils.Generator(group, project, env=env,
-                                    formats=APP_FORMATS)
+                                    region=region, formats=APP_FORMATS)
 
     LOG.debug('Application details: %s', generated)
     return generated
