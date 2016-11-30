@@ -78,10 +78,23 @@ def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
             elb_records = kwargs.get('elb_records')
             for record in elb_records:
                 kwargs['elb_dns'] = record
+                kwargs['zone_id'] = zone_id
                 if 'us-east-1' in record:
-                    kwargs['Failover'] = 'PRIMARY'
+                    kwargs['failover'] = 'PRIMARY'
                 else:
-                    kwargs['Failover'] = 'SECONDARY'
+                    kwargs['failover'] = 'SECONDARY'
+
+                dns_json = get_template(template_file='infrastructure/dns_failover_upsert.json.j2',
+                                    **kwargs)
+                LOG.info('Attempting to create DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record, zone_id, zone_name)
+                try:
+                    response = client.change_resource_record_sets(
+                        HostedZoneId=zone_id,
+                        ChangeBatch=json.loads(dns_json), )
+                    LOG.info('Upserted DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record, zone_id, zone_name)
+                except botocore.exceptions.ClientError as e:
+                    LOG.info('Error creating DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record, zone_id, zone_name)
+                    LOG.debug(e)
         else:
             dns_name_aws = kwargs.get('dns_name_aws')
             # This is what will be added to DNS

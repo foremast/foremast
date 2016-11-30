@@ -42,6 +42,7 @@ class SpinnakerDns:
         self.env = env
         self.region = region
         self.elb_subnet = elb_subnet
+        self.app = app
 
         self.generated = get_details(app, env=self.env, region=self.region)
         self.app_name = self.generated.app_name()
@@ -94,12 +95,12 @@ class SpinnakerDns:
 
         #put together list of expected ELB records
         elb_records = []
-        regions = self.properties['app']['regions']
+        regions = self.properties['regions']
         for region in regions:
-            gen = get_details(app, env=self.env, region=region)
+            gen = get_details(self.app, env=self.env, region=region)
             elb_records.append(gen.dns()['elb_region'])
 
-        self.log.info('Updating Application URL: %s', dns_elb)
+        self.log.info('Updating Application URL: %s', dns_record)
 
         dns_kwargs = {
             'dns_name': dns_record,
