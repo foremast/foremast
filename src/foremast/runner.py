@@ -161,7 +161,9 @@ class ForemastRunner(object):
                                   region=self.region,
                                   prop_path=self.json_path,
                                   elb_subnet=elb_subnet)
-        dnsobj.create_elb_dns()
+        dnsobj.create_elb_dns(hasregion=True)
+        dnsobj.create_failover_dns()
+
 
     def create_autoscaling_policy(self):
         """Create Scaling Policy for app in environment"""
