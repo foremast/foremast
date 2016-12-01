@@ -20,6 +20,7 @@ import logging
 from pprint import pformat
 
 import boto3
+from boto3.exceptions import botocore
 
 from ..consts import DOMAIN
 from ..utils import get_template
@@ -77,8 +78,8 @@ def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
         if failover_record:
             elb_records = kwargs.get('elb_records')
             for record in elb_records:
-                kwargs['elb_dns'] = record
-                kwargs['zone_id'] = zone_id
+                kwargs['elb_dns'] = record['elb_dns']
+                kwargs['elb_zone_id'] = record['elb_zone_id']
                 if 'us-east-1' in record:
                     kwargs['failover'] = 'PRIMARY'
                 else:

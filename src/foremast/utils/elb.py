@@ -17,6 +17,7 @@
 """Search for ELB DNS name."""
 import logging
 
+import boto3
 import requests
 from tryagain import retries
 
@@ -60,3 +61,19 @@ def find_elb(name='', env='', region=''):
 
     LOG.info('Found: %s', elb_dns)
     return elb_dns
+
+def find_elb_dns_zone_id(name='', env='dev', region='us-east-1'):
+    """Get an application's AWS elb dns zone id.
+
+    Args:
+        name (str): ELB name
+        env (str): Environment/account of ELB
+        region (str): AWS Region
+
+    Returns:
+        str: elb DNS zone ID
+    """
+    LOG.info('Find %s ELB DNS Zone ID in %s [%s].', name, env, region)
+    client = boto3.Session(profile_name=env).client('elb', region_name=region)
+    elbs = client.describe_load_balancers(LoadBalancerNames=[name])
+    return elbs['LoadBalancerDescriptions'][0]['CanonicalHostedZoneNameID']

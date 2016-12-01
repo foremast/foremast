@@ -18,7 +18,8 @@
 import logging
 
 from ..consts import DOMAIN
-from ..utils import find_elb, get_details, get_dns_zone_ids, get_properties, update_dns_zone_record
+from ..utils import (find_elb, find_elb_dns_zone_id, get_details,
+get_dns_zone_ids, get_properties, update_dns_zone_record)
 
 
 class SpinnakerDns:
@@ -90,7 +91,7 @@ class SpinnakerDns:
         Returns:
             Auto-generated DNS name.
         """
-        dns_record = self.generated.dns()['no_region']
+        dns_record = self.generated.dns()['global']
         zone_ids = get_dns_zone_ids(env=self.env, facing=self.elb_subnet)
 
         #put together list of expected ELB records
@@ -98,7 +99,14 @@ class SpinnakerDns:
         regions = self.properties['regions']
         for region in regions:
             gen = get_details(self.app, env=self.env, region=region)
-            elb_records.append(gen.dns()['elb_region'])
+            dns_elb_aws = find_elb(name=self.app_name,
+                               env=self.env,
+                               region=region)
+            elb_dns_zone_id = find_elb_dns_zone_id(name=self.app_name,
+                                                env=self.env,
+                                                region=region)
+            record = {"elb_dns": dns_elb_aws, "elb_zone_id": elb_dns_zone_id}
+            elb_records.append(record)
 
         self.log.info('Updating Application URL: %s', dns_record)
 
