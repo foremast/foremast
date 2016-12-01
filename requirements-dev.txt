@@ -1,6 +1,7 @@
 pytest-cov
 pytest-pep8
 sphinx
+sphinx-autodoc-annotation
 sphinx_rtd_theme
 sphinxcontrib-napoleon
 tox
