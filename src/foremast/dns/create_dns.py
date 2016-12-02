@@ -13,13 +13,12 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Module to create dynamically generated DNS record in route53"""
 import logging
 
 from ..consts import DOMAIN
 from ..utils import (find_elb, find_elb_dns_zone_id, get_details,
-get_dns_zone_ids, get_properties, update_dns_zone_record)
+                     get_dns_zone_ids, get_properties, update_dns_zone_record)
 
 
 class SpinnakerDns:
@@ -65,9 +64,7 @@ class SpinnakerDns:
         else:
             dns_elb = self.generated.dns()['elb']
 
-        dns_elb_aws = find_elb(name=self.app_name,
-                               env=self.env,
-                               region=self.region)
+        dns_elb_aws = find_elb(name=self.app_name, env=self.env, region=self.region)
 
         zone_ids = get_dns_zone_ids(env=self.env, facing=self.elb_subnet)
 
@@ -99,12 +96,8 @@ class SpinnakerDns:
         regions = self.properties['regions']
         for region in regions:
             gen = get_details(self.app, env=self.env, region=region)
-            dns_elb_aws = find_elb(name=self.app_name,
-                               env=self.env,
-                               region=region)
-            elb_dns_zone_id = find_elb_dns_zone_id(name=self.app_name,
-                                                env=self.env,
-                                                region=region)
+            dns_elb_aws = find_elb(name=self.app_name, env=self.env, region=region)
+            elb_dns_zone_id = find_elb_dns_zone_id(name=self.app_name, env=self.env, region=region)
             record = {"elb_dns": dns_elb_aws, "elb_zone_id": elb_dns_zone_id}
             elb_records.append(record)
 

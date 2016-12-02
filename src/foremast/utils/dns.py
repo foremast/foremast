@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Retrieve Route 53 Hosted Zone IDs."""
 import json
 import logging
@@ -26,6 +25,7 @@ from ..consts import DOMAIN
 from ..utils import get_template
 
 LOG = logging.getLogger(__name__)
+
 
 def get_dns_zone_ids(env='dev', facing='internal'):
     """Get Route 53 Hosted Zone IDs for _env_.
@@ -53,6 +53,7 @@ def get_dns_zone_ids(env='dev', facing='internal'):
     LOG.debug('Zone IDs: %s', zone_ids)
     return zone_ids
 
+
 def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
     """Create a Route53 CNAME record in _env_ zone.
 
@@ -65,6 +66,7 @@ def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
         dns_name (str): FQDN of application's dns entry to add/update.
         dns_name_aws (str): FQDN of AWS resource
         dns_ttl (int): DNS time-to-live (ttl)
+        elb_records (list): List of dicts of ELB info [{"elb_dns": $aws_dns, "elb_zone_id": $aws_zone_id}]
     """
     client = boto3.Session(profile_name=env).client('route53')
     response = {}
@@ -72,7 +74,6 @@ def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
     hosted_zone_info = client.get_hosted_zone(Id=zone_id)
     zone_name = hosted_zone_info['HostedZone']['Name'].rstrip('.')
     dns_name = kwargs.get('dns_name')
-
 
     if dns_name and dns_name.endswith(zone_name):
         if failover_record:
@@ -85,30 +86,34 @@ def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
                 else:
                     kwargs['failover'] = 'SECONDARY'
 
-                dns_json = get_template(template_file='infrastructure/dns_failover_upsert.json.j2',
-                                    **kwargs)
-                LOG.info('Attempting to create DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record, zone_id, zone_name)
+                dns_json = get_template(template_file='infrastructure/dns_failover_upsert.json.j2', **kwargs)
+                LOG.info('Attempting to create DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record,
+                         zone_id, zone_name)
                 try:
                     response = client.change_resource_record_sets(
                         HostedZoneId=zone_id,
                         ChangeBatch=json.loads(dns_json), )
-                    LOG.info('Upserted DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record, zone_id, zone_name)
+                    LOG.info('Upserted DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record, zone_id,
+                             zone_name)
                 except botocore.exceptions.ClientError as e:
-                    LOG.info('Error creating DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record, zone_id, zone_name)
+                    LOG.info('Error creating DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record,
+                             zone_id, zone_name)
                     LOG.debug(e)
         else:
             dns_name_aws = kwargs.get('dns_name_aws')
             # This is what will be added to DNS
-            dns_json = get_template(template_file='infrastructure/dns_upsert.json.j2',
-                                    **kwargs)
-            LOG.info('Attempting to create DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id, zone_name)
+            dns_json = get_template(template_file='infrastructure/dns_upsert.json.j2', **kwargs)
+            LOG.info('Attempting to create DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id,
+                     zone_name)
             try:
                 response = client.change_resource_record_sets(
                     HostedZoneId=zone_id,
                     ChangeBatch=json.loads(dns_json), )
-                LOG.info('Upserted DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id, zone_name)
+                LOG.info('Upserted DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id,
+                         zone_name)
             except botocore.exceptions.ClientError as e:
-                LOG.info('Error creating DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id, zone_name)
+                LOG.info('Error creating DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id,
+                         zone_name)
                 LOG.debug(e)
     else:
         LOG.info('Skipping creating DNS record %s in non-matching Hosted Zone %s (%s)', dns_name, zone_id, zone_name)
