@@ -156,13 +156,18 @@ class ForemastRunner(object):
         """Create DNS for the defined app and environment."""
         utils.banner("Creating DNS")
         elb_subnet = self.configs[self.env]['elb']['subnet_purpose']
+        regions = self.configs[self.env]['regions']
+
         dnsobj = dns.SpinnakerDns(app=self.app,
                                   env=self.env,
                                   region=self.region,
                                   prop_path=self.json_path,
                                   elb_subnet=elb_subnet)
-        dnsobj.create_elb_dns(hasregion=True)
-        dnsobj.create_failover_dns()
+        if len(regions) > 1:
+            dnsobj.create_elb_dns(regionspecific=True)
+            dnsobj.create_failover_dns()
+        else:
+            dnsobj.create_elb_dns(regionspecific=False)
 
 
     def create_autoscaling_policy(self):
