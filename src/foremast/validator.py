@@ -7,7 +7,7 @@ from .utils.credentials import get_env_credential
 LOG = logging.getLogger(__name__)
 
 
-def gate_tester():
+def gate_validator():
     """Check Gate connection."""
     try:
         credentials = get_env_credential()
@@ -17,11 +17,7 @@ def gate_tester():
         LOG.fatal('Gate connection not valid: API_URL = %s', API_URL)
 
 
-def all_testers(args):
-    """Run all tests.
-
-    Args:
-        args (CliArgs): Arguments from CLI.
-    """
-    LOG.info('Running all tests.')
-    gate_tester()
+def all_validators(args):
+    """Run all validators."""
+    LOG.info('Running all validators.')
+    gate_validator()

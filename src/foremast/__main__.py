@@ -4,7 +4,7 @@ import collections
 import logging
 import os
 
-from . import runner, tester
+from . import runner, validator
 from .args import add_debug, add_env
 from .consts import LOGGING_FORMAT, SHORT_LOGGING_FORMAT
 
@@ -57,21 +57,21 @@ def add_autoscaling(subparsers):
     autoscaling_parser.set_defaults(func=runner.create_scaling_policy)
 
 
-def add_tester(subparsers):
-    """Test Spinnaker setup."""
-    tester_parser = subparsers.add_parser(
-        'tester', help=add_tester.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    tester_parser.set_defaults(func=tester_parser.print_help)
+def add_validate(subparsers):
+    """Validate Spinnaker setup."""
+    validator_parser = subparsers.add_parser(
+        'validate', help=add_validate.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    validator_parser.set_defaults(func=validator_parser.print_help)
 
-    tester_subparsers = tester_parser.add_subparsers(title='Testers')
+    validator_subparsers = validator_parser.add_subparsers(title='Testers')
 
-    tester_all_parser = tester_subparsers.add_parser(
-        'all', help=tester.all_testers.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    tester_all_parser.set_defaults(func=tester.all_testers)
+    validator_all_parser = validator_subparsers.add_parser(
+        'all', help=validator.all_validators.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    validator_all_parser.set_defaults(func=validator.all_validators)
 
-    tester_gate_parser = tester_subparsers.add_parser(
-        'gate', help=tester.gate_tester.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    tester_gate_parser.set_defaults(func=tester.gate_tester)
+    validator_gate_parser = validator_subparsers.add_parser(
+        'gate', help=validator.gate_validator.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    validator_gate_parser.set_defaults(func=validator.gate_validator)
 
 
 def main(manual_args=None):
@@ -93,7 +93,7 @@ def main(manual_args=None):
     add_pipeline(subparsers)
     add_rebuild(subparsers)
     add_autoscaling(subparsers)
-    add_tester(subparsers)
+    add_validate(subparsers)
 
     CliArgs = collections.namedtuple('CliArgs', ['parsed', 'extra'])
 
