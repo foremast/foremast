@@ -51,7 +51,7 @@ class SpinnakerDns:
         self.dns_ttl = self.properties['dns']['ttl']
         self.header = {'content-type': 'application/json'}
 
-    def create_elb_dns(self, hasregion=False):
+    def create_elb_dns(self, regionspecific=False):
         """Create dns entries in route53.
 
         Args:
@@ -59,7 +59,7 @@ class SpinnakerDns:
         Returns:
             Auto-generated DNS name for the Elastic Load Balancer.
         """
-        if hasregion:
+        if regionspecific:
             dns_elb = self.generated.dns()['elb_region']
         else:
             dns_elb = self.generated.dns()['elb']
