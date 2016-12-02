@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Search for ELB DNS name."""
 import logging
 
@@ -27,9 +26,7 @@ from ..exceptions import SpinnakerElbNotFound
 LOG = logging.getLogger(__name__)
 
 
-@retries(max_attempts=5,
-         wait=2,
-         exceptions=(AssertionError, SpinnakerElbNotFound))
+@retries(max_attempts=5, wait=2, exceptions=(AssertionError, SpinnakerElbNotFound))
 def find_elb(name='', env='', region=''):
     """Get an application's AWS elb dns name.
 
@@ -44,9 +41,7 @@ def find_elb(name='', env='', region=''):
     LOG.info('Find %s ELB in %s [%s].', name, env, region)
 
     url = '{0}/applications/{1}/loadBalancers'.format(API_URL, name)
-    response = requests.get(url,
-                            verify=GATE_CA_BUNDLE,
-                            cert=GATE_CLIENT_CERT)
+    response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
     assert response.ok
 
     elb_dns = None
@@ -56,11 +51,11 @@ def find_elb(name='', env='', region=''):
             elb_dns = account['dnsname']
             break
     else:
-        raise SpinnakerElbNotFound(
-            'Elb for "{0}" in region {1} not found'.format(name, region))
+        raise SpinnakerElbNotFound('Elb for "{0}" in region {1} not found'.format(name, region))
 
     LOG.info('Found: %s', elb_dns)
     return elb_dns
+
 
 def find_elb_dns_zone_id(name='', env='dev', region='us-east-1'):
     """Get an application's AWS elb dns zone id.
