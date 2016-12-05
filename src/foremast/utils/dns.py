@@ -67,6 +67,7 @@ def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
         dns_name_aws (str): FQDN of AWS resource
         dns_ttl (int): DNS time-to-live (ttl)
         elb_records (list): List of dicts of ELB info [{"elb_dns": $aws_dns, "elb_zone_id": $aws_zone_id}]
+        primary_region (str): Primary AWS region for DNS
     """
     client = boto3.Session(profile_name=env).client('route53')
     response = {}
@@ -81,7 +82,7 @@ def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
             for record in elb_records:
                 kwargs['elb_dns'] = record['elb_dns']
                 kwargs['elb_zone_id'] = record['elb_zone_id']
-                if 'us-east-1' in record:
+                if kwargs['primary_region'] in record:
                     kwargs['failover'] = 'PRIMARY'
                 else:
                     kwargs['failover'] = 'SECONDARY'
