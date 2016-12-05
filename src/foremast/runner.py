@@ -157,15 +157,17 @@ class ForemastRunner(object):
         utils.banner("Creating DNS")
         elb_subnet = self.configs[self.env]['elb']['subnet_purpose']
         regions = self.configs[self.env]['regions']
+        failover = self.configs[self.env]['dns']['failover_dns']
 
         dnsobj = dns.SpinnakerDns(app=self.app,
                                   env=self.env,
                                   region=self.region,
                                   prop_path=self.json_path,
                                   elb_subnet=elb_subnet)
-        if len(regions) > 1:
+        if len(regions) > 1 and failover:
             dnsobj.create_elb_dns(regionspecific=True)
-            dnsobj.create_failover_dns()
+            primary_region = self.configs['pipeline']['primary_region']
+            dnsobj.create_failover_dns(primary_region=primary_region)
         else:
             dnsobj.create_elb_dns(regionspecific=False)
 

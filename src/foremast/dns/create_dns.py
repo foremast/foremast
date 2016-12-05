@@ -82,9 +82,11 @@ class SpinnakerDns:
 
         return dns_elb
 
-    def create_failover_dns(self):
-        """Create dns entries in route53 for multiregion failover setupts
+    def create_failover_dns(self, primary_region='us-east-1'):
+        """Create dns entries in route53 for multiregion failover setups
 
+        Args:
+            primary_region (str): primary AWS region for failover
         Returns:
             Auto-generated DNS name.
         """
@@ -95,18 +97,18 @@ class SpinnakerDns:
         elb_records = []
         regions = self.properties['regions']
         for region in regions:
-            gen = get_details(self.app, env=self.env, region=region)
             dns_elb_aws = find_elb(name=self.app_name, env=self.env, region=region)
             elb_dns_zone_id = find_elb_dns_zone_id(name=self.app_name, env=self.env, region=region)
             record = {"elb_dns": dns_elb_aws, "elb_zone_id": elb_dns_zone_id}
             elb_records.append(record)
 
-        self.log.info('Updating Application URL: %s', dns_record)
+        self.log.info('Updating Application Failover URL: %s', dns_record)
 
         dns_kwargs = {
             'dns_name': dns_record,
             'elb_records': elb_records,
             'dns_ttl': self.dns_ttl,
+            'primary_region': primary_region,
         }
 
         for zone_id in zone_ids:
