@@ -55,14 +55,14 @@ class SpinnakerELB:
         region = self.region
         elb_settings = self.properties['elb']
         health_settings = elb_settings['health']
+        elb_subnet_purpose = elb_settings.get('subnet_purpose', 'internal')
 
-        region_subnets = get_subnets(target='elb', env=env, region=region)
+        region_subnets = get_subnets(target='elb', purpose=elb_subnet_purpose, env=env, region=region)
         region_subnets.pop("subnet_ids", None)
 
         # CAVEAT: Setting the ELB to public, you must use a public subnet,
         #         otherwise AWS complains about missing IGW on subnet.
 
-        elb_subnet_purpose = elb_settings.get('subnet_purpose', 'internal')
 
         if elb_subnet_purpose == 'internal':
             is_internal = 'true'
