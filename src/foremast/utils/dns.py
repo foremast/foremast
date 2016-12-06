@@ -82,10 +82,12 @@ def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
             for record in elb_records:
                 kwargs['elb_dns'] = record['elb_dns']
                 kwargs['elb_zone_id'] = record['elb_zone_id']
-                if kwargs['primary_region'] in record:
+                LOG.info("Primary region set to: %s", kwargs['primary_region'])
+                if kwargs['primary_region'] in record['elb_dns']:
                     kwargs['failover'] = 'PRIMARY'
                 else:
                     kwargs['failover'] = 'SECONDARY'
+                LOG.info("%s set as %s record", record, kwargs['failover'])
 
                 dns_json = get_template(template_file='infrastructure/dns_failover_upsert.json.j2', **kwargs)
                 LOG.info('Attempting to create DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record,
