@@ -17,8 +17,8 @@
 import logging
 
 from ..consts import DOMAIN
-from ..utils import (find_elb, find_elb_dns_zone_id, get_details,
-                     get_dns_zone_ids, get_properties, update_dns_zone_record)
+from ..utils import (find_elb, find_elb_dns_zone_id, get_details, get_dns_zone_ids, get_properties,
+                     update_dns_zone_record, update_failover_dns_record)
 
 
 class SpinnakerDns:
@@ -70,11 +70,7 @@ class SpinnakerDns:
 
         self.log.info('Updating Application URL: %s', dns_elb)
 
-        dns_kwargs = {
-            'dns_name': dns_elb,
-            'dns_name_aws': dns_elb_aws,
-            'dns_ttl': self.dns_ttl,
-        }
+        dns_kwargs = {'dns_name': dns_elb, 'dns_name_aws': dns_elb_aws, 'dns_ttl': self.dns_ttl, }
 
         for zone_id in zone_ids:
             self.log.debug('zone_id: %s', zone_id)
@@ -93,9 +89,9 @@ class SpinnakerDns:
         dns_record = self.generated.dns()['global']
         zone_ids = get_dns_zone_ids(env=self.env, facing=self.elb_subnet)
 
-        #put together list of expected ELB records
         elb_dns_aws = find_elb(name=self.app_name, env=self.env, region=self.region)
         elb_dns_zone_id = find_elb_dns_zone_id(name=self.app_name, env=self.env, region=self.region)
+
         if primary_region in elb_dns_aws:
             failover_state = 'PRIMARY'
         else:
@@ -114,6 +110,6 @@ class SpinnakerDns:
 
         for zone_id in zone_ids:
             self.log.debug('zone_id: %s', zone_id)
-            update_dns_zone_record(self.env, zone_id, failover_record=True, **dns_kwargs)
+            update_failover_dns_record(self.env, zone_id, **dns_kwargs)
 
         return dns_record
