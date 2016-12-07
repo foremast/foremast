@@ -6,11 +6,11 @@
             "ResourceRecordSet": {
                 "Name": "{{ dns_name }}",
                 "Type": "A",
-                "SetIdentifier": "{{ dns_name}}-{{ failover }}",
-                "Failover": "{{ failover }}",
+                "SetIdentifier": "{{ dns_name}}-{{ failover_state }}",
+                "Failover": "{{ failover_state }}",
                 "AliasTarget": {
-                    "HostedZoneId": "{{ elb_zone_id }}",
-                    "DNSName": "dualstack.{{ elb_dns }}",
+                    "HostedZoneId": "{{ elb_dns_zone_id }}",
+                    "DNSName": "dualstack.{{ elb_aws_dns }}",
                     "EvaluateTargetHealth": true
                 }
             }

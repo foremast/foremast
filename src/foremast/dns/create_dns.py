@@ -94,21 +94,22 @@ class SpinnakerDns:
         zone_ids = get_dns_zone_ids(env=self.env, facing=self.elb_subnet)
 
         #put together list of expected ELB records
-        elb_records = []
-        regions = self.properties['regions']
-        for region in regions:
-            dns_elb_aws = find_elb(name=self.app_name, env=self.env, region=region)
-            elb_dns_zone_id = find_elb_dns_zone_id(name=self.app_name, env=self.env, region=region)
-            record = {"elb_dns": dns_elb_aws, "elb_zone_id": elb_dns_zone_id}
-            elb_records.append(record)
+        elb_dns_aws = find_elb(name=self.app_name, env=self.env, region=self.region)
+        elb_dns_zone_id = find_elb_dns_zone_id(name=self.app_name, env=self.env, region=self.region)
+        if primary_region in elb_dns_aws:
+            failover_state = 'PRIMARY'
+        else:
+            failover_state = 'SECONDARY'
+        self.log.info("%s set as %s record", elb_dns_aws, failover_state)
 
         self.log.info('Updating Application Failover URL: %s', dns_record)
 
         dns_kwargs = {
             'dns_name': dns_record,
-            'elb_records': elb_records,
+            'elb_dns_zone_id': elb_dns_zone_id,
+            'elb_aws_dns': elb_dns_aws,
             'dns_ttl': self.dns_ttl,
-            'primary_region': primary_region,
+            'failover_state': failover_state,
         }
 
         for zone_id in zone_ids:

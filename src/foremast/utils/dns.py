@@ -66,7 +66,7 @@ def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
         dns_name (str): FQDN of application's dns entry to add/update.
         dns_name_aws (str): FQDN of AWS resource
         dns_ttl (int): DNS time-to-live (ttl)
-        elb_records (list): List of dicts of ELB info [{"elb_dns": $aws_dns, "elb_zone_id": $aws_zone_id}]
+        elb_record (dict): ELB info {"elb_dns": $aws_dns, "elb_zone_id": $aws_zone_id}
         primary_region (str): Primary AWS region for DNS
     """
     client = boto3.Session(profile_name=env).client('route53')
@@ -78,30 +78,19 @@ def update_dns_zone_record(env, zone_id, failover_record=False, **kwargs):
 
     if dns_name and dns_name.endswith(zone_name):
         if failover_record:
-            elb_records = kwargs.get('elb_records')
-            for record in elb_records:
-                kwargs['elb_dns'] = record['elb_dns']
-                kwargs['elb_zone_id'] = record['elb_zone_id']
-                LOG.info("Primary region set to: %s", kwargs['primary_region'])
-                if kwargs['primary_region'] in record['elb_dns']:
-                    kwargs['failover'] = 'PRIMARY'
-                else:
-                    kwargs['failover'] = 'SECONDARY'
-                LOG.info("%s set as %s record", record, kwargs['failover'])
-
-                dns_json = get_template(template_file='infrastructure/dns_failover_upsert.json.j2', **kwargs)
-                LOG.info('Attempting to create DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record,
+            dns_json = get_template(template_file='infrastructure/dns_failover_upsert.json.j2', **kwargs)
+            LOG.info('Attempting to create DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, kwargs['elb_aws_dns'],
+                     zone_id, zone_name)
+            try:
+                response = client.change_resource_record_sets(
+                    HostedZoneId=zone_id,
+                    ChangeBatch=json.loads(dns_json), )
+                LOG.info('Upserted DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, kwargs['elb_aws_dns'], zone_id,
+                         zone_name)
+            except botocore.exceptions.ClientError as e:
+                LOG.info('Error creating DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, kwargs['elb_aws_dns'],
                          zone_id, zone_name)
-                try:
-                    response = client.change_resource_record_sets(
-                        HostedZoneId=zone_id,
-                        ChangeBatch=json.loads(dns_json), )
-                    LOG.info('Upserted DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record, zone_id,
-                             zone_name)
-                except botocore.exceptions.ClientError as e:
-                    LOG.info('Error creating DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, record,
-                             zone_id, zone_name)
-                    LOG.debug(e)
+                LOG.debug(e)
         else:
             dns_name_aws = kwargs.get('dns_name_aws')
             # This is what will be added to DNS
