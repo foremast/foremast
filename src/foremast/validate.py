@@ -1,4 +1,4 @@
-"""Spinnaker tester functions."""
+"""Spinnaker validate functions."""
 import logging
 
 from .consts import API_URL
@@ -7,7 +7,7 @@ from .utils.credentials import get_env_credential
 LOG = logging.getLogger(__name__)
 
 
-def gate_validator():
+def validate_gate():
     """Check Gate connection."""
     try:
         credentials = get_env_credential()
@@ -17,7 +17,7 @@ def gate_validator():
         LOG.fatal('Gate connection not valid: API_URL = %s', API_URL)
 
 
-def all_validators(args):
-    """Run all validators."""
-    LOG.info('Running all validators.')
-    gate_validator()
+def validate_all(args):
+    """Run all validate steps."""
+    LOG.info('Running all validate steps.')
+    validate_gate()

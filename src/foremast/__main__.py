@@ -4,7 +4,7 @@ import collections
 import logging
 import os
 
-from . import runner, validator
+from . import runner, validate
 from .args import add_debug, add_env
 from .consts import LOGGING_FORMAT, SHORT_LOGGING_FORMAT
 
@@ -59,19 +59,19 @@ def add_autoscaling(subparsers):
 
 def add_validate(subparsers):
     """Validate Spinnaker setup."""
-    validator_parser = subparsers.add_parser(
+    validate_parser = subparsers.add_parser(
         'validate', help=add_validate.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    validator_parser.set_defaults(func=validator_parser.print_help)
+    validate_parser.set_defaults(func=validate_parser.print_help)
 
-    validator_subparsers = validator_parser.add_subparsers(title='Testers')
+    validate_subparsers = validate_parser.add_subparsers(title='Testers')
 
-    validator_all_parser = validator_subparsers.add_parser(
-        'all', help=validator.all_validators.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    validator_all_parser.set_defaults(func=validator.all_validators)
+    validate_all_parser = validate_subparsers.add_parser(
+        'all', help=validate.validate_all.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    validate_all_parser.set_defaults(func=validate.validate_all)
 
-    validator_gate_parser = validator_subparsers.add_parser(
-        'gate', help=validator.gate_validator.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    validator_gate_parser.set_defaults(func=validator.gate_validator)
+    validate_gate_parser = validate_subparsers.add_parser(
+        'gate', help=validate.validate_gate.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    validate_gate_parser.set_defaults(func=validate.validate_gate)
 
 
 def main(manual_args=None):
