@@ -92,6 +92,10 @@ class SpinnakerPipelineCreationFailed(SpinnakerError):
     pass
 
 
+class SpinnakerPipelineDeletionFailed(SpinnakerError):
+    """Could not delete Spinnaker Pipeline."""
+
+
 class SpinnakerSecurityGroupCreationFailed(SpinnakerError):
     """Could not create Security Group."""
     pass
