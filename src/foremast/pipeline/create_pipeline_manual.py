@@ -14,6 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Create manual Pipeline for Spinnaker."""
+from ..utils import normalize_pipeline_name
 from ..utils.lookups import FileLookup
 from .clean_pipelines import delete_pipeline
 from .create_pipeline import SpinnakerPipeline
@@ -24,14 +25,17 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
     def create_pipeline(self):
         """Use JSON files to create Pipelines."""
-        self.log.info('Uploading manual Pipelines: %s')
+        pipelines = self.settings['pipeline']['pipeline_files']
+        self.log.info('Uploading manual Pipelines: %s', pipelines)
+
         lookup = FileLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
 
-        for json_file in self.settings['pipeline']['pipeline_files']:
+        for json_file in pipelines:
             delete_pipeline(app=self.app_name, pipeline_name=json_file)
 
             json_dict = lookup.json(filename=json_file)
-            json_dict['name'] = json_file
+            json_dict['application'] = self.app_name
+            json_dict['name'] = normalize_pipeline_name(name=json_file)
             self.post_pipeline(json_dict)
 
         return True
