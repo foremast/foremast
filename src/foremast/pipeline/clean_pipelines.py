@@ -20,22 +20,31 @@ import murl
 import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
-from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import check_managed_pipeline, get_all_pipelines
+from ..exceptions import SpinnakerPipelineCreationFailed, SpinnakerPipelineDeletionFailed
+from ..utils import check_managed_pipeline, get_all_pipelines, normalize_pipeline_name
 
 LOG = logging.getLogger(__name__)
 
 
 def delete_pipeline(app='', pipeline_name=''):
     """Delete _pipeline_name_ from _app_."""
+    safe_pipeline_name = normalize_pipeline_name(name=pipeline_name)
     url = murl.Url(API_URL)
 
-    LOG.warning('Deleting Pipeline: %s', pipeline_name)
+    LOG.warning('Deleting Pipeline: %s', safe_pipeline_name)
 
-    url.path = 'pipelines/{app}/{pipeline}'.format(app=app, pipeline=pipeline_name)
+    url.path = 'pipelines/{app}/{pipeline}'.format(app=app, pipeline=safe_pipeline_name)
     response = requests.delete(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
-    LOG.debug('Deleted "%s" Pipeline response:\n%s', pipeline_name, response.text)
+    if not response.ok:
+        LOG.debug('Delete response code: %d', response.status_code)
+        if response.status_code == requests.status_codes.codes['method_not_allowed']:
+            raise SpinnakerPipelineDeletionFailed('Failed to delete "{0}" from "{1}", '
+                                                  'possibly invalid Pipeline name.'.format(safe_pipeline_name, app))
+        else:
+            LOG.debug('Pipeline missing, no delete required.')
+
+    LOG.debug('Deleted "%s" Pipeline response:\n%s', safe_pipeline_name, response.text)
 
     return response.text
 
