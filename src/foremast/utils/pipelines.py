@@ -108,3 +108,11 @@ def get_pipeline_id(name=''):
             break
 
     return return_id
+
+
+def normalize_pipeline_name(name=''):
+    """Translate unsafe characters to underscores."""
+    normalized_name = name
+    for bad in '\\/?%#':
+        normalized_name = normalized_name.replace(bad, '_')
+    return normalized_name
