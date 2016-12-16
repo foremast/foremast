@@ -34,8 +34,10 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             delete_pipeline(app=self.app_name, pipeline_name=json_file)
 
             json_dict = lookup.json(filename=json_file)
-            json_dict['application'] = self.app_name
-            json_dict['name'] = normalize_pipeline_name(name=json_file)
+
+            json_dict.setdefault('application', self.app_name)
+            json_dict.setdefault('name', normalize_pipeline_name(name=json_file))
+
             self.post_pipeline(json_dict)
 
         return True
