@@ -81,16 +81,18 @@ def test_utils_pipeline_get_all_pipelines(mock_murl, mock_requests_get):
 
 @mock.patch('foremast.utils.pipelines.get_all_pipelines')
 def test_utils_pipeline_get_pipeline_id(mock_get_pipelines):
-
+    """Verify Pipeline ID response."""
     data = [
         {'name': 'app', 'id': 100},
     ]
     mock_get_pipelines.return_value = data
 
-    result = get_pipeline_id(name='app')
+    result = get_pipeline_id(app='test', name='app')
+    mock_get_pipelines.assert_called_once_with(app='test')
     assert result is 100
 
-    result = get_pipeline_id(name='badapp')
+    result = get_pipeline_id(app='embarrassingly', name='badapp')
+    mock_get_pipelines.assert_called_with(app='embarrassingly')
     assert result == None
 
 
