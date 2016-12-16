@@ -14,9 +14,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Create manual Pipeline for Spinnaker."""
-from ..utils import normalize_pipeline_name
+from ..utils import get_pipeline_id, normalize_pipeline_name
 from ..utils.lookups import FileLookup
-from .clean_pipelines import delete_pipeline
 from .create_pipeline import SpinnakerPipeline
 
 
@@ -36,7 +35,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             json_dict.setdefault('application', self.app_name)
             json_dict.setdefault('name', normalize_pipeline_name(name=json_file))
 
-            delete_pipeline(app=json_dict['application'], pipeline_name=json_dict['name'])
+            json_dict.setdefault('id', get_pipeline_id(app=json_dict['application'], name=json_dict['name']))
 
             self.post_pipeline(json_dict)
 

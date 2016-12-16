@@ -85,10 +85,11 @@ def get_all_pipelines(app=''):
     return pipelines
 
 
-def get_pipeline_id(name=''):
+def get_pipeline_id(app='', name=''):
     """Get the ID for Pipeline _name_.
 
     Args:
+        app (str): Name of Spinnaker Application to search.
         name (str): Name of Pipeline to get ID for.
 
     Returns:
@@ -97,7 +98,7 @@ def get_pipeline_id(name=''):
     """
     return_id = None
 
-    pipelines = get_all_pipelines(name)
+    pipelines = get_all_pipelines(app=app)
 
     for pipeline in pipelines:
         LOG.debug('ID of %(name)s: %(id)s', pipeline)
