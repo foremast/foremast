@@ -31,12 +31,12 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         lookup = FileLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
 
         for json_file in pipelines:
-            delete_pipeline(app=self.app_name, pipeline_name=json_file)
-
             json_dict = lookup.json(filename=json_file)
 
             json_dict.setdefault('application', self.app_name)
             json_dict.setdefault('name', normalize_pipeline_name(name=json_file))
+
+            delete_pipeline(app=json_dict['application'], pipeline_name=json_dict['name'])
 
             self.post_pipeline(json_dict)
 
