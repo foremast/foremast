@@ -77,6 +77,8 @@ class SpinnakerPipeline:
         else:
             pipeline_json = json.dumps(pipeline)
 
+        pipeline_dict = json.loads(pipeline_json)
+
         self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
         pipeline_response = requests.post(url,
@@ -93,8 +95,9 @@ class SpinnakerPipeline:
                 'Failed to create pipeline for {0}: {1}'.format(
                     self.app_name, pipeline_response.json()))
 
-        self.log.info('Successfully created "%s" pipeline',
-                      json.loads(pipeline_json)['name'])
+
+        self.log.info('Successfully created "%s" pipeline in application "%s".',
+                      pipeline_dict['name'], pipeline_dict['application'])
 
     def render_wrapper(self, region='us-east-1'):
         """Generate the base Pipeline wrapper.
