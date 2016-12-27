@@ -165,7 +165,7 @@ class LambdaFunction(object):
             vpc_config (dict): Dictionary of SubnetIds and SecurityGroupsIds for using
                                a VPC in lambda
         """
-        LOG.info('Updating code for lambda function: %s', self.app_name)
+        LOG.info('Updating configuration for lambda function: %s', self.app_name)
 
         try:
             self.lambda_client.update_function_configuration(
@@ -185,7 +185,7 @@ class LambdaFunction(object):
 
             raise
 
-        LOG.info("Successfully updated Lambda function and alias")
+        LOG.info("Successfully updated Lambda configuration.")
 
     @retries(max_attempts=3, wait=1, exceptions=(SystemExit))
     def create_function(self, vpc_config):
