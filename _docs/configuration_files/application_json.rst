@@ -130,7 +130,7 @@ Determines if instances in an cluster should have public IPs associated. By defa
 
        - ``true``
        - ``false``
-    `
+
 ``scaling_policy``
 ******************
 
