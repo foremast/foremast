@@ -30,7 +30,7 @@ Add DynamoDB access to tables listed.
    | *Default*: ``[]``
 
 ``elasticsearch``
-************
+*****************
 
 Add ElasticSearch access to domains listed.
 
