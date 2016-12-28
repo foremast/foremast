@@ -68,6 +68,13 @@ The amount of memory to give a Lambda function
     | *Default*: ``"128"``
     | *Units*: Megabytes
 
+``lambda_role``
+***************
+
+Override the default generated IAM Role name.
+
+    | *Default*: ``"${stack}_${app}_role"``
+
 ``lambda_timeout``
 ******************
 
