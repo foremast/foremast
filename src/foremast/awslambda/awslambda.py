@@ -54,10 +54,12 @@ class LambdaFunction(object):
         self.handler = self.pipeline['handler']
         self.vpc_enabled = self.pipeline['vpc_enabled']
 
-        self.memory = self.properties[env]['app']['lambda_memory']
-        self.timeout = self.properties[env]['app']['lambda_timeout']
+        app = self.properties[self.env]['app']
+        self.memory = app['lambda_memory']
+        self.role = app.get('lambda_role') or generated.iam()['role']
+        self.timeout = app['lambda_timeout']
 
-        self.role_arn = get_role_arn(generated.iam()['role'], self.env, self.region)
+        self.role_arn = get_role_arn(self.role, self.env, self.region)
 
         self.session = boto3.Session(profile_name=self.env, region_name=self.region)
         self.lambda_client = self.session.client('lambda')
