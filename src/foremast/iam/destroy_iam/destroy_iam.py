@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Destroy any IAM related resources."""
 import collections
 import logging
@@ -40,10 +39,9 @@ def destroy_iam(app='', env='dev', **_):
     client = session.client('iam')
 
     generated = get_details(env=env, app=app)
-    app_details = collections.namedtuple('AppDetails',
-                                         ['group', 'policy', 'profile', 'role',
-                                          'user'])
-    details = app_details(**generated.iam())
+    generated_iam = generated.iam()
+    app_details = collections.namedtuple('AppDetails', generated_iam.keys())
+    details = app_details(**generated_iam)
 
     LOG.debug('Application details: %s', details)
 

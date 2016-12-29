@@ -42,8 +42,9 @@ def create_iam_resources(env='dev', app='', **_):
     app_properties = get_properties(env='pipeline')
 
     generated = get_details(env=env, app=app)
-    app_details = collections.namedtuple('AppDetails', ['group', 'policy', 'profile', 'role', 'user'])
-    details = app_details(**generated.iam())
+    generated_iam = generated.iam()
+    app_details = collections.namedtuple('AppDetails', generated_iam.keys())
+    details = app_details(**generated_iam)
 
     LOG.debug('Application details: %s', details)
 
