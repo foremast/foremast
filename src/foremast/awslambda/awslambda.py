@@ -56,7 +56,7 @@ class LambdaFunction(object):
 
         app = self.properties[self.env]['app']
         self.memory = app['lambda_memory']
-        self.role = app.get('lambda_role') or generated.iam()['role']
+        self.role = app.get('lambda_role') or generated.iam()['lambda_role']
         self.timeout = app['lambda_timeout']
 
         self.role_arn = get_role_arn(self.role, self.env, self.region)

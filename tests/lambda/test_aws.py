@@ -20,7 +20,7 @@ TEST_PROPERTIES = {
         }
     },
 }
-GENERATED_IAM = {'role': 'generated_role', }
+GENERATED_IAM = {'lambda_role': 'generated_role', }
 
 
 @mock.patch('foremast.awslambda.awslambda.boto3')
@@ -36,7 +36,7 @@ def test_role_arn(mock_get_role_arn, mock_get_properties, mock_get_details, mock
     mock_get_properties.return_value = properties
 
     LambdaFunction(app='test_app', env='test_env', region='us-east-1', prop_path='other')
-    mock_get_role_arn.assert_called_with(generated['role'], mock.ANY, mock.ANY)
+    mock_get_role_arn.assert_called_with(generated['lambda_role'], mock.ANY, mock.ANY)
 
 
 @mock.patch('foremast.awslambda.awslambda.boto3')
@@ -53,7 +53,7 @@ def test_role_arn_none(mock_get_role_arn, mock_get_properties, mock_get_details,
     mock_get_properties.return_value = properties
 
     LambdaFunction(app='test_app', env='test_env', region='us-east-1', prop_path='other')
-    mock_get_role_arn.assert_called_with(GENERATED_IAM['role'], mock.ANY, mock.ANY)
+    mock_get_role_arn.assert_called_with(GENERATED_IAM['lambda_role'], mock.ANY, mock.ANY)
 
 
 @mock.patch('foremast.awslambda.awslambda.boto3')
