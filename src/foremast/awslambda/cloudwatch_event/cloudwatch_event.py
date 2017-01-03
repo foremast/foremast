@@ -20,7 +20,7 @@ import logging
 import boto3
 
 from ...exceptions import InvalidEventConfiguration
-from ...utils import add_lambda_permissions, get_env_credential, get_lambda_alias_arn
+from ...utils import add_lambda_permissions, get_env_credential, get_lambda_arn
 
 LOG = logging.getLogger(__name__)
 
@@ -57,14 +57,14 @@ def create_cloudwatch_event(app_name, env, region, rules):
     if rule_description is None:
         rule_description = "{} - {}".format(app_name, rule_name)
 
-    lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
+    lambda_arn = get_lambda_arn(app=app_name, account=env, region=region)
 
     #Add lambda permissions
     account_id = get_env_credential(env=env)['accountId']
     principal = "events.amazonaws.com"
     statement_id = '{}_cloudwatch_{}'.format(app_name, rule_name)
     source_arn = 'arn:aws:events:{}:{}:rule/{}'.format(region, account_id, rule_name)
-    add_lambda_permissions(function=lambda_alias_arn,
+    add_lambda_permissions(function=lambda_arn,
                            statement_id=statement_id,
                            action='lambda:InvokeFunction',
                            principal=principal,
@@ -82,7 +82,7 @@ def create_cloudwatch_event(app_name, env, region, rules):
     # TODO: read this one from file event-config-*.json
     json_payload = '{}'.format(json.dumps(json_input))
 
-    target = {"Id": app_name, "Arn": lambda_alias_arn, "Input": json_payload}
+    target = {"Id": app_name, "Arn": lambda_arn, "Input": json_payload}
 
     targets.append(target)
 
