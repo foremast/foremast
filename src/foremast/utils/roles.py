@@ -18,6 +18,8 @@ def get_role_arn(role_name, env, region):
     session = boto3.Session(profile_name=env, region_name=region)
     iam_client = session.client('iam')
 
+    LOG.debug('Searching for %s.', role_name)
+
     role = iam_client.get_role(RoleName=role_name)
     role_arn = role['Role']['Arn']
 
