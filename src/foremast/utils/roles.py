@@ -6,7 +6,8 @@ LOG = logging.getLogger(__name__)
 
 
 def get_role_arn(role_name, env, region):
-    """Gets role ARN given role name
+    """Get role ARN given role name.
+
     Args:
         role_name (str): Role name to lookup
         env (str): Environment in which to lookup
