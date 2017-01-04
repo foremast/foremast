@@ -32,9 +32,8 @@ def create_cloudwatch_event(app_name, env, region, rules):
         app_name (str): name of the lambda function
         env (str): Environment/Account for lambda function
         region (str): AWS region of the lambda function
-        rules (str): Trigger rules from the settings
+        rules (dict): Trigger rules from the settings
     """
-
     session = boto3.Session(profile_name=env, region_name=region)
     cloudwatch_client = session.client('events')
 
