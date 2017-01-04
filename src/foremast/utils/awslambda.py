@@ -113,7 +113,7 @@ def add_lambda_permissions(function='',
         lambda_client.add_permission(**add_permissions_kwargs)
         response_action = 'Add permission with Sid: {}'.format(statement_id)
     except boto3.exceptions.botocore.exceptions.ClientError as error:
-        LOG.debug(error)
+        LOG.debug('Add permission error: %s', error)
         response_action = "Did not add permissions"
 
     LOG.debug('Related StatementId (SID): %s', statement_id)
