@@ -64,25 +64,31 @@ def create_cloudwatch_event(app_name, env, region, rules):
     principal = "events.amazonaws.com"
     statement_id = '{}_cloudwatch_{}'.format(app_name, rule_name)
     source_arn = 'arn:aws:events:{}:{}:rule/{}'.format(region, account_id, rule_name)
-    add_lambda_permissions(function=lambda_arn,
-                           statement_id=statement_id,
-                           action='lambda:InvokeFunction',
-                           principal=principal,
-                           source_arn=source_arn,
-                           env=env,
-                           region=region)
+    add_lambda_permissions(
+        function=lambda_arn,
+        statement_id=statement_id,
+        action='lambda:InvokeFunction',
+        principal=principal,
+        source_arn=source_arn,
+        env=env,
+        region=region, )
 
     # Create Cloudwatch rule
-    cloudwatch_client.put_rule(Name=rule_name,
-                               ScheduleExpression=schedule,
-                               State='ENABLED',
-                               Description=rule_description)
+    cloudwatch_client.put_rule(
+        Name=rule_name,
+        ScheduleExpression=schedule,
+        State='ENABLED',
+        Description=rule_description, )
 
     targets = []
     # TODO: read this one from file event-config-*.json
     json_payload = '{}'.format(json.dumps(json_input))
 
-    target = {"Id": app_name, "Arn": lambda_arn, "Input": json_payload}
+    target = {
+        "Id": app_name,
+        "Arn": lambda_arn,
+        "Input": json_payload,
+    }
 
     targets.append(target)
 
