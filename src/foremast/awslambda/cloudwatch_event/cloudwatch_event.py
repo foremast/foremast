@@ -95,4 +95,4 @@ def create_cloudwatch_event(app_name, env, region, rules):
     put_targets_response = cloudwatch_client.put_targets(Rule=rule_name, Targets=targets)
     LOG.debug('Cloudwatch put targets response: %s', put_targets_response)
 
-    LOG.info("Created Cloudwatch event with schedule: %s", schedule)
+    LOG.info('Created Cloudwatch event "%s" with schedule: %s', rule_name, schedule)
