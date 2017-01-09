@@ -91,7 +91,7 @@ def update_dns_zone_record(env, zone_id, **kwargs):
 
     LOG.debug('Route53 JSON Response: \n%s', pformat(response))
 
-def delete_existing_cname(env, zone_id, **kwargs):
+def delete_existing_cname(env, zone_id, dns_name):
     """Function to delete an existing CNAME record. This is
     used when updating to multi-region for deleting old records.
     The record can not just be upserted since it changes types.
@@ -99,32 +99,29 @@ def delete_existing_cname(env, zone_id, **kwargs):
     Args:
         env (str): Deployment environment.
         zone_id (str): Route53 zone id.
-
-    Keyword Args:
         dns_name (str): FQDN of application's dns entry to add/update.
-
     """
-    oldrecord = None
-    recordname = kwargs.get('dns_name')
+    startrecord = None
+    newrecord_name = dns_name
     client = boto3.Session(profile_name=env).client('route53')
     response = client.list_resource_record_sets(
         HostedZoneId=zone_id
     )
     for item in response['ResourceRecordSets']:
-        if item['Name'][:-1] == recordname and item['Type'] == 'CNAME':
-            oldrecord = item
-            LOG.info("Found Old Record: %s", item)
+        if item['Name'][:-1] == newrecord_name and item['Type'] == 'CNAME':
+            startrecord = item
+            LOG.info("Found old record: %s", item)
             break
 
     if oldrecord:
-        LOG.info("Deleteing Old Record: %s", recordname)
+        LOG.info("Deleting old record: %s", newrecord_name)
         del_response = client.change_resource_record_sets(
             HostedZoneId=zone_id,
             ChangeBatch={
                 'Changes': [
                     {
                         'Action': 'DELETE',
-                        'ResourceRecordSet': oldrecord
+                        'ResourceRecordSet': startrecord
                     }]
             }
         )
@@ -156,7 +153,7 @@ def update_failover_dns_record(env, zone_id, **kwargs):
         LOG.info('Attempting to create DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name,
                  kwargs['elb_aws_dns'], zone_id, zone_name)
         try:
-            delete_existing_cname(env, zone_id, dns_name=dns_name)
+            delete_existing_cname(env, zone_id, dns_name)
             response = client.change_resource_record_sets(HostedZoneId=zone_id, ChangeBatch=json.loads(dns_json), )
             LOG.info('Upserted DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, kwargs['elb_aws_dns'],
                      zone_id, zone_name)
