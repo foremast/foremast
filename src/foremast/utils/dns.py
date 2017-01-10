@@ -108,12 +108,12 @@ def delete_existing_cname(env, zone_id, dns_name):
         HostedZoneId=zone_id
     )
     for item in response['ResourceRecordSets']:
-        if item['Name'][:-1] == newrecord_name and item['Type'] == 'CNAME':
+        if item['Name'].rstrip('.') == newrecord_name and item['Type'] == 'CNAME':
             startrecord = item
             LOG.info("Found old record: %s", item)
             break
 
-    if oldrecord:
+    if startrecord:
         LOG.info("Deleting old record: %s", newrecord_name)
         del_response = client.change_resource_record_sets(
             HostedZoneId=zone_id,
