@@ -237,9 +237,21 @@ Defines ELB listeners. Expects a list of listeners.
 
         | *Default*: ``"HTTP:8080"``
 
-    ``loadbalanacer`` : the protocol:port of the load balancer
+    ``loadbalancer`` : the protocol:port of the load balancer
 
         | *Default*: ``"HTTP:80"``
+
+    ``stickiness`` : defines stickiness on ELB
+
+        | *Default*: ``None``
+
+        | *Example*:
+
+            ::
+                "stickiness": {
+                    "type": "app",
+                    "cookie_name": "$cookiename"
+                }
 
     ``certificate`` : The name of the certificate to use if required
 

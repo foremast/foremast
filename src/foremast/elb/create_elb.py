@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Create ELBs for Spinnaker Pipelines."""
 import json
 import logging
@@ -26,6 +25,8 @@ from .format_listeners import format_listeners
 from .splay_health import splay_health
 
 log = logging.getLogger(__name__)
+
+
 class SpinnakerELB:
     """Create ELBs for Spinnaker.
 
@@ -36,13 +37,11 @@ class SpinnakerELB:
         region (str): AWS Region.
     """
 
-
     def __init__(self, app='', env='', region='', prop_path=''):
         self.app = app
         self.env = env
         self.region = region
-        self.properties = get_properties(properties_file=prop_path,
-                                         env=self.env)
+        self.properties = get_properties(properties_file=prop_path, env=self.env)
 
     def make_elb_json(self):
         """Render the JSON template with arguments.
@@ -61,7 +60,6 @@ class SpinnakerELB:
 
         # CAVEAT: Setting the ELB to public, you must use a public subnet,
         #         otherwise AWS complains about missing IGW on subnet.
-
 
         if elb_subnet_purpose == 'internal':
             is_internal = 'true'
@@ -98,9 +96,7 @@ class SpinnakerELB:
             'vpc_id': get_vpc_id(env, region),
         }
 
-        rendered_template = get_template(
-            template_file='infrastructure/elb_data.json.j2',
-            **template_kwargs)
+        rendered_template = get_template(template_file='infrastructure/elb_data.json.j2', **template_kwargs)
 
         return rendered_template
 
@@ -117,8 +113,12 @@ class SpinnakerELB:
         self.add_listener_policy(json_data)
         elb_settings = self.properties['elb']
 
-
     def add_listener_policy(self, json_data):
+        """Attaches listerner policies to an ELB
+
+        Args:
+            json_data (json): return data from ELB upsert
+        """
         env = boto3.session.Session(profile_name=self.env, region_name=self.region)
         elbclient = env.client('elb')
 
@@ -132,6 +132,8 @@ class SpinnakerELB:
                     stickiness = self.add_cookie_stickiness()
                     log.info("Stickiness Found: %s", stickiness)
                     break
+
+        #Attach policies to created ELB
         for job in json.loads(json_data)['job']:
             for listener in job['listeners']:
                 policies = []
@@ -142,14 +144,20 @@ class SpinnakerELB:
                     policies.append(stickiness.get(ext_port))
                 if policies:
                     log.info("Adding policies: %s", policies)
-                    elbclient.set_load_balancer_policies_of_listener(
-                        LoadBalancerName=self.app,
-                        LoadBalancerPort=ext_port,
-                        PolicyNames=policies)
-
+                    elbclient.set_load_balancer_policies_of_listener(LoadBalancerName=self.app,
+                                                                     LoadBalancerPort=ext_port,
+                                                                     PolicyNames=policies)
 
     def add_cookie_stickiness(self):
-        """ Adds cookie stickiness policy to created ELB """
+        """ Adds cookie stickiness policy to created ELB
+
+        Returns:
+            dict: A dict of stickiness policies and ports
+                example:
+                {
+                    80: $policy_name
+                }
+        """
         stickiness_dict = {}
         env = boto3.session.Session(profile_name=self.env, region_name=self.region)
         elbclient = env.client('elb')
@@ -159,10 +167,8 @@ class SpinnakerELB:
                 if listener['stickiness']['type'].lower() == 'app':
                     externalport = int(listener['loadbalancer'].split(":")[-1])
                     policyname = "{0}-appcookie-{1}".format(self.app, externalport)
-                    elbclient.create_app_cookie_stickiness_policy(
-                        LoadBalancerName=self.app,
-                        PolicyName=policyname,
-                        CookieName=listener['stickiness']['cookie_name']
-                    )
+                    elbclient.create_app_cookie_stickiness_policy(LoadBalancerName=self.app,
+                                                                  PolicyName=policyname,
+                                                                  CookieName=listener['stickiness']['cookie_name'])
                     stickiness_dict[externalport] = policyname
         return stickiness_dict
