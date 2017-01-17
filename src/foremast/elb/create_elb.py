@@ -111,7 +111,6 @@ class SpinnakerELB:
         check_task(taskid)
 
         self.add_listener_policy(json_data)
-        elb_settings = self.properties['elb']
 
     def add_listener_policy(self, json_data):
         """Attaches listerner policies to an ELB
@@ -155,7 +154,7 @@ class SpinnakerELB:
             dict: A dict of stickiness policies and ports
                 example:
                 {
-                    80: $policy_name
+                    80: "$policy_name"
                 }
         """
         stickiness_dict = {}
