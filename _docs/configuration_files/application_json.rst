@@ -253,7 +253,11 @@ Defines ELB listeners. Expects a list of listeners.
     "ports": [
         {
           "instance": "HTTP:8080",
-          "loadbalancer": "HTTP:80"
+          "loadbalancer": "HTTP:80",
+          "stickiness": {
+            "type": "app",
+            "cookie_name": "cookie"
+          }
         },
         {
           "certificate": "my_cert",
