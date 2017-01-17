@@ -25,7 +25,7 @@ from ..utils import check_task, get_properties, get_subnets, get_template, get_v
 from .format_listeners import format_listeners
 from .splay_health import splay_health
 
-
+log = logging.getLogger(__name__)
 class SpinnakerELB:
     """Create ELBs for Spinnaker.
 
@@ -36,7 +36,6 @@ class SpinnakerELB:
         region (str): AWS Region.
     """
 
-    log = logging.getLogger(__name__)
 
     def __init__(self, app='', env='', region='', prop_path=''):
         self.app = app
@@ -109,21 +108,61 @@ class SpinnakerELB:
         """Create or Update the ELB after rendering JSON data from configs.
         Asserts that the ELB task was successful.
         """
+
         json_data = self.make_elb_json()
 
         taskid = post_task(json_data)
         check_task(taskid)
 
         self.add_listener_policy(json_data)
+        elb_settings = self.properties['elb']
+
 
     def add_listener_policy(self, json_data):
         env = boto3.session.Session(profile_name=self.env, region_name=self.region)
         elbclient = env.client('elb')
 
+        #create stickiness policy if set in configs
+        stickiness = {}
+        elb_settings = self.properties['elb']
+        if elb_settings.get('ports'):
+            ports = elb_settings['ports']
+            for listener in ports:
+                if listener.get("stickiness"):
+                    stickiness = self.add_cookie_stickiness()
+                    log.info("Stickiness Found: %s", stickiness)
+                    break
         for job in json.loads(json_data)['job']:
             for listener in job['listeners']:
+                policies = []
+                ext_port = listener['externalPort']
                 if listener['listenerPolicies']:
+                    policies.extend(listener['listenerPolicies'])
+                if stickiness.get(ext_port):
+                    policies.append(stickiness.get(ext_port))
+                if policies:
+                    log.info("Adding policies: %s", policies)
                     elbclient.set_load_balancer_policies_of_listener(
                         LoadBalancerName=self.app,
-                        LoadBalancerPort=listener['externalPort'],
-                        PolicyNames=listener['listenerPolicies'])
+                        LoadBalancerPort=ext_port,
+                        PolicyNames=policies)
+
+
+    def add_cookie_stickiness(self):
+        """ Adds cookie stickiness policy to created ELB """
+        stickiness_dict = {}
+        env = boto3.session.Session(profile_name=self.env, region_name=self.region)
+        elbclient = env.client('elb')
+        elb_settings = self.properties['elb']
+        for listener in elb_settings.get('ports'):
+            if listener.get("stickiness"):
+                if listener['stickiness']['type'].lower() == 'app':
+                    externalport = int(listener['loadbalancer'].split(":")[-1])
+                    policyname = "{0}-appcookie-{1}".format(self.app, externalport)
+                    elbclient.create_app_cookie_stickiness_policy(
+                        LoadBalancerName=self.app,
+                        PolicyName=policyname,
+                        CookieName=listener['stickiness']['cookie_name']
+                    )
+                    stickiness_dict[externalport] = policyname
+        return stickiness_dict
