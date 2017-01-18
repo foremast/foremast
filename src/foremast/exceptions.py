@@ -140,3 +140,7 @@ class LambdaAliasDoesNotExist(ForemastError):
 class RequiredKeyNotFound(ForemastError):
     """Required key in json config not found"""
     pass
+
+class PrimaryDNSRecordNotFound(ForemastError):
+    """Required Primary DNS record does not exist"""
+    pass
