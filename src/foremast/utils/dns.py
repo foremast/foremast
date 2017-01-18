@@ -22,6 +22,7 @@ import boto3
 from boto3.exceptions import botocore
 
 from ..consts import DOMAIN
+from ..exceptions import PrimaryDNSRecordNotFound
 from ..utils import get_template
 
 LOG = logging.getLogger(__name__)
@@ -104,14 +105,14 @@ def delete_existing_cname(env, zone_id, dns_name):
     startrecord = None
     newrecord_name = dns_name
     client = boto3.Session(profile_name=env).client('route53')
-    response = client.list_resource_record_sets(
-        HostedZoneId=zone_id
-    )
-    for item in response['ResourceRecordSets']:
-        if item['Name'].rstrip('.') == newrecord_name and item['Type'] == 'CNAME':
-            startrecord = item
-            LOG.info("Found old record: %s", item)
-            break
+    pager = client.get_paginator('list_resource_record_sets')
+
+    for rset in pager.paginate(HostedZoneId=zone_id):
+        for item in rset['ResourceRecordSets']:
+            if item['Name'].rstrip('.') == newrecord_name and item['Type'] == 'CNAME':
+                startrecord = item
+                LOG.info("Found old record: %s", item)
+                break
 
     if startrecord:
         LOG.info("Deleting old record: %s", newrecord_name)
@@ -148,6 +149,13 @@ def update_failover_dns_record(env, zone_id, **kwargs):
     zone_name = hosted_zone_info['HostedZone']['Name'].rstrip('.')
     dns_name = kwargs.get('dns_name')
 
+    #Check that the primary record exists
+    failover_state = kwargs.get('failover_state')
+    if failover_state.lower() != 'primary':
+        primary_exists = primary_record_exists(env, zone_id, dns_name)
+        if not primary_exists:
+            raise PrimaryDNSRecordNotFound("Primary Failover DNS record not found: {}".format(dns_name))
+
     if dns_name and dns_name.endswith(zone_name):
         dns_json = get_template(template_file='infrastructure/dns_failover_upsert.json.j2', **kwargs)
         LOG.info('Attempting to create DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name,
@@ -165,3 +173,24 @@ def update_failover_dns_record(env, zone_id, **kwargs):
         LOG.info('Skipping creating DNS record %s in non-matching Hosted Zone %s (%s)', dns_name, zone_id, zone_name)
 
     LOG.debug('Route53 JSON Response: \n%s', pformat(response))
+
+def primary_record_exists(env, zone_id, dns_name):
+    """ Looks to see if the primary record exists yet
+
+    Args:
+        env (str): deployment environment
+        zone_id (str): DNS zone to check
+        dns_name (str): Name of DNS record
+
+    Returns:
+        bool: True or False if the primary record exists
+    """
+    client = boto3.Session(profile_name=env).client('route53')
+    pager = client.get_paginator('list_resource_record_sets')
+
+    for rset in pager.paginate(HostedZoneId=zone_id):
+        for record in rset['ResourceRecordSets']:
+            if record['Name'].rstrip('.') == dns_name and record.get('Failover') == 'PRIMARY':
+                return True
+    LOG.info("Primary Failover record for %s NOT FOUND", dns_name)
+    return False
