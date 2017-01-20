@@ -108,10 +108,10 @@ def delete_existing_cname(env, zone_id, dns_name):
     pager = client.get_paginator('list_resource_record_sets')
 
     for rset in pager.paginate(HostedZoneId=zone_id):
-        for item in rset['ResourceRecordSets']:
-            if item['Name'].rstrip('.') == newrecord_name and item['Type'] == 'CNAME':
-                startrecord = item
-                LOG.info("Found old record: %s", item)
+        for record in rset['ResourceRecordSets']:
+            if record['Name'].rstrip('.') == newrecord_name and record['Type'] == 'CNAME':
+                startrecord = record
+                LOG.info("Found old record: %s", record)
                 break
 
     if startrecord:
