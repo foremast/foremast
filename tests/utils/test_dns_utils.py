@@ -24,12 +24,12 @@ def test_find_existing_record(mock_session):
     assert find_existing_record(MOCK_VALUES['env'],
                                 MOCK_VALUES['zone_id'],
                                 MOCK_VALUES['dns_name'],
-                                ['Type', 'CNAME'])
+                                ['Type', 'CNAME']) == {'Name': 'test.example.com.', 'Type': 'CNAME' }
     assert find_existing_record(MOCK_VALUES['env'],
                                 MOCK_VALUES['zone_id'],
                                 MOCK_VALUES['dns_name'],
-                                ['Failover', 'PRIMARY'])
-    assert not find_existing_record(MOCK_VALUES['env'],
+                                ['Failover', 'PRIMARY']) == {'Name': 'test.example.com.', 'Failover': 'PRIMARY' }
+    assert find_existing_record(MOCK_VALUES['env'],
                                 MOCK_VALUES['zone_id'],
                                 'bad.example.com',
-                                ['Type', 'CNAME'])
+                                ['Type', 'CNAME']) == None
