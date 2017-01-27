@@ -13,6 +13,7 @@ MOCK_VALUES = {
 
 @mock.patch('foremast.utils.dns.boto3.Session')
 def test_find_existing_record(mock_session):
+    """Check that a record is found correctly"""
     test_records = [
     {'ResourceRecordSets': [{'Name': 'test.example.com.', 'Type': 'CNAME' }]},
     {'ResourceRecordSets': [{'Name': 'test.example.com.', 'Failover': 'PRIMARY' }]},
@@ -32,3 +33,20 @@ def test_find_existing_record(mock_session):
                                 MOCK_VALUES['zone_id'],
                                 'bad.example.com',
                                 ['Type', 'CNAME'])
+
+@mock.patch('foremast.utils.dns.boto3.Session')
+def test_get_dns_zone_ids(mock_session):
+    """Test that zone id look up is correct"""
+    test_zones = {
+            'HostedZones': [
+                {'Id': MOCK_VALUES['zone_id'],
+                 'Config': {
+                    'PrivateZone': False
+                 }
+                }
+            ]
+    }
+    client = mock_session.return_value.client.return_value
+    client.list_hosted_zones_by_name.return_value = test_zones
+    assert get_dns_zone_ids(env=MOCK_VALUES['env'], facing='external') == [MOCK_VALUES['zone_id']]
+    assert get_dns_zone_ids(env=MOCK_VALUES['env'], facing='internal') == []
