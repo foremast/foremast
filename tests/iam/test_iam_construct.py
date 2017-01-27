@@ -18,17 +18,21 @@ import copy
 import json
 from unittest import mock
 
+import pytest
+
 from foremast.iam.construct_policy import construct_policy
 from foremast.utils.templates import get_template
 
-BASE_SETTINGS = json.loads(get_template(template_file='configs/pipeline.json.j2'))
-
+@pytest.fixture
+@mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
+def get_base_settings():
+    return json.loads(get_template(template_file='configs/pipeline.json.j2'))
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.requests.get')
-def test_iam_construct_policy(requests_get):
+def test_iam_construct_policy(requests_get, get_base_settings):
     """Check general assemblage."""
-    settings = copy.deepcopy(BASE_SETTINGS)
+    settings = get_base_settings
 
     policy_json = construct_policy(pipeline_settings=settings)
     # checking empty policy
@@ -48,9 +52,9 @@ def test_iam_construct_policy(requests_get):
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.requests.get')
-def test_construct_cloudwatchlogs(requests_get):
+def test_construct_cloudwatchlogs(requests_get, get_base_settings):
     """Check Lambda Policy."""
-    pipeline_settings = copy.deepcopy(BASE_SETTINGS)
+    pipeline_settings = get_base_settings
     pipeline_settings.update({'services': {'cloudwatchlogs': True}, 'type': 'lambda'})
 
     policy_json = construct_policy(
@@ -68,9 +72,10 @@ def test_construct_cloudwatchlogs(requests_get):
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.requests.get')
-def test_construct_s3(requests_get):
+@mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
+def test_construct_s3(requests_get, get_base_settings):
     """Check S3 Policy."""
-    pipeline_settings = copy.deepcopy(BASE_SETTINGS)
+    pipeline_settings = get_base_settings
     pipeline_settings.update({'services': {'s3': True}})
 
     construct_policy_kwargs = {'app': 'unicornforrest',
@@ -95,9 +100,12 @@ def test_construct_s3(requests_get):
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.requests.get')
-def test_construct_s3_buckets(requests_get):
+@mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
+def test_construct_s3_buckets(requests_get, get_base_settings):
     """Check S3 Policy with multiple Buckets listed."""
-    pipeline_settings = copy.deepcopy(BASE_SETTINGS)
+    #print(get_base_settings)
+    #pipeline_settings = copy.deepcopy(BASE_SETTINGS)
+    pipeline_settings = get_base_settings
     pipeline_settings.update({'services': {'s3': ['Bucket1', 'Bucket2']}})
 
     construct_policy_kwargs = {'app': 'unicornforrest',
