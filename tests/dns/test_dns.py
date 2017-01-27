@@ -22,6 +22,7 @@ from unittest.mock import patch, MagicMock
 @patch('foremast.dns.create_dns.get_dns_zone_ids')
 @patch('foremast.dns.create_dns.find_elb')
 @patch('foremast.dns.create_dns.get_properties')
+@patch('foremast.dns.create_dns.DOMAIN', 'example.com')
 @patch('foremast.dns.create_dns.get_details')
 def test_dns_creation(mock_get_details, mock_properties, mock_find_elb, mock_dns_zones, mock_update_dns):
     # mocked data
@@ -31,6 +32,7 @@ def test_dns_creation(mock_get_details, mock_properties, mock_find_elb, mock_dns
     }
 
     # mock results
+    #mock_domain.value = 'example.com'
     mock_get_details.return_value.app_name.return_value = 'myapp'
     mock_get_details.return_value.dns.return_value = dns_elb
     mock_properties.return_value = {'dns': {'ttl': 60}}
