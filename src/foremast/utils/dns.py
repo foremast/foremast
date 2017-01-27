@@ -92,6 +92,30 @@ def update_dns_zone_record(env, zone_id, **kwargs):
 
     LOG.debug('Route53 JSON Response: \n%s', pformat(response))
 
+def find_existing_record(env, zone_id, dns_name, valuecheck=[]):
+    """Checks if a specific DNS record exists
+
+    Args:
+        env (str): Deployment environment.
+        zone_id (str): Route53 zone id.
+        dns_name (str): FQDN of application's dns entry to add/update.
+        valuecheck (list): List of [KEY, VALUE] to check record for. Example:
+            ["Type", "CNAME"] will check for Type==CNAME in record
+    Returns:
+        json: Found Record. Returns None if no record found
+    """
+    client = boto3.Session(profile_name=env).client('route53')
+    pager = client.get_paginator('list_resource_record_sets')
+    existingrecord = None
+    for rset in pager.paginate(HostedZoneId=zone_id):
+        for record in rset['ResourceRecordSets']:
+            if valuecheck:
+                if record['Name'].rstrip('.') == dns_name and record.get(valuecheck[0]) == valuecheck[1]:
+                    LOG.info("Found existing record: %s", record)
+                    existingrecord = record
+                    break
+    return existingrecord
+
 def delete_existing_cname(env, zone_id, dns_name):
     """Function to delete an existing CNAME record. This is
     used when updating to multi-region for deleting old records.
@@ -104,16 +128,7 @@ def delete_existing_cname(env, zone_id, dns_name):
     """
     startrecord = None
     newrecord_name = dns_name
-    client = boto3.Session(profile_name=env).client('route53')
-    pager = client.get_paginator('list_resource_record_sets')
-
-    for rset in pager.paginate(HostedZoneId=zone_id):
-        for record in rset['ResourceRecordSets']:
-            if record['Name'].rstrip('.') == newrecord_name and record['Type'] == 'CNAME':
-                startrecord = record
-                LOG.info("Found old record: %s", record)
-                break
-
+    startrecord = find_existing_record(env, zone_id, newrecord_name, valuecheck=['Type', 'CNAME'])
     if startrecord:
         LOG.info("Deleting old record: %s", newrecord_name)
         del_response = client.change_resource_record_sets(
@@ -152,8 +167,8 @@ def update_failover_dns_record(env, zone_id, **kwargs):
     #Check that the primary record exists
     failover_state = kwargs.get('failover_state')
     if failover_state.lower() != 'primary':
-        primary_exists = primary_record_exists(env, zone_id, dns_name)
-        if not primary_exists:
+        primary_record = find_existing_record(env, zone_id, dns_name, valuecheck=['Failover', 'PRIMARY'])
+        if not primary_record:
             raise PrimaryDNSRecordNotFound("Primary Failover DNS record not found: {}".format(dns_name))
 
     if dns_name and dns_name.endswith(zone_name):
@@ -173,24 +188,3 @@ def update_failover_dns_record(env, zone_id, **kwargs):
         LOG.info('Skipping creating DNS record %s in non-matching Hosted Zone %s (%s)', dns_name, zone_id, zone_name)
 
     LOG.debug('Route53 JSON Response: \n%s', pformat(response))
-
-def primary_record_exists(env, zone_id, dns_name):
-    """ Looks to see if the primary record exists yet
-
-    Args:
-        env (str): deployment environment
-        zone_id (str): DNS zone to check
-        dns_name (str): Name of DNS record
-
-    Returns:
-        bool: True or False if the primary record exists
-    """
-    client = boto3.Session(profile_name=env).client('route53')
-    pager = client.get_paginator('list_resource_record_sets')
-
-    for rset in pager.paginate(HostedZoneId=zone_id):
-        for record in rset['ResourceRecordSets']:
-            if record['Name'].rstrip('.') == dns_name and record.get('Failover') == 'PRIMARY':
-                return True
-    LOG.info("Primary Failover record for %s NOT FOUND", dns_name)
-    return False
