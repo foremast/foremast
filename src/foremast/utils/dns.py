@@ -92,15 +92,15 @@ def update_dns_zone_record(env, zone_id, **kwargs):
 
     LOG.debug('Route53 JSON Response: \n%s', pformat(response))
 
-def find_existing_record(env, zone_id, dns_name, valuecheck=[]):
+def find_existing_record(env, zone_id, dns_name, check_key=None, check_value=None):
     """Checks if a specific DNS record exists
 
     Args:
         env (str): Deployment environment.
         zone_id (str): Route53 zone id.
         dns_name (str): FQDN of application's dns entry to add/update.
-        valuecheck (list): List of [KEY, VALUE] to check record for. Example:
-            ["Type", "CNAME"] will check for Type==CNAME in record
+        check_key(str): Key to look for in record. Example: "Type"
+        check_value(str): Value to look for with check_key. Example: "CNAME"
     Returns:
         json: Found Record. Returns None if no record found
     """
@@ -109,8 +109,8 @@ def find_existing_record(env, zone_id, dns_name, valuecheck=[]):
     existingrecord = None
     for rset in pager.paginate(HostedZoneId=zone_id):
         for record in rset['ResourceRecordSets']:
-            if valuecheck:
-                if record['Name'].rstrip('.') == dns_name and record.get(valuecheck[0]) == valuecheck[1]:
+            if check_key:
+                if record['Name'].rstrip('.') == dns_name and record.get(check_key) == check_value:
                     LOG.info("Found existing record: %s", record)
                     existingrecord = record
                     break
@@ -128,7 +128,7 @@ def delete_existing_cname(env, zone_id, dns_name):
     """
     startrecord = None
     newrecord_name = dns_name
-    startrecord = find_existing_record(env, zone_id, newrecord_name, valuecheck=['Type', 'CNAME'])
+    startrecord = find_existing_record(env, zone_id, newrecord_name, check_key='Type', check_type='CNAME')
     if startrecord:
         LOG.info("Deleting old record: %s", newrecord_name)
         del_response = client.change_resource_record_sets(
@@ -167,7 +167,7 @@ def update_failover_dns_record(env, zone_id, **kwargs):
     #Check that the primary record exists
     failover_state = kwargs.get('failover_state')
     if failover_state.lower() != 'primary':
-        primary_record = find_existing_record(env, zone_id, dns_name, valuecheck=['Failover', 'PRIMARY'])
+        primary_record = find_existing_record(env, zone_id, dns_name, check_key='Failover', check_type='PRIMARY')
         if not primary_record:
             raise PrimaryDNSRecordNotFound("Primary Failover DNS record not found: {}".format(dns_name))
 
