@@ -30,6 +30,7 @@ def get_base_settings():
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.requests.get')
+@mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
 def test_iam_construct_policy(requests_get, get_base_settings):
     """Check general assemblage."""
     settings = get_base_settings
@@ -52,6 +53,7 @@ def test_iam_construct_policy(requests_get, get_base_settings):
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.requests.get')
+@mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
 def test_construct_cloudwatchlogs(requests_get, get_base_settings):
     """Check Lambda Policy."""
     pipeline_settings = get_base_settings
@@ -103,8 +105,6 @@ def test_construct_s3(requests_get, get_base_settings):
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
 def test_construct_s3_buckets(requests_get, get_base_settings):
     """Check S3 Policy with multiple Buckets listed."""
-    #print(get_base_settings)
-    #pipeline_settings = copy.deepcopy(BASE_SETTINGS)
     pipeline_settings = get_base_settings
     pipeline_settings.update({'services': {'s3': ['Bucket1', 'Bucket2']}})
 
