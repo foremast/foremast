@@ -32,7 +32,6 @@ def test_dns_creation(mock_get_details, mock_properties, mock_find_elb, mock_dns
     }
 
     # mock results
-    #mock_domain.value = 'example.com'
     mock_get_details.return_value.app_name.return_value = 'myapp'
     mock_get_details.return_value.dns.return_value = dns_elb
     mock_properties.return_value = {'dns': {'ttl': 60}}
