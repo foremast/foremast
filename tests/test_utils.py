@@ -202,6 +202,37 @@ def test_utils_dns_get_zone_ids(mock_boto3):
     result = get_dns_zone_ids(facing='wrong_param')
     assert result == []
 
+@mock.patch('foremast.utils.dns.boto3.Session')
+def test_find_existing_record(mock_session):
+    """Check that a record is found correctly"""
+
+    dns_values = {
+        'env': 'dev',
+        'zone_id': '/hostedzone/TESTTESTS279',
+        'dns_name': 'test.example.com'
+    }
+    test_records = [
+    {'ResourceRecordSets': [{'Name': 'test.example.com.', 'Type': 'CNAME' }]},
+    {'ResourceRecordSets': [{'Name': 'test.example.com.', 'Failover': 'PRIMARY' }]},
+    {'ResourceRecordSets': [{'Name': 'test.example.com.', 'Type': 'A' }]}
+    ]
+    client = mock_session.return_value.client.return_value
+    client.get_paginator.return_value.paginate.return_value = test_records
+    assert find_existing_record(dns_values['env'],
+                                dns_values['zone_id'],
+                                dns_values['dns_name'],
+                                check_key='Type',
+                                check_value='CNAME') == {'Name': 'test.example.com.', 'Type': 'CNAME' }
+    assert find_existing_record(dns_values['env'],
+                                dns_values['zone_id'],
+                                dns_values['dns_name'],
+                                check_key='Failover',
+                                check_value='PRIMARY') == {'Name': 'test.example.com.', 'Failover': 'PRIMARY' }
+    assert find_existing_record(dns_values['env'],
+                                dns_values['zone_id'],
+                                'bad.example.com',
+                                check_key='Type',
+                                check_value='CNAME') == None
 
 @mock.patch('requests.get')
 @mock.patch('foremast.utils.security_group.get_vpc_id')
