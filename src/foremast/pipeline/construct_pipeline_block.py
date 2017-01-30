@@ -20,7 +20,7 @@ import json
 import logging
 from pprint import pformat
 
-from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
+from ..consts import DEFAULT_EC2_SECURITYGROUPS
 from ..utils import generate_encoded_user_data, get_template
 
 LOG = logging.getLogger(__name__)
@@ -136,11 +136,6 @@ def construct_pipeline_block(env='',
     if env == 'dev' or settings['app']['eureka_enabled']:
         data['asg'].update({'hc_type': 'EC2'})
         LOG.info('Switching health check type to: EC2')
-
-    LOG.info('White listed dev asg apps: {0}'.format(ASG_WHITELIST))
-    if env == 'dev' and gen_app_name not in ASG_WHITELIST:
-        data['asg'].update({'max_inst': '1', 'min_inst': '1'})
-        LOG.info('App {0} is not white listed, using default dev ASG settings'.format(gen_app_name))
 
     data['app'].update({
         'appname': gen_app_name,
