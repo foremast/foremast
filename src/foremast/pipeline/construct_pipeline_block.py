@@ -20,7 +20,7 @@ import json
 import logging
 from pprint import pformat
 
-from ..consts import DEFAULT_EC2_SECURITYGROUPS
+from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
 from ..utils import generate_encoded_user_data, get_template
 
 LOG = logging.getLogger(__name__)
@@ -150,14 +150,15 @@ def construct_pipeline_block(env='',
         'elb': json.dumps(elb),
         'promote_restrict': pipeline_data['promote_restrict'],
         'owner_email': pipeline_data['owner_email'],
-        'scalingpolicy': scalingpolicy
+        'scalingpolicy': scalingpolicy,
     })
 
     data['asg'].update({
         'hc_type': data['asg'].get('hc_type').upper(),
         'provider_healthcheck': json.dumps(health_checks.providers),
         'enable_public_ips': json.dumps(settings['asg']['enable_public_ips']),
-        "has_provider_healthcheck": health_checks.has_healthcheck,
+        'has_provider_healthcheck': health_checks.has_healthcheck,
+        'asg_whitelist': ASG_WHITELIST,
     })
 
     LOG.debug('Block data:\n%s', pformat(data))
