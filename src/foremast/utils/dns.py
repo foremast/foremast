@@ -128,7 +128,7 @@ def delete_existing_cname(env, zone_id, dns_name):
     """
     startrecord = None
     newrecord_name = dns_name
-    startrecord = find_existing_record(env, zone_id, newrecord_name, check_key='Type', check_type='CNAME')
+    startrecord = find_existing_record(env, zone_id, newrecord_name, check_key='Type', check_value='CNAME')
     if startrecord:
         LOG.info("Deleting old record: %s", newrecord_name)
         del_response = client.change_resource_record_sets(
@@ -167,7 +167,7 @@ def update_failover_dns_record(env, zone_id, **kwargs):
     #Check that the primary record exists
     failover_state = kwargs.get('failover_state')
     if failover_state.lower() != 'primary':
-        primary_record = find_existing_record(env, zone_id, dns_name, check_key='Failover', check_type='PRIMARY')
+        primary_record = find_existing_record(env, zone_id, dns_name, check_key='Failover', check_value='PRIMARY')
         if not primary_record:
             raise PrimaryDNSRecordNotFound("Primary Failover DNS record not found: {}".format(dns_name))
 
