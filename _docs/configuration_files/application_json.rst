@@ -245,9 +245,10 @@ Defines ELB listeners. Expects a list of listeners.
 
         | *Default*: ``None``
 
+        | *Supported Types*: ``elb``, ``app``
+
         | *Example*:
 
-            ::
                 "stickiness": {
                     "type": "app",
                     "cookie_name": "$cookiename"
