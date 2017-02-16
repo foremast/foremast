@@ -128,7 +128,7 @@ class SpinnakerELB:
             ports = elb_settings['ports']
             for listener in ports:
                 if listener.get("stickiness"):
-                    stickiness = self.add_cookie_stickiness()
+                    stickiness = self.add_stickiness()
                     log.info("Stickiness Found: %s", stickiness)
                     break
 
@@ -147,8 +147,8 @@ class SpinnakerELB:
                                                                      LoadBalancerPort=ext_port,
                                                                      PolicyNames=policies)
 
-    def add_cookie_stickiness(self):
-        """ Adds cookie stickiness policy to created ELB
+    def add_stickiness(self):
+        """ Adds stickiness policy to created ELB
 
         Returns:
             dict: A dict of stickiness policies and ports
@@ -163,11 +163,16 @@ class SpinnakerELB:
         elb_settings = self.properties['elb']
         for listener in elb_settings.get('ports'):
             if listener.get("stickiness"):
-                if listener['stickiness']['type'].lower() == 'app':
-                    externalport = int(listener['loadbalancer'].split(":")[-1])
-                    policyname = "{0}-appcookie-{1}".format(self.app, externalport)
+                sticky_type = listener['stickiness']['type'].lower()
+                externalport = int(listener['loadbalancer'].split(":")[-1])
+                policyname = "{0}-{1}cookie-{2}".format(self.app, sticky_type, externalport)
+                if sticky_type == 'app':
                     elbclient.create_app_cookie_stickiness_policy(LoadBalancerName=self.app,
                                                                   PolicyName=policyname,
                                                                   CookieName=listener['stickiness']['cookie_name'])
+                    stickiness_dict[externalport] = policyname
+                elif sticky_type == 'elb':
+                    elbclient.create_lb_cookie_stickiness_policy(LoadBalancerName=self.app,
+                                                                 PolicyName=policyname)
                     stickiness_dict[externalport] = policyname
         return stickiness_dict
