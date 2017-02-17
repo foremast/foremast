@@ -165,14 +165,18 @@ class SpinnakerELB:
             if listener.get("stickiness"):
                 sticky_type = listener['stickiness']['type'].lower()
                 externalport = int(listener['loadbalancer'].split(":")[-1])
-                policyname = "{0}-{1}cookie-{2}".format(self.app, sticky_type, externalport)
                 if sticky_type == 'app':
+                    cookiename = listener['stickiness']['cookie_name']
+                    policyname = "{0}-{1}cookie-{2}-{3}".format(self.app, sticky_type, externalport, cookiename)
                     elbclient.create_app_cookie_stickiness_policy(LoadBalancerName=self.app,
                                                                   PolicyName=policyname,
-                                                                  CookieName=listener['stickiness']['cookie_name'])
+                                                                  CookieName=cookiename)
                     stickiness_dict[externalport] = policyname
                 elif sticky_type == 'elb':
+                    cookie_ttl = listener['stickiness'].get('cookie_ttl', 0)
+                    policyname = "{0}-{1}cookie-{2}-{3}".format(self.app, sticky_type, externalport, cookie_ttl)
                     elbclient.create_lb_cookie_stickiness_policy(LoadBalancerName=self.app,
-                                                                 PolicyName=policyname)
+                                                                 PolicyName=policyname,
+                                                                 CookieExpirationPeriod=cookie_ttl)
                     stickiness_dict[externalport] = policyname
         return stickiness_dict
