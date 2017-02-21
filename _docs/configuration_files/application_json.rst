@@ -287,13 +287,13 @@ Defines ELB listeners. Expects a list of listeners.
 
     ``listener_policies`` : A list of listener policies to associate to an ELB. Must be created in AWS first.
 
-        | *Default*: ``[]``
+        | *Default*: `null`
 
         | *Type*: List of strings
 
     ``backend_policies`` : A list of backend server policies to associate to an ELB. Must be created in AWS first.
 
-        | *Default*: ``[]``
+        | *Default*: `null`
 
         | *Type*: List of strings
 
