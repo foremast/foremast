@@ -69,7 +69,8 @@ def format_listeners(elb_settings=None, env='dev'):
                     'internalPort': 8080,
                     'internalProtocol': 'HTTP',
                     'sslCertificateId': None,
-                    'listenerPolicies': []
+                    'listenerPolicies': [],
+                    'backendPolicies': []
                 },
                 ...
             ]
@@ -88,6 +89,8 @@ def format_listeners(elb_settings=None, env='dev'):
             lb_proto, lb_port = listener['loadbalancer'].split(':')
             i_proto, i_port = listener['instance'].split(':')
             listener_policies = listener.get('policies', [])
+            listener_policies += listener.get('listenerpolicies', [])
+            backend_policies = listener.get('backendpolicies', [])
 
             elb_data = {
                 'externalPort': int(lb_port),
@@ -96,17 +99,21 @@ def format_listeners(elb_settings=None, env='dev'):
                 'internalProtocol': i_proto.upper(),
                 'sslCertificateId': cert_name,
                 'listenerPolicies': listener_policies,
+                'backendPolicies': backend_policies,
             }
 
             listeners.append(elb_data)
     else:
+        listener_policies = elb_settings['policies']
+        listener_policies += elb_settings['listenerpolicies']
         listeners = [{
             'externalPort': int(elb_settings['lb_port']),
             'externalProtocol': elb_settings['lb_proto'],
             'internalPort': int(elb_settings['i_port']),
             'internalProtocol': elb_settings['i_proto'],
             'sslCertificateId': elb_settings['certificate'],
-            'listenerPolicies': elb_settings['policies'],
+            'listenerPolicies': listener_policies,
+            'backendPolicies': elb_settings['backendpolicies'],
         }]
 
     for listener in listeners:
@@ -114,7 +121,8 @@ def format_listeners(elb_settings=None, env='dev'):
                  'loadbalancer %(externalProtocol)s:%(externalPort)d\n'
                  'instance %(internalProtocol)s:%(internalPort)d\n'
                  'certificate: %(sslCertificateId)s\n'
-                 'listenerpolicies: %(listenerPolicies)s', listener)
+                 'listenerpolicies: %(listenerPolicies)s\n')
+                 'backendpolicies: %(backendPolicies)s', listener)
     return listeners
 
 
