@@ -89,8 +89,8 @@ def format_listeners(elb_settings=None, env='dev'):
             lb_proto, lb_port = listener['loadbalancer'].split(':')
             i_proto, i_port = listener['instance'].split(':')
             listener_policies = listener.get('policies', [])
-            listener_policies += listener.get('listenerpolicies', [])
-            backend_policies = listener.get('backendpolicies', [])
+            listener_policies += listener.get('listener_policies', [])
+            backend_policies = listener.get('backend_policies', [])
 
             elb_data = {
                 'externalPort': int(lb_port),
@@ -105,7 +105,7 @@ def format_listeners(elb_settings=None, env='dev'):
             listeners.append(elb_data)
     else:
         listener_policies = elb_settings['policies']
-        listener_policies += elb_settings['listenerpolicies']
+        listener_policies += elb_settings['listener_policies']
         listeners = [{
             'externalPort': int(elb_settings['lb_port']),
             'externalProtocol': elb_settings['lb_proto'],
@@ -113,7 +113,7 @@ def format_listeners(elb_settings=None, env='dev'):
             'internalProtocol': elb_settings['i_proto'],
             'sslCertificateId': elb_settings['certificate'],
             'listenerPolicies': listener_policies,
-            'backendPolicies': elb_settings['backendpolicies'],
+            'backendPolicies': elb_settings['backend_policies'],
         }]
 
     for listener in listeners:
@@ -121,8 +121,8 @@ def format_listeners(elb_settings=None, env='dev'):
                  'loadbalancer %(externalProtocol)s:%(externalPort)d\n'
                  'instance %(internalProtocol)s:%(internalPort)d\n'
                  'certificate: %(sslCertificateId)s\n'
-                 'listenerpolicies: %(listenerPolicies)s\n')
-                 'backendpolicies: %(backendPolicies)s', listener)
+                 'listener_policies: %(listenerPolicies)s\n'
+                 'backend_policies: %(backendPolicies)s', listener)
     return listeners
 
 
