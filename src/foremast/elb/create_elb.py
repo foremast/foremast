@@ -111,6 +111,7 @@ class SpinnakerELB:
         check_task(taskid)
 
         self.add_listener_policy(json_data)
+        self.add_backend_policy(json_data)
 
     def add_listener_policy(self, json_data):
         """Attaches listerner policies to an ELB
@@ -146,6 +147,30 @@ class SpinnakerELB:
                     elbclient.set_load_balancer_policies_of_listener(LoadBalancerName=self.app,
                                                                      LoadBalancerPort=ext_port,
                                                                      PolicyNames=policies)
+
+
+    def add_backend_policy(self, json_data):
+        """Attaches backend server policies to an ELB
+
+        Args:
+            json_data (json): return data from ELB upsert
+        """
+        env = boto3.session.Session(profile_name=self.env, region_name=self.region)
+        elbclient = env.client('elb')
+
+        #Attach backend server policies to created ELB
+        for job in json.loads(json_data)['job']:
+            for listener in job['listeners']:
+                policies = []
+                instance_port = listener['instancePort']
+                if listener['backendPolicies']:
+                    policies.extend(listener['backendPolicies'])
+                if policies:
+                    log.info("Adding policies: %s", policies)
+                    elbclient.set_load_balancer_policies_for_backend_server(LoadBalancerName=self.app,
+                                                                            InstancePort=instance_port,
+                                                                            PolicyNames=policies)
+
 
     def add_stickiness(self):
         """ Adds stickiness policy to created ELB
