@@ -17,6 +17,7 @@ TEST_PROPERTIES = {
         'app': {
             'lambda_memory': 0,
             'lambda_timeout': 0,
+            'lambda_environment': None,
         }
     },
 }
