@@ -66,7 +66,7 @@ The size/type of the EC2 instance. Uses Standard AWS instance names. See https:/
 Environment variables which are passed to the lambda function.
 
 ``lambda_environment`` *Keys*
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     ``Variables`` : Dictionary of environment variables.
 
@@ -74,7 +74,7 @@ Environment variables which are passed to the lambda function.
         | *Default*: ``null``
 
 ``lambda_environment`` *Example*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ::
 
       "environment": {
