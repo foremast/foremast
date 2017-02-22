@@ -56,7 +56,7 @@ class LambdaFunction(object):
         self.vpc_enabled = self.pipeline['vpc_enabled']
 
         app = self.properties[self.env]['app']
-        self.environment = app['environment']
+        self.lambda_environment = app['lambda_environment']
         self.memory = app['lambda_memory']
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
         self.timeout = app['lambda_timeout']
@@ -173,7 +173,7 @@ class LambdaFunction(object):
 
         try:
             self.lambda_client.update_function_configuration(
-                Environment=self.environment,
+                Environment=self.lambda_environment,
                 FunctionName=self.app_name,
                 Runtime=self.runtime,
                 Role=self.role_arn,
@@ -216,7 +216,7 @@ class LambdaFunction(object):
 
         try:
             self.lambda_client.create_function(
-                Environment=self.environment,
+                Environment=self.lambda_environment,
                 FunctionName=self.app_name,
                 Runtime=self.runtime,
                 Role=self.role_arn,
