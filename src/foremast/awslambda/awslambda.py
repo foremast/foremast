@@ -21,7 +21,7 @@ import boto3
 from tryagain import retries
 
 from ..exceptions import RequiredKeyNotFound
-from ..utils import (get_details, get_properties, get_role_arn, get_security_group_id, get_subnets)
+from ..utils import get_details, get_properties, get_role_arn, get_security_group_id, get_subnets
 
 LOG = logging.getLogger(__name__)
 
