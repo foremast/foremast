@@ -21,7 +21,8 @@ import boto3
 from tryagain import retries
 
 from ..exceptions import RequiredKeyNotFound
-from ..utils import get_details, get_properties, get_role_arn, get_security_group_id, get_subnets
+from ..utils import (get_details, get_properties, get_role_arn,
+                     get_security_group_id, get_subnets)
 
 LOG = logging.getLogger(__name__)
 
@@ -55,6 +56,7 @@ class LambdaFunction(object):
         self.vpc_enabled = self.pipeline['vpc_enabled']
 
         app = self.properties[self.env]['app']
+        self.environment = app['environment']
         self.memory = app['lambda_memory']
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
         self.timeout = app['lambda_timeout']
@@ -171,6 +173,7 @@ class LambdaFunction(object):
 
         try:
             self.lambda_client.update_function_configuration(
+                Environment=self.environment,
                 FunctionName=self.app_name,
                 Runtime=self.runtime,
                 Role=self.role_arn,
@@ -213,6 +216,7 @@ class LambdaFunction(object):
 
         try:
             self.lambda_client.create_function(
+                Environment=self.environment,
                 FunctionName=self.app_name,
                 Runtime=self.runtime,
                 Role=self.role_arn,
