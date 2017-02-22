@@ -126,6 +126,7 @@ def delete_existing_cname(env, zone_id, dns_name):
         zone_id (str): Route53 zone id.
         dns_name (str): FQDN of application's dns entry to add/update.
     """
+    client = boto3.Session(profile_name=env).client('route53')
     startrecord = None
     newrecord_name = dns_name
     startrecord = find_existing_record(env, zone_id, newrecord_name, check_key='Type', check_value='CNAME')
