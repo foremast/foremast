@@ -60,6 +60,31 @@ The size/type of the EC2 instance. Uses Standard AWS instance names. See https:/
 
     | *Default*: ``"t2.micro"``
 
+``lambda_environment``
+**********************
+
+Environment variables which are passed to the lambda function.
+
+``lambda_environment`` *Keys*
+^^^^^^^^^^^^^^^^^^^^
+
+    ``Variables`` : Dictionary of environment variables.
+
+        | *Type*: Dict
+        | *Default*: ``null``
+
+``lambda_environment`` *Example*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+::
+
+      "environment": {
+          "Variables": {
+              "VAR1": "val1",
+              "VAR2": "val2",
+              "VAR3": "val3"
+          }
+      }
+
 ``lambda_memory``
 *****************
 
