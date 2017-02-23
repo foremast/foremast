@@ -62,6 +62,8 @@ def test_elb_format_listeners(mock_creds):
         'lb_port': 80,
         'lb_proto': 'HTTP',
         'policies': None,
+        'listener_policies': None,
+        'backend_policies': None,
     }
     generated = [{
         'externalPort': 80,
@@ -70,6 +72,7 @@ def test_elb_format_listeners(mock_creds):
         'internalProtocol': 'HTTP',
         'sslCertificateId': None,
         'listenerPolicies': None,
+        'backendPolicies': None,
     }]
 
     # check defaults
@@ -84,6 +87,7 @@ def test_elb_format_listeners(mock_creds):
         'internalProtocol': 'HTTP',
         'sslCertificateId': None,
         'listenerPolicies': [],
+        'backendPolicies': [],
     }]
 
     # check ports
@@ -101,6 +105,7 @@ def test_elb_format_listeners(mock_creds):
         'internalProtocol': 'HTTP',
         'sslCertificateId': 'arn:aws:iam::0100:server-certificate/kerby',
         'listenerPolicies': [],
+        'backendPolicies': [],
     })
 
     # check certificate
