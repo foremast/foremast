@@ -104,8 +104,8 @@ def format_listeners(elb_settings=None, env='dev'):
 
             listeners.append(elb_data)
     else:
-        listener_policies = elb_settings['policies']
-        listener_policies += elb_settings['listener_policies']
+        listener_policies = elb_settings.get('policies', [])
+        listener_policies += elb_settings.get('listener_policies', [])
         listeners = [{
             'externalPort': int(elb_settings['lb_port']),
             'externalProtocol': elb_settings['lb_proto'],
