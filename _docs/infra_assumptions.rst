@@ -9,7 +9,7 @@ Spinnaker
 ---------
 
 - Foremast assumes that Spinnaker is already setup. Please see the `Spinnaker documentation`_ for assistance
-- Requires connectivity to the Gate component of Spinnaker. Foremast does not support authentication on Gate (yet).
+- Requires connectivity to the Gate component of Spinnaker. Foremast also supports x509 authentication on Gate.
 - Assumes AWS EBS is used for Packer bakes in Spinnaker Rosco
 
 
