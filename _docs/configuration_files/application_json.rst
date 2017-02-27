@@ -287,21 +287,15 @@ Defines ELB listeners. Expects a list of listeners.
 
     ``listener_policies`` : A list of listener policies to associate to an ELB. Must be created in AWS first.
 
-        | *Default*: `null`
+        | *Default*: ``[]``
 
         | *Type*: List of strings
 
     ``backend_policies`` : A list of backend server policies to associate to an ELB. Must be created in AWS first.
 
-        | *Default*: `null`
-
+        | *Default*: ``[]``
         | *Type*: List of strings
-
-        | *Example*:
-
-            ::
-
-                "backend_policies": ["WebSocket-Proxy-Protocol"]
+        | *Example*: ``["WebSocket-Proxy-Protocol"]```
 
 ``ports`` *Example*
 ^^^^^^^^^^^^^^^^^^^
@@ -320,7 +314,8 @@ Defines ELB listeners. Expects a list of listeners.
         {
           "certificate": "my_cert",
           "instance": "HTTP:8443",
-          "loadbalancer": "HTTPS:443"
+          "loadbalancer": "HTTPS:443",
+          "listener_policies": ["MyExamplePolicy"]
         }
       ]
 

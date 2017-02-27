@@ -158,18 +158,15 @@ class SpinnakerELB:
         env = boto3.session.Session(profile_name=self.env, region_name=self.region)
         elbclient = env.client('elb')
 
-        #Attach backend server policies to created ELB
+        # Attach backend server policies to created ELB
         for job in json.loads(json_data)['job']:
             for listener in job['listeners']:
-                policies = []
                 instance_port = listener['internalPort']
                 if listener['backendPolicies']:
-                    policies.extend(listener['backendPolicies'])
-                if policies:
-                    log.info("Adding backend server policies: %s", policies)
+                    log.info("Adding backend server policies: %s", listener['backendPolicies'])
                     elbclient.set_load_balancer_policies_for_backend_server(LoadBalancerName=self.app,
                                                                             InstancePort=instance_port,
-                                                                            PolicyNames=policies)
+                                                                            PolicyNames=listener['backendPolicies'])
 
 
     def add_stickiness(self):
