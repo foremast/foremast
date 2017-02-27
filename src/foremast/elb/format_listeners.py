@@ -106,6 +106,8 @@ def format_listeners(elb_settings=None, env='dev'):
     else:
         listener_policies = elb_settings.get('policies', [])
         listener_policies += elb_settings.get('listener_policies', [])
+        backend_policies = elb_settings.get('backend_policies', [])
+
         listeners = [{
             'externalPort': int(elb_settings['lb_port']),
             'externalProtocol': elb_settings['lb_proto'],
@@ -113,7 +115,7 @@ def format_listeners(elb_settings=None, env='dev'):
             'internalProtocol': elb_settings['i_proto'],
             'sslCertificateId': elb_settings['certificate'],
             'listenerPolicies': listener_policies,
-            'backendPolicies': elb_settings['backend_policies'],
+            'backendPolicies': backend_policies,
         }]
 
     for listener in listeners:
