@@ -61,9 +61,9 @@ def test_elb_format_listeners(mock_creds):
         'i_proto': 'HTTP',
         'lb_port': 80,
         'lb_proto': 'HTTP',
-        'policies': None,
-        'listener_policies': None,
-        'backend_policies': None,
+        'policies': [],
+        'listener_policies': [],
+        'backend_policies': [],
     }
     generated = [{
         'externalPort': 80,
@@ -71,8 +71,8 @@ def test_elb_format_listeners(mock_creds):
         'internalPort': 8080,
         'internalProtocol': 'HTTP',
         'sslCertificateId': None,
-        'listenerPolicies': None,
-        'backendPolicies': None,
+        'listenerPolicies': [],
+        'backendPolicies': [],
     }]
 
     # check defaults
@@ -123,12 +123,13 @@ def test_elb_format_cert_name():
     assert compiled_cert == format_cert_name(account='dev', certificate='mycert1')
 
 
+@mock.patch.object(SpinnakerELB, 'add_backend_policy')
 @mock.patch.object(SpinnakerELB, 'add_listener_policy')
 @mock.patch('foremast.elb.create_elb.check_task')
 @mock.patch('foremast.elb.create_elb.post_task')
 @mock.patch.object(SpinnakerELB, 'make_elb_json', return_value={})
 @mock.patch('foremast.elb.create_elb.get_properties')
-def test_elb_create_elb(mock_get_properties, mock_elb_json, mock_post_task, mock_check_task, mock_listener_policy):
+def test_elb_create_elb(mock_get_properties, mock_elb_json, mock_post_task, mock_check_task, mock_listener_policy, mock_backend_policy):
     """Test SpinnakerELB create_elb method"""
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb.create_elb()
@@ -216,4 +217,4 @@ def test_elb_add_backend_policy(mock_get_properties, mock_boto3_session):
 
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb.add_backend_policy(json.dumps(json_data))
-    assert client.set_load_balancer_policies_of_listener.called
+    assert client.set_load_balancer_policies_for_backend_server.called
