@@ -52,7 +52,7 @@ class SlackNotification:
             template_file='slack/pipeline-prepare-ran.j2',
             info=self.info)
         channel = '#deployments-prod'
-        post_slack_message(message, channel)
+        post_slack_message(message=message, channel=channel, username='pipeline-bot', icon_emoji=':gear:')
 
     def notify_slack_channel(self):
         """Post message to a defined Slack channel."""
@@ -61,5 +61,7 @@ class SlackNotification:
             info=self.info)
 
         if self.settings['pipeline']['notifications']['slack']:
-            post_slack_message(
-                message, self.settings['pipeline']['notifications']['slack'])
+            post_slack_message(message=message,
+                               channel=self.settings['pipeline']['notifications']['slack'],
+                               username='pipeline-bot',
+                               icon_emoji=':gear:')
