@@ -195,7 +195,7 @@ def test_elb_add_listener_policy(mock_get_properties, mock_boto3_session):
 
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb.add_listener_policy(json.dumps(json_data))
-    assert client.set_load_balancer_policies_of_listener.called
+    client.set_load_balancer_policies_of_listener.assert_called_with(LoadBalancerName='myapp', LoadBalancerPort=80, PolicyNames=['policy_name'])
 
 @mock.patch('foremast.elb.create_elb.boto3.session.Session')
 @mock.patch('foremast.elb.create_elb.get_properties')
@@ -217,4 +217,4 @@ def test_elb_add_backend_policy(mock_get_properties, mock_boto3_session):
 
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb.add_backend_policy(json.dumps(json_data))
-    assert client.set_load_balancer_policies_for_backend_server.called
+    client.set_load_balancer_policies_for_backend_server.assert_called_with(InstancePort=80, LoadBalancerName='myapp', PolicyNames=['policy_name'])
