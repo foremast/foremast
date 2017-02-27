@@ -24,7 +24,7 @@ from ..consts import SLACK_TOKEN
 LOG = logging.getLogger(__name__)
 
 
-def post_slack_message(message, channel):
+def post_slack_message(message=None, channel=None, username=None, icon_emoji=None):
     """Format the message and post to the appropriate slack channel.
 
     Args:
