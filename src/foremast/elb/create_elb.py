@@ -162,11 +162,12 @@ class SpinnakerELB:
         for job in json.loads(json_data)['job']:
             for listener in job['listeners']:
                 instance_port = listener['internalPort']
-                if listener['backendPolicies']:
-                    log.info("Adding backend server policies: %s", listener['backendPolicies'])
+                backend_policy_list = listener['backendPolicies']
+                if backend_policy_list:
+                    log.info("Adding backend server policies: %s", backend_policy_list)
                     elbclient.set_load_balancer_policies_for_backend_server(LoadBalancerName=self.app,
                                                                             InstancePort=instance_port,
-                                                                            PolicyNames=listener['backendPolicies'])
+                                                                            PolicyNames=backend_policy_list)
 
 
     def add_stickiness(self):

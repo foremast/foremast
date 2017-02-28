@@ -178,14 +178,17 @@ def test_elb_make_elb_json(mock_get_properties, mock_get_subnets, mock_format_li
 @mock.patch('foremast.elb.create_elb.boto3.session.Session')
 @mock.patch('foremast.elb.create_elb.get_properties')
 def test_elb_add_listener_policy(mock_get_properties, mock_boto3_session):
+    test_app = 'myapp'
+    test_port = 80
+    test_policy_list = ['policy_name']
 
     json_data = {
        'job': [
             {
                 'listeners': [
                     {
-                        'externalPort': 80,
-                        'listenerPolicies': ['policy_name']
+                        'externalPort': test_port,
+                        'listenerPolicies': test_policy_list
                     },
                 ],
             }
@@ -195,19 +198,22 @@ def test_elb_add_listener_policy(mock_get_properties, mock_boto3_session):
 
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb.add_listener_policy(json.dumps(json_data))
-    client.set_load_balancer_policies_of_listener.assert_called_with(LoadBalancerName='myapp', LoadBalancerPort=80, PolicyNames=['policy_name'])
+    client.set_load_balancer_policies_of_listener.assert_called_with(LoadBalancerName=test_app, LoadBalancerPort=test_port, PolicyNames=test_policy_list)
 
 @mock.patch('foremast.elb.create_elb.boto3.session.Session')
 @mock.patch('foremast.elb.create_elb.get_properties')
 def test_elb_add_backend_policy(mock_get_properties, mock_boto3_session):
+    test_app = 'myapp'
+    test_port = 80
+    test_policy_list = ['policy_name']
 
     json_data = {
        'job': [
             {
                 'listeners': [
                     {
-                        'internalPort': 80,
-                        'backendPolicies': ['policy_name']
+                        'internalPort': test_port,
+                        'backendPolicies': test_policy_list
                     },
                 ],
             }
@@ -217,4 +223,4 @@ def test_elb_add_backend_policy(mock_get_properties, mock_boto3_session):
 
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb.add_backend_policy(json.dumps(json_data))
-    client.set_load_balancer_policies_for_backend_server.assert_called_with(InstancePort=80, LoadBalancerName='myapp', PolicyNames=['policy_name'])
+    client.set_load_balancer_policies_for_backend_server.assert_called_with(LoadBalancerName=test_app, InstancePort=test_port, PolicyNames=test_policy_list)
