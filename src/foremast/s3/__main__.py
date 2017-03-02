@@ -52,10 +52,10 @@ def main():
     rendered_props = get_properties(args.properties)
     if rendered_props['pipeline']['type'] == 's3':
         s3app = S3Apps(app=args.app,
-                                 env=args.env,
-                                 region=args.region,
-                                 prop_path=args.properties
-                                 )
+                       env=args.env,
+                       region=args.region,
+                       prop_path=args.properties
+                       )
         s3app.create_bucket()
     else:
         init_properties(**vars(args))
