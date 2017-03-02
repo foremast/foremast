@@ -119,10 +119,19 @@ class ForemastRunner(object):
         utils.banner("Creating IAM")
         iam.create_iam_resources(env=self.env, app=self.app)
 
-    def create_s3(self):
+    def create_archaius(self):
         """Create S3 bucket for Archaius."""
         utils.banner("Creating S3")
         s3.init_properties(env=self.env, app=self.app)
+
+    def create_s3app(self):
+        """Create S3 infra for s3 applications"""
+        utils.banner("Creating S3 App Infrastructure")
+        s3obj = s3.S3Apps(app=self.app,
+                           env=self.env,
+                           region=self.region,
+                           prop_path=self.json_path)
+        s3obj.create_bucket()
 
     def create_secgroups(self):
         """Create security groups as defined in the configs."""
@@ -205,18 +214,22 @@ def prepare_infrastructure():
 
     runner.write_configs()
     runner.create_app()
-    runner.create_iam()
-    runner.create_s3()
-    runner.create_secgroups()
 
     eureka = runner.configs[runner.env]['app']['eureka_enabled']
     deploy_type = runner.configs['pipeline']['type']
+
+    if  deploy_type != 's3':
+        runner.create_iam()
+        runner.create_archaius()
+        runner.create_secgroups()
 
     if eureka:
         LOG.info("Eureka Enabled, skipping ELB and DNS setup")
     elif deploy_type == "lambda":
         LOG.info("Lambda Enabled, skipping ELB and DNS setup")
         runner.create_awslambda()
+    elif deploy_type == "s3":
+        runner.create_s3app()
     else:
         LOG.info("No Eureka, running ELB and DNS setup")
         runner.create_elb()
