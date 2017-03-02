@@ -22,9 +22,11 @@ Help: ``python -m src.foremast.s3 -h``
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_env
+from ..args import add_app, add_debug, add_env, add_properties, add_region
 from ..consts import LOGGING_FORMAT
+from ..utils import get_properties
 from .create_archaius import init_properties
+from .s3apps import S3Apps
 
 LOG = logging.getLogger(__name__)
 
@@ -38,6 +40,8 @@ def main():
     add_debug(parser)
     add_app(parser)
     add_env(parser)
+    add_properties(parser)
+    add_region(parser)
 
     args = parser.parse_args()
 
@@ -45,7 +49,16 @@ def main():
 
     LOG.debug('Args: %s', vars(args))
 
-    init_properties(**vars(args))
+    rendered_props = get_properties(args.properties)
+    if rendered_props['pipeline']['type'] == 's3':
+        s3app = S3Apps(app=args.app,
+                                 env=args.env,
+                                 region=args.region,
+                                 prop_path=args.properties
+                                 )
+        s3app.create_bucket()
+    else:
+        init_properties(**vars(args))
 
 
 if __name__ == '__main__':
