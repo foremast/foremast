@@ -24,10 +24,10 @@ from ..utils import get_properties, get_details
 LOG = logging.getLogger(__name__)
 
 class S3Apps(object):
-    """Handles infrastructure around depolying static content to S3"""
+    """Handles infrastructure around depolying static content to S3. Setups Bucket and Policy"""
 
     def __init__(self, app, env, region, prop_path):
-        """S3 deployment object.
+        """S3 application object. Setups Bucket and policies for S3 applications.
 
         Args:
             app (str): Application name
