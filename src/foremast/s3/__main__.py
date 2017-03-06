@@ -27,6 +27,7 @@ from ..consts import LOGGING_FORMAT
 from ..utils import get_properties
 from .create_archaius import init_properties
 from .s3apps import S3Apps
+from .s3deploy import S3Deployment
 
 LOG = logging.getLogger(__name__)
 
@@ -51,12 +52,20 @@ def main():
 
     rendered_props = get_properties(args.properties)
     if rendered_props['pipeline']['type'] == 's3':
-        s3app = S3Apps(app=args.app,
+        #s3app = S3Apps(app=args.app,
+        #               env=args.env,
+        #               region=args.region,
+    #                   prop_path=args.properties
+    #                   )
+        #s3app.create_bucket()
+
+        s3deploy = S3Deployment(app=args.app,
                        env=args.env,
                        region=args.region,
-                       prop_path=args.properties
+                       prop_path=args.properties,
+                       artifact_path="../../testdir"
                        )
-        s3app.create_bucket()
+        s3deploy.upload_artifacts()
     else:
         init_properties(**vars(args))
 
