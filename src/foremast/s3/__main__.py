@@ -22,7 +22,7 @@ Help: ``python -m src.foremast.s3 -h``
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_env, add_properties, add_region
+from ..args import add_app, add_debug, add_env, add_properties, add_region, add_artifact_path, add_artifact_version
 from ..consts import LOGGING_FORMAT
 from ..utils import get_properties
 from .create_archaius import init_properties
@@ -43,6 +43,8 @@ def main():
     add_env(parser)
     add_properties(parser)
     add_region(parser)
+    add_artifact_path(parser)
+    add_artifact_version(parser)
 
     args = parser.parse_args()
 
@@ -63,8 +65,8 @@ def main():
                        env=args.env,
                        region=args.region,
                        prop_path=args.properties,
-                       artifact_path="../../testdir",
-                       artifact_version='20'
+                       artifact_path=args.artifact_path,
+                       artifact_version=args.artifact_version
                        )
         s3deploy.upload_artifacts()
     else:

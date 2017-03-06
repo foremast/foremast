@@ -71,3 +71,13 @@ def add_region(parser):
                         '--region',
                         default='us-east-1',
                         help='Region to create Resources in, e.g. us-east-1')
+
+def add_artifact_path(parser):
+    """Add an `artifact-path` flag to _parser_."""
+    parser.add_argument('--artifact-path',
+                        help='Local path to artifact directory for S3 deployments')
+
+def add_artifact_version(parser):
+    """Add an `artifact-version` flag to _parser_."""
+    parser.add_argument('--artifact-version',
+                        help='Artifact version for S3 deployments')

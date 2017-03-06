@@ -16,9 +16,9 @@
 
 import json
 import logging
-import os
 
 import boto3
+import sh
 
 from ..utils import get_properties, get_details
 
@@ -52,41 +52,28 @@ class S3Deployment(object):
         if self.s3path[0] == '/': #remove leading slash
             self.s3path[0] = ''
 
+    def setup_pathing(self):
+        path_format = "{}/{}/{}"
+        s3_format = "s3://{}"
+        self.version_path = path_format.format(self.bucket, self.s3path, self.version).replace('//', '/')
+        self.latest_path = path_format.format(self.bucket, self.s3path, "LATEST").replace('//', '/')
+        self.s3_version_uri = s3_format.format(self.version_path)
+        self.s3_latest_uri = s3_format.format(self.latest_path)
+
     def upload_artifacts(self):
         """Uploads the artifacts to S3 and copies to LATEST depending on strategy"""
-        self._recursive_upload()
-        self._copy_to_latest()
+        self.setup_pathing()
+        self._upload_artifacts()
+        self._sync_to_latest()
 
-    def _recursive_upload(self):
+    def _upload_artifacts(self):
         """Recursively uploads a directory and all files and subdirectories to S3"""
-        for root, dirs, files in os.walk(self.artifact_path):
-            trimmed_root = root.replace(self.artifact_path, "") #removes artifact path from root path
-            for filename in files:
-                abspath = os.path.join(root, filename)
-                relpath = os.path.join(trimmed_root, filename)
-                full_s3_path = "{}/{}/{}".format(self.s3path, self.version, relpath).replace('//', '/')
-                with open(abspath) as f:
-                    object_data = f.read()
-                    LOG.debug("Uploading %s to %s", full_s3_path, self.bucket)
-                    self.s3client.put_object(Body=object_data, Bucket=self.bucket, Key=full_s3_path)
+        output = sh.aws.s3.sync(self.artifact_path, self.s3_version_uri, "--profile", self.env)
+        LOG.debug(output)
+        LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
-    def _copy_to_latest(self):
-        """Copies deployed version to LATEST directory"""
-
-        copy_path = "{}/{}".format(self.s3path, self.version).replace('//', '/')
-        prefix_path = "{}/".format(copy_path)
-        version_string = "/{}/".format(self.version)
-
-        resp = self.s3client.list_objects(Bucket=self.bucket, Prefix=prefix_path)
-        allobjs = resp['Contents']
-
-        for obj in allobjs:
-            latest_path = obj['Key'].replace(version_string, '/LATEST/')
-            print(latest_path)
-            copy_source = {
-                'Bucket': self.bucket,
-                'Key': obj['Key']
-            }
-            self.s3client.copy(copy_source, self.bucket, latest_path)
-            LOG.debug("Copied %s to %s", obj['Key'], latest_path)
-        LOG.info("Copied Version %s to LATEST directory", self.version)
+    def _sync_to_latest(self):
+        """Uses AWS CLI to sync versioned directory to LATEST directory in S3"""
+        output = sh.aws.s3.sync(self.s3_version_uri, self.s3_latest_uri, "--profile", self.env)
+        LOG.debug(output)
+        LOG.info("Copied version %s to LATEST", self.version)
