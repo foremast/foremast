@@ -30,6 +30,8 @@
   "stages": [
     {% if data.app.deploy_type == "lambda" %}
       {# coming soon {% include "pipeline/stage-tagger-lambda.json.j2" %}, #}
+    {% if data.app.deploy_type == "s3" %}
+      {# coming soon {% include "pipeline/stage-tagger-s3.json.j2" %}, #}
     {% else %}
       {% include "pipeline/stage-bake.json.j2" %}
     {% endif %}
