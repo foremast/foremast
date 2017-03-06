@@ -18,3 +18,4 @@
 from .create_archaius import *
 from .destroy_s3 import *
 from .s3apps import *
+from .s3deploy import *

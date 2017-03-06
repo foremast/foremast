@@ -52,6 +52,8 @@ class ForemastRunner(object):
         self.region = os.getenv("REGION")
         self.repo = os.getenv("GIT_REPO")
         self.runway_dir = os.getenv("RUNWAY_DIR")
+        self.artifact_path = os.getenv("ARTIFACT_PATH")
+        self.artifact_version = os.getenv("ARTIFACT_VERSION")
 
         self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
@@ -132,6 +134,28 @@ class ForemastRunner(object):
                            region=self.region,
                            prop_path=self.json_path)
         s3obj.create_bucket()
+
+    def deploy_s3app(self):
+        """Deploys artifacts contents to S3 bucket"""
+        utils.banner("Deploying S3 App")
+        s3obj = s3.S3Deployment(app=self.app,
+                                env=self.env,
+                                region=self.region,
+                                prop_path=self.json_path,
+                                artifact_path=self.artifact_path,
+                                artifact_version=self.artifact_version)
+        s3obj.upload_artifacts()
+
+    def promote_s3app(self):
+        """promotes S3 deployment to LATEST"""
+        utils.banner("Promoting S3 App")
+        s3obj = s3.S3Deployment(app=self.app,
+                                env=self.env,
+                                region=self.region,
+                                prop_path=self.json_path,
+                                artifact_path=self.artifact_path,
+                                artifact_version=self.artifact_version)
+        s3obj.promote_artifacts()
 
     def create_secgroups(self):
         """Create security groups as defined in the configs."""
@@ -310,6 +334,15 @@ def rebuild_pipelines(*args):
             except Exception as error:
                 LOG.warning('Error updating pipeline for %s', app_name)
 
+def deploy_s3app():
+    """Entry point for application setup and s3 deployments"""
+    runner = ForemastRunner()
+    runner.deploy_s3app()
+
+def promote_s3app():
+    """Entry point for application setup and s3 promotions"""
+    runner = ForemastRunner()
+    runner.promote_s3app()
 
 def debug_flag():
     """Set logging level for entry points."""
