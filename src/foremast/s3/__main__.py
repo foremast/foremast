@@ -63,7 +63,8 @@ def main():
                        env=args.env,
                        region=args.region,
                        prop_path=args.properties,
-                       artifact_path="../../testdir"
+                       artifact_path="../../testdir",
+                       artifact_version='20'
                        )
         s3deploy.upload_artifacts()
     else:
