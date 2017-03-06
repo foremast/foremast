@@ -108,7 +108,7 @@ class ForemastRunner(object):
             elif pipeline_type == 'lambda':
                 spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
             elif pipeline_type == 's3':
-                spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs
+                spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
             elif pipeline_type == 'manual':
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             else:
