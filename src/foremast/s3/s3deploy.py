@@ -16,9 +16,7 @@
 
 import json
 import logging
-
-import boto3
-import sh
+import subprocess
 
 from ..utils import get_properties, get_details
 
@@ -42,8 +40,6 @@ class S3Deployment(object):
         self.region = region
         self.artifact_path = artifact_path
         self.version = artifact_version
-        boto_sess = boto3.session.Session(profile_name=env)
-        self.s3client = boto_sess.client('s3')
         generated = get_details(app=app, env=env)
         self.bucket = generated.s3_app_bucket()
         properties = get_properties(prop_path)
@@ -53,12 +49,13 @@ class S3Deployment(object):
             self.s3path[0] = ''
 
     def setup_pathing(self):
+        """Formats pathing for S3 deployments"""
         path_format = "{}/{}/{}"
         s3_format = "s3://{}"
-        self.version_path = path_format.format(self.bucket, self.s3path, self.version).replace('//', '/')
-        self.latest_path = path_format.format(self.bucket, self.s3path, "LATEST").replace('//', '/')
-        self.s3_version_uri = s3_format.format(self.version_path)
-        self.s3_latest_uri = s3_format.format(self.latest_path)
+        version_path = path_format.format(self.bucket, self.s3path, self.version).replace('//', '/')
+        latest_path = path_format.format(self.bucket, self.s3path, "LATEST").replace('//', '/')
+        self.s3_version_uri = s3_format.format(version_path)
+        self.s3_latest_uri = s3_format.format(latest_path)
 
     def upload_artifacts(self):
         """Uploads the artifacts to S3 and copies to LATEST depending on strategy"""
@@ -68,12 +65,14 @@ class S3Deployment(object):
 
     def _upload_artifacts(self):
         """Recursively uploads a directory and all files and subdirectories to S3"""
-        output = sh.aws.s3.sync(self.artifact_path, self.s3_version_uri, "--profile", self.env)
-        LOG.debug(output)
+        cmd = 'aws s3 sync {} {} --delete --profile {}'.format(self.artifact_path, self.s3_version_uri, self.env)
+        p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
+        LOG.debug(p.stdout)
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
     def _sync_to_latest(self):
         """Uses AWS CLI to sync versioned directory to LATEST directory in S3"""
-        output = sh.aws.s3.sync(self.s3_version_uri, self.s3_latest_uri, "--profile", self.env)
-        LOG.debug(output)
+        cmd = 'aws s3 sync {} {} --delete --profile {}'.format(self.s3_version_uri, self.s3_latest_uri, self.env)
+        p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
+        LOG.debug(p.stdout)
         LOG.info("Copied version %s to LATEST", self.version)
