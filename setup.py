@@ -84,6 +84,8 @@ setup(
             'foremast-scaling-policy=foremast.runner:create_scaling_policy',
             'rebuild_pipelines=foremast.runner:rebuild_pipelines',
             'foremast-pipeline-rebuild=foremast.runner:rebuild_pipelines',
+            'foremast-deploy-s3app=foremast.runner:deploy_s3app',
+            'foremast-promote-s3app=foremast.runner:promote_s3app',
             'slack-notify=foremast.slacknotify.__main__:main',
             'foremast=foremast.__main__:main',
         ]

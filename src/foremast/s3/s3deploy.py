@@ -42,8 +42,8 @@ class S3Deployment(object):
         self.version = artifact_version
         generated = get_details(app=app, env=env)
         self.bucket = generated.s3_app_bucket()
-        properties = get_properties(prop_path)
-        self.s3props = properties[self.env]['s3']
+        self.properties = get_properties(prop_path)
+        self.s3props = self.properties[self.env]['s3']
         self.s3path = self.s3props['path']
         if self.s3path[0] == '/': #remove leading slash
             self.s3path[0] = ''
@@ -60,10 +60,18 @@ class S3Deployment(object):
     def upload_artifacts(self):
         """Uploads the artifacts to S3 and copies to LATEST depending on strategy"""
         self.setup_pathing()
-        self._upload_artifacts()
+        deploy_strategy = self.properties[self.env]["deploy_strategy"]
+        if deploy_strategy == "highlander":
+            self._upload_artifacts_to_version()
+            self._sync_to_latest()
+        elif deploy_strategy == "redblack":
+            self._upload_artifacts_to_version()
+
+    def promote_artifacts(self):
+        """Promotes artifact version to LATEST"""
         self._sync_to_latest()
 
-    def _upload_artifacts(self):
+    def _upload_artifacts_to_version(self):
         """Recursively uploads a directory and all files and subdirectories to S3"""
         cmd = 'aws s3 sync {} {} --delete --profile {}'.format(self.artifact_path, self.s3_version_uri, self.env)
         p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
