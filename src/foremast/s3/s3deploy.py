@@ -14,7 +14,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import json
 import logging
 import subprocess
 
@@ -44,9 +43,10 @@ class S3Deployment(object):
         self.bucket = generated.s3_app_bucket()
         self.properties = get_properties(prop_path)
         self.s3props = self.properties[self.env]['s3']
-        self.s3path = self.s3props['path']
-        if self.s3path[0] == '/': #remove leading slash
-            self.s3path[0] = ''
+        self.s3path = self.s3props['path'].lstrip('/')
+        self.s3_version_uri = ''
+        self.s3_latest_uri = ''
+        self.setup_pathing()
 
     def setup_pathing(self):
         """Formats pathing for S3 deployments"""
@@ -59,13 +59,14 @@ class S3Deployment(object):
 
     def upload_artifacts(self):
         """Uploads the artifacts to S3 and copies to LATEST depending on strategy"""
-        self.setup_pathing()
         deploy_strategy = self.properties[self.env]["deploy_strategy"]
         if deploy_strategy == "highlander":
             self._upload_artifacts_to_version()
             self._sync_to_latest()
         elif deploy_strategy == "redblack":
             self._upload_artifacts_to_version()
+        else:
+            raise NotImplemented
 
     def promote_artifacts(self):
         """Promotes artifact version to LATEST"""
@@ -75,12 +76,12 @@ class S3Deployment(object):
         """Recursively uploads a directory and all files and subdirectories to S3"""
         cmd = 'aws s3 sync {} {} --delete --profile {}'.format(self.artifact_path, self.s3_version_uri, self.env)
         p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug(p.stdout)
+        LOG.debug("Upload Command Ouput: %s", p.stdout)
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
     def _sync_to_latest(self):
         """Uses AWS CLI to sync versioned directory to LATEST directory in S3"""
         cmd = 'aws s3 sync {} {} --delete --profile {}'.format(self.s3_version_uri, self.s3_latest_uri, self.env)
         p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug(p.stdout)
+        LOG.debug("Sync to latest command output: %s", p.stdout)
         LOG.info("Copied version %s to LATEST", self.version)
