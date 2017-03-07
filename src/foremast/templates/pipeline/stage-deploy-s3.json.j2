@@ -6,7 +6,7 @@
     "name": "Deploy S3 [{{ data.app.environment }}]",
     "failPipeline": true,
     "master": "JenkinsCI",
-    "job": "s3-promote",
+    "job": "s3-deploy",
     "parameters": {
       "PROJECT": "{{ data.app.group_name }}",
       "GIT_REPO": "{{ data.app.repo_name }}",
