@@ -20,7 +20,6 @@ import json
 import logging
 from pprint import pformat
 
-from ..consts import DEFAULT_EC2_SECURITYGROUPS
 from ..utils import generate_encoded_user_data, get_template
 
 LOG = logging.getLogger(__name__)
