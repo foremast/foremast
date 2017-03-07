@@ -47,7 +47,6 @@ class S3Apps(object):
 
     def create_bucket(self):
         """Creates or updates bucket based on app name"""
-        print(self.bucket)
         resp = self.s3client.create_bucket(
             ACL=self.s3props['bucket_acl'],
             Bucket=self.bucket
