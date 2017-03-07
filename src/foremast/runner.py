@@ -31,8 +31,9 @@ import logging
 import os
 
 import gogoutils
-from foremast import (app, autoscaling_policy, awslambda, configs, consts, dns, elb, iam, pipeline, s3, securitygroup,
-                      slacknotify, utils)
+from foremast import (app, autoscaling_policy, awslambda, configs, consts, dns,
+                      elb, iam, pipeline, s3, securitygroup, slacknotify,
+                      utils)
 
 from .args import add_debug
 
@@ -106,7 +107,7 @@ class ForemastRunner(object):
             elif pipeline_type == 'lambda':
                 spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
             elif pipeline_type == 's3':
-                spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
+                spinnakerpipeline = pipeline.SpinnakerPipelineS3(**kwargs)
             elif pipeline_type == 'manual':
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             else:
