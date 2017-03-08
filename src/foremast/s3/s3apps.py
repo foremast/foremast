@@ -54,6 +54,8 @@ class S3Apps(object):
         LOG.info('%s - S3 Bucket Upserted', self.bucket)
         if self.s3props['bucket_policy']:
             self._attach_bucket_policy()
+        if self.s3props['website']['enabled']:
+            self._set_website_settings()
 
     def _attach_bucket_policy(self):
         """attaches a bucket policy to app bucket"""
@@ -61,3 +63,12 @@ class S3Apps(object):
         resp = self.s3client.put_bucket_policy(Bucket=self.bucket,
                                                Policy=policy_str)
         LOG.info('S3 Bucket Policy Attached')
+
+    def _set_website_settings(self):
+        """Sets S3 static website setting on bucket"""
+        website_config = {'ErrorDocument': {'Key': self.s3props['website']['error_document']},
+                          'IndexDocument': {'Suffix': self.s3props['website']['index_suffix']}
+                         }
+        resp = self.s3client.put_bucket_website(Bucket=self.bucket,
+                                                WebsiteConfiguration=website_config)
+        LOG.info('S3 website settings updated')
