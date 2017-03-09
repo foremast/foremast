@@ -25,7 +25,7 @@ import requests
 
 from ..consts import API_URL
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import get_details, get_properties, get_subnets, get_template
+from ..utils import get_details, get_properties, get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_s3 import construct_pipeline_block_s3
 from .create_pipeline import SpinnakerPipeline
@@ -90,9 +90,8 @@ class SpinnakerPipelineS3(SpinnakerPipeline):
         """Main wrapper for pipeline creation.
         1. Runs clean_pipelines to clean up existing ones
         2. determines which environments the pipeline needs
-        3. gets all subnets for template rendering
-        4. Renders all of the pipeline blocks as defined in configs
-        5. Runs post_pipeline to create pipeline
+        3. Renders all of the pipeline blocks as defined in configs
+        4. Runs post_pipeline to create pipeline
         """
         clean_pipelines(app=self.app_name, settings=self.settings)
 
@@ -106,7 +105,6 @@ class SpinnakerPipelineS3(SpinnakerPipeline):
         self.log.info('Environments and Regions for Pipelines:\n%s',
                       json.dumps(regions_envs, indent=4))
 
-        subnets = get_subnets()
 
         pipelines = {}
         for region, envs in regions_envs.items():
@@ -116,18 +114,12 @@ class SpinnakerPipelineS3(SpinnakerPipeline):
 
             previous_env = None
             for env in envs:
-                try:
-                    region_subnets = {region: subnets[env][region]}
-                except KeyError:
-                    self.log.info('%s is not available for %s.', env, region)
-                    continue
 
                 block = construct_pipeline_block_s3(
                     env=env,
                     generated=self.generated,
                     previous_env=previous_env,
                     region=region,
-                    region_subnets=region_subnets,
                     settings=self.settings[env],
                     pipeline_data=self.settings['pipeline'])
                 pipelines[region]['stages'].extend(json.loads(block))

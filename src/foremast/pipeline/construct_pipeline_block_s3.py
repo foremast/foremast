@@ -29,7 +29,6 @@ def construct_pipeline_block_s3(env='',
                              generated=None,
                              previous_env=None,
                              region='us-east-1',
-                             region_subnets=None,
                              settings=None,
                              pipeline_data=None):
     """Create the Pipeline JSON from template.
@@ -44,8 +43,6 @@ def construct_pipeline_block_s3(env='',
             Trigger.
         region (str): AWS Region to deploy to.
         settings (dict): Environment settings from configurations.
-        region_subnets (dict): Subnets for a Region, e.g.
-            {'us-west-2': ['us-west-2a', 'us-west-2b', 'us-west-2c']}.
 
     Returns:
         dict: Pipeline JSON template rendered with configurations.
