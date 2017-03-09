@@ -1,5 +1,7 @@
 [
     {% include "pipeline/stage-judgement-nonprod.json.j2" %},
     {% include "pipeline/stage-infrastructure-setup-s3.json.j2" %},
-    {% include "pipeline/stage-deploy-s3.json.j2" %}
+    {% include "pipeline/stage-deploy-s3.json.j2" %},
+    {% include "pipeline/stage-judgement-nonprod.json.j2" %},
+    {% include "pipeline/stage-promote-s3.json.j2" %}
 ]
