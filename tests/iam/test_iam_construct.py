@@ -123,3 +123,23 @@ def test_construct_s3_buckets(requests_get, get_base_settings):
     assert len(allow_list_policy['Resource']) == 3
 
     assert len(allow_edit_policy['Resource']) == 3
+
+@mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
+@mock.patch('foremast.utils.credentials.requests.get')
+@mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
+def test_construct_sdb_domains(requests_get, get_base_settings):
+    """Check SimpleDB Policy with multiple Domains listed."""
+    pipeline_settings = get_base_settings
+    pipeline_settings.update({'services': {'sdb': ['Domain1', 'Domain2']}})
+
+    construct_policy_kwargs = {'app': 'unicornforrest',
+                               'env': 'dev',
+                               'group': 'forrest',
+                               'pipeline_settings': pipeline_settings}
+
+    policy_json = construct_policy(**construct_policy_kwargs)
+    policy = json.loads(policy_json)
+    assert len(policy['Statement']) == 1
+    assert len(policy['Statement'][0]['Resource']) == 2
+    assert policy['Statement'][0]['Resource'][0].endswith('Domain1')
+    assert policy['Statement'][0]['Resource'][1].endswith('Domain2')
