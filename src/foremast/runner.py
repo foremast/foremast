@@ -337,11 +337,13 @@ def rebuild_pipelines(*args):
 def deploy_s3app():
     """Entry point for application setup and s3 deployments"""
     runner = ForemastRunner()
+    runner.write_configs()
     runner.deploy_s3app()
 
 def promote_s3app():
     """Entry point for application setup and s3 promotions"""
     runner = ForemastRunner()
+    runner.write_configs()
     runner.promote_s3app()
 
 def debug_flag():
