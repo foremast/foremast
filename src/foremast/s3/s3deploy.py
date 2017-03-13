@@ -15,9 +15,11 @@
 #   limitations under the License.
 
 import logging
+import os
 import subprocess
 
 from ..utils import get_properties, get_details
+from ..exceptions import S3ArtifactNotFound
 
 LOG = logging.getLogger(__name__)
 
@@ -74,6 +76,11 @@ class S3Deployment(object):
 
     def _upload_artifacts_to_version(self):
         """Recursively uploads a directory and all files and subdirectories to S3"""
+        # exit if empty artifact path
+        if not os.listdir(self.artifact_path) or not self.artifact_path:
+            raise S3ArtifactNotFound
+
+
         cmd = 'aws s3 sync {} {} --delete --profile {}'.format(self.artifact_path, self.s3_version_uri, self.env)
         p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
         LOG.debug("Upload Command Ouput: %s", p.stdout)
