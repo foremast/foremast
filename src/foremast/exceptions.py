@@ -144,3 +144,7 @@ class RequiredKeyNotFound(ForemastError):
 class PrimaryDNSRecordNotFound(ForemastError):
     """Required Primary DNS record does not exist"""
     pass
+
+class S3ArtifactNotFound(ForemastError):
+    """Could not find Artifact to upload to S3"""
+    pass
