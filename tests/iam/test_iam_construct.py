@@ -91,11 +91,11 @@ def test_construct_s3(requests_get, get_base_settings):
 
     allow_list_policy, allow_edit_policy = policy['Statement']
 
-    assert len(allow_list_policy['Action']) == 1
+    assert len(allow_list_policy['Action']) == 3
     assert 's3:ListBucket' in allow_list_policy['Action']
     assert len(allow_list_policy['Resource']) == 1
 
-    assert len(allow_edit_policy['Action']) == 3
+    assert len(allow_edit_policy['Action']) == 5
     assert all(('s3:{0}Object'.format(action) in allow_edit_policy['Action'] for action in ('Delete', 'Get', 'Put')))
     assert len(allow_edit_policy['Resource']) == 1
 
