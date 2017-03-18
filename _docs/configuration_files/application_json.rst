@@ -124,6 +124,14 @@ ASG Health check type (EC2 or ELB)
        - ``"ELB"``
        - ``"EC2"``
 
+``hc_grace_period``
+************
+
+ASG health check grace period to delay sending of health check requests
+
+    | *Default*: ``180``
+    | *Units*: Seconds
+
 ``max_inst``
 *************
 
