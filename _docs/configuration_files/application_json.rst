@@ -124,12 +124,16 @@ ASG Health check type (EC2 or ELB)
        - ``"ELB"``
        - ``"EC2"``
 
-``hc_grace_period``
+``app_grace_period``
 ************
 
-ASG health check grace period to delay sending of health check requests
+App specific health check grace period (added onto default ASG healthcheck grace period) to delay sending 
+of health check requests. This is useful in the event your application takes longer to boot than the 
+default hc_grace_period defined in templates. For example, hc_grace_period may be 180 seconds, but an app 
+may need a variable amount of time to boot (say 30 seconds extra). This will add 180 + 30 to calculate 
+the overall hc_grace_period of 210 seconds.
 
-    | *Default*: ``180``
+    | *Default*: ``0``
     | *Units*: Seconds
 
 ``max_inst``
