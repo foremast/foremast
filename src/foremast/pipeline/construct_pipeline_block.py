@@ -137,6 +137,11 @@ def construct_pipeline_block(env='',
         data['asg'].update({'hc_type': 'EC2'})
         LOG.info('Switching health check type to: EC2')
 
+    # Aggregate the default grace period, plus the exposed app_grace_period
+    # to allow per repo extension of asg healthcheck grace period
+    hc_grace_period = data['asg'].get('hc_grace_period')
+    hc_grace_period += data['asg'].get('app_grace_period')
+
     data['app'].update({
         'appname': gen_app_name,
         'repo_name': generated.repo,
@@ -155,6 +160,7 @@ def construct_pipeline_block(env='',
 
     data['asg'].update({
         'hc_type': data['asg'].get('hc_type').upper(),
+        'hc_grace_period': hc_grace_period,
         'provider_healthcheck': json.dumps(health_checks.providers),
         'enable_public_ips': json.dumps(settings['asg']['enable_public_ips']),
         'has_provider_healthcheck': health_checks.has_healthcheck,
