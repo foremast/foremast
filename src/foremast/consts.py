@@ -31,7 +31,11 @@ from configparser import ConfigParser, DuplicateSectionError
 from os.path import expanduser, expandvars
 
 LOG = logging.getLogger(__name__)
+LOGGING_FORMAT = '%(asctime)s [%(levelname)s] %(name)s:%(funcName)s:%(lineno)d - %(message)s'
+SHORT_LOGGING_FORMAT = '[%(levelname)s] %(message)s'
 
+logging.basicConfig(format=LOGGING_FORMAT)
+logging.getLogger(__package__.split('.')[0]).setLevel(logging.INFO)
 
 def validate_key_values(config_handle, section, key, default=None):
     """Warn when *key* is missing from configuration *section*.
@@ -132,6 +136,3 @@ HEADERS = {
     'content-type': 'application/json',
     'user-agent': 'foremast',
 }
-
-LOGGING_FORMAT = '%(asctime)s [%(levelname)s] %(name)s:%(funcName)s:%(lineno)d - %(message)s'
-SHORT_LOGGING_FORMAT = '[%(levelname)s] %(message)s'
