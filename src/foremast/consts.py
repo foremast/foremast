@@ -51,7 +51,7 @@ def validate_key_values(config_handle, section, key, default=None):
     """
     try:
         config_handle.add_section(section)
-        LOG.warning('Section missing from configurations: [%s]', section)
+        LOG.info('Section missing from configurations: [%s]', section)
     except DuplicateSectionError:
         pass
 
