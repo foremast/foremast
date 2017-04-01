@@ -104,7 +104,7 @@ def find_config():
     cfg_file = configurations.read(config_locations)
 
     if not cfg_file:
-        LOG.warning('No configuration found in the following locations:\n\n%s\n', '\n'.join(config_locations))
+        LOG.warning('No configuration found in the following locations:\n%s', '\n'.join(config_locations))
 
     return configurations
 
