@@ -45,6 +45,14 @@ Add Firehose access to streams listed.
    | *Type*: list
    | *Default*: ``[]``
 
+``kinesis``
+************
+
+Add Kinesis Streams access to streams listed.
+
+   | *Type*: list
+   | *Default*: ``[]``
+
 ``lambda``
 **********
 
@@ -60,6 +68,14 @@ Add S3 access. You may need to override default templates, see :ref:`templates_p
 
    | *Type*: bool -or- list
    | *Default*: ``false``
+
+``sdb``
+************
+
+Add SimpleDB access to SimpleDB Domains listed.
+
+   | *Type*: list
+   | *Default*: ``[]``
 
 ``ses``
 *******
