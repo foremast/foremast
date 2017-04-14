@@ -79,14 +79,14 @@ class S3Deployment(object):
         if not os.listdir(self.artifact_path) or not self.artifact_path:
             raise S3ArtifactNotFound
 
-        cmd = 'aws s3 sync {} {} --delete --profile {}'.format(self.artifact_path, self.s3_version_uri, self.env)
+        cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path, self.s3_version_uri, self.env)
         p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
         LOG.debug("Upload Command Ouput: %s", p.stdout)
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
     def _sync_to_latest(self):
         """Uses AWS CLI to sync versioned directory to LATEST directory in S3"""
-        cmd = 'aws s3 sync {} {} --delete --profile {}'.format(self.s3_version_uri, self.s3_latest_uri, self.env)
+        cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.s3_version_uri, self.s3_latest_uri, self.env)
         p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
         LOG.debug("Sync to latest command output: %s", p.stdout)
         LOG.info("Copied version %s to LATEST", self.version)
