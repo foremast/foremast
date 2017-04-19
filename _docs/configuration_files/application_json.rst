@@ -148,7 +148,7 @@ Minimum number of instances your auto-scaling group should have at all times. Th
 ``ssh_keypair``
 *******************
 
-SSH key that your EC2 instances will use. Must already be created in AWS.
+SSH key that your EC2 instances will use. Must already be created in AWS. This replaces the non-functional and deprecated app_ssh_key configuration key.
 
     | *Default*: ``"{{ account }}_{{ region }}_default"`` - {{ account }} being the AWS account in the configuration name
 
