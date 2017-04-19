@@ -31,13 +31,6 @@ Describes the application.
 
     | *Default*: ``null``
 
-``app_ssh_key``
-*******************
-
-SSH key that your EC2 instances will use. Must already be created in AWS.
-
-    | *Default*: ``"{{ account }}_access"`` - {{ account }} being the AWS account in the configuration name
-
 ``eureka_enabled``
 ***********************
 
@@ -151,6 +144,13 @@ Minimum number of instances your auto-scaling group should have at all times. Th
 
     | *Type*: int
     | *Default*: ``1``
+
+``ssh_keypair``
+*******************
+
+SSH key that your EC2 instances will use. Must already be created in AWS.
+
+    | *Default*: ``"{{ account }}_{{ region }}_default"`` - {{ account }} being the AWS account in the configuration name
 
 ``subnet_purpose``
 ******************

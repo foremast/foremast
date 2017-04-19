@@ -31,7 +31,7 @@
             "Default"
           ],
           "availabilityZones": {{ data.app.az_dict }},
-          "keyPair": "{{ data.app.environment }}_{{ data.app.region }}_default",
+          "keyPair": "{{ data.asg.ssh_keypair }}",
           "suspendedProcesses": [],
           "securityGroups": {{ data.app.instance_security_groups }},
           "tags": {
