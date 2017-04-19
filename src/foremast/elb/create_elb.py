@@ -72,17 +72,19 @@ class SpinnakerELB:
 
         listeners = format_listeners(elb_settings=elb_settings, env=self.env)
 
-        idle_timeout = elb_settings.get('idle_timeout')
-        connection_draining_timeout = elb_settings.get('connection_draining_timeout')
+        idle_timeout = elb_settings.get('idle_timeout', None)
+        access_log = elb_settings.get('access_log', {})
+        connection_draining_timeout = elb_settings.get('connection_draining_timeout', None)
 
         security_groups = list(DEFAULT_ELB_SECURITYGROUPS)
         security_groups.append(self.app)
         security_groups.extend(self.properties['security_group']['elb_extras'])
 
         template_kwargs = {
+            'access_log': json.dumps(access_log),
             'app_name': self.app,
             'availability_zones': json.dumps(region_subnets),
-            'connection_draining_timeout': connection_draining_timeout,
+            'connection_draining_timeout': json.dumps(connection_draining_timeout),
             'env': env,
             'hc_string': target,
             'health_interval': health_settings['interval'],
@@ -91,7 +93,7 @@ class SpinnakerELB:
             'health_protocol': health.proto,
             'health_timeout': health_settings['timeout'],
             'healthy_threshold': health_settings['threshold'],
-            'idle_timeout': idle_timeout,
+            'idle_timeout': json.dumps(idle_timeout),
             'isInternal': is_internal,
             'listeners': json.dumps(listeners),
             'region_zones': json.dumps(region_subnets[region]),
@@ -217,6 +219,7 @@ class SpinnakerELB:
                     stickiness_dict[externalport] = policyname
         return stickiness_dict
 
+
     def configure_load_balancer_attributes(self, json_data):
         """Configure load balancer attributes such as idle timeout, connection draining, etc
 
@@ -231,16 +234,32 @@ class SpinnakerELB:
         for job in json.loads(json_data)['job']:
             load_balancer_attributes = {}
             if elb_settings.get('connectionDrainingTimeout'):
-                log.info("Adding Backend Connection Draining of %s", connection_draining_timeout)
+                connection_draining_timeout = int(elb_settings['connectionDrainingTimeout'])
+                log.info("Adding Backend Connection Draining of %d", connection_draining_timeout)
                 load_balancer_attributes['ConnectionDraining'] = {
                         'Enabled': True,
                         'Timeout': connection_draining_timeout
                 }
             if elb_settings.get('idleTimeout'):
-                log.info("Adding ELB Idle Timeout of %s", idle_timeout)
+                idle_timeout = int(elb_settings['idleTimeout'])
+                log.info("Adding ELB Idle Timeout of %d", idle_timeout)
                 load_balancer_attributes['ConnectionSettings'] = {
                         'IdleTimeout': idle_timeout
                 }
+            if elb_settings.get('AccessLog'):
+                access_log_bucket_name = elb_settings['AccessLog']['bucket_name']
+                access_log_bucket_prefix = elb_settings['AccessLog']['bucket_prefix']
+                access_log_emit_interval = int(elb_settings['AccessLog']['emit_interval'])
+                log.info("Setting ELB AccessLog path to %s/%s writing every %d minutes", access_log_bucket_name, 
+                                                                                         access_log_bucket_prefix,
+                                                                                         access_log_emit_interval)
+                load_balancer_attributes['AccessLog'] = {
+                        'Enabled': True,
+                        'S3BucketName': access_log_bucket_name,
+                        'EmitInterval': access_log_emit_interval
+                        'S3BucketPrefix': access_log_bucket_prefix
+                }
+                
             if load_balancer_attributes:
                 log.info("Applying Custom Load Balancer Attributes")
                 log.debug('Custom Load Balancer Attributes:\n%s', pformat(load_balancer_attributes))
