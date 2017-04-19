@@ -16,6 +16,7 @@
 """Create ELBs for Spinnaker Pipelines."""
 import json
 import logging
+from pprint import pformat
 
 import boto3
 
@@ -71,6 +72,9 @@ class SpinnakerELB:
 
         listeners = format_listeners(elb_settings=elb_settings, env=self.env)
 
+        idle_timeout = elb_settings.get('idle_timeout')
+        connection_draining_timeout = elb_settings.get('connection_draining_timeout')
+
         security_groups = list(DEFAULT_ELB_SECURITYGROUPS)
         security_groups.append(self.app)
         security_groups.extend(self.properties['security_group']['elb_extras'])
@@ -78,6 +82,7 @@ class SpinnakerELB:
         template_kwargs = {
             'app_name': self.app,
             'availability_zones': json.dumps(region_subnets),
+            'connection_draining_timeout': connection_draining_timeout,
             'env': env,
             'hc_string': target,
             'health_interval': health_settings['interval'],
@@ -86,6 +91,7 @@ class SpinnakerELB:
             'health_protocol': health.proto,
             'health_timeout': health_settings['timeout'],
             'healthy_threshold': health_settings['threshold'],
+            'idle_timeout': idle_timeout,
             'isInternal': is_internal,
             'listeners': json.dumps(listeners),
             'region_zones': json.dumps(region_subnets[region]),
@@ -112,6 +118,8 @@ class SpinnakerELB:
 
         self.add_listener_policy(json_data)
         self.add_backend_policy(json_data)
+
+        self.configure_load_balancer_attributes(json_data)
 
     def add_listener_policy(self, json_data):
         """Attaches listerner policies to an ELB
@@ -208,3 +216,35 @@ class SpinnakerELB:
                                                                      PolicyName=policyname)
                     stickiness_dict[externalport] = policyname
         return stickiness_dict
+
+    def configure_load_balancer_attributes(self, json_data):
+        """Configure load balancer attributes such as idle timeout, connection draining, etc
+
+        Args:
+            json_data (json): return data from ELB upsert
+        """
+        env = boto3.session.Session(profile_name=self.env, region_name=self.region)
+        elbclient = env.client('elb')
+
+        elb_settings = self.properties['elb']
+
+        for job in json.loads(json_data)['job']:
+            load_balancer_attributes = {}
+            if elb_settings.get('connectionDrainingTimeout'):
+                log.info("Adding Backend Connection Draining of %s", connection_draining_timeout)
+                load_balancer_attributes['ConnectionDraining'] = {
+                        'Enabled': True,
+                        'Timeout': connection_draining_timeout
+                }
+            if elb_settings.get('idleTimeout'):
+                log.info("Adding ELB Idle Timeout of %s", idle_timeout)
+                load_balancer_attributes['ConnectionSettings'] = {
+                        'IdleTimeout': idle_timeout
+                }
+            if load_balancer_attributes:
+                log.info("Applying Custom Load Balancer Attributes")
+                log.debug('Custom Load Balancer Attributes:\n%s', pformat(load_balancer_attributes))
+                elbclient.modify_load_balancer_attributes(LoadBalancerName=self.app,
+                                                          LoadBalancerAttributes=load_balancer_attributes)
+            else:
+                log.info("Leveraging Default Load Balancer Attributes")
