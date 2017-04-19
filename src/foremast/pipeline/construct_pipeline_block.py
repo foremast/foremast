@@ -142,6 +142,12 @@ def construct_pipeline_block(env='',
     hc_grace_period = data['asg'].get('hc_grace_period')
     app_grace_period = data['asg'].get('app_grace_period')
     grace_period = hc_grace_period + app_grace_period
+    
+    ssh_keypair = data['asg'].get('ssh_keypair', None)
+    LOG.info('SSH keypair ({0}) used'.format(ssh_keypair))
+    if not ssh_keypair:
+        ssh_keypair = '{0}_{1}_default'.format(env, region)
+    LOG.info('SSH keypair ({0}) used'.format(ssh_keypair))
 
     data['app'].update({
         'appname': gen_app_name,
@@ -162,6 +168,7 @@ def construct_pipeline_block(env='',
     data['asg'].update({
         'hc_type': data['asg'].get('hc_type').upper(),
         'hc_grace_period': grace_period,
+        'ssh_keypair': ssh_keypair,
         'provider_healthcheck': json.dumps(health_checks.providers),
         'enable_public_ips': json.dumps(settings['asg']['enable_public_ips']),
         'has_provider_healthcheck': health_checks.has_healthcheck,

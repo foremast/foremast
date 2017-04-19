@@ -1,7 +1,6 @@
 {
     "app": {
         "app_description": null,
-        "app_ssh_key": "{{ env }}_access",
         "email": null,
         "eureka_enabled": false,
         "instance_profile": "{{ profile }}",
@@ -17,6 +16,7 @@
         "app_grace_period": 0,
         "max_inst": 3,
         "min_inst": 1,
+        "ssh_keypair": null,
         "subnet_purpose": "internal",
         "enable_public_ips": null,
         "provider_healthcheck": {
