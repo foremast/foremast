@@ -24,6 +24,7 @@ The runtime environment for the Lambda function
         - ``"nodejs"``
         - ``"nodejs4.3"``
         - ``"python2.7"``
+        - ``"python3.6"``
 
 ``handler``
 ***********
