@@ -53,6 +53,8 @@ class SpinnakerELB:
         env = self.env
         region = self.region
         elb_settings = self.properties['elb']
+        log.debug('Block ELB Settings:\n%s', pformat(elb_settings))
+
         health_settings = elb_settings['health']
         elb_subnet_purpose = elb_settings.get('subnet_purpose', 'internal')
 
@@ -114,6 +116,7 @@ class SpinnakerELB:
         """
 
         json_data = self.make_elb_json()
+        log.debug('Block ELB JSON Data:\n%s', pformat(json_data))
 
         taskid = post_task(json_data)
         check_task(taskid)
@@ -230,33 +233,47 @@ class SpinnakerELB:
         elbclient = env.client('elb')
 
         elb_settings = self.properties['elb']
+        log.debug('Block ELB Settings Pre Configure Load Balancer Attributes:\n%s', pformat(elb_settings))
 
         for job in json.loads(json_data)['job']:
-            load_balancer_attributes = {}
-            if elb_settings.get('connectionDrainingTimeout'):
-                connection_draining_timeout = int(elb_settings['connectionDrainingTimeout'])
+            load_balancer_attributes = {    
+                'CrossZoneLoadBalancing': {
+                    'Enabled': True
+                 },
+                 'AccessLog': {
+                     'Enabled': False,
+                 },
+                 'ConnectionDraining': {
+                     'Enabled': False,
+                 },
+                 'ConnectionSettings': {
+                     'IdleTimeout': 60
+                 }
+            }
+            if elb_settings.get('connection_draining_timeout'):
+                connection_draining_timeout = int(elb_settings['connection_draining_timeout'])
                 log.info("Adding Backend Connection Draining of %d", connection_draining_timeout)
                 load_balancer_attributes['ConnectionDraining'] = {
                         'Enabled': True,
                         'Timeout': connection_draining_timeout
                 }
-            if elb_settings.get('idleTimeout'):
-                idle_timeout = int(elb_settings['idleTimeout'])
+            if elb_settings.get('idle_timeout'):
+                idle_timeout = int(elb_settings['idle_timeout'])
                 log.info("Adding ELB Idle Timeout of %d", idle_timeout)
                 load_balancer_attributes['ConnectionSettings'] = {
                         'IdleTimeout': idle_timeout
                 }
-            if elb_settings.get('AccessLog'):
-                access_log_bucket_name = elb_settings['AccessLog']['bucket_name']
-                access_log_bucket_prefix = elb_settings['AccessLog']['bucket_prefix']
-                access_log_emit_interval = int(elb_settings['AccessLog']['emit_interval'])
+            if elb_settings.get('access_log'):
+                access_log_bucket_name = elb_settings['access_log']['bucket_name']
+                access_log_bucket_prefix = elb_settings['access_log']['bucket_prefix']
+                access_log_emit_interval = int(elb_settings['access_log']['emit_interval'])
                 log.info("Setting ELB AccessLog path to %s/%s writing every %d minutes", access_log_bucket_name, 
                                                                                          access_log_bucket_prefix,
                                                                                          access_log_emit_interval)
                 load_balancer_attributes['AccessLog'] = {
                         'Enabled': True,
                         'S3BucketName': access_log_bucket_name,
-                        'EmitInterval': access_log_emit_interval
+                        'EmitInterval': access_log_emit_interval,
                         'S3BucketPrefix': access_log_bucket_prefix
                 }
                 
@@ -267,3 +284,5 @@ class SpinnakerELB:
                                                           LoadBalancerAttributes=load_balancer_attributes)
             else:
                 log.info("Leveraging Default Load Balancer Attributes")
+                elbclient.modify_load_balancer_attributes(LoadBalancerName=self.app,
+                                                          LoadBalancerAttributes=load_balancer_attributes)
