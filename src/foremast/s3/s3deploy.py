@@ -23,6 +23,7 @@ from ..exceptions import S3ArtifactNotFound
 
 LOG = logging.getLogger(__name__)
 
+
 class S3Deployment(object):
     """Handles uploading artifact to S3 and S3 deployment strategies"""
 
@@ -78,17 +79,22 @@ class S3Deployment(object):
         """Recursively uploads a directory and all files and subdirectories to S3"""
         if not os.listdir(self.artifact_path) or not self.artifact_path:
             raise S3ArtifactNotFound
-
-        cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                           self.s3_version_uri, self.env)
+        cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(
+            self.artifact_path, self.s3_version_uri, self.env)
         p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
         LOG.debug("Upload Command Ouput: %s", p.stdout)
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
     def _sync_to_latest(self):
-        """Uses AWS CLI to sync versioned directory to LATEST directory in S3"""
-        cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.s3_version_uri,
-                                                                           self.s3_latest_uri, self.env)
-        p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Sync to latest command output: %s", p.stdout)
+        """Uses AWS CLI to cp first then sync versioned directory to LATEST directory in S3"""
+        cmd_cp = 'aws s3 cp {} {} --recursive --profile {}'.format(
+            self.s3_version_uri, self.s3_latest_uri, self.env)
+        # AWS CLI sync does not work as expected bucket to bucket with exact timestamp sync.
+        cmd_sync = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(
+            self.s3_version_uri, self.s3_latest_uri, self.env)
+        p_cp = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
+        p_sync = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
+        LOG.debug("Copy to latest before sync output: %s", p_cp.stdout)
+        LOG.debug("Sync to latest command output: %s", p_sync.stdout)
         LOG.info("Copied version %s to LATEST", self.version)
+        LOG.info("Synced version %s to LATEST", self.version)
