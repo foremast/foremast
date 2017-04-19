@@ -26,7 +26,7 @@ When releasing a new version, the following needs to occur:
 
    .. code:: bash
 
-      git tag -a #.#.#
+      git tag -a v#.#.#
       git push --tags
 
 #. Ensure all test via ``tox`` pass
