@@ -143,7 +143,7 @@ class SpinnakerELB:
             for listener in ports:
                 if listener.get("stickiness"):
                     stickiness = self.add_stickiness()
-                    log.info("Stickiness Found: %s", stickiness)
+                    log.info('Stickiness Found: %s', stickiness)
                     break
 
         #Attach policies to created ELB
@@ -156,7 +156,7 @@ class SpinnakerELB:
                 if stickiness.get(ext_port):
                     policies.append(stickiness.get(ext_port))
                 if policies:
-                    log.info("Adding listener policies: %s", policies)
+                    log.info('Adding listener policies: %s', policies)
                     elbclient.set_load_balancer_policies_of_listener(LoadBalancerName=self.app,
                                                                      LoadBalancerPort=ext_port,
                                                                      PolicyNames=policies)
@@ -177,7 +177,7 @@ class SpinnakerELB:
                 instance_port = listener['internalPort']
                 backend_policy_list = listener['backendPolicies']
                 if backend_policy_list:
-                    log.info("Adding backend server policies: %s", backend_policy_list)
+                    log.info('Adding backend server policies: %s', backend_policy_list)
                     elbclient.set_load_balancer_policies_for_backend_server(LoadBalancerName=self.app,
                                                                             InstancePort=instance_port,
                                                                             PolicyNames=backend_policy_list)
@@ -251,25 +251,30 @@ class SpinnakerELB:
                  }
             }
             if elb_settings.get('connection_draining_timeout'):
+                log.info('Applying Custom Load Balancer Connection Draining Timeout: %d', 
+                          connection_draining_timeout)
+
                 connection_draining_timeout = int(elb_settings['connection_draining_timeout'])
-                log.info("Adding Backend Connection Draining of %d", connection_draining_timeout)
                 load_balancer_attributes['ConnectionDraining'] = {
                         'Enabled': True,
                         'Timeout': connection_draining_timeout
                 }
             if elb_settings.get('idle_timeout'):
+                log.info('Applying Custom Load Balancer Idle Timeout: %d', idle_timeout)
+
                 idle_timeout = int(elb_settings['idle_timeout'])
-                log.info("Adding ELB Idle Timeout of %d", idle_timeout)
                 load_balancer_attributes['ConnectionSettings'] = {
                         'IdleTimeout': idle_timeout
                 }
             if elb_settings.get('access_log'):
+                log.info('Applying Custom Load Balancer Access Log: %s/%s every %d minutes', 
+                         access_log_bucket_name,
+                         access_log_bucket_prefix,
+                         access_log_emit_interval)
+
                 access_log_bucket_name = elb_settings['access_log']['bucket_name']
                 access_log_bucket_prefix = elb_settings['access_log']['bucket_prefix']
                 access_log_emit_interval = int(elb_settings['access_log']['emit_interval'])
-                log.info("Setting ELB AccessLog path to %s/%s writing every %d minutes", access_log_bucket_name, 
-                                                                                         access_log_bucket_prefix,
-                                                                                         access_log_emit_interval)
                 load_balancer_attributes['AccessLog'] = {
                         'Enabled': True,
                         'S3BucketName': access_log_bucket_name,
@@ -277,12 +282,7 @@ class SpinnakerELB:
                         'S3BucketPrefix': access_log_bucket_prefix
                 }
                 
-            if load_balancer_attributes:
-                log.info("Applying Custom Load Balancer Attributes")
-                log.debug('Custom Load Balancer Attributes:\n%s', pformat(load_balancer_attributes))
-                elbclient.modify_load_balancer_attributes(LoadBalancerName=self.app,
-                                                          LoadBalancerAttributes=load_balancer_attributes)
-            else:
-                log.info("Leveraging Default Load Balancer Attributes")
-                elbclient.modify_load_balancer_attributes(LoadBalancerName=self.app,
-                                                          LoadBalancerAttributes=load_balancer_attributes)
+            log.info('Applying Load Balancer Attributes')
+            log.debug('Load Balancer Attributes:\n%s', pformat(load_balancer_attributes))
+            elbclient.modify_load_balancer_attributes(LoadBalancerName=self.app,
+                                                      LoadBalancerAttributes=load_balancer_attributes)
