@@ -227,6 +227,41 @@ Defines scaling policy to attach to ASG. If this block does not exist, no scalin
 
 Top level key for ELB configuration
 
+``access_log``
+**********
+
+Access Log configuration block. Ensure S3 bucket has proper bucket policy to enable writing.
+
+``access_log`` *Keys*
+^^^^^^^^^^^^^^^^^^^^^
+
+    ``bucket_name`` : Name of S3 bucket to write access log to
+
+        | *Type*: string
+        | *Default*: Null
+
+    ``bucket_prefix`` : Prefix to write to in the S3 bucket
+
+        | *Type*: string
+        | *Default*: Null
+
+    ``emit_interval`` : ELB Access Log write delay
+
+        | *Type*: int
+        | *Range*: 5-60
+        | *Units*: seconds
+        | *Default*: Null
+
+``connection_draining_timeout``
+***************
+
+Connection Draining Timeout to set on the ELB. This allows existing requests to complete before the load balancer shifts traffic away from a deregistered or unhealthy instance.
+
+    | *Type*: int
+    | *Range*: 1-3600
+    | *Units*: seconds
+    | *Default*: Null
+
 ``certificate``
 ***************
 
@@ -261,6 +296,16 @@ Health check configuration block
     ``unhealthy_threshold`` : number of consecutive health check failures before declaring EC2 instance unhealthy
 
         | *Default*: ``5``
+
+``idle_timeout``
+***************
+
+Idle Timeout to set on the ELB. This the time, in seconds, that the connection is allowed to be idle (no data has been sent over the connection) before it is closed by the load balancer.
+
+    | *Type*: int
+    | *Range*: 1-3600
+    | *Units*: seconds
+    | *Default*: 60
 
 ``ports``
 *********
