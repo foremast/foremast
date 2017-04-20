@@ -116,7 +116,7 @@ class S3Apps(object):
     def _bucket_exists(self):
         """Checks if the bucket exists"""
         try:
-            s3.get_bucket_location(Bucket=self.bucket)
+            self.s3client.get_bucket_location(Bucket=self.bucket)
             return True
         except ClientError:
             return False
