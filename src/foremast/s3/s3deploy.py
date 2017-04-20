@@ -47,7 +47,7 @@ class S3Deployment(object):
         generated = get_details(app=app, env=env)
 
         if self.s3props.get('shared_bucket_master'):
-            self.bucket = self.generated.shared_s3_app_bucket()
+            self.bucket = generated.shared_s3_app_bucket()
             self.s3path = app
         elif self.s3props.get('shared_bucket_target'):
             shared_app = self.s3props['shared_bucket_target']

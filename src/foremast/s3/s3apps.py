@@ -102,16 +102,15 @@ class S3Apps(object):
         else:
             s3_endpoint = "{0}.s3-website-{1}.amazonaws.com".format(self.bucket, self.region)
 
-        bucket_dns = self.generated.dns()['global']
         zone_ids = get_dns_zone_ids(env=self.env, facing="public")
-        dns_kwargs = {'dns_name': bucket_dns,
+        dns_kwargs = {'dns_name': self.bucket,
                       'dns_name_aws': s3_endpoint,
                       'dns_ttl': self.properties[self.env]['dns']['ttl']}
 
         for zone_id in zone_ids:
             LOG.debug('zone_id: %s', zone_id)
             update_dns_zone_record(self.env, zone_id, **dns_kwargs)
-        LOG.info("Created DNS %s for Bucket", bucket_dns)
+        LOG.info("Created DNS %s for Bucket", self.bucket)
 
     def _bucket_exists(self):
         """Checks if the bucket exists"""
