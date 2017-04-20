@@ -148,3 +148,7 @@ class PrimaryDNSRecordNotFound(ForemastError):
 class S3ArtifactNotFound(ForemastError):
     """Could not find Artifact to upload to S3"""
     pass
+
+class S3SharedBucketNotFound(ForemastError):
+    """Shared S3 Bucket does not exist"""
+    pass

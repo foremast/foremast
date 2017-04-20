@@ -18,7 +18,9 @@ import json
 import logging
 
 import boto3
+from botocore.client import ClientError
 
+from ..exceptions import S3SharedBucketNotFound
 from ..utils import get_properties, get_details, get_dns_zone_ids, update_dns_zone_record
 
 LOG = logging.getLogger(__name__)
@@ -47,25 +49,32 @@ class S3Apps(object):
         if self.s3props.get('shared_bucket_master')
             self.bucket = self.generated.shared_s3_app_bucket()
         elif self.s3props.get('shared_bucket_target'):
-            shared_app = self.s3props['shared_bucket_target'].split('/')
-            shared_formatted = '{}{}'.format(shared_app[1], shared_app[0])
-            newgenerated = get_details(app=formattedapp)
+            shared_app = self.s3props['shared_bucket_target']
+            newgenerated = get_details(app=shared_app, env=env)
             self.bucket = newgenerated.shared_s3_app_bucket()
         else:
             self.bucket = self.generated.s3_app_bucket()
 
     def create_bucket(self):
         """Creates or updates bucket based on app name"""
-        resp = self.s3client.create_bucket(
-            ACL=self.s3props['bucket_acl'],
-            Bucket=self.bucket
-        )
-        LOG.info('%s - S3 Bucket Upserted', self.bucket)
-        if self.s3props['bucket_policy']:
-            self._attach_bucket_policy()
-        if self.s3props['website']['enabled']:
-            self._set_website_settings()
-            self._set_bucket_dns()
+
+        if self.s3props.get('shared_bucket_target'):
+            if self._bucket_exists():
+                LOG.info('App uses shared bucket - %s ', self.bucket)
+            else:
+                LOG.error("Shared bucket %s does not exist", self.bucket)
+                raise S3SharedBucketNotFound
+        else:
+            resp = self.s3client.create_bucket(
+                ACL=self.s3props['bucket_acl'],
+                Bucket=self.bucket
+            )
+            LOG.info('%s - S3 Bucket Upserted', self.bucket)
+            if self.s3props['bucket_policy']:
+                self._attach_bucket_policy()
+            if self.s3props['website']['enabled']:
+                self._set_website_settings()
+                self._set_bucket_dns()
 
     def _attach_bucket_policy(self):
         """attaches a bucket policy to app bucket"""
@@ -103,3 +112,11 @@ class S3Apps(object):
             LOG.debug('zone_id: %s', zone_id)
             update_dns_zone_record(self.env, zone_id, **dns_kwargs)
         LOG.info("Created DNS %s for Bucket", bucket_dns)
+
+    def _bucket_exists(self):
+        """Checks if the bucket exists"""
+        try:
+            s3.get_bucket_location(Bucket=self.bucket)
+            return True
+        except ClientError
+            return False
