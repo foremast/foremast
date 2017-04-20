@@ -42,11 +42,22 @@ class S3Deployment(object):
         self.region = region
         self.artifact_path = artifact_path
         self.version = artifact_version
-        generated = get_details(app=app, env=env)
-        self.bucket = generated.s3_app_bucket()
         self.properties = get_properties(prop_path)
         self.s3props = self.properties[self.env]['s3']
-        self.s3path = self.s3props['path'].lstrip('/')
+        generated = get_details(app=app, env=env)
+
+        if self.s3props.get('shared_bucket_master'):
+            self.bucket = self.generated.shared_s3_app_bucket()
+            self.s3path = app
+        elif self.s3props.get('shared_bucket_target'):
+            shared_app = self.s3props['shared_bucket_target']
+            newgenerated = get_details(app=shared_app, env=env)
+            self.bucket = newgenerated.shared_s3_app_bucket()
+            self.s3path = app
+        else:
+            self.bucket = generated.s3_app_bucket()
+            self.s3path = self.s3props['path'].lstrip('/')
+
         self.s3_version_uri = ''
         self.s3_latest_uri = ''
         self.setup_pathing()
