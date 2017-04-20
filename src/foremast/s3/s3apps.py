@@ -46,7 +46,7 @@ class S3Apps(object):
         self.properties = get_properties(prop_path)
         self.s3props = self.properties[self.env]['s3']
 
-        if self.s3props.get('shared_bucket_master')
+        if self.s3props.get('shared_bucket_master'):
             self.bucket = self.generated.shared_s3_app_bucket()
         elif self.s3props.get('shared_bucket_target'):
             shared_app = self.s3props['shared_bucket_target']
@@ -118,5 +118,5 @@ class S3Apps(object):
         try:
             s3.get_bucket_location(Bucket=self.bucket)
             return True
-        except ClientError
+        except ClientError:
             return False
