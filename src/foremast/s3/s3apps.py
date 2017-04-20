@@ -41,9 +41,18 @@ class S3Apps(object):
         boto_sess = boto3.session.Session(profile_name=env)
         self.s3client = boto_sess.client('s3')
         self.generated = get_details(app=app, env=env)
-        self.bucket = self.generated.s3_app_bucket()
         self.properties = get_properties(prop_path)
         self.s3props = self.properties[self.env]['s3']
+
+        if self.s3props.get('shared_bucket_master')
+            self.bucket = self.generated.shared_s3_app_bucket()
+        elif self.s3props.get('shared_bucket_target'):
+            shared_app = self.s3props['shared_bucket_target'].split('/')
+            shared_formatted = '{}{}'.format(shared_app[1], shared_app[0])
+            newgenerated = get_details(app=formattedapp)
+            self.bucket = newgenerated.shared_s3_app_bucket()
+        else:
+            self.bucket = self.generated.s3_app_bucket()
 
     def create_bucket(self):
         """Creates or updates bucket based on app name"""
