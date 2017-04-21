@@ -204,7 +204,8 @@ class SpinnakerELB:
                 policyname_tmp = "{0}-{1}-{2}-{3}"
                 if sticky_type == 'app':
                     cookiename = listener['stickiness']['cookie_name']
-                    policyname = policyname_tmp.format(self.app, sticky_type, externalport, cookiename)
+                    policy_key = cookiename.replace('.','')
+                    policyname = policyname_tmp.format(self.app, sticky_type, externalport, policy_key)
                     elbclient.create_app_cookie_stickiness_policy(LoadBalancerName=self.app,
                                                                   PolicyName=policyname,
                                                                   CookieName=cookiename)
