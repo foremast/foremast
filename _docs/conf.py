@@ -24,7 +24,7 @@
 import shlex
 import subprocess
 
-from pkg_resources.extern import packaging
+from pkg_resources import packaging
 
 # -- General configuration ------------------------------------------------
 
