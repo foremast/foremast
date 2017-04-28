@@ -120,10 +120,10 @@ ASG Health check type (EC2 or ELB)
 ``app_grace_period``
 ************
 
-App specific health check grace period (added onto default ASG healthcheck grace period) to delay sending 
-of health check requests. This is useful in the event your application takes longer to boot than the 
-default hc_grace_period defined in templates. For example, hc_grace_period may be 180 seconds, but an app 
-may need a variable amount of time to boot (say 30 seconds extra). This will add 180 + 30 to calculate 
+App specific health check grace period (added onto default ASG healthcheck grace period) to delay sending
+of health check requests. This is useful in the event your application takes longer to boot than the
+default hc_grace_period defined in templates. For example, hc_grace_period may be 180 seconds, but an app
+may need a variable amount of time to boot (say 30 seconds extra). This will add 180 + 30 to calculate
 the overall hc_grace_period of 210 seconds.
 
     | *Default*: ``0``
@@ -323,7 +323,7 @@ Defines ELB listeners. Expects a list of listeners.
 
         | *Default*: ``"HTTP:80"``
 
-    ``stickiness`` : defines stickiness on ELB
+    ``stickiness`` : defines stickiness on ELB; if app, specify cookie_name, if elb, specify cookie_ttl
 
         | *Default*: ``None``
 
@@ -337,6 +337,12 @@ Defines ELB listeners. Expects a list of listeners.
                     "type": "app",
                     "cookie_name": "$cookiename"
                 }
+
+                "stickiness": {
+                    "type": "elb",
+                    "cookie_ttl": 300
+                }
+
 
     ``certificate`` : The name of the certificate to use if required
 
@@ -372,7 +378,11 @@ Defines ELB listeners. Expects a list of listeners.
           "certificate": "my_cert",
           "instance": "HTTP:8443",
           "loadbalancer": "HTTPS:443",
-          "listener_policies": ["MyExamplePolicy"]
+          "listener_policies": ["MyExamplePolicy"],
+          "stickiness": {
+            "type": "elb",
+            "cookie_name": 300
+          }
         }
       ]
 
@@ -454,6 +464,31 @@ Provides a list of other security groups and ports to allow inbound access to ap
 Provides info about outbound access from application
 
     | *Default*: ``"0.0.0.0/0"```
+
+``security_group`` *Example*
+****************************
+
+You can reference SG by name or by cidr block, you can also specify cross account SG by name by referring to the spinnaker environment name. To see an example of this see below:
+
+::
+
+    "security_group": {
+        "ingress": {
+            "examplesecuritygroupname": [
+                { "start_port": 80, "end_port": 80, "protocol": "tcp" },
+                { "start_port": 443, "end_port": 443, "protocol": "tcp" },
+                { "start_port": 443, "end_port": 443, "protocol": "tcp", "env": "prod" },
+            ],
+            "192.168.100.0/24": [
+                { "start_port": 80, "end_port": 80, "protocol": "tcp" }
+            ]
+        },
+        "egress": {
+            "192.168.100.0/24": [
+                { "start_port": 80, "end_port": 80, "protocol": "tcp" }
+            ]
+        }
+    }
 
 ``dns`` Block
 ~~~~~~~~~~~~~~
