@@ -27,8 +27,11 @@ descending order. First found wins.
    :language: ini
 """
 import logging
+import sys
+
 from configparser import ConfigParser, DuplicateSectionError
 from os.path import expanduser, expandvars
+from os import getcwd, path
 
 LOG = logging.getLogger(__name__)
 LOGGING_FORMAT = '%(asctime)s [%(levelname)s] %(name)s:%(funcName)s:%(lineno)d - %(message)s'
@@ -85,6 +88,21 @@ def extract_formats(config_handle):
     return formats
 
 
+def load_dynamic_config(configurations, config_dir=getcwd()):
+    """Load and parse dynamic config"""
+    # Create full path of config
+    config_file = '{path}/config.py'.format(path=config_dir)
+
+    # Insert config path so we can import it
+    sys.path.insert(0, path.dirname(path.abspath(config_file)))
+    config_module = __import__('config')
+
+    for k, v in config_module.CONFIG.items():
+        LOG.debug('Importing %s with key %s', k, v)
+        # Update configparser object
+        configurations.update({k: v})
+
+
 def find_config():
     """Look for **foremast.cfg** in config_locations.
 
@@ -105,6 +123,8 @@ def find_config():
 
     if not cfg_file:
         LOG.warning('No configuration found in the following locations:\n%s', '\n'.join(config_locations))
+        LOG.warning('Loading dynamic config')
+        load_dynamic_config(configurations)
 
     return configurations
 
