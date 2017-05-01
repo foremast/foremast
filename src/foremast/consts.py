@@ -95,12 +95,16 @@ def load_dynamic_config(configurations, config_dir=getcwd()):
 
     # Insert config path so we can import it
     sys.path.insert(0, path.dirname(path.abspath(config_file)))
-    config_module = __import__('config')
+    try:
+        config_module = __import__('config')
 
-    for k, v in config_module.CONFIG.items():
-        LOG.debug('Importing %s with key %s', k, v)
-        # Update configparser object
-        configurations.update({k: v})
+        for k, v in config_module.CONFIG.items():
+            LOG.debug('Importing %s with key %s', k, v)
+            # Update configparser object
+            configurations.update({k: v})
+    except ImportError:
+        # Provide a default if config not found
+        configurations = {}
 
 
 def find_config():
