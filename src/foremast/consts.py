@@ -30,7 +30,7 @@ import logging
 import sys
 
 from configparser import ConfigParser, DuplicateSectionError
-from os.path import expanduser, expandvars
+from os.path import expanduser, expandvars, exists
 from os import getcwd, path
 
 LOG = logging.getLogger(__name__)
@@ -124,11 +124,17 @@ def find_config():
     configurations = ConfigParser()
 
     cfg_file = configurations.read(config_locations)
+    dynamic_config_file = '{path}/config.py'.format(path=getcwd())
 
-    if not cfg_file:
-        LOG.warning('No configuration found in the following locations:\n%s', '\n'.join(config_locations))
-        LOG.warning('Loading dynamic config')
+    if cfg_file:
+        LOG.info('Loading static configuration file.')
+    elif exists(dynamic_config_file):
+        LOG.info('Loading dynamic configuration file.')
         load_dynamic_config(configurations)
+    else:
+        config_locations.append(dynamic_config_file)
+        LOG.warning('No configuration found in the following locations:\n%s', '\n'.join(config_locations))
+        LOG.warning('Using defaults...')
 
     return configurations
 
