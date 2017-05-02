@@ -1,7 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
-#
+#   Copyright 2016 Gogo, LLC #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
@@ -15,13 +14,14 @@
 #   limitations under the License.
 
 """POST a new task or check status of running task"""
+from functools import partial
 import json
 import logging
 
 import requests
-from tryagain import retries
+from tryagain import call as retry_call 
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, HEADERS
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, HEADERS, TASK_TIMEOUT, TIMEOUTS
 from ..exceptions import SpinnakerTaskError
 
 LOG = logging.getLogger(__name__)
@@ -59,8 +59,7 @@ def post_task(task_data):
     return resp_json['ref']
 
 
-@retries(max_attempts=50, wait=2, exceptions=(AssertionError, ValueError))
-def check_task(taskid):
+def _check_task(taskid):
     """Check task status.
 
     Args:
@@ -99,3 +98,48 @@ def check_task(taskid):
         raise SpinnakerTaskError(task_state)
     else:
         raise ValueError
+
+
+def check_task(taskid, timeout=TASK_TIMEOUT):
+    """wrapper for check_task
+
+    Args:
+        taskid (str): the task id returned from post_task 
+        timeout (int) (optional): how long to wait before failing the task
+
+    Returns:
+        polls for task status.
+    """
+    wait = 2
+    max_attempts = int(timeout / wait)
+    return retry_call(partial(_check_task, taskid),
+                      max_attempts=max_attempts,
+                      wait=wait,
+                      exceptions=(AssertionError, ValueError))
+
+def wait_for_task(task_data):
+    """Run task and check the result
+
+    Args:
+        task_data (str): the task json to execute 
+
+    Returns:
+        polls for task status
+    """
+    taskid = post_task(task_data)
+
+    if isinstance(task_data, str):
+        json_data = json.loads(task_data) 
+    else:
+        json_data = task_data
+
+    # inspect the task to see if a timeout is configured
+    job = json_data['job'][0]
+    env = job.get('credentials')
+    task_type = job.get('type')
+
+    timeout = TIMEOUTS.get(env, dict()).get(task_type, TASK_TIMEOUT)
+
+    LOG.debug("Task %s will timeout after %s", task_type, timeout)
+
+    check_task(taskid, timeout)
