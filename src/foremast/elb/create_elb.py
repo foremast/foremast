@@ -21,7 +21,7 @@ from pprint import pformat
 import boto3
 
 from ..consts import DEFAULT_ELB_SECURITYGROUPS
-from ..utils import check_task, get_properties, get_subnets, get_template, get_vpc_id, post_task
+from ..utils import get_properties, get_subnets, get_template, get_vpc_id, wait_for_task
 from .format_listeners import format_listeners
 from .splay_health import splay_health
 
@@ -118,8 +118,7 @@ class SpinnakerELB:
         json_data = self.make_elb_json()
         log.debug('Block ELB JSON Data:\n%s', pformat(json_data))
 
-        taskid = post_task(json_data)
-        check_task(taskid)
+        wait_for_task(json_data)
 
         self.add_listener_policy(json_data)
         self.add_backend_policy(json_data)

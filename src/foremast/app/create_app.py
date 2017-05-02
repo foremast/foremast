@@ -25,7 +25,7 @@ import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import ForemastError
-from ..utils import check_task, get_template, post_task
+from ..utils import get_template, wait_for_task
 
 
 class SpinnakerApp:
@@ -94,8 +94,7 @@ class SpinnakerApp:
         jsondata = get_template(template_file='infrastructure/app_data.json.j2',
                                 appinfo=self.appinfo)
 
-        taskid = post_task(jsondata)
-        check_task(taskid)
+        wait_for_task(jsondata)
 
         self.log.info("Successfully created %s application", self.appname)
         return
