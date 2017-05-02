@@ -1,3 +1,4 @@
+; foremast.cfg
 [base]
 domain = example.com
 envs = dev,stage,prod
