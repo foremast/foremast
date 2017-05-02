@@ -1,8 +1,8 @@
 .. _foremast_config:
 
-============
-foremast.cfg
-============
+========================
+foremast.cfg / config.py
+========================
 
 .. contents::
    :local:
@@ -15,15 +15,17 @@ Example Configuration
 ---------------------
 
 .. literalinclude:: ../../src/foremast/templates/configs/foremast.cfg.example
+.. literalinclude:: ../../src/foremast/templates/configs/config.py.example
 
 Configuration Locations
 -----------------------
 
-Foremast will look in the following locations, in order, for the foremast.cfg config file.
+Foremast will look in the following locations, in order, for the ``foremast.cfg`` or ``config.py`` config file.
 
 1. ``./.foremast/foremast.cfg``
 2. ``~/.foremast/.foremast.cfg``
 3. ``/etc/foremast/foremast/cfg``
+4. ``./config.py``
 
 Configuration Details
 ---------------------

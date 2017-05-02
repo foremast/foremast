@@ -1,0 +1,26 @@
+# config.py
+
+CONFIG = {
+    'base': {
+        'domain': 'example.com',
+        'envs': 'dev,stage,prod',
+        'regions': 'us-east-1,us-west-2',
+        'ami_json_url': 'http://s3.bucketname.com/ami_lookup.json',
+        'git_url': 'https://git.example.com',
+        'gate_api_url': 'http://gate-api.example.com:8084',
+        'templates_path': '../../foremast-templates',
+    },
+    'credentials': {
+        'gitlab_token': '123token23423343',
+        'slack_token': '123slack3203120312',
+    },
+
+    'whitelists': {
+        'asg_whitelist': 'application1,application2',
+    },
+    'formats': {
+        'app': '{project}{repo}',
+        'dns_elb': 'lb-{project}{repo}.{env}.{domain}',
+        's3_bucket': 'secret-{env}-{project}',
+    },
+}
