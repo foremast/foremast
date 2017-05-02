@@ -26,6 +26,7 @@ descending order. First found wins.
 .. literalinclude:: ../src/foremast/templates/configs/foremast.cfg.example
    :language: ini
 """
+import json
 import logging
 import sys
 
@@ -155,7 +156,8 @@ DEFAULT_ELB_SECURITYGROUPS = set(validate_key_values(config, 'base', 'default_el
                                  default='').split(','))
 GITLAB_TOKEN = validate_key_values(config, 'credentials', 'gitlab_token')
 SLACK_TOKEN = validate_key_values(config, 'credentials', 'slack_token')
-
+TASK_TIMEOUT = validate_key_values(config, 'timeouts', 'default', default=120)
+TIMEOUTS = json.loads(validate_key_values(config, 'timeouts', 'envs', default="{}"))
 ASG_WHITELIST = set(validate_key_values(config, 'whitelists', 'asg_whitelist', default='').split(','))
 APP_FORMATS = extract_formats(config)
 GATE_CLIENT_CERT = expandvars(expanduser(validate_key_values(config, 'base', 'gate_client_cert', default='')))
