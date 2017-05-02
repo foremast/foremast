@@ -16,7 +16,7 @@
 
 """Destroy any ELB Resources."""
 
-from ...utils import check_task, get_template, get_vpc_id, post_task
+from ...utils import get_template, get_vpc_id, wait_for_task
 
 
 def destroy_elb(app='', env='dev', region='us-east-1', **_):
@@ -37,7 +37,6 @@ def destroy_elb(app='', env='dev', region='us-east-1', **_):
         region=region,
         vpc=get_vpc_id(account=env, region=region))
 
-    task_id = post_task(task_json)
-    check_task(task_id)
+    wait_for_task(task_json)
 
     return True

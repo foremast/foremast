@@ -24,7 +24,7 @@ import os
 import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
-from ..utils import check_task, get_properties, get_template, post_task
+from ..utils import get_properties, get_template, wait_for_task
 
 
 class AutoScalingPolicy:
@@ -84,8 +84,7 @@ class AutoScalingPolicy:
         self.log.info('Rendering Scaling Policy Template: {0}'.format(template_kwargs))
         rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
         print(rendered_template)
-        taskid = post_task(rendered_template)
-        check_task(taskid)
+        wait_for_task(rendered_template)
         self.log.info('Successfully created scaling policy in {0}'.format(self.env))
 
     def create_policy(self):
@@ -149,8 +148,7 @@ class AutoScalingPolicy:
                 }
             ]
         }
-        taskid = post_task(json.dumps(delete_dict))
-        check_task(taskid)
+        wait_for_task(json.dumps(delete_dict))
 
     def get_all_existing(self, server_group):
         """Finds all existing scaling policies for an application

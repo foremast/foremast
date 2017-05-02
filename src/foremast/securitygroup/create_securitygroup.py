@@ -48,7 +48,7 @@ from boto3.exceptions import botocore
 
 from ..exceptions import (ForemastConfigurationFileError, SpinnakerSecurityGroupCreationFailed,
                           SpinnakerSecurityGroupError)
-from ..utils import check_task, get_properties, get_security_group_id, get_template, get_vpc_id, post_task, warn_user
+from ..utils import get_properties, get_security_group_id, get_template, get_vpc_id, wait_for_task, warn_user
 
 
 class SpinnakerSecurityGroup(object):
@@ -244,8 +244,7 @@ class SpinnakerSecurityGroup(object):
             template_file='infrastructure/securitygroup_data.json.j2',
             **template_kwargs)
 
-        taskid = post_task(secgroup_json)
-        check_task(taskid)
+        wait_for_task(secgroup_json)
 
         # Append cidr rules
         self.add_cidr_rules(ingress_rules_cidr)

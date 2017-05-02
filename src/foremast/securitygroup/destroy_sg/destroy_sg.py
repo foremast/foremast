@@ -20,7 +20,7 @@ import logging
 import requests
 
 from ...consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
-from ...utils import Gate, check_task, get_template, get_vpc_id, post_task
+from ...utils import Gate, get_template, get_vpc_id, wait_for_task 
 
 LOG = logging.getLogger(__name__)
 
@@ -60,8 +60,6 @@ def destroy_sg(app='', env='', region='', **_):
                                        env=env,
                                        region=region,
                                        vpc=vpc)
-        task_id = post_task(destroy_request)
-
-        check_task(task_id)
+        wait_for_task(destroy_request)
 
     return True
