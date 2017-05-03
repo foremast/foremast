@@ -39,15 +39,13 @@ SAMPLE_JSON = """{"security_group": {
 
 
 @patch('foremast.securitygroup.create_securitygroup.boto3')
-@patch('foremast.securitygroup.create_securitygroup.check_task')
 @patch('foremast.securitygroup.create_securitygroup.get_security_group_id')
 @patch('foremast.securitygroup.create_securitygroup.get_vpc_id')
-@patch('foremast.securitygroup.create_securitygroup.post_task')
+@patch('foremast.securitygroup.create_securitygroup.wait_for_task')
 @patch("foremast.securitygroup.create_securitygroup.get_properties")
-def test_create_crossaccount_securitygroup(pipeline_config, post_task, get_vpc_id, get_security_group_id, check_task,
+def test_create_crossaccount_securitygroup(pipeline_config, wait_for_task, get_vpc_id, get_security_group_id,
                                            boto3):
     """Should create SG with cross account true"""
-    check_task.return_value = True
     pipeline_config.return_value = json.loads(SAMPLE_JSON)
 
     get_security_group_id.return_value = 'SGID'
