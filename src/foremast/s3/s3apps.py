@@ -117,5 +117,6 @@ class S3Apps(object):
         try:
             self.s3client.get_bucket_location(Bucket=self.bucket)
             return True
-        except ClientError:
+        except ClientError as e:
+            LOG.error(e)
             return False
