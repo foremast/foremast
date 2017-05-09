@@ -21,7 +21,7 @@ import logging
 import requests
 from tryagain import call as retry_call 
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, HEADERS, TASK_TIMEOUT, TIMEOUTS
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, HEADERS, DEFAULT_TASK_TIMEOUT, TASK_TIMEOUTS
 from ..exceptions import SpinnakerTaskError
 
 LOG = logging.getLogger(__name__)
@@ -100,7 +100,7 @@ def _check_task(taskid):
         raise ValueError
 
 
-def check_task(taskid, timeout=TASK_TIMEOUT):
+def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT):
     """wrapper for check_task
 
     Args:
@@ -138,7 +138,7 @@ def wait_for_task(task_data):
     env = job.get('credentials')
     task_type = job.get('type')
 
-    timeout = TIMEOUTS.get(env, dict()).get(task_type, TASK_TIMEOUT)
+    timeout = TASK_TIMEOUTS.get(env, dict()).get(task_type, DEFAULT_TASK_TIMEOUT)
 
     LOG.debug("Task %s will timeout after %s", task_type, timeout)
 

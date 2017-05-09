@@ -219,4 +219,27 @@ An string of the format of the application's jenkins job name
     | *Default*: {project}_{repo}
     | *Required*: No
 
+``[task_timeouts]``
+~~~~~~~~~~~~~~~~~~~
+
+Section handling customization of task timeouts when communicating with Spinnaker.
+
+Timeouts can vary per environment and per task. 
+
+``default``
+***********
+
+The default task timeout value
+
+    | *Default*: 120
+    | *Required*: No
+
+``envs``
+********
+
+A json object keyed by environment name. Each value should be a json object keyed by task name.
+
+    | *Default*: 120
+    | *Required*: No
+
 .. _gogo-utils: https://github.com/gogoair/gogo-utils#formats
