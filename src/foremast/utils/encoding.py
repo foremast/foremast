@@ -23,7 +23,8 @@ from .templates import get_template
 def generate_encoded_user_data(env='dev',
                                region='us-east-1',
                                app_name='',
-                               group_name=''):
+                               group_name='',
+                               canary=False):
     r"""Generate base64 encoded User Data.
 
     Args:
@@ -59,5 +60,6 @@ def generate_encoded_user_data(env='dev',
                              env_s=env_s,
                              region=region,
                              app_name=app_name,
-                             group_name=group_name, )
+                             group_name=group_name,
+                             canary=canary, )
     return base64.b64encode(user_data.encode()).decode()
