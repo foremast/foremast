@@ -106,8 +106,6 @@ def construct_pipeline_block(env='',
 
     gen_app_name = generated.app_name()
     user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project)
-    if settings['app']['canary']:
-        canary_user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project, canary=True)
 
     # Use different variable to keep template simple
     instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS)
@@ -155,7 +153,8 @@ def construct_pipeline_block(env='',
         'scalingpolicy': scalingpolicy,
     })
 
-    if data['app']['canary']:
+    if settings['app']['canary']:
+        canary_user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project, canary=True)
         data['app'].update({
             'canary_encoded_user_data': canary_user_data,
         })
