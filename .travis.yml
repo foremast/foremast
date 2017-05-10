@@ -9,7 +9,7 @@ env:
   - TOX_ENV=py34
   - TOX_ENV=py35
   - TOX_ENV=py36
-#  - TOX_ENV=lint
+  - TOX_ENV=lint
 
 install:
   - pip install -r requirements-dev.txt
