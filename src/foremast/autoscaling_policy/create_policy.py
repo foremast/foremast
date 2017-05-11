@@ -83,7 +83,7 @@ class AutoScalingPolicy:
 
         self.log.info('Rendering Scaling Policy Template: {0}'.format(template_kwargs))
         rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
-        print(rendered_template)
+        self.log.debug(rendered_template)
         wait_for_task(rendered_template)
         self.log.info('Successfully created scaling policy in {0}'.format(self.env))
 
