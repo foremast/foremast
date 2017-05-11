@@ -1,7 +1,16 @@
+"""Test Stage renumerate logic."""
 from foremast.pipeline.renumerate_stages import renumerate_stages
 
 
 def test_basic():
+    """Should be sequential Stage IDs.
+    Examples:
+        Graphically:
+
+        .. code-block:: text
+
+            [ 1 ]-[ 2 ]-[ 3 ]
+    """
     pipeline = {
         'stages': [
             {
@@ -37,6 +46,18 @@ def test_basic():
 
 
 def test_branches():
+    """Test 'branch' Stages refer to correct 'master' level.
+
+    Examples:
+        Graphically:
+
+        .. code-block:: text
+
+            [ 1 ]-[ 2 ]-[ 3 ]-[ 4 ]
+                    L---[200]
+                    L---[201]
+                    L---[202]
+    """
     pipeline = {
         'stages': [
             {
