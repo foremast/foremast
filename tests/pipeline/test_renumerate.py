@@ -96,15 +96,15 @@ def test_branches():
             },
             {
                 'refId': '200',
-                'requisiteStageRefIds': ['1'],
+                'requisiteStageRefIds': ['2'],
             },
             {
                 'refId': '201',
-                'requisiteStageRefIds': ['1'],
+                'requisiteStageRefIds': ['2'],
             },
             {
                 'refId': '202',
-                'requisiteStageRefIds': ['1'],
+                'requisiteStageRefIds': ['2'],
             },
             {
                 'refId': '3',
