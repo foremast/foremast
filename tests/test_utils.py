@@ -344,3 +344,39 @@ def test_utils_subnets_get_subnets_api_error(mock_requests_get):
     with pytest.raises(SpinnakerTimeout):
         mock_requests_get.return_value.ok = False
         result = get_subnets()
+
+
+@mock.patch('foremast.utils.tasks._check_task')
+@mock.patch('foremast.utils.tasks.requests.get')
+def test_utils_retry_task(mock_requests_get, mock_check_task):
+    """Validate task retries are configurable"""
+    taskid = 'fake_task'
+    mock_check_task.side_effect=ValueError
+    with pytest.raises(ValueError):
+        check_task(taskid, 4)
+        assert mock_check_task.call_count == 2
+
+
+@mock.patch('foremast.utils.tasks.check_task')
+@mock.patch('foremast.utils.tasks.post_task')
+@mock.patch('foremast.utils.tasks.TASK_TIMEOUTS')
+def test_utils_timeout_per_env(mock_check_task, mock_requests_post, mock_timeouts):
+    """Verify custom timeout propagates to check_task""" 
+    mock_requests_post.return_value = 5
+    task_data = { "job": [{ "credentials": "dev", "type": "fake_task"} ]}
+    mock_timeouts.side_effect = {"dev": {"fake_task": "240"} }
+    tasks.wait_for_task(task_data) 
+    assert mock_check_task.called_with("fake_task", 240)
+    assert mock_check_task.called_with("fake_task", tasks.DEFAULT_TASK_TIMEOUT)
+
+
+@mock.patch('foremast.utils.tasks.check_task')
+@mock.patch('foremast.utils.tasks.post_task')
+@mock.patch('foremast.utils.tasks.TASK_TIMEOUTS')
+def test_utils_default_timeout(mock_check_task, mock_requests_post, mock_timeouts):
+    """default timeout for tasks is applied if missing from timeout data"""
+    mock_requests_post.return_value = 5
+    task_data = { "job": [{ "credentials": "dev", "type": "really_fake_task"} ]}
+    mock_timeouts.side_effect = {"dev": {"fake_task": "240"} }
+    tasks.wait_for_task(task_data) 
+    assert mock_check_task.called_with("really_fake_task", tasks.DEFAULT_TASK_TIMEOUT)
