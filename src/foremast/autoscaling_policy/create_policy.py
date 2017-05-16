@@ -19,6 +19,7 @@ This module also creates an inverse policy for scaling down
 """
 import json
 import logging
+from math import floor
 import os
 
 import requests
@@ -75,8 +76,8 @@ class AutoScalingPolicy:
             template_kwargs['scalingAdjustment'] = 1
 
         elif scaling_type == 'scale_down':
-            self.settings['asg']['scaling_policy']['threshold'] = int(
-                self.settings['asg']['scaling_policy']['threshold']) * 0.5
+            cur_threshold = int(self.settings['asg']['scaling_policy']['threshold'])
+            self.settings['asg']['scaling_policy']['threshold'] = floor(cur_threshold * 0.5)
             template_kwargs['operation'] = 'decrease'
             template_kwargs['comparisonOperator'] = 'LessThanThreshold'
             template_kwargs['scalingAdjustment'] = -1
