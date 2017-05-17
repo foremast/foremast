@@ -55,7 +55,7 @@ def create_cloudwatch_log_event(app_name, env, region, rules):
 
     lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
 
-    statement_id = '{}_cloudwatchlog_{}'.format(app_name, filter_name.replace(" ", "_"))
+    statement_id = 'foremast-{}_cloudwatchlog_{}'.format(app_name, filter_name.replace(" ", "_"))
     principal = 'logs.{}.amazonaws.com'.format(region)
     account_id = get_env_credential(env=env)['accountId']
     source_arn = "arn:aws:logs:{0}:{1}:log-group:{2}:*".format(region, account_id, log_group)
