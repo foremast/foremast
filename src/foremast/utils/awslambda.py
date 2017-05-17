@@ -16,6 +16,7 @@
 
 """Lambda related utilities"""
 import logging
+import json
 
 import boto3
 
@@ -106,6 +107,7 @@ def add_lambda_permissions(function='',
         'Action': action,
         'Principal': principal,
     }
+
     if source_arn:
         add_permissions_kwargs['SourceArn'] = source_arn
 
@@ -118,3 +120,32 @@ def add_lambda_permissions(function='',
 
     LOG.debug('Related StatementId (SID): %s', statement_id)
     LOG.info(response_action)
+
+def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
+    """removes all foremast-* permissions from lambda
+
+    Args:
+        app_name (str): Application name
+        env (str): AWS environment
+        region (str): AWS region
+    """
+    session = boto3.Session(profile_name=env, region_name=region)
+    lambda_client = session.client('lambda')
+
+    lambda_arn = get_lambda_arn(app_name, env, region)
+    try:
+        response = lambda_client.get_policy(FunctionName=lambda_arn)
+    except boto3.exceptions.botocore.exceptions.ClientError as error:
+        LOG.info("No policy exists for function, skipping deletion")
+        LOG.debug(error)
+        return
+
+    policy_json = json.loads(response['Policy'])
+    LOG.debug("Found Policy: %s", response)
+    for perm in policy_json['Statement']:
+        if perm['Sid'].startswith('foremast-'):
+            lambda_client.remove_permission(FunctionName=lambda_arn,
+                                            StatementId=perm['Sid'])
+            LOG.info('removed permission: %s', perm['Sid'])
+        else:
+            LOG.info('Skipping deleting permission %s - Not managed by Foremast', perm['Sid'])

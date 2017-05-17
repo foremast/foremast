@@ -40,7 +40,7 @@ def create_sns_event(app_name, env, region, rules):
     topic_arn = get_sns_topic_arn(topic_name=topic_name, account=env, region=region)
     protocol = 'lambda'
 
-    statement_id = '{}_sns_{}'.format(app_name, topic_name)
+    statement_id = 'foremast-{}_sns_{}'.format(app_name, topic_name)
     principal = 'sns.amazonaws.com'
     add_lambda_permissions(function=lambda_alias_arn,
                            statement_id=statement_id,
