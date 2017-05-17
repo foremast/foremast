@@ -209,7 +209,7 @@ class APIGateway:
             parent_id (str): The resource ID of the parent resource in API Gateway
         """
         resource_name = self.trigger_settings.get('resource', '')
-        resource_name.replace("/", "")
+        resource_name = resource_name.replace("/", "")
         created_resource = self.client.create_resource(restApiId=self.api_id,
                                                        parentId=parent_id,
                                                        pathPart=resource_name)
