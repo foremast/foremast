@@ -143,7 +143,7 @@ def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
     policy_json = json.loads(response['Policy'])
     LOG.debug("Found Policy: %s", response)
     for perm in policy_json['Statement']:
-        if perm['Sid'].startswith('foremast-'):
+        if perm['Sid'].startswith('foremast-') or app_name+'_' in perm['Sid']:
             lambda_client.remove_permission(FunctionName=lambda_arn,
                                             StatementId=perm['Sid'])
             LOG.info('removed permission: %s', perm['Sid'])
