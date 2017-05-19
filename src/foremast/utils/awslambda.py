@@ -133,19 +133,23 @@ def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
     lambda_client = session.client('lambda')
 
     lambda_arn = get_lambda_arn(app_name, env, region)
-    try:
-        response = lambda_client.get_policy(FunctionName=lambda_arn)
-    except boto3.exceptions.botocore.exceptions.ClientError as error:
-        LOG.info("No policy exists for function, skipping deletion")
-        LOG.debug(error)
-        return
+    lambda_alias_arn = get_lambda_alias_arn(app_name, env, region)
+    arns = (lambda_arn, lambda_alias_arn)
 
-    policy_json = json.loads(response['Policy'])
-    LOG.debug("Found Policy: %s", response)
-    for perm in policy_json['Statement']:
-        if perm['Sid'].startswith('foremast-') or app_name+'_' in perm['Sid']:
-            lambda_client.remove_permission(FunctionName=lambda_arn,
-                                            StatementId=perm['Sid'])
-            LOG.info('removed permission: %s', perm['Sid'])
-        else:
-            LOG.info('Skipping deleting permission %s - Not managed by Foremast', perm['Sid'])
+    for arn in arns:
+        try:
+            response = lambda_client.get_policy(FunctionName=arn)
+        except boto3.exceptions.botocore.exceptions.ClientError as error:
+            LOG.info("No policy exists for function %s, skipping deletion", arn)
+            LOG.debug(error)
+            return
+
+        policy_json = json.loads(response['Policy'])
+        LOG.debug("Found Policy: %s", response)
+        for perm in policy_json['Statement']:
+            if perm['Sid'].startswith('foremast-') or app_name+'_' in perm['Sid']:
+                lambda_client.remove_permission(FunctionName=arn,
+                                                StatementId=perm['Sid'])
+                LOG.info('removed permission: %s', perm['Sid'])
+            else:
+                LOG.info('Skipping deleting permission %s - Not managed by Foremast', perm['Sid'])
