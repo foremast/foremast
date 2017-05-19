@@ -24,7 +24,7 @@
 import shlex
 import subprocess
 
-from pkg_resources import packaging
+import pkg_resources
 
 # -- General configuration ------------------------------------------------
 
@@ -72,19 +72,8 @@ author = 'Gogo DevOps'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 
-def tag_version():
-    """Generate version number from Git Tag, e.g. v2.0.0, v2.0.0-1."""
-    try:
-        recent_tag = subprocess.check_output(shlex.split('git describe --long'))
-    except subprocess.CalledProcessError:
-        recent_tag = b'v0.0-0-00000000'
-    tag, count, _ = recent_tag.decode().split('-')
-    raw_version = 'a'.join([tag, count]) if int(count) else tag
-    normalized_version = str(packaging.version.Version(raw_version))
-    return normalized_version
-
 # The full version, including alpha/beta/rc tags.
-release = tag_version()
+release = pkg_resources.get_distribution(project).version
 # The short X.Y version.
 version = '.'.join(release.split('.')[:2])
 
