@@ -14,35 +14,21 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-import shlex
-import subprocess
-
 from setuptools import find_packages, setup
-
-
-def tag_version():
-    """Generate version number from Git Tag, e.g. v2.0.0, v2.0.0-1."""
-    try:
-        recent_tag = subprocess.check_output(shlex.split('git describe --long'))
-    except subprocess.CalledProcessError:
-        recent_tag = b'v0.0-0-00000000'
-    tag, count, _ = recent_tag.decode().split('-')
-    version = 'a'.join([tag, count]) if int(count) else tag
-    return version
-
 
 with open('requirements.txt', 'rt') as reqs_file:
     reqs_list = reqs_file.readlines()
 
 setup(
     name='foremast',
-    version=tag_version(),
     description='Tools for creating infrastructure and Spinnaker Pipelines.',
     long_description=open('README.rst').read(),
     author='Gogo DevOps',
     author_email='ps-devops-tooling@example.com',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
+    setup_requires=['setuptools_scm'],
+    use_scm_version=True,
     install_requires=reqs_list,
     include_package_data=True,
     keywords="aws gogo infrastructure netflixoss python spinnaker",
