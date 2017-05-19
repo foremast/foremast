@@ -109,7 +109,7 @@ class APIGateway:
 
     def add_permission(self):
         """Add permission to Lambda for the API Trigger."""
-        statement_id = 'foremast-{}_api_{}'.format(self.app_name, self.trigger_settings['api_name'])
+        statement_id = '{}_api_{}'.format(self.app_name, self.trigger_settings['api_name'])
         principal = 'apigateway.amazonaws.com'
         lambda_alias_arn = get_lambda_alias_arn(self.app_name, self.env, self.region)
         add_lambda_permissions(function=lambda_alias_arn,

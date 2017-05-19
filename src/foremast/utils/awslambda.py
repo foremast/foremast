@@ -100,10 +100,11 @@ def add_lambda_permissions(function='',
     session = boto3.Session(profile_name=env, region_name=region)
     lambda_client = session.client('lambda')
     response_action = None
+    prefixed_sid = 'foremast-' + statement_id
 
     add_permissions_kwargs = {
         'FunctionName': function,
-        'StatementId': statement_id,
+        'StatementId': prefixed_sid,
         'Action': action,
         'Principal': principal,
     }
@@ -113,12 +114,12 @@ def add_lambda_permissions(function='',
 
     try:
         lambda_client.add_permission(**add_permissions_kwargs)
-        response_action = 'Add permission with Sid: {}'.format(statement_id)
+        response_action = 'Add permission with Sid: {}'.format(prefixed_sid)
     except boto3.exceptions.botocore.exceptions.ClientError as error:
         LOG.debug('Add permission error: %s', error)
         response_action = "Did not add permissions"
 
-    LOG.debug('Related StatementId (SID): %s', statement_id)
+    LOG.debug('Related StatementId (SID): %s', prefixed_sid)
     LOG.info(response_action)
 
 def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
@@ -131,6 +132,8 @@ def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
     """
     session = boto3.Session(profile_name=env, region_name=region)
     lambda_client = session.client('lambda')
+    legacy_prefix = app_name + "_"
+    foremast_prefix = "foremast-"
 
     lambda_arn = get_lambda_arn(app_name, env, region)
     lambda_alias_arn = get_lambda_alias_arn(app_name, env, region)
@@ -147,7 +150,7 @@ def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
         policy_json = json.loads(response['Policy'])
         LOG.debug("Found Policy: %s", response)
         for perm in policy_json['Statement']:
-            if perm['Sid'].startswith('foremast-') or app_name+'_' in perm['Sid']:
+            if perm['Sid'].startswith(foremast_prefix) or perm['Sid'].startswith(legacy_prefix):
                 lambda_client.remove_permission(FunctionName=arn,
                                                 StatementId=perm['Sid'])
                 LOG.info('removed permission: %s', perm['Sid'])
