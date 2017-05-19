@@ -7,6 +7,7 @@ import os
 from . import runner, validate
 from .args import add_debug, add_env
 from .consts import LOGGING_FORMAT, SHORT_LOGGING_FORMAT
+from .version import print_version
 
 LOG = logging.getLogger(__name__)
 
@@ -86,6 +87,7 @@ def main(manual_args=None):
         const=SHORT_LOGGING_FORMAT,
         default=LOGGING_FORMAT,
         help='Truncated logging format')
+    parser.add_argument('-v', '--version', action='store_true', help=print_version.__doc__)
 
     subparsers = parser.add_subparsers(title='Commands', description='Available activies')
 
@@ -106,6 +108,9 @@ def main(manual_args=None):
     logging.getLogger(package).setLevel(args.parsed.debug)
 
     LOG.debug('Arguments: %s', args)
+
+    if args.parsed.version:
+        args.parsed.func = print_version
 
     try:
         args.parsed.func(args)
