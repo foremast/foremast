@@ -1,6 +1,6 @@
 {
    "application":"{{ app }}",
-   "description":"Upsert scaling policy",
+   "description":"Upsert scaling policy {{ operation }}",
    "job":[
       {
          "name":"{{ app }}-{{ scaling_policy.metric }}-{{ operation }}",
@@ -35,7 +35,11 @@
             "stepAdjustments":[
                {
                   "scalingAdjustment":{{ scalingAdjustment }},
+                  {% if operation == "decrease" %}
+                  "metricIntervalUpperBound":0
+                  {% else %}
                   "metricIntervalLowerBound":0
+                  {% endif %}
                }
             ]
          },
