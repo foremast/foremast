@@ -23,7 +23,7 @@ import boto3
 from ..exceptions import LambdaAliasDoesNotExist, LambdaFunctionDoesNotExist
 
 LOG = logging.getLogger(__name__)
-
+FOREMAST_PREFIX = "foremast-"
 
 def get_lambda_arn(app, account, region):
     """Get lambda ARN.
@@ -100,7 +100,7 @@ def add_lambda_permissions(function='',
     session = boto3.Session(profile_name=env, region_name=region)
     lambda_client = session.client('lambda')
     response_action = None
-    prefixed_sid = 'foremast-' + statement_id
+    prefixed_sid = FOREMAST_PREFIX + statement_id
 
     add_permissions_kwargs = {
         'FunctionName': function,
@@ -133,7 +133,6 @@ def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
     session = boto3.Session(profile_name=env, region_name=region)
     lambda_client = session.client('lambda')
     legacy_prefix = app_name + "_"
-    foremast_prefix = "foremast-"
 
     lambda_arn = get_lambda_arn(app_name, env, region)
     lambda_alias_arn = get_lambda_alias_arn(app_name, env, region)
@@ -145,12 +144,12 @@ def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             LOG.info("No policy exists for function %s, skipping deletion", arn)
             LOG.debug(error)
-            return
+            continue
 
         policy_json = json.loads(response['Policy'])
         LOG.debug("Found Policy: %s", response)
         for perm in policy_json['Statement']:
-            if perm['Sid'].startswith(foremast_prefix) or perm['Sid'].startswith(legacy_prefix):
+            if perm['Sid'].startswith(FOREMAST_PREFIX) or perm['Sid'].startswith(legacy_prefix):
                 lambda_client.remove_permission(FunctionName=arn,
                                                 StatementId=perm['Sid'])
                 LOG.info('removed permission: %s', perm['Sid'])
