@@ -184,7 +184,8 @@ class SpinnakerELB:
         """ Adds stickiness policy to created ELB
 
         Returns:
-            dict: A dict of stickiness policies and ports
+            dict: A dict of stickiness policies and ports::
+
                 example:
                 {
                     80: "$policy_name"
