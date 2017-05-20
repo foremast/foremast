@@ -118,7 +118,7 @@ ASG Health check type (EC2 or ELB)
        - ``"EC2"``
 
 ``app_grace_period``
-************
+********************
 
 App specific health check grace period (added onto default ASG healthcheck grace period) to delay sending
 of health check requests. This is useful in the event your application takes longer to boot than the
@@ -228,7 +228,7 @@ Defines scaling policy to attach to ASG. If this block does not exist, no scalin
 Top level key for ELB configuration
 
 ``access_log``
-**********
+**************
 
 Access Log configuration block. Ensure S3 bucket has proper bucket policy to enable writing.
 
@@ -253,7 +253,7 @@ Access Log configuration block. Ensure S3 bucket has proper bucket policy to ena
         | *Default*: Null
 
 ``connection_draining_timeout``
-***************
+*******************************
 
 Connection Draining Timeout to set on the ELB. This allows existing requests to complete before the load balancer shifts traffic away from a deregistered or unhealthy instance.
 
@@ -298,7 +298,7 @@ Health check configuration block
         | *Default*: ``5``
 
 ``idle_timeout``
-***************
+****************
 
 Idle Timeout to set on the ELB. This the time, in seconds, that the connection is allowed to be idle (no data has been sent over the connection) before it is closed by the load balancer.
 
