@@ -42,17 +42,26 @@ class AWSDataPipeline(object):
         self.region = region
         self.properties = get_properties(prop_path)
         self.datapipeline_data = self.properties[self.env]['datapipeline']
+        generated = get_details(app=self.app_name)
+        self.group = generated.data['project']
 
         session = boto3.Session(profile_name=self.env, region_name=self.region)
         self.client = session.client('datapipeline')
 
     def create_datapipeline(self):
         """Creates the data pipeline if it does not already exist"""
-        response = self.client.create_pipeline(name=self.app_name,
+
+        tags = [
+                {"key": "app_group",
+                "value": self.group},
+                {"key": "app_name",
+                "value": self.app_name}
+                ]
+        response = self.client.create_pipeline(name=self.datapipeline_data.get('name', self.app_name),
                                                uniqueId=self.app_name,
-                                               description=self.datapipeline_data['description'])
-        print(response)
-        LOG.info("Successfully created Data Pipeline %s", self.app_name)
+                                               description=self.datapipeline_data['description'],
+                                               tags=tags)
+        LOG.info("Successfully configured Data Pipeline - %s", self.app_name)
 
     def set_pipeline_definition(self):
         """Translates the json definition and puts it on created pipeline"""
