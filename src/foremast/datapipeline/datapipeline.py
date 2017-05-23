@@ -16,6 +16,7 @@
 
 import logging
 
+import awscli.customizations.datapipeline.translator as translator
 import boto3
 from tryagain import retries
 
@@ -27,7 +28,7 @@ LOG = logging.getLogger(__name__)
 class AWSDataPipeline(object):
     """Manipulate Data Pipeline."""
 
-    def __init__(self, app, env, region, prop_path):
+    def __init__(self, app=None, env=None, region='us-east-1', prop_path=None):
         """AWS Data Pipeline object.
 
         Args:
@@ -40,4 +41,26 @@ class AWSDataPipeline(object):
         self.env = env
         self.region = region
         self.properties = get_properties(prop_path)
-        generated = get_details(app=self.app_name)
+        self.datapipeline_data = self.properties[self.env]['datapipeline']
+
+        session = boto3.Session(profile_name=self.env, region_name=self.region)
+        self.client = session.client('datapipeline')
+
+    def create_datapipeline(self):
+        """Creates the data pipeline if it does not already exist"""
+        response = self.client.create_pipeline(name=self.app_name,
+                                               uniqueId=self.app_name,
+                                               description=self.datapipeline_data['description'])
+        print(response)
+        LOG.info("Successfully created Data Pipeline %s", self.app_name)
+
+    def set_pipeline_definition(self):
+        """Translates the json definition and puts it on created pipeline"""
+        pipelineObjects = translator.definition_to_api_objects(self.datapipeline_data['json_definition'])
+        parameterObjects = translator.definition_to_api_parameters(self.datapipeline_data['json_definition'])
+        parameterValues = translator.definition_to_parameter_values(self.datapipeline_data['json_definition'])
+        response = self.client.put_pipeline_definition(
+                                pipelineId=self.app_name,
+                                pipelineObjects=pipelineObjects,
+                                parameterObjects=parameterObjects,
+                                parameterValues=parameterValues)

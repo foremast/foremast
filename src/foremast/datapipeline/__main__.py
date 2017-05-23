@@ -24,6 +24,8 @@ import logging
 from ..args import add_app, add_debug, add_env, add_properties, add_region
 from ..consts import LOGGING_FORMAT
 
+from .datapipeline import AWSDataPipeline
+
 
 def main():
     """Create datapipeline."""
@@ -41,6 +43,12 @@ def main():
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     log.debug('Parsed arguments: %s', args)
+
+    datapipeline = AWSDataPipeline(app=args.app,
+                                   env=args.env,
+                                   region=args.region,
+                                   prop_path=args.properties)
+    datapipeline.create_datapipeline()
 
 if __name__ == "__main__":
     main()
