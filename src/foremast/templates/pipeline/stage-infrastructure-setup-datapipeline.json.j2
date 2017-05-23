@@ -1,0 +1,18 @@
+  {
+      "requisiteStageRefIds": [""],
+      "refId": "master",
+      "type": "jenkins",
+      "comments": "This stage will run the infrastructure setup scripts to setup an AWS Data Pipeline in <b>{{ data.app.environment }}</b>. This will look at the applications runway/ configuration files to determine setup",
+      "name": "Setup Data Pipeline [{{ data.app.environment }}]",
+      "failPipeline": true,
+      "master": "JenkinsCI",
+      "job": "prepare_infrastructure",
+      "parameters": {
+        "PROJECT": "{{ data.app.group_name }}",
+        "GIT_REPO": "{{ data.app.repo_name }}",
+        "ENV": "{{ data.app.environment }}",
+        "REGION": "{{ data.app.region }}",
+        "OWNER_EMAIL": "{{ data.app.owner_email}}",
+        "APP_NAME": "{{ data.app.appname }}"
+        }
+    }
