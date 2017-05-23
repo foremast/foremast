@@ -49,6 +49,7 @@ def main():
                                    region=args.region,
                                    prop_path=args.properties)
     datapipeline.create_datapipeline()
+    datapipeline.set_pipeline_definition()
 
 if __name__ == "__main__":
     main()

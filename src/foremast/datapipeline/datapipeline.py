@@ -47,6 +47,7 @@ class AWSDataPipeline(object):
 
         session = boto3.Session(profile_name=self.env, region_name=self.region)
         self.client = session.client('datapipeline')
+        self.pipeline_id = None
 
     def create_datapipeline(self):
         """Creates the data pipeline if it does not already exist"""
@@ -61,15 +62,35 @@ class AWSDataPipeline(object):
                                                uniqueId=self.app_name,
                                                description=self.datapipeline_data['description'],
                                                tags=tags)
+        self.pipeline_id = response['pipelineId']
+        LOG.debug(response)
         LOG.info("Successfully configured Data Pipeline - %s", self.app_name)
 
     def set_pipeline_definition(self):
         """Translates the json definition and puts it on created pipeline"""
+
+        if not self.pipeline_id:
+            self.get_pipeline_id()
+
         pipelineObjects = translator.definition_to_api_objects(self.datapipeline_data['json_definition'])
         parameterObjects = translator.definition_to_api_parameters(self.datapipeline_data['json_definition'])
         parameterValues = translator.definition_to_parameter_values(self.datapipeline_data['json_definition'])
         response = self.client.put_pipeline_definition(
-                                pipelineId=self.app_name,
+                                pipelineId=self.pipeline_id,
                                 pipelineObjects=pipelineObjects,
                                 parameterObjects=parameterObjects,
                                 parameterValues=parameterValues)
+        LOG.debug(response)
+        LOG.info("Successfully applied pipeline definition")
+
+    def get_pipeline_id(self):
+        """Finds the pipeline ID for configured pipeline"""
+
+        response = self.client.list_pipelines()
+        LOG.debug(response)
+        for pipeline in response['pipelineIdList']:
+            if pipeline['name'] == self.datapipeline_data.get('name', self.app_name):
+                self.pipeline_id = pipeline['id']
+                LOG.info("Pipeline ID Found")
+                return
+        LOG.info("Pipeline ID Not Found for %s", self.app_name)
