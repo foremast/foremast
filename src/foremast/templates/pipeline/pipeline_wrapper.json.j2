@@ -32,6 +32,8 @@
       {# coming soon {% include "pipeline/stage-tagger-lambda.json.j2" %}, #}
     {% elif data.app.deploy_type == "s3" %}
       {# coming soon {% include "pipeline/stage-tagger-s3.json.j2" %}, #}
+    {% elif data.app.deploy_type == "datapipeline" %}
+      {# coming soon {% include "pipeline/stage-tagger-s3.json.j2" %}, #}
     {% else %}
       {% include "pipeline/stage-bake.json.j2" %}
     {% endif %}
