@@ -31,8 +31,8 @@ import logging
 import os
 
 import gogoutils
-from foremast import (app, autoscaling_policy, awslambda, configs, consts, dns,
-                      elb, iam, pipeline, s3, securitygroup, slacknotify,
+from foremast import (app, autoscaling_policy, awslambda, configs, consts, datapipeline,
+                      dns, elb, iam, pipeline, s3, securitygroup, slacknotify,
                       utils)
 
 from .args import add_debug
@@ -220,6 +220,16 @@ class ForemastRunner(object):
                                                          prop_path=self.json_path)
         policyobj.create_policy()
 
+    def create_datapipeline(self):
+        """Creates data pipeline and adds definition"""
+        utils.banner("Creating Data Pipeline")
+        dpobj = datapipeline.AWSDataPipeline(app=self.app,
+                                           env=self.env,
+                                           region=self.region,
+                                           prop_path=self.json_path)
+        dpobj.create_datapipeline()
+        dpobj.set_pipeline_definition()
+
     def slack_notify(self):
         """Send out a slack notification."""
         utils.banner("Sending slack notification")
@@ -245,7 +255,7 @@ def prepare_infrastructure():
     eureka = runner.configs[runner.env]['app']['eureka_enabled']
     deploy_type = runner.configs['pipeline']['type']
 
-    if  deploy_type != 's3':
+    if  deploy_type not in  ['s3', 'datapipeline']:
         runner.create_iam()
         runner.create_archaius()
         runner.create_secgroups()
@@ -257,6 +267,8 @@ def prepare_infrastructure():
         runner.create_awslambda()
     elif deploy_type == "s3":
         runner.create_s3app()
+    elif deploy_type == 'datapipeline':
+        runner.create_datapipeline()
     else:
         LOG.info("No Eureka, running ELB and DNS setup")
         runner.create_elb()
