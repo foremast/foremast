@@ -62,7 +62,7 @@ class AWSDataPipeline(object):
                                                uniqueId=self.app_name,
                                                description=self.datapipeline_data['description'],
                                                tags=tags)
-        self.pipeline_id = response['pipelineId']
+        self.pipeline_id = response.get('pipelineId')
         LOG.debug(response)
         LOG.info("Successfully configured Data Pipeline - %s", self.app_name)
 
