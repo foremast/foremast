@@ -71,6 +71,7 @@ class AWSDataPipeline(object):
 
         if not self.pipeline_id:
             self.get_pipeline_id()
+        else:
 
         pipelineObjects = translator.definition_to_api_objects(self.datapipeline_data['json_definition'])
         parameterObjects = translator.definition_to_api_parameters(self.datapipeline_data['json_definition'])
@@ -86,9 +87,22 @@ class AWSDataPipeline(object):
     def get_pipeline_id(self):
         """Finds the pipeline ID for configured pipeline"""
 
-        response = self.client.list_pipelines()
-        LOG.debug(response)
-        for pipeline in response['pipelineIdList']:
+        all_pipelines = []
+        hasMore = True
+        marker = None
+        # handles the pagination from boto3
+        while hasMore:
+            if not marker:
+                response = self.client.list_pipelines()
+            else:
+                LOG.info("Checking for more pipelines")
+                response = self.client.list_pipelines(marker=marker)
+            all_pipelines.extend(response['pipelineIdList'])
+            hasMore = response['hasMoreResults']
+            marker = response.get('marker')
+            LOG.debug(response)
+        
+        for pipeline in all_pipelines:
             if pipeline['name'] == self.datapipeline_data.get('name', self.app_name):
                 self.pipeline_id = pipeline['id']
                 LOG.info("Pipeline ID Found")
