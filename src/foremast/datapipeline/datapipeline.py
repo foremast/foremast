@@ -71,7 +71,6 @@ class AWSDataPipeline(object):
 
         if not self.pipeline_id:
             self.get_pipeline_id()
-        else:
 
         pipelineObjects = translator.definition_to_api_objects(self.datapipeline_data['json_definition'])
         parameterObjects = translator.definition_to_api_parameters(self.datapipeline_data['json_definition'])

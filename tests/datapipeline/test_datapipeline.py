@@ -1,5 +1,6 @@
 """Verify AWS Data Pipeline Creation."""
 from unittest import mock
+import pytest
 
 import copy
 import awscli.customizations.datapipeline.translator
@@ -45,8 +46,8 @@ def test_create_datapipeline(mock_get_properties, mock_get_details, mock_boto3):
 @mock.patch('foremast.datapipeline.datapipeline.boto3.Session.client')
 @mock.patch('foremast.datapipeline.datapipeline.get_details')
 @mock.patch('foremast.datapipeline.datapipeline.get_properties')
-def test_set_pipeline_definition(mock_get_properties, mock_get_details, mock_boto3):
-    """Tests that pipeline definition is set correctly"""
+def test_good_set_pipeline_definition(mock_get_properties, mock_get_details, mock_boto3):
+    """Tests that good pipeline definition is set correctly"""
     generated = {"project": "test"}
     properties = copy.deepcopy(TEST_PROPERTIES)
     mock_get_details.return_value.data = generated
@@ -54,21 +55,23 @@ def test_set_pipeline_definition(mock_get_properties, mock_get_details, mock_bot
 
     good_dp = AWSDataPipeline(app='test_app', env='test_env', region='us-east-1', prop_path='other')
     good_dp.pipeline_id='1'
-    try:
-        good_dp.set_pipeline_definition()
-        assert True
-    except awscli.customizations.datapipeline.translator.PipelineDefinitionError:
-        assert False
+    good_dp.set_pipeline_definition()
 
+@mock.patch('foremast.datapipeline.datapipeline.boto3.Session.client')
+@mock.patch('foremast.datapipeline.datapipeline.get_details')
+@mock.patch('foremast.datapipeline.datapipeline.get_properties')
+def test_bad_set_pipeline_definition(mock_get_properties, mock_get_details, mock_boto3):
+    """Tests that bad pipeline definition is caught"""
+    generated = {"project": "test"}
+    properties = copy.deepcopy(TEST_PROPERTIES)
     properties['test_env']['datapipeline']['json_definition'] = BAD_DEF
+    mock_get_details.return_value.data = generated
     mock_get_properties.return_value = properties
+
     bad_dp = AWSDataPipeline(app='test_app', env='test_env', region='us-east-1', prop_path='other')
     bad_dp.pipeline_id='1'
-    try:
+    with pytest.raises(awscli.customizations.datapipeline.translator.PipelineDefinitionError):
         bad_dp.set_pipeline_definition()
-        assert False
-    except awscli.customizations.datapipeline.translator.PipelineDefinitionError:
-        assert True
 
 @mock.patch('foremast.datapipeline.datapipeline.boto3.Session.client')
 @mock.patch('foremast.datapipeline.datapipeline.get_details')
@@ -84,7 +87,9 @@ def test_get_pipeline_id(mock_get_properties, mock_get_details, mock_boto3):
             "name": "Other",
             "id": "5678"
         }
-    ] }
+        ],
+        "hasMoreResults": False 
+        }
     generated = {"project": "test"}
     properties = copy.deepcopy(TEST_PROPERTIES)
     mock_get_details.return_value.data = generated
