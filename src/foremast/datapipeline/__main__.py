@@ -16,7 +16,7 @@
 
 """CLI entry point for aws datapipeline creation.
 
-Help: ``python -m src.foremast.awslambdaevent -h``
+Help: ``python -m src.foremast.datapipeline -h``
 """
 import argparse
 import logging
