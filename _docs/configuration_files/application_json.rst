@@ -513,3 +513,33 @@ A list of all events to trigger a Lambda function. See :ref:`lambda_events` for 
 
     | *Type*: List
     | *Default*: ``[]``
+
+``datapipeline`` Block
+~~~~~~~~~~~~~~~~~~~~~~
+
+Top level key for AWS Data Pipeline settings. Only necessary for Data Pipeline deployments.
+
+``name``
+********
+
+Name of the Data Pipeline. This defaults to the application name.
+
+    | *Type*: string
+    | *Default*: ``$appname``
+    
+``description``
+***************
+
+Description of the Data Pipeline. 
+
+    | *Type*: string
+    | *Default*: ``""``
+
+``json_definition``
+*******************
+
+The exported JSON definition of the AWS Data Pipeline. You can get this by clicking "Export" in the
+AWS Console when creating the Data Pipeline. 
+
+    | *Type*: json
+    | *Default*: ``{}``
