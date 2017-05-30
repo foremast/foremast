@@ -23,7 +23,7 @@ Contents
    lambda/index
    CONTRIBUTING
    RELEASING
-   modules
+   foremast/modules.rst
 
 .. include:: ../README.rst
 

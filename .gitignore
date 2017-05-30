@@ -1,6 +1,7 @@
 *.exports
 *.json
 *.properties
+_docs/foremast/
 
 # Created by https://www.gitignore.io/api/python,linux,vim,osx
 

@@ -367,3 +367,5 @@ intersphinx_mapping = {
 }
 
 autodoc_mock_imports = []
+
+subprocess.run('sphinx-apidoc --force --output-dir foremast ../src/', check=True, shell=True)
