@@ -5,8 +5,8 @@
                 "rds-db:connect"
             ],
             "Resource": [
-            {%- for db_name, db_user in items.iteritems() %}
-                "arn:aws:rds-db:{{ region }}:{{ account_number }}:dbuser:{{ db_name }}/{{ db_user }}"
+            {%- for db_resource_id, db_user in items.iteritems() %}
+                "arn:aws:rds-db:{{ region }}:{{ account_number }}:dbuser:{{ db_resource_id }}/{{ db_user }}"
                 {{ "," if not loop.last }}
             {% endfor %} 
             ]
