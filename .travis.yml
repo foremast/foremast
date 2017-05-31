@@ -7,17 +7,11 @@ python:
 
 cache: false
 
-env:
-  - TOX_ENV=py34
-  - TOX_ENV=py35
-  - TOX_ENV=py36
-  - TOX_ENV=lint
-
 install:
   - pip install -r requirements-dev.txt
 
 script:
-  - tox -e $TOX_ENV
+  - tox
 
 notifications:
   webhooks:
