@@ -53,7 +53,7 @@ class AWSDataPipeline(object):
         """Creates the data pipeline if it does not already exist
 
         Returns:
-                json: the response of the Boto3 command
+                dict: the response of the Boto3 command
         """
 
         tags = [
@@ -76,7 +76,7 @@ class AWSDataPipeline(object):
         """Translates the json definition and puts it on created pipeline
 
         Returns:
-                json: the response of the Boto3 command
+                dict: the response of the Boto3 command
         """
 
         if not self.pipeline_id:
