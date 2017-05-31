@@ -61,6 +61,16 @@ Add Lambda access.
    | *Type*: bool
    | *Default*: ``false``
 
+``rds-db``
+************
+
+Add RDS-DB Connect access to RDS DB Name/RDS DB User key pairs listed.
+(http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html)
+
+   | *Type*: dict
+   | *Default*: ``{}``
+   | *Example*: ``{"dbi_resource_id": "db_user", "*": "example_user"}```
+
 ``s3``
 ******
 
