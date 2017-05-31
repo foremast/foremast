@@ -153,6 +153,6 @@ class S3SharedBucketNotFound(ForemastError):
     """Shared S3 Bucket does not exist"""
     pass
 
-class ErrorCreatingDataPipeline(ForemastError):
+class DataPipelineDefinitionError(ForemastError):
     """Error Creating Data Pipeline"""
     pass
