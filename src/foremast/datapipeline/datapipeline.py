@@ -65,9 +65,10 @@ class AWSDataPipeline(object):
                                                tags=tags)
             self.pipeline_id = response.get('pipelineId')
         except Exception as e:
-            LOG.warning("%s - %s", response, e)
+            LOG.warning(e)
             raise ErrorCreatingDataPipeline
-
+        
+        LOG.debug(response)
         LOG.info("Successfully configured Data Pipeline - %s", self.app_name)
 
     def set_pipeline_definition(self):
@@ -77,14 +78,18 @@ class AWSDataPipeline(object):
             self.get_pipeline_id()
 
         json_def = self.datapipeline_data['json_definition']
-        pipelineObjects = translator.definition_to_api_objects(json_def)
-        parameterObjects = translator.definition_to_api_parameters(json_def)
-        parameterValues = translator.definition_to_parameter_values(json_def)
-        response = self.client.put_pipeline_definition(
+        try:
+            pipelineObjects = translator.definition_to_api_objects(json_def)
+            parameterObjects = translator.definition_to_api_parameters(json_def)
+            parameterValues = translator.definition_to_parameter_values(json_def)
+            response = self.client.put_pipeline_definition(
                                 pipelineId=self.pipeline_id,
                                 pipelineObjects=pipelineObjects,
                                 parameterObjects=parameterObjects,
                                 parameterValues=parameterValues)
+        except Exception as e:
+            LOG.warning(e)
+            raise ErrorCreatingDataPipeline
         LOG.debug(response)
         LOG.info("Successfully applied pipeline definition")
 
