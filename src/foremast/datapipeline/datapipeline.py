@@ -19,6 +19,7 @@ import logging
 import awscli.customizations.datapipeline.translator as translator
 import boto3
 
+from ..exceptions import ErrorCreatingDataPipeline
 from ..utils import get_details, get_properties
 
 LOG = logging.getLogger(__name__)
@@ -57,12 +58,16 @@ class AWSDataPipeline(object):
                 {"key": "app_name",
                 "value": self.app_name}
                 ]
-        response = self.client.create_pipeline(name=self.datapipeline_data.get('name', self.app_name),
+        try:
+            response = self.client.create_pipeline(name=self.datapipeline_data.get('name', self.app_name),
                                                uniqueId=self.app_name,
                                                description=self.datapipeline_data['description'],
                                                tags=tags)
-        self.pipeline_id = response.get('pipelineId')
-        LOG.debug(response)
+            self.pipeline_id = response.get('pipelineId')
+        except Exception as e:
+            LOG.warning("%s - %s", response, e)
+            raise ErrorCreatingDataPipeline
+
         LOG.info("Successfully configured Data Pipeline - %s", self.app_name)
 
     def set_pipeline_definition(self):
