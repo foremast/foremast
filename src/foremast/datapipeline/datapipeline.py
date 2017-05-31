@@ -19,7 +19,7 @@ import logging
 import awscli.customizations.datapipeline.translator as translator
 import boto3
 
-from ..exceptions import ErrorCreatingDataPipeline
+from ..exceptions import DataPipelineDefinitionError
 from ..utils import get_details, get_properties
 
 LOG = logging.getLogger(__name__)
@@ -50,7 +50,11 @@ class AWSDataPipeline(object):
         self.pipeline_id = None
 
     def create_datapipeline(self):
-        """Creates the data pipeline if it does not already exist"""
+        """Creates the data pipeline if it does not already exist
+
+        Returns:
+                json: the response of the Boto3 command
+        """
 
         tags = [
                 {"key": "app_group",
@@ -58,24 +62,21 @@ class AWSDataPipeline(object):
                 {"key": "app_name",
                 "value": self.app_name}
                 ]
-        try:
-            response = self.client.create_pipeline(name=self.datapipeline_data.get('name', self.app_name),
-                                               uniqueId=self.app_name,
-                                               description=self.datapipeline_data['description'],
-                                               tags=tags)
-            self.pipeline_id = response.get('pipelineId')
-        except Exception as e:
-            LOG.warning(e)
-            raise ErrorCreatingDataPipeline
-        
+        response = self.client.create_pipeline(name=self.datapipeline_data.get('name', self.app_name),
+                                            uniqueId=self.app_name,
+                                            description=self.datapipeline_data['description'],
+                                            tags=tags)
+        self.pipeline_id = response.get('pipelineId')
+
         LOG.debug(response)
         LOG.info("Successfully configured Data Pipeline - %s", self.app_name)
+        return response
 
     def set_pipeline_definition(self):
         """Translates the json definition and puts it on created pipeline
 
         Returns:
-                bool: True if successful
+                json: the response of the Boto3 command
         """
 
         if not self.pipeline_id:
@@ -86,17 +87,18 @@ class AWSDataPipeline(object):
             pipelineObjects = translator.definition_to_api_objects(json_def)
             parameterObjects = translator.definition_to_api_parameters(json_def)
             parameterValues = translator.definition_to_parameter_values(json_def)
-            response = self.client.put_pipeline_definition(
-                                pipelineId=self.pipeline_id,
-                                pipelineObjects=pipelineObjects,
-                                parameterObjects=parameterObjects,
-                                parameterValues=parameterValues)
-        except Exception as e:
+        except translator.PipelineDefinitionError as e:
             LOG.warning(e)
-            raise ErrorCreatingDataPipeline
+            raise DataPipelineDefinitionError
+
+        response = self.client.put_pipeline_definition(
+                            pipelineId=self.pipeline_id,
+                            pipelineObjects=pipelineObjects,
+                            parameterObjects=parameterObjects,
+                            parameterValues=parameterValues)
         LOG.debug(response)
         LOG.info("Successfully applied pipeline definition")
-        return True
+        return response
 
     def get_pipeline_id(self):
         """Finds the pipeline ID for configured pipeline"""
