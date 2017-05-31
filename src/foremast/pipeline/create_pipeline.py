@@ -47,7 +47,8 @@ class SpinnakerPipeline:
                  trigger_job='',
                  prop_path='',
                  base='',
-                 runway_dir=''):
+                 runway_dir='',
+                 pipeline_type='ec2'):
         self.log = logging.getLogger(__name__)
 
         self.header = {'content-type': 'application/json'}
@@ -63,6 +64,7 @@ class SpinnakerPipeline:
 
         self.settings = get_properties(prop_path)
         self.environments = self.settings['pipeline']['env']
+        self.pipeline_type = pipeline_type
 
     def post_pipeline(self, pipeline):
         """Send Pipeline JSON to Spinnaker.
@@ -117,43 +119,48 @@ class SpinnakerPipeline:
 
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
-        baking_process = self.settings['pipeline']['image']['builder']
         provider = 'aws'
-        root_volume_size = self.settings['pipeline']['image']['root_volume_size']
-
-        if root_volume_size > 50:
-            raise SpinnakerPipelineCreationFailed(
-                'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
-                    root_volume_size))
-
-        ami_id = ami_lookup(name=base,
-                            region=region)
-
-        ami_template_file = generate_packer_filename(provider, region, baking_process)
-
         pipeline_id = self.compare_with_existing(region=region)
+
+        type_specific_data = {}
+        if self.pipeline_type == 'ec2':
+            baking_process = self.settings['pipeline']['image']['builder']
+            root_volume_size = self.settings['pipeline']['image']['root_volume_size']
+            if root_volume_size > 50:
+                raise SpinnakerPipelineCreationFailed(
+                    'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
+                        root_volume_size))
+            ami_id = ami_lookup(name=base,
+                                region=region)
+            ami_template_file = generate_packer_filename(provider, region, baking_process)
+            type_specific_data = {
+                                    'ami_id': ami_id,
+                                    'root_volume_size': root_volume_size,
+                                    'ami_template_file': ami_template_file
+                                }
 
         data = {
             'app': {
-                'ami_id': ami_id,
                 'appname': self.app_name,
                 'base': base,
+                'deploy_type': self.pipeline_type,
                 'environment': 'packaging',
                 'region': region,
                 'triggerjob': self.trigger_job,
                 'email': email,
                 'slack': slack,
-                'root_volume_size': root_volume_size,
-                'ami_template_file': ami_template_file,
             },
             'id': pipeline_id
         }
 
-        self.log.debug('Wrapper app data:\n%s', pformat(data))
+        fulldata = data.copy()
+        fulldata.update(type_specific_data)
+
+        self.log.debug('Wrapper app data:\n%s', pformat(fulldata))
 
         wrapper = get_template(
             template_file='pipeline/pipeline_wrapper.json.j2',
-            data=data)
+            data=fulldata)
 
         return json.loads(wrapper)
 
@@ -213,7 +220,8 @@ class SpinnakerPipeline:
         self.log.info('Environments and Regions for Pipelines:\n%s',
                       json.dumps(regions_envs, indent=4))
 
-        subnets = get_subnets()
+        if self.pipeline_type == 'ec2':
+            subnets = get_subnets()
 
         pipelines = {}
         for region, envs in regions_envs.items():
@@ -223,20 +231,25 @@ class SpinnakerPipeline:
 
             previous_env = None
             for env in envs:
-                try:
-                    region_subnets = {region: subnets[env][region]}
-                except KeyError:
-                    self.log.info('%s is not available for %s.', env, region)
-                    continue
+                pipeline_block_data = {
+                    "pipeline_type": self.pipeline_type,
+                    "env": env,
+                    "generated": self.generated,
+                    "previous_env": previous_env,
+                    "region": region,
+                    "settings": self.settings[env],
+                    "pipeline_data": self.settings['pipeline'],
+                }
 
-                block = construct_pipeline_block(
-                    env=env,
-                    generated=self.generated,
-                    previous_env=previous_env,
-                    region=region,
-                    region_subnets=region_subnets,
-                    settings=self.settings[env],
-                    pipeline_data=self.settings['pipeline'])
+                if self.pipeline_type == 'ec2':
+                    try:
+                        region_subnets = {region: subnets[env][region]}
+                    except KeyError:
+                        self.log.info('%s is not available for %s.', env, region)
+                        continue
+                    pipeline_block_data['region_subnets'] = region_subnets
+
+                block = construct_pipeline_block(**pipeline_block_data)
 
                 pipelines[region]['stages'].extend(json.loads(block))
 

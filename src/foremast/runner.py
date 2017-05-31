@@ -104,14 +104,14 @@ class ForemastRunner(object):
             raise NotImplementedError('Pipeline type "{0}" not permitted.'.format(pipeline_type))
 
         if not onetime:
-            if pipeline_type == 'ec2':
+            if pipeline_type == 'ec2' or pipeline_type == 's3':
                 spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
             elif pipeline_type == 'lambda':
                 spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
-            elif pipeline_type == 's3':
-                spinnakerpipeline = pipeline.SpinnakerPipelineS3(**kwargs)
             elif pipeline_type == 'datapipeline':
                 spinnakerpipeline = pipeline.SpinnakerPipelineDataPipeline(**kwargs)
+            #elif pipeline_type == 's3':
+            #    spinnakerpipeline = pipeline.SpinnakerPipelineS3(**kwargs)
             elif pipeline_type == 'manual':
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             else:
