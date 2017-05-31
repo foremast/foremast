@@ -31,7 +31,7 @@ Specifies what type of pipeline to use for the application.
 
         - ``"lambda"`` - Sets up the AWS Lambda pipeline and infrastructure
         - ``"ec2"`` - Sets up the AWS EC2 pipeline and infrastructure
-        - ``"datapipeline"`` - Setups the AWS Data Pipeline infrastructure
+        - ``"datapipeline"`` - Sets up the AWS Data Pipeline infrastructure
         - ``"manual"`` - Create Pipelines from raw JSON, use with :ref:`pipeline_files`.
 
 ``owner_email``
