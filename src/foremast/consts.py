@@ -23,7 +23,7 @@ descending order. First found wins.
 * ``~/.foremast/foremast.cfg``
 * ``/etc/foremast/foremast.cfg``
 
-.. literalinclude:: ../src/foremast/templates/configs/foremast.cfg.example
+.. literalinclude:: ../../src/foremast/templates/configs/foremast.cfg.example
    :language: ini
 """
 import json
