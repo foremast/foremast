@@ -72,7 +72,11 @@ class AWSDataPipeline(object):
         LOG.info("Successfully configured Data Pipeline - %s", self.app_name)
 
     def set_pipeline_definition(self):
-        """Translates the json definition and puts it on created pipeline"""
+        """Translates the json definition and puts it on created pipeline
+
+        Returns:
+                bool: True if successful
+        """
 
         if not self.pipeline_id:
             self.get_pipeline_id()
@@ -92,6 +96,7 @@ class AWSDataPipeline(object):
             raise ErrorCreatingDataPipeline
         LOG.debug(response)
         LOG.info("Successfully applied pipeline definition")
+        return True
 
     def get_pipeline_id(self):
         """Finds the pipeline ID for configured pipeline"""

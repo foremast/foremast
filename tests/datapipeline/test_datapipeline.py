@@ -55,8 +55,7 @@ def test_good_set_pipeline_definition(mock_get_properties, mock_get_details, moc
 
     good_dp = AWSDataPipeline(app='test_app', env='test_env', region='us-east-1', prop_path='other')
     good_dp.pipeline_id='1'
-    result = good_dp.set_pipeline_definition()
-    assert result == None
+    assert good_dp.set_pipeline_definition()
 
 
 @mock.patch('foremast.datapipeline.datapipeline.boto3.Session.client')
