@@ -2,6 +2,7 @@
 *.json
 *.properties
 _docs/foremast/
+CHANGELOG.rst
 
 # Created by https://www.gitignore.io/api/python,linux,vim,osx
 

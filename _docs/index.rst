@@ -24,6 +24,7 @@ Contents
    CONTRIBUTING
    RELEASING
    foremast/modules
+   CHANGELOG
 
 .. include:: ../README.rst
 
