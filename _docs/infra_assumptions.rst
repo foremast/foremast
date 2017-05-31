@@ -120,13 +120,23 @@ The default generated pipeline requires a couple of Jenkins jobs to be setup in 
 
     - ``REGION``
 
-  - Example Shell after cloning Foremast::
+  - Example Shell after cloning Foremast
 
-     virtualenv -p python3 venv
-     . venv/bin/activate
-     pip install -U --quiet .
-
-     create-scaling-policy
+    .. code-block:: bash
+    
+       virtualenv -p python3 venv
+       . venv/bin/activate
+       pip install -U --quiet .
+       
+       create-scaling-policy
+       
+       # You can export these variables or also pass them beforehand such as:
+       export GIT_REPO=<repo_name>
+       export ENV=<spinnaker_env_name>
+       
+       PROJECT=<repo_project> RUNWAY_DIR=<OS_path_to_runway_dir> \
+          REGION=<spinnaker_env_region> \
+          foremast-infrastructure
 
 Gitlab
 ------
