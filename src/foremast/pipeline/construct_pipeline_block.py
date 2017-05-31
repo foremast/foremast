@@ -119,7 +119,6 @@ def construct_pipeline_block(pipeline_type='ec2',
     gen_app_name = generated.app_name()
     data = copy.deepcopy(settings)
 
-    type_specific_data = {}
     if pipeline_type == 'ec2':
         kwargs = {'appname': gen_app_name,
                   'settings': settings,
@@ -127,7 +126,7 @@ def construct_pipeline_block(pipeline_type='ec2',
                   'region': region,
                   'region_subnets': kwargs['region_subnets'],
                   'project': generated.project}
-        type_specific_data = ec2_pipeline_setup(**kwargs)
+        data = ec2_pipeline_setup(**kwargs)
 
     data['app'].update({
         'appname': gen_app_name,
@@ -140,12 +139,12 @@ def construct_pipeline_block(pipeline_type='ec2',
         'owner_email': pipeline_data['owner_email'],
     })
 
-    fulldata = data.copy()
-    fulldata.update(type_specific_data)
+    #data.update(type_specific_data)
+    print(pformat(data))
 
-    LOG.debug('Block data:\n%s', pformat(fulldata))
+    LOG.debug('Block data:\n%s', pformat(data))
 
-    pipeline_json = get_template(template_file=template_name, data=fulldata)
+    pipeline_json = get_template(template_file=template_name, data=data)
     return pipeline_json
 
 def ec2_pipeline_setup(**kwargs):

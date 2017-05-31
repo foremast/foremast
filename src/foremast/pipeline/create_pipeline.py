@@ -153,14 +153,13 @@ class SpinnakerPipeline:
             'id': pipeline_id
         }
 
-        fulldata = data.copy()
-        fulldata.update(type_specific_data)
+        data['app'].update(type_specific_data)
 
-        self.log.debug('Wrapper app data:\n%s', pformat(fulldata))
+        self.log.debug('Wrapper app data:\n%s', pformat(data))
 
         wrapper = get_template(
             template_file='pipeline/pipeline_wrapper.json.j2',
-            data=fulldata)
+            data=data)
 
         return json.loads(wrapper)
 
