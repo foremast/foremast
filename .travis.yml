@@ -5,6 +5,31 @@ python:
   - 3.5
   - 3.6
 
+env:
+  - TOXENV=py34
+  - TOXENV=py35
+  - TOXENV=py36
+  - TOXENV=lint
+
+matrix:
+  exclude:
+    - python: 3.4
+      env: TOXENV=py35
+    - python: 3.4
+      env: TOXENV=py36
+    - python: 3.4
+      env: TOXENV=lint
+    - python: 3.5
+      env: TOXENV=py34
+    - python: 3.5
+      env: TOXENV=py36
+    - python: 3.5
+      env: TOXENV=lint
+    - python: 3.6
+      env: TOXENV=py34
+    - python: 3.6
+      env: TOXENV=py35
+
 cache: false
 
 install:
@@ -12,7 +37,6 @@ install:
 
 script:
   - tox
-  - tox -e lint
 
 notifications:
   webhooks:
