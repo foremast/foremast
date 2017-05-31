@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 
 import copy
-import awscli.customizations.datapipeline.translator
+from foremast.exceptions import ErrorCreatingDataPipeline
 from foremast.datapipeline.datapipeline import AWSDataPipeline
 
 GOOD_DEF = 	{
@@ -72,7 +72,7 @@ def test_bad_set_pipeline_definition(mock_get_properties, mock_get_details, mock
 
     bad_dp = AWSDataPipeline(app='test_app', env='test_env', region='us-east-1', prop_path='other')
     bad_dp.pipeline_id='1'
-    with pytest.raises(awscli.customizations.datapipeline.translator.PipelineDefinitionError):
+    with pytest.raises(ErrorCreatingDataPipeline):
         bad_dp.set_pipeline_definition()
 
 @mock.patch('foremast.datapipeline.datapipeline.boto3.Session.client')
