@@ -17,15 +17,9 @@
 """Create Pipelines for Spinnaker."""
 import collections
 import json
-import logging
-import os
 from pprint import pformat
 
-import requests
-
-from ..consts import API_URL
-from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import get_details, get_properties, get_template
+from ..utils import get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_datapipeline import construct_pipeline_block_datapipeline
 from .create_pipeline import SpinnakerPipeline
@@ -53,15 +47,11 @@ class SpinnakerPipelineDataPipeline(SpinnakerPipeline):
         Returns:
             dict: Rendered Pipeline wrapper.
         """
-        base = self.settings['pipeline']['base']
-
-        if self.base:
-            base = self.base
+        base = self.base or self.settings['pipeline']['base']
 
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
         deploy_type = self.settings['pipeline']['type']
-        provider = 'aws'
         pipeline_id = self.compare_with_existing(region=region)
 
         data = {

@@ -18,7 +18,6 @@ import logging
 
 import awscli.customizations.datapipeline.translator as translator
 import boto3
-from tryagain import retries
 
 from ..utils import get_details, get_properties
 
@@ -72,9 +71,10 @@ class AWSDataPipeline(object):
         if not self.pipeline_id:
             self.get_pipeline_id()
 
-        pipelineObjects = translator.definition_to_api_objects(self.datapipeline_data['json_definition'])
-        parameterObjects = translator.definition_to_api_parameters(self.datapipeline_data['json_definition'])
-        parameterValues = translator.definition_to_parameter_values(self.datapipeline_data['json_definition'])
+        json_def = self.datapipeline_data['json_definition']
+        pipelineObjects = translator.definition_to_api_objects(json_def)
+        parameterObjects = translator.definition_to_api_parameters(json_def)
+        parameterValues = translator.definition_to_parameter_values(json_def)
         response = self.client.put_pipeline_definition(
                                 pipelineId=self.pipeline_id,
                                 pipelineObjects=pipelineObjects,
@@ -85,22 +85,12 @@ class AWSDataPipeline(object):
 
     def get_pipeline_id(self):
         """Finds the pipeline ID for configured pipeline"""
-
-        all_pipelines = []
-        hasMore = True
-        marker = None
-        # handles the pagination from boto3
-        while hasMore:
-            if not marker:
-                response = self.client.list_pipelines()
-            else:
-                LOG.info("Checking for more pipelines")
-                response = self.client.list_pipelines(marker=marker)
-            all_pipelines.extend(response['pipelineIdList'])
-            hasMore = response['hasMoreResults']
-            marker = response.get('marker')
-            LOG.debug(response)
         
+        all_pipelines = []
+        paginiator = self.client.get_paginator('list_pipelines')
+        for page in paginiator.paginate():
+            all_pipelines.extend(page['pipelineIdList'])
+            
         for pipeline in all_pipelines:
             if pipeline['name'] == self.datapipeline_data.get('name', self.app_name):
                 self.pipeline_id = pipeline['id']
