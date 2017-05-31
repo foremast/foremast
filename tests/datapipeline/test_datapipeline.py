@@ -37,11 +37,11 @@ def test_create_datapipeline(mock_get_properties, mock_get_details, mock_boto3):
     properties = copy.deepcopy(TEST_PROPERTIES)
     mock_get_details.return_value.data = generated
     mock_get_properties.return_value = properties
-    mock_boto3.return_value.create_pipeline.return_value = {}
+    mock_boto3.return_value.create_pipeline.return_value = { 'pipelineId': '1234'}
 
     dp = AWSDataPipeline(app='test_app', env='test_env', region='us-east-1', prop_path='other')
     dp.create_datapipeline()
-    assert dp.pipeline_id == None
+    assert dp.pipeline_id == '1234'
 
 @mock.patch('foremast.datapipeline.datapipeline.boto3.Session.client')
 @mock.patch('foremast.datapipeline.datapipeline.get_details')
@@ -78,7 +78,7 @@ def test_bad_set_pipeline_definition(mock_get_properties, mock_get_details, mock
 @mock.patch('foremast.datapipeline.datapipeline.get_properties')
 def test_get_pipeline_id(mock_get_properties, mock_get_details, mock_boto3):
     """Tests getting the pipeline ID from boto3"""
-    test_pipelines = {'pipelineIdList': [
+    test_pipelines = [{'pipelineIdList': [
         {
             "name": "Test Pipeline",
             "id": "1234"
@@ -89,12 +89,12 @@ def test_get_pipeline_id(mock_get_properties, mock_get_details, mock_boto3):
         }
         ],
         "hasMoreResults": False 
-        }
+        }]
     generated = {"project": "test"}
     properties = copy.deepcopy(TEST_PROPERTIES)
     mock_get_details.return_value.data = generated
     mock_get_properties.return_value = properties
-    mock_boto3.return_value.list_pipelines.return_value = test_pipelines
+    mock_boto3.return_value.get_paginator.return_value.paginate.return_value = test_pipelines
 
     dp = AWSDataPipeline(app='test_app', env='test_env', region='us-east-1', prop_path='other')
     dp.get_pipeline_id()
