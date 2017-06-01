@@ -112,11 +112,7 @@ class SpinnakerPipeline:
         Returns:
             dict: Rendered Pipeline wrapper.
         """
-        base = self.settings['pipeline']['base']
-
-        if self.base:
-            base = self.base
-
+        base = self.base or self.settings['pipeline']['base']
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
         provider = 'aws'
@@ -156,6 +152,7 @@ class SpinnakerPipeline:
         data['app'].update(type_specific_data)
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
+        print(pformat(data))
 
         wrapper = get_template(
             template_file='pipeline/pipeline_wrapper.json.j2',
@@ -219,7 +216,8 @@ class SpinnakerPipeline:
         self.log.info('Environments and Regions for Pipelines:\n%s',
                       json.dumps(regions_envs, indent=4))
 
-        if self.pipeline_type == 'ec2':
+        types_with_subnets = ['ec2', 'lambda']
+        if self.pipeline_type in types_with_subnets:
             subnets = get_subnets()
 
         pipelines = {}
@@ -240,7 +238,7 @@ class SpinnakerPipeline:
                     "pipeline_data": self.settings['pipeline'],
                 }
 
-                if self.pipeline_type == 'ec2':
+                if self.pipeline_type in types_with_subnets:
                     try:
                         region_subnets = {region: subnets[env][region]}
                     except KeyError:
@@ -249,16 +247,13 @@ class SpinnakerPipeline:
                     pipeline_block_data['region_subnets'] = region_subnets
 
                 block = construct_pipeline_block(**pipeline_block_data)
-
                 pipelines[region]['stages'].extend(json.loads(block))
-
                 previous_env = env
 
         self.log.debug('Assembled Pipelines:\n%s', pformat(pipelines))
 
         for region, pipeline in pipelines.items():
             renumerate_stages(pipeline)
-
             self.post_pipeline(pipeline)
 
         return True

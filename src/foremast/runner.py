@@ -90,24 +90,24 @@ class ForemastRunner(object):
         """Create the spinnaker pipeline(s)."""
         utils.banner("Creating Pipeline")
 
+        pipeline_type = self.configs['pipeline']['type']
+        if pipeline_type not in consts.ALLOWED_TYPES:
+            raise NotImplementedError('Pipeline type "{0}" not permitted.'.format(pipeline_type))
+
         kwargs = {
             'app': self.app,
             'trigger_job': self.trigger_job,
             'prop_path': self.json_path,
             'base': None,
             'runway_dir': self.runway_dir,
+            'pipeline_type': pipeline_type
         }
 
-        pipeline_type = self.configs['pipeline']['type']
-
-        if pipeline_type not in consts.ALLOWED_TYPES:
-            raise NotImplementedError('Pipeline type "{0}" not permitted.'.format(pipeline_type))
-
         if not onetime:
-            if pipeline_type == 'ec2' or pipeline_type == 's3':
+            if pipeline_type == 'ec2' or pipeline_type == 's3' or pipeline_type == 'lambda':
                 spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
-            elif pipeline_type == 'lambda':
-                spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
+            #elif pipeline_type == 'lambda':
+           #    spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
             elif pipeline_type == 'datapipeline':
                 spinnakerpipeline = pipeline.SpinnakerPipelineDataPipeline(**kwargs)
             #elif pipeline_type == 's3':
