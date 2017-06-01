@@ -119,14 +119,16 @@ def construct_pipeline_block(pipeline_type='ec2',
     gen_app_name = generated.app_name()
     data = copy.deepcopy(settings)
 
+    setup_kwargs = {'appname': gen_app_name,
+                'settings': settings,
+                'env': env,
+                'region': region,
+                'project': generated.project}
     if pipeline_type == 'ec2':
-        kwargs = {'appname': gen_app_name,
-                  'settings': settings,
-                  'env': env,
-                  'region': region,
-                  'region_subnets': kwargs['region_subnets'],
-                  'project': generated.project}
-        data = ec2_pipeline_setup(**kwargs)
+       setup_kwargs['region_subnets'] = kwargs['region_subnets']
+       data = ec2_pipeline_setup(**setup_kwargs)
+    elif pipeline_type == 'lambda':
+       setup_kwargs['region_subnets'] = kwargs['region_subnets']
 
     data['app'].update({
         'appname': gen_app_name,
@@ -139,14 +141,48 @@ def construct_pipeline_block(pipeline_type='ec2',
         'owner_email': pipeline_data['owner_email'],
     })
 
-    #data.update(type_specific_data)
-    print(pformat(data))
-
     LOG.debug('Block data:\n%s', pformat(data))
 
     pipeline_json = get_template(template_file=template_name, data=data)
     return pipeline_json
 
+def lambda_pipeline_setup(**kwargs):
+    """Handles ec2 pipeline data setup
+    
+    Returns:
+        dict: Updated settings to pass to templates for EC2 info
+    """
+
+    settings = kwargs['settings']
+    appname = kwargs['appname']
+    env = kwargs['env']
+    region = kwargs['region']
+    project = kwargs['project']
+    data = copy.deepcopy(settings)
+
+    user_data = generate_encoded_user_data(env=env,
+                                        region=region,
+                                        app_name=appname,
+                                        group_name=project)
+
+    # Use different variable to keep template simple
+    instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS)
+    instance_security_groups.append(appname)
+    instance_security_groups.extend(settings['security_group']['instance_extras'])
+
+    LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
+
+    data = copy.deepcopy(settings)
+
+    data['app'].update({
+        'az_dict': json.dumps(kwargs['region_subnets']),
+        'encoded_user_data': user_data,
+        'instance_security_groups': json.dumps(instance_security_groups),
+        'function_name': pipeline_data['lambda']['handler']
+    })
+
+    return data
+    
 def ec2_pipeline_setup(**kwargs):
     """Handles ec2 pipeline data setup
     
