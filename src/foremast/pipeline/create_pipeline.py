@@ -27,7 +27,7 @@ from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import ami_lookup, generate_packer_filename, get_details, get_properties, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
-from .construct_pipeline_block import construct_pipeline_block
+from .construct_pipeline_block import construct_pipeline_block, ec2_bake_data
 from .renumerate_stages import renumerate_stages
 
 
@@ -115,25 +115,13 @@ class SpinnakerPipeline:
         base = self.base or self.settings['pipeline']['base']
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
-        provider = 'aws'
         pipeline_id = self.compare_with_existing(region=region)
 
-        type_specific_data = {}
+        bake_data = {}
         if self.pipeline_type == 'ec2':
-            baking_process = self.settings['pipeline']['image']['builder']
-            root_volume_size = self.settings['pipeline']['image']['root_volume_size']
-            if root_volume_size > 50:
-                raise SpinnakerPipelineCreationFailed(
-                    'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
-                        root_volume_size))
-            ami_id = ami_lookup(name=base,
-                                region=region)
-            ami_template_file = generate_packer_filename(provider, region, baking_process)
-            type_specific_data = {
-                                    'ami_id': ami_id,
-                                    'root_volume_size': root_volume_size,
-                                    'ami_template_file': ami_template_file
-                                }
+            bake_data = ec2_bake_data(settings=self.settings, 
+                                      base=base,
+                                      region=region)
 
         data = {
             'app': {
@@ -149,7 +137,7 @@ class SpinnakerPipeline:
             'id': pipeline_id
         }
 
-        data['app'].update(type_specific_data)
+        data['app'].update(bake_data)
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
         print(pformat(data))
@@ -159,6 +147,7 @@ class SpinnakerPipeline:
             data=data)
 
         return json.loads(wrapper)
+    
 
     def get_existing_pipelines(self):
         """Get existing pipeline configs for specific application.
@@ -216,10 +205,9 @@ class SpinnakerPipeline:
         self.log.info('Environments and Regions for Pipelines:\n%s',
                       json.dumps(regions_envs, indent=4))
 
-        types_with_subnets = ['ec2', 'lambda']
-        if self.pipeline_type in types_with_subnets:
-            subnets = get_subnets()
 
+        subnets = None
+        types_with_subnets = ['ec2', 'lambda']
         pipelines = {}
         for region, envs in regions_envs.items():
             # TODO: Overrides for an environment no longer makes sense. Need to
@@ -239,6 +227,8 @@ class SpinnakerPipeline:
                 }
 
                 if self.pipeline_type in types_with_subnets:
+                    if not subnets:
+                        subnets = get_subnets()
                     try:
                         region_subnets = {region: subnets[env][region]}
                     except KeyError:

@@ -120,15 +120,16 @@ def construct_pipeline_block(pipeline_type='ec2',
     data = copy.deepcopy(settings)
 
     setup_kwargs = {'appname': gen_app_name,
-                'settings': settings,
-                'env': env,
-                'region': region,
-                'project': generated.project}
+                    'settings': settings,
+                    'env': env,
+                    'region': region,
+                    'project': generated.project}
     if pipeline_type == 'ec2':
        setup_kwargs['region_subnets'] = kwargs['region_subnets']
        data = ec2_pipeline_setup(**setup_kwargs)
     elif pipeline_type == 'lambda':
        setup_kwargs['region_subnets'] = kwargs['region_subnets']
+       data = lambda_pipeline_setup(**setup_kwargs)
 
     data['app'].update({
         'appname': gen_app_name,
@@ -147,10 +148,10 @@ def construct_pipeline_block(pipeline_type='ec2',
     return pipeline_json
 
 def lambda_pipeline_setup(**kwargs):
-    """Handles ec2 pipeline data setup
+    """Handles lambda pipeline data setup
     
     Returns:
-        dict: Updated settings to pass to templates for EC2 info
+        dict: Updated settings to pass to templates for lambda info
     """
 
     settings = kwargs['settings']
@@ -159,11 +160,6 @@ def lambda_pipeline_setup(**kwargs):
     region = kwargs['region']
     project = kwargs['project']
     data = copy.deepcopy(settings)
-
-    user_data = generate_encoded_user_data(env=env,
-                                        region=region,
-                                        app_name=appname,
-                                        group_name=project)
 
     # Use different variable to keep template simple
     instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS)
@@ -176,7 +172,6 @@ def lambda_pipeline_setup(**kwargs):
 
     data['app'].update({
         'az_dict': json.dumps(kwargs['region_subnets']),
-        'encoded_user_data': user_data,
         'instance_security_groups': json.dumps(instance_security_groups),
         'function_name': pipeline_data['lambda']['handler']
     })
@@ -269,3 +264,20 @@ def ec2_pipeline_setup(**kwargs):
         })
     
     return data
+
+def ec2_bake_data(settings=None, base=None, region='us-east-1', provider='aws'):
+    """Sets up extra data for EC2 wrapper/baking stage"""
+
+    baking_process = settings['pipeline']['image']['builder']
+    root_volume_size = settings['pipeline']['image']['root_volume_size']
+    if root_volume_size > 50:
+        raise SpinnakerPipelineCreationFailed(
+            'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
+                root_volume_size))
+    ami_id = ami_lookup(name=base,
+                        region=region)
+    ami_template_file = generate_packer_filename(provider, region, baking_process)
+    bake_data = {'ami_id': ami_id,
+                    'root_volume_size': root_volume_size,
+                    'ami_template_file': ami_template_file}
+    return bake_data
