@@ -181,11 +181,7 @@ class LambdaFunction(object):
                 Description=self.description,
                 Timeout=int(self.timeout),
                 MemorySize=int(self.memory),
-                VpcConfig=vpc_config,
-                Tags={
-                    'app_group': self.group,
-                    'app_name': self.app_name
-                }
+                VpcConfig=vpc_config
             )
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
@@ -233,7 +229,11 @@ class LambdaFunction(object):
                 Timeout=int(self.timeout),
                 MemorySize=int(self.memory),
                 Publish=False,
-                VpcConfig=vpc_config)
+                VpcConfig=vpc_config,
+                Tags={
+                    'app_group': self.group,
+                    'app_name': self.app_name
+                })
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
