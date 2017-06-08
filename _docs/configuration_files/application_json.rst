@@ -535,6 +535,14 @@ Description of the Data Pipeline.
     | *Type*: string
     | *Default*: ``""``
 
+``activate_on_deploy``
+**********************
+
+Activates a Data Pipeline after deployment. Useful for OnDemand pipelines 
+
+    | *Type*: bool
+    | *Default*: ``false``
+
 ``json_definition``
 *******************
 
