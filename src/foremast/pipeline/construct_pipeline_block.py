@@ -76,7 +76,8 @@ def construct_pipeline_block(env='',
                              region='us-east-1',
                              region_subnets=None,
                              settings=None,
-                             pipeline_data=None):
+                             pipeline_data=None,
+                             runway_dir=''):
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -142,7 +143,7 @@ def construct_pipeline_block(env='',
     hc_grace_period = data['asg'].get('hc_grace_period')
     app_grace_period = data['asg'].get('app_grace_period')
     grace_period = hc_grace_period + app_grace_period
-    
+
     # TODO: Migrate the naming logic to an external library to make it easier
     #       to update in the future. Gogo-Utils looks like a good candidate
     ssh_keypair = data['asg'].get('ssh_keypair', None)
@@ -165,6 +166,7 @@ def construct_pipeline_block(env='',
         'promote_restrict': pipeline_data['promote_restrict'],
         'owner_email': pipeline_data['owner_email'],
         'scalingpolicy': scalingpolicy,
+        'runway_dir': runway_dir
     })
 
     if settings['app']['canary']:
