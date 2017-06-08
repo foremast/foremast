@@ -231,6 +231,8 @@ class ForemastRunner(object):
                                            prop_path=self.json_path)
         dpobj.create_datapipeline()
         dpobj.set_pipeline_definition()
+        if self.configs[self.env].get('datapipeline').get('activate_on_deploy'):
+            dpobj.activate_pipeline()
 
     def slack_notify(self):
         """Send out a slack notification."""
