@@ -114,3 +114,8 @@ class AWSDataPipeline(object):
                 LOG.info("Pipeline ID Found")
                 return
         LOG.info("Pipeline ID Not Found for %s", self.app_name)
+
+    def activate_pipeline(self):
+        """Activates a deployed pipeline, useful for OnDemand pipelines"""
+        self.client.activate_pipeline(PipelineId=self.pipeline_id)
+        LOG.info("Activated Pipeline %s", self.pipeline_id)
