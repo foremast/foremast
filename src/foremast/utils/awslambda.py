@@ -43,19 +43,19 @@ def get_lambda_arn(app, account, region):
     paginator = lambda_client.get_paginator('list_functions')
 
     for lambda_functions in paginator.paginate():
-        if lambda_arn:
-            break
         for lambda_function in lambda_functions['Functions']:
             if lambda_function['FunctionName'] == app:
                 lambda_arn = lambda_function['FunctionArn']
                 LOG.debug("Lambda ARN for lambda function %s is %s.", app, lambda_arn)
                 break
+        if lambda_arn:
+            break
 
     if not lambda_arn:
         LOG.fatal('Lambda function with name %s not found in %s %s', app, account, region)
         raise LambdaFunctionDoesNotExist('Lambda function with name {0} not found in {1} {2}'.format(app, account, region))
-    else:
-        return lambda_arn
+
+    return lambda_arn
 
 
 def get_lambda_alias_arn(app, account, region):
