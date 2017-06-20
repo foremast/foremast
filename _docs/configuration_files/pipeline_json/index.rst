@@ -69,7 +69,7 @@ The base AMI to use for baking the application. This can be an alias defined in 
 
     | *Default*: ``"tomcat8"``
 
-``envs``
+``env``
 ~~~~~~~~
 
 List of accounts that the application will be deployed to. Order matters as it defines the order of the pipeline. The accounts should be named the same as you have them in Spinnaker Clouddriver
