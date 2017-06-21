@@ -87,6 +87,28 @@ class SpinnakerTaskError(SpinnakerError):
         super().__init__(*errors)
 
 
+class SpinnakerTaskInconclusiveError(SpinnakerTaskError):
+    """Spinnaker Task state failed to reach terminal state in allowed time."""
+
+    def __init__(self, message):
+        mock_failure_stage = {
+            'context': {
+                'exception': {
+                    'details': {
+                        'errors': [message],
+                    },
+                },
+            },
+        }
+        spinnaker_task_state = {
+            'execution': {
+                'stages': [mock_failure_stage],
+            },
+        }
+
+        super().__init__(spinnaker_task_state)
+
+
 class SpinnakerPipelineCreationFailed(SpinnakerError):
     """Could not create Spinnaker Pipeline."""
     pass
