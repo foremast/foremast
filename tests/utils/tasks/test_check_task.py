@@ -18,7 +18,7 @@ def test_utils_retry_task(mock_requests_get, mock_check_task):
     mock_check_task.side_effect = ValueError
     with pytest.raises(SpinnakerTaskInconclusiveError):
         check_task(taskid, timeout=2, wait=1)
-        assert mock_check_task.call_count == 2
+    assert mock_check_task.call_count == 2
 
 
 @mock.patch('foremast.utils.tasks.requests')
