@@ -12,7 +12,7 @@ SUCCESS_MESSAGE = 'SUCCEEDED'
 
 @mock.patch('foremast.utils.tasks._check_task')
 def test_utils_retry_task(mock_check_task):
-    """Validate task retries are configurable"""
+    """Validate task retries are configurable."""
     taskid = 'fake_task'
     mock_check_task.side_effect = ValueError
     with pytest.raises(SpinnakerTaskInconclusiveError):
