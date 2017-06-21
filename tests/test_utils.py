@@ -352,7 +352,7 @@ def test_utils_retry_task(mock_requests_get, mock_check_task):
     """Validate task retries are configurable"""
     taskid = 'fake_task'
     mock_check_task.side_effect=ValueError
-    with pytest.raises(ValueError):
+    with pytest.raises(SpinnakerTaskInconclusiveError):
         check_task(taskid, 4)
         assert mock_check_task.call_count == 2
 
