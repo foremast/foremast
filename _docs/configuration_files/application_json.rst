@@ -185,7 +185,7 @@ Defines scaling policy to attach to ASG. If this block does not exist, no scalin
 
         ``metric`` : The CloudWatch metric to trigger auto-scaling events.
 
-            | *Default*: ``"CPUUtilization"```
+            | *Default*: ``"CPUUtilization"``
             | *Options*:
 
                - ``"CPUUtilization"``
