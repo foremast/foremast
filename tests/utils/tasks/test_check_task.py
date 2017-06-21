@@ -10,6 +10,17 @@ FAIL_MESSAGE = 'TERMINAL'
 SUCCESS_MESSAGE = 'SUCCEEDED'
 
 
+@mock.patch('foremast.utils.tasks._check_task')
+@mock.patch('foremast.utils.tasks.requests.get')
+def test_utils_retry_task(mock_requests_get, mock_check_task):
+    """Validate task retries are configurable"""
+    taskid = 'fake_task'
+    mock_check_task.side_effect = ValueError
+    with pytest.raises(SpinnakerTaskInconclusiveError):
+        check_task(taskid, 4)
+        assert mock_check_task.call_count == 2
+
+
 @mock.patch('foremast.utils.tasks.requests')
 def test_task_success(mock_requests):
     """Successful Task."""
