@@ -51,12 +51,3 @@ def test_task_unknown(mock_requests):
 
     with pytest.raises(ValueError):
         _check_task(taskid='')
-
-
-@mock.patch('foremast.utils.tasks._check_task')
-def test_polling_inconclusive(mock_check):
-    """Spinnaker Task with non-terminal state should raise exception."""
-    mock_check.side_effect = ValueError
-
-    with pytest.raises(SpinnakerTaskInconclusiveError):
-        check_task(taskid='', timeout=1, wait=1)
