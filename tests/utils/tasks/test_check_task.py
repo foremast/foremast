@@ -32,3 +32,12 @@ def test_task_failure(mock_requests):
 
     with pytest.raises(SpinnakerTaskError):
         _check_task(taskid='')
+
+
+@mock.patch('foremast.utils.tasks.requests')
+def test_task_unknown(mock_requests):
+    """Unknown Task status raises exception to keep polling."""
+    mock_requests.get.return_value.json.return_value = {'status': ''}
+
+    with pytest.raises(ValueError):
+        _check_task(taskid='')
