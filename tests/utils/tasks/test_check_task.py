@@ -49,4 +49,4 @@ def test_polling_inconclusive(mock_check):
     mock_check.side_effect = ValueError
 
     with pytest.raises(ValueError):
-        check_task(taskid='', timeout=2)
+        check_task(taskid='', timeout=1, wait=1)
