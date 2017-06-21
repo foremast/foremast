@@ -22,7 +22,7 @@ import requests
 from tryagain import call as retry_call 
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, HEADERS, DEFAULT_TASK_TIMEOUT, TASK_TIMEOUTS
-from ..exceptions import SpinnakerTaskError
+from ..exceptions import SpinnakerTaskError, SpinnakerTaskInconclusiveError
 
 LOG = logging.getLogger(__name__)
 
@@ -110,12 +110,23 @@ def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT, wait=2):
 
     Returns:
         polls for task status.
+
+    Raises:
+        AssertionError: API did not responde with a 200 status code.
+        foremast.exceptions.SpinnakerTaskInconclusiveError: Task did not reach a
+            terminal state in the given time.
+
     """
     max_attempts = int(timeout / wait)
-    return retry_call(partial(_check_task, taskid),
-                      max_attempts=max_attempts,
-                      wait=wait,
-                      exceptions=(AssertionError, ValueError))
+    try:
+        return retry_call(
+            partial(_check_task, taskid),
+            max_attempts=max_attempts,
+            wait=wait,
+            exceptions=(AssertionError, ValueError), )
+    except ValueError:
+        raise SpinnakerTaskInconclusiveError('Task failed to complete in time: {0}'.format(taskid))
+
 
 def wait_for_task(task_data):
     """Run task and check the result
