@@ -100,17 +100,17 @@ def _check_task(taskid):
         raise ValueError
 
 
-def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT):
+def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT, wait=2):
     """wrapper for check_task
 
     Args:
         taskid (str): the task id returned from post_task 
         timeout (int) (optional): how long to wait before failing the task
+        wait (int, optional): Seconds to pause between polling attempts.
 
     Returns:
         polls for task status.
     """
-    wait = 2
     max_attempts = int(timeout / wait)
     return retry_call(partial(_check_task, taskid),
                       max_attempts=max_attempts,
