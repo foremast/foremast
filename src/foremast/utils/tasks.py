@@ -125,7 +125,7 @@ def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT, wait=2):
             wait=wait,
             exceptions=(AssertionError, ValueError), )
     except ValueError:
-        raise SpinnakerTaskInconclusiveError('Task failed to complete in time: {0}'.format(taskid))
+        raise SpinnakerTaskInconclusiveError('Task failed to complete in {0} seconds: {1}'.format(timeout, taskid))
 
 
 def wait_for_task(task_data):
