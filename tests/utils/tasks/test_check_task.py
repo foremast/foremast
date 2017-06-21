@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from foremast.exceptions import SpinnakerTaskError
+from foremast.exceptions import SpinnakerTaskError, SpinnakerTaskInconclusiveError
 from foremast.utils.tasks import _check_task, check_task
 
 FAIL_MESSAGE = 'TERMINAL'
@@ -48,5 +48,5 @@ def test_polling_inconclusive(mock_check):
     """Spinnaker Task with non-terminal state should raise exception."""
     mock_check.side_effect = ValueError
 
-    with pytest.raises(ValueError):
+    with pytest.raises(SpinnakerTaskInconclusiveError):
         check_task(taskid='', timeout=1, wait=1)
