@@ -82,6 +82,10 @@ def construct_pipeline_block(env='',
     This handles the common repeatable patterns in a pipeline, such as
     judgement, infrastructure, tagger and qe.
 
+    Note:
+       ASG Health Check type is overridden to `EC2` when deploying to **dev** or
+       using :ref:`eureka_enabled`.
+
     Args:
         env (str): Deploy environment name, e.g. dev, stage, prod.
         generated (gogoutils.Generator): Gogo Application name generator.
@@ -94,6 +98,7 @@ def construct_pipeline_block(env='',
 
     Returns:
         dict: Pipeline JSON template rendered with configurations.
+
     """
     LOG.info('%s block for [%s].', env, region)
 
