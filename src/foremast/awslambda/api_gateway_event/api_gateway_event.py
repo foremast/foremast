@@ -51,7 +51,7 @@ class APIGateway:
         self.api_version = self.lambda_client.meta.service_model.api_version
 
         self.api_id = self.find_api_id()
-        self.resource_id = self.find_resource_id()
+        self.resource_id, self.parent_id = self.find_resource_ids()
 
     def find_api_id(self):
         """Given API name, find API ID."""
@@ -68,7 +68,7 @@ class APIGateway:
 
         return api_id
 
-    def find_resource_id(self):
+    def find_resource_ids(self):
         """Given a resource path and API Id, find resource Id."""
         all_resources = self.client.get_resources(restApiId=self.api_id)
         parent_id = None
@@ -80,12 +80,7 @@ class APIGateway:
                 resource_id = resource['id']
                 self.log.info("Found Resource ID for: %s", resource['path'])
                 self.attach_method(resource_id)
-                break
-        else:
-            resource_id = self.create_resource(parent_id=parent_id)
-            self.attach_method(resource_id)
-
-        return resource_id
+        return resource_id, parent_id
 
     def add_lambda_integration(self):
         """Attach lambda found to API."""
@@ -231,7 +226,7 @@ class APIGateway:
         self.log.info("Successfully created API")
         return api_id
 
-    def create_or_update_resource(self, parent_id=""):
+    def create_resource(self, parent_id=""):
         """Create the specified resource.
 
         Args:
@@ -239,14 +234,14 @@ class APIGateway:
         """
         resource_name = self.trigger_settings.get('resource', '')
         resource_name = resource_name.replace("/", "")
-        try:
+        if not self.resource_id:
             created_resource = self.client.create_resource(restApiId=self.api_id,
                                                            parentId=parent_id,
                                                            pathPart=resource_name)
-            resource_id = created_resource['id']
+            self.resource_id = created_resource['id']
             self.log.info("Successfully created resource")
-        except:
-        return resource_id
+        else:
+            self.log.info("Resource already exists. To update resource please delete existing resource: %s", resource_name)
 
     def attach_method(self, resource_id):
         """Attach the defined method."""
@@ -267,6 +262,8 @@ class APIGateway:
 
     def setup_lambda_api(self):
         """A wrapper for all the steps needed to setup the integration."""
+        self.create_resource(self.parent_id)
+        self.attach_method(self.resource_id)
         self.add_lambda_integration()
         self.add_permission()
         self.create_api_deployment()
