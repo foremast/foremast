@@ -117,7 +117,7 @@ class APIGateway:
         resource_name = resource_name.replace("/", "")
         source_arn = 'arn:aws:execute-api:{}:{}:{}/{}/{}/{}'.format(self.region, self.account_id, self.api_id, self.env, self.trigger_settings['method'], resource_name)
         add_lambda_permissions(function=lambda_alias_arn,
-                               statement_id=statement_id,
+                               statement_id=statement_id + self.trigger_settings['method'],
                                action='lambda:InvokeFunction',
                                principal=principal,
                                env=self.env,
@@ -125,7 +125,7 @@ class APIGateway:
                                source_arn=source_arn)
         source_arn = 'arn:aws:execute-api:{}:{}:{}/*/*/{}'.format(self.region, self.account_id, self.api_id, resource_name)
         add_lambda_permissions(function=lambda_alias_arn,
-                               statement_id=statement_id + self.trigger_settings['method'],
+                               statement_id=statement_id,
                                action='lambda:InvokeFunction',
                                principal=principal,
                                env=self.env,
@@ -133,7 +133,7 @@ class APIGateway:
                                source_arn=source_arn)
         source_arn = 'arn:aws:execute-api:{}:{}:{}/{}/{}/{}'.format(self.region, self.account_id, self.api_id, self.env, self.trigger_settings['method'], resource_name)
         add_lambda_permissions(function=lambda_arn,
-                               statement_id=statement_id,
+                               statement_id=statement_id + self.trigger_settings['method'],
                                action='lambda:InvokeFunction',
                                principal=principal,
                                env=self.env,
@@ -141,7 +141,7 @@ class APIGateway:
                                source_arn=source_arn)
         source_arn = 'arn:aws:execute-api:{}:{}:{}/*/*/{}'.format(self.region, self.account_id, self.api_id, resource_name)
         add_lambda_permissions(function=lambda_arn,
-                               statement_id=statement_id + self.trigger_settings['method'],
+                               statement_id=statement_id,
                                action='lambda:InvokeFunction',
                                principal=principal,
                                env=self.env,
@@ -231,7 +231,7 @@ class APIGateway:
         self.log.info("Successfully created API")
         return api_id
 
-    def create_resource(self, parent_id=""):
+    def create_or_update_resource(self, parent_id=""):
         """Create the specified resource.
 
         Args:
@@ -239,11 +239,13 @@ class APIGateway:
         """
         resource_name = self.trigger_settings.get('resource', '')
         resource_name = resource_name.replace("/", "")
-        created_resource = self.client.create_resource(restApiId=self.api_id,
-                                                       parentId=parent_id,
-                                                       pathPart=resource_name)
-        resource_id = created_resource['id']
-        self.log.info("Successfully created resource")
+        try:
+            created_resource = self.client.create_resource(restApiId=self.api_id,
+                                                           parentId=parent_id,
+                                                           pathPart=resource_name)
+            resource_id = created_resource['id']
+            self.log.info("Successfully created resource")
+        except:
         return resource_id
 
     def attach_method(self, resource_id):
