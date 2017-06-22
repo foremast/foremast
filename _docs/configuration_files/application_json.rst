@@ -527,11 +527,11 @@ Name of the Data Pipeline. This defaults to the application name.
 
     | *Type*: string
     | *Default*: ``$appname``
-    
+
 ``description``
 ***************
 
-Description of the Data Pipeline. 
+Description of the Data Pipeline.
 
     | *Type*: string
     | *Default*: ``""``
@@ -539,7 +539,7 @@ Description of the Data Pipeline.
 ``activate_on_deploy``
 **********************
 
-Activates a Data Pipeline after deployment. Useful for OnDemand pipelines 
+Activates a Data Pipeline after deployment. Useful for OnDemand pipelines
 
     | *Type*: bool
     | *Default*: ``false``
@@ -548,7 +548,7 @@ Activates a Data Pipeline after deployment. Useful for OnDemand pipelines
 *******************
 
 The exported JSON definition of the AWS Data Pipeline. You can get this by clicking "Export" in the
-AWS Console when creating the Data Pipeline. 
+AWS Console when creating the Data Pipeline.
 
     | *Type*: json
     | *Default*: ``{}``
