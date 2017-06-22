@@ -18,7 +18,7 @@ import logging
 
 import boto3
 import botocore
-from foremast.utils import add_lambda_permissions, get_details, get_env_credential, get_lambda_alias_arn, get_properties
+from foremast.utils import add_lambda_permissions, get_details, get_env_credential, get_lambda_alias_arn, get_lambda_arn, get_properties
 from tryagain import retries
 
 LOG = logging.getLogger(__name__)
@@ -112,12 +112,41 @@ class APIGateway:
         statement_id = '{}_api_{}'.format(self.app_name, self.trigger_settings['api_name'])
         principal = 'apigateway.amazonaws.com'
         lambda_alias_arn = get_lambda_alias_arn(self.app_name, self.env, self.region)
+        lambda_arn = get_lambda_arn(self.app_name, self.env, self.region)
+        resource_name = self.trigger_settings.get('resource', '')
+        resource_name = resource_name.replace("/", "")
+        source_arn = 'arn:aws:execute-api:{}:{}:{}/{}/{}/{}'.format(self.region, self.account_id, self.api_id, self.env, self.trigger_settings['method'], resource_name)
         add_lambda_permissions(function=lambda_alias_arn,
                                statement_id=statement_id,
                                action='lambda:InvokeFunction',
                                principal=principal,
                                env=self.env,
-                               region=self.region)
+                               region=self.region,
+                               source_arn=source_arn)
+        source_arn = 'arn:aws:execute-api:{}:{}:{}/*/*/{}'.format(self.region, self.account_id, self.api_id, resource_name)
+        add_lambda_permissions(function=lambda_alias_arn,
+                               statement_id=statement_id + self.trigger_settings['method'],
+                               action='lambda:InvokeFunction',
+                               principal=principal,
+                               env=self.env,
+                               region=self.region,
+                               source_arn=source_arn)
+        source_arn = 'arn:aws:execute-api:{}:{}:{}/{}/{}/{}'.format(self.region, self.account_id, self.api_id, self.env, self.trigger_settings['method'], resource_name)
+        add_lambda_permissions(function=lambda_arn,
+                               statement_id=statement_id,
+                               action='lambda:InvokeFunction',
+                               principal=principal,
+                               env=self.env,
+                               region=self.region,
+                               source_arn=source_arn)
+        source_arn = 'arn:aws:execute-api:{}:{}:{}/*/*/{}'.format(self.region, self.account_id, self.api_id, resource_name)
+        add_lambda_permissions(function=lambda_arn,
+                               statement_id=statement_id + self.trigger_settings['method'],
+                               action='lambda:InvokeFunction',
+                               principal=principal,
+                               env=self.env,
+                               region=self.region,
+                               source_arn=source_arn)
 
     @retries(max_attempts=5, wait=2, exceptions=(botocore.exceptions.ClientError))
     def create_api_deployment(self):
