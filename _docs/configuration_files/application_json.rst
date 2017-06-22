@@ -31,6 +31,8 @@ Describes the application.
 
     | *Default*: ``null``
 
+.. _eureka_enabled:
+
 ``eureka_enabled``
 ***********************
 
@@ -108,6 +110,12 @@ Top level key containing information regarding application ASGs
 
 ``hc_type``
 ************
+
+.. note::
+
+   See
+   :func:`foremast.pipeline.construct_pipeline_block.construct_pipeline_block`
+   for cases where the Health Check type is overridden to ``"EC2"``.
 
 ASG Health check type (EC2 or ELB)
 
