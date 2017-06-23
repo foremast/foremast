@@ -19,16 +19,6 @@ from setuptools import find_packages, setup
 with open('requirements.txt', 'rt') as reqs_file:
     reqs_list = reqs_file.readlines()
 
-def no_local_scheme(*_):
-    """Remove the local scheme for PEP 440 compliance.
-
-    Fixes the error when uploading to PyPI:
-
-    .. quote: Upload failed (400): version: Cannot use PEP 440 local versions.
-
-    """
-    return ''
-
 setup(
     name='foremast',
     description='Tools for creating infrastructure and Spinnaker Pipelines.',
@@ -38,7 +28,7 @@ setup(
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     setup_requires=['setuptools_scm'],
-    use_scm_version={'local_scheme': no_local_scheme},
+    use_scm_version={'local_scheme': 'dirty-tag'},
     install_requires=reqs_list,
     include_package_data=True,
     keywords="aws gogo infrastructure netflixoss python spinnaker",
