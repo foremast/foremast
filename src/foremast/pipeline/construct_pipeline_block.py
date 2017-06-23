@@ -119,17 +119,19 @@ def construct_pipeline_block(pipeline_type='ec2',
     gen_app_name = generated.app_name()
     data = copy.deepcopy(settings)
 
-    setup_kwargs = {'appname': gen_app_name,
-                    'settings': settings,
-                    'env': env,
-                    'region': region,
-                    'project': generated.project}
+    setup_kwargs = {
+        'appname': gen_app_name,
+        'settings': settings,
+        'env': env,
+        'region': region,
+        'project': generated.project
+    }
     if pipeline_type == 'ec2':
-       setup_kwargs['region_subnets'] = kwargs['region_subnets']
-       data = ec2_pipeline_setup(**setup_kwargs)
+        setup_kwargs['region_subnets'] = kwargs['region_subnets']
+        data = ec2_pipeline_setup(**setup_kwargs)
     elif pipeline_type == 'lambda':
-       setup_kwargs['region_subnets'] = kwargs['region_subnets']
-       data = lambda_pipeline_setup(**setup_kwargs)
+        setup_kwargs['region_subnets'] = kwargs['region_subnets']
+        data = lambda_pipeline_setup(**setup_kwargs)
 
     data['app'].update({
         'appname': gen_app_name,
@@ -146,6 +148,7 @@ def construct_pipeline_block(pipeline_type='ec2',
 
     pipeline_json = get_template(template_file=template_name, data=data)
     return pipeline_json
+
 
 def lambda_pipeline_setup(**kwargs):
     """Handles lambda pipeline data setup
@@ -177,7 +180,8 @@ def lambda_pipeline_setup(**kwargs):
     })
 
     return data
-    
+
+
 def ec2_pipeline_setup(**kwargs):
     """Handles ec2 pipeline data setup
     
@@ -192,10 +196,7 @@ def ec2_pipeline_setup(**kwargs):
     project = kwargs['project']
     data = copy.deepcopy(settings)
 
-    user_data = generate_encoded_user_data(env=env,
-                                        region=region,
-                                        app_name=appname,
-                                        group_name=project)
+    user_data = generate_encoded_user_data(env=env, region=region, app_name=appname, group_name=project)
 
     # Use different variable to keep template simple
     instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS)
@@ -240,7 +241,8 @@ def ec2_pipeline_setup(**kwargs):
     LOG.info('SSH keypair ({0}) used'.format(ssh_keypair))
 
     if settings['app']['canary']:
-        canary_user_data = generate_encoded_user_data(env=env, region=region, app_name=appname, group_name=project, canary=True)
+        canary_user_data = generate_encoded_user_data(
+            env=env, region=region, app_name=appname, group_name=project, canary=True)
         data['app'].update({
             'canary_encoded_user_data': canary_user_data,
         })
@@ -261,9 +263,10 @@ def ec2_pipeline_setup(**kwargs):
         'instance_security_groups': json.dumps(instance_security_groups),
         'elb': json.dumps(elb),
         'scalingpolicy': scalingpolicy,
-        })
-    
+    })
+
     return data
+
 
 def ec2_bake_data(settings=None, base=None, region='us-east-1', provider='aws'):
     """Sets up extra data for EC2 wrapper/baking stage"""
@@ -274,10 +277,7 @@ def ec2_bake_data(settings=None, base=None, region='us-east-1', provider='aws'):
         raise SpinnakerPipelineCreationFailed(
             'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
                 root_volume_size))
-    ami_id = ami_lookup(name=base,
-                        region=region)
+    ami_id = ami_lookup(name=base, region=region)
     ami_template_file = generate_packer_filename(provider, region, baking_process)
-    bake_data = {'ami_id': ami_id,
-                    'root_volume_size': root_volume_size,
-                    'ami_template_file': ami_template_file}
+    bake_data = {'ami_id': ami_id, 'root_volume_size': root_volume_size, 'ami_template_file': ami_template_file}
     return bake_data
