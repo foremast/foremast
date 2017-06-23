@@ -79,7 +79,6 @@ class APIGateway:
             if resource['path'] == self.trigger_settings['resource']:
                 resource_id = resource['id']
                 self.log.info("Found Resource ID for: %s", resource['path'])
-                self.attach_method(resource_id)
         return resource_id, parent_id
 
     def add_lambda_integration(self):
