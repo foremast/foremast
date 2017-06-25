@@ -21,7 +21,8 @@ import boto3
 from tryagain import retries
 
 from ..exceptions import RequiredKeyNotFound
-from ..utils import get_details, get_properties, get_role_arn, get_security_group_id, get_subnets
+from ..utils import (get_details, get_lambda_arn, get_properties, get_role_arn,
+                     get_security_group_id, get_subnets)
 
 LOG = logging.getLogger(__name__)
 
@@ -190,6 +191,15 @@ class LambdaFunction(object):
                 raise SystemExit(message)
 
             raise
+        LOG.info('Updating Lambda function tags')
+
+        lambda_arn = get_lambda_arn(self.app_name, self.env, self.region)
+        self.lambda_client.tag_resource(
+            Resource = lambda_arn,
+            Tags={
+                'app_group': self.group,
+                'app_name': self.app_name
+            })
 
         LOG.info("Successfully updated Lambda configuration.")
 
