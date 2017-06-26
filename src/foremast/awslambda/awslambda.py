@@ -195,7 +195,7 @@ class LambdaFunction(object):
 
         lambda_arn = get_lambda_arn(self.app_name, self.env, self.region)
         self.lambda_client.tag_resource(
-            Resource = lambda_arn,
+            Resource=lambda_arn,
             Tags={
                 'app_group': self.group,
                 'app_name': self.app_name
