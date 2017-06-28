@@ -64,14 +64,25 @@ class S3Deployment(object):
 
     def setup_pathing(self):
         """Formats pathing for S3 deployments"""
+        self.s3_version_uri = self._path_formatter(self.version)
+        self.s3_latest_uri = self._path_formatter("LATEST")
+        self.s3_canary_uri = self._path_formatter("CANARY")
+
+    def _path_formatter(self, suffix):
+        """Formats the s3 path properly
+
+        Args:
+            suffix (str): suffix to add on to an s3 path
+        
+        Returns:
+            str: formatted path
+        """
         path_format = "{}/{}/{}"
         s3_format = "s3://{}"
-        version_path = path_format.format(self.bucket, self.s3path, self.version).replace('//', '/')
-        latest_path = path_format.format(self.bucket, self.s3path, "LATEST").replace('//', '/')
-        canary_path = path_format.format(self.bucket, self.s3path, "CANARY").replace('//', '/')
-        self.s3_version_uri = s3_format.format(version_path)
-        self.s3_latest_uri = s3_format.format(latest_path)
-        self.s3_canary_uri = s3_format.format(canary_path)
+        path = path_format.format(self.bucket, self.s3path, suffix)
+        formatted_path = path.replace('//', '/') #removes configuration errors
+        full_path = s3_format.format(formatted_path)
+        return full_path
 
     def upload_artifacts(self):
         """Uploads the artifacts to S3 and copies to LATEST depending on strategy"""
@@ -108,12 +119,12 @@ class S3Deployment(object):
         cmd_sync = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(
             self.s3_version_uri, self.s3_latest_uri, self.env)
 
-        p_cp = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Copy to latest before sync output: %s", p_cp.stdout)
+        cp_result = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
+        LOG.debug("Copy to latest before sync output: %s", cp_result.stdout)
         LOG.info("Copied version %s to %s", self.version, self.s3_latest_uri)
 
-        p_sync = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Sync to latest command output: %s", p_sync.stdout)
+        sync_result = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
+        LOG.debug("Sync to latest command output: %s", sync_result.stdout)
         LOG.info("Synced version %s to %s", self.version, self.s3_latest_uri)
 
     def _sync_to_canary(self):
@@ -123,10 +134,10 @@ class S3Deployment(object):
         cmd_sync = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(
             self.s3_version_uri, self.s3_canary_uri, self.env)
 
-        p_cp = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Copy to canary before sync output: %s", p_cp.stdout)
+        cp_result = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
+        LOG.debug("Copy to canary before sync output: %s", cp_result.stdout)
         LOG.info("Copied version %s to %s", self.version, self.s3_canary_uri)
 
-        p_sync = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Sync to canary command output: %s", p_sync.stdout)
+        sync_result = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
+        LOG.debug("Sync to canary command output: %s", sync_result.stdout)
         LOG.info("Synced version %s to %s", self.version, self.s3_canary_uri)
