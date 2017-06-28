@@ -110,11 +110,11 @@ class S3Deployment(object):
 
         p_cp = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
         LOG.debug("Copy to latest before sync output: %s", p_cp.stdout)
-        LOG.info("Copied version %s to LATEST", self.version)
+        LOG.info("Copied version %s to %s", self.version, self.s3_latest_uri)
 
         p_sync = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
         LOG.debug("Sync to latest command output: %s", p_sync.stdout)
-        LOG.info("Synced version %s to LATEST", self.version)
+        LOG.info("Synced version %s to %s", self.version, self.s3_latest_uri)
 
     def _sync_to_canary(self):
         """Uses AWS CLI to cp first then sync versioned directory to CANARY directory in S3"""
@@ -124,9 +124,9 @@ class S3Deployment(object):
             self.s3_version_uri, self.s3_canary_uri, self.env)
 
         p_cp = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Copy to latest before sync output: %s", p_cp.stdout)
-        LOG.info("Copied version %s to LATEST", self.version)
+        LOG.debug("Copy to canary before sync output: %s", p_cp.stdout)
+        LOG.info("Copied version %s to %s", self.version, self.s3_canary_uri)
 
         p_sync = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Sync to latest command output: %s", p_sync.stdout)
-        LOG.info("Synced version %s to LATEST", self.version)
+        LOG.debug("Sync to canary command output: %s", p_sync.stdout)
+        LOG.info("Synced version %s to %s", self.version, self.s3_canary_uri)
