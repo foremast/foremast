@@ -67,6 +67,13 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
                                           self.environments[0])
         pipeline_json['name'] = name
 
+        #Inject pipeline Id so that it does not override existing pipelines
+        pipeline_id = super().compare_with_existing(onetime=True)
+        if pipeline_id:
+            pipeline_json['id'] = pipeline_id
+        else:
+            del pipeline_json['id']
+
         # disable trigger as not to accidently kick off multiple deployments
         for trigger in pipeline_json['triggers']:
             trigger['enabled'] = False

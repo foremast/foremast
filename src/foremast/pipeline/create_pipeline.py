@@ -172,19 +172,29 @@ class SpinnakerPipeline:
 
         return resp.json()
 
-    def compare_with_existing(self, region='us-east-1'):
+    def compare_with_existing(self, region='us-east-1', onetime=False):
         """Compare desired pipeline with existing pipelines.
 
         Args:
             region (str): Region of desired pipeline.
+            onetime (bool): Looks for different pipeline if Onetime
 
         Returns:
             str: pipeline_id if existing, empty string of not.
         """
         pipelines = self.get_existing_pipelines()
         pipeline_id = None
+        found = False
         for pipeline in pipelines:
-            if (pipeline['application'] == self.app_name) and (region in pipeline['name']):
+            right_app_and_region = (pipeline['application'] == self.app_name) and (region in pipeline['name']) 
+            if onetime:
+                onetime_str = "(onetime-{})".format(self.environments[0])
+                if right_app_and_region and onetime_str in pipeline['name']:
+                    found = True
+            elif right_app_and_region:
+                found = True
+
+            if found:
                 self.log.info('Existing pipeline found - %s', pipeline['name'])
                 pipeline_id = pipeline['id']
                 break
