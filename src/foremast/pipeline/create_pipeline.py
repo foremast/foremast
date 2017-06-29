@@ -186,12 +186,12 @@ class SpinnakerPipeline:
         pipeline_id = None
         found = False
         for pipeline in pipelines:
-            right_app_and_region = (pipeline['application'] == self.app_name) and (region in pipeline['name']) 
+            correct_app_and_region = (pipeline['application'] == self.app_name) and (region in pipeline['name']) 
             if onetime:
                 onetime_str = "(onetime-{})".format(self.environments[0])
-                if right_app_and_region and onetime_str in pipeline['name']:
+                if correct_app_and_region and onetime_str in pipeline['name']:
                     found = True
-            elif right_app_and_region:
+            elif correct_app_and_region:
                 found = True
 
             if found:
