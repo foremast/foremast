@@ -21,23 +21,26 @@ import boto3
 from botocore.client import ClientError
 
 from ..exceptions import S3SharedBucketNotFound
-from ..utils import get_properties, get_details, get_dns_zone_ids, update_dns_zone_record
+from ..utils import (get_details, get_dns_zone_ids, get_properties,
+                     update_dns_zone_record)
 
 LOG = logging.getLogger(__name__)
 
 class S3Apps(object):
     """Handles infrastructure around depolying static content to S3. Setups Bucket and Policy"""
 
-    def __init__(self, app, env, region, prop_path):
+    def __init__(self, app, group, env, region, prop_path):
         """S3 application object. Setups Bucket and policies for S3 applications.
 
         Args:
             app (str): Application name
+            group (str): Application group name
             env (str): Environment/Account
             region (str): AWS Region
             prop_path (str): Path of environment property file
         """
         self.app_name = app
+        self.app_group = group
         self.env = env
         self.region = region
         boto_sess = boto3.session.Session(profile_name=env)
@@ -75,6 +78,7 @@ class S3Apps(object):
             if self.s3props['website']['enabled']:
                 self._set_website_settings()
                 self._set_bucket_dns()
+        self._put_bucket_tagging()
 
     def _attach_bucket_policy(self):
         """attaches a bucket policy to app bucket"""
@@ -111,6 +115,15 @@ class S3Apps(object):
             LOG.debug('zone_id: %s', zone_id)
             update_dns_zone_record(self.env, zone_id, **dns_kwargs)
         LOG.info("Created DNS %s for Bucket", self.bucket)
+
+    def _put_bucket_tagging(self):
+        tagset = {'TagSet': [
+            {'Key': 'app_name',
+             'Value': self.app_name},
+            {'Key': 'app_group',
+             'Value': self.app_group},
+        ]}
+        self.s3client.put_bucket_tagging(Bucket='string', Tagging=tagset)
 
     def _bucket_exists(self):
         """Checks if the bucket exists"""

@@ -31,9 +31,9 @@ import logging
 import os
 
 import gogoutils
-from foremast import (app, autoscaling_policy, awslambda, configs, consts, datapipeline,
-                      dns, elb, iam, pipeline, s3, securitygroup, slacknotify,
-                      utils)
+from foremast import (app, autoscaling_policy, awslambda, configs, consts,
+                      datapipeline, dns, elb, iam, pipeline, s3, securitygroup,
+                      slacknotify, utils)
 
 from .args import add_debug
 
@@ -135,9 +135,10 @@ class ForemastRunner(object):
         """Create S3 infra for s3 applications"""
         utils.banner("Creating S3 App Infrastructure")
         s3obj = s3.S3Apps(app=self.app,
-                           env=self.env,
-                           region=self.region,
-                           prop_path=self.json_path)
+                          group=self.group,
+                          env=self.env,
+                          region=self.region,
+                          prop_path=self.json_path)
         s3obj.create_bucket()
 
     def deploy_s3app(self):
