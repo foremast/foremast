@@ -69,14 +69,38 @@ def check_provider_healthcheck(settings, default_provider='Discovery'):
 
     return ProviderHealthCheck(providers=health_check_providers, has_healthcheck=has_healthcheck)
 
+def get_template_name(env, pipeline_type):
+    """Generates the correct template name based on pipeline type
+
+    Args:
+        env (str): environment to generate templates for
+        pipeline_type (str): Type of pipeline like ec2 or lambda
+    
+    Returns:
+        str: Name of template
+    """
+    if pipeline_type == 'ec2':
+        if env.startswith('prod'):
+            template_name = 'pipeline/pipeline_{}.json.j2'.format(env)
+        else:
+            template_name = 'pipeline/pipeline_stages.json.j2'
+    else:
+        if env.startswith('prod'):
+            template_name = 'pipeline/pipeline_{}_{}.json.j2'.format(env, pipeline_type)
+        else:
+            template_name = 'pipeline/pipeline_stages_{}.json.j2'.format(pipeline_type)
+
+    return template_name
 
 def construct_pipeline_block(env='',
                              generated=None,
                              previous_env=None,
                              region='us-east-1',
-                             region_subnets=None,
                              settings=None,
-                             pipeline_data=None):
+                             pipeline_data=None,
+                             pipeline_type='ec2',
+                             **kwargs):
+
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -100,17 +124,57 @@ def construct_pipeline_block(env='',
         dict: Pipeline JSON template rendered with configurations.
 
     """
+
     LOG.info('%s block for [%s].', env, region)
-
-    if env.startswith('prod'):
-        template_name = 'pipeline/pipeline_{}.json.j2'.format(env)
-    else:
-        template_name = 'pipeline/pipeline_stages.json.j2'
-
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
     gen_app_name = generated.app_name()
-    user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project)
+    data = copy.deepcopy(settings)
+
+    setup_kwargs = {
+        'appname': gen_app_name,
+        'settings': settings,
+        'env': env,
+        'region': region,
+        'project': generated.project
+    }
+
+    if pipeline_type == 'ec2':
+        setup_kwargs['region_subnets'] = kwargs['region_subnets']
+        data = ec2_pipeline_setup(**setup_kwargs)
+
+    data['app'].update({
+        'appname': gen_app_name,
+        'repo_name': generated.repo,
+        'group_name': generated.project,
+        'environment': env,
+        'region': region,
+        'previous_env': previous_env,
+        'promote_restrict': pipeline_data['promote_restrict'],
+        'owner_email': pipeline_data['owner_email'],
+    })
+
+    LOG.debug('Block data:\n%s', pformat(data))
+    
+    template_name = get_template_name(env, pipeline_type)
+    pipeline_json = get_template(template_file=template_name, data=data)
+    return pipeline_json
+
+def ec2_pipeline_setup(**kwargs):
+    """Handles ec2 pipeline data setup
+    
+    Returns:
+        dict: Updated settings to pass to templates for EC2 info
+    """
+
+    settings = kwargs['settings']
+    appname = kwargs['appname']
+    env = kwargs['env']
+    region = kwargs['region']
+    project = kwargs['project']
+    data = copy.deepcopy(settings)
+
+    user_data = generate_encoded_user_data(env=env, region=region, app_name=appname, group_name=project)
 
     # Use different variable to keep template simple
     instance_security_groups = DEFAULT_EC2_SECURITYGROUPS[env]
@@ -130,12 +194,10 @@ def construct_pipeline_block(env='',
     if settings['app']['eureka_enabled']:
         elb = []
     else:
-        elb = ['{0}'.format(gen_app_name)]
+        elb = ['{0}'.format(appname)]
     LOG.info('Attaching the following ELB: {0}'.format(elb))
 
     health_checks = check_provider_healthcheck(settings)
-
-    data = copy.deepcopy(settings)
 
     # Use EC2 Health Check for DEV or Eureka enabled
     if env == 'dev' or settings['app']['eureka_enabled']:
@@ -156,25 +218,9 @@ def construct_pipeline_block(env='',
         ssh_keypair = '{0}_{1}_default'.format(env, region)
     LOG.info('SSH keypair ({0}) used'.format(ssh_keypair))
 
-    data['app'].update({
-        'appname': gen_app_name,
-        'repo_name': generated.repo,
-        'group_name': generated.project,
-        'environment': env,
-        'region': region,
-        'az_dict': json.dumps(region_subnets),
-        'previous_env': previous_env,
-        'encoded_user_data': user_data,
-        'instance_security_groups': json.dumps(instance_security_groups),
-        'elb': json.dumps(elb),
-        'promote_restrict': pipeline_data['promote_restrict'],
-        'owner_email': pipeline_data['owner_email'],
-        'pipeline': pipeline_data,
-        'scalingpolicy': scalingpolicy,
-    })
-
     if settings['app']['canary']:
-        canary_user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project, canary=True)
+        canary_user_data = generate_encoded_user_data(
+            env=env, region=region, app_name=appname, group_name=project, canary=True)
         data['app'].update({
             'canary_encoded_user_data': canary_user_data,
         })
@@ -189,7 +235,13 @@ def construct_pipeline_block(env='',
         'asg_whitelist': ASG_WHITELIST,
     })
 
-    LOG.debug('Block data:\n%s', pformat(data))
+    data['app'].update({
+        'az_dict': json.dumps(kwargs['region_subnets']),
+        'encoded_user_data': user_data,
+        'instance_security_groups': json.dumps(instance_security_groups),
+        'elb': json.dumps(elb),
+        'scalingpolicy': scalingpolicy,
+    })
 
-    pipeline_json = get_template(template_file=template_name, data=data)
-    return pipeline_json
+    return data
+
