@@ -46,7 +46,7 @@ class S3Apps(object):
         self.generated = get_details(app=app, env=env)
         self.properties = get_properties(prop_path)
         self.s3props = self.properties[self.env]['s3']
-        self.group = self.generated.project()
+        self.group = self.generated.project
 
         if self.s3props.get('shared_bucket_master'):
             self.bucket = self.generated.shared_s3_app_bucket()
@@ -122,7 +122,8 @@ class S3Apps(object):
             {'Key': 'app_group',
              'Value': self.group},
         ]}
-        self.s3client.put_bucket_tagging(Bucket='string', Tagging=tagset)
+        self.s3client.put_bucket_tagging(Bucket=self.bucket, Tagging=tagset)
+        LOG.info("Adding tagging %s for Bucket", tagset)
 
     def _bucket_exists(self):
         """Checks if the bucket exists"""
