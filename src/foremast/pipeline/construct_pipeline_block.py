@@ -69,6 +69,7 @@ def check_provider_healthcheck(settings, default_provider='Discovery'):
 
     return ProviderHealthCheck(providers=health_check_providers, has_healthcheck=has_healthcheck)
 
+
 def get_template_name(env, pipeline_type):
     """Generates the correct template name based on pipeline type
 
@@ -92,6 +93,7 @@ def get_template_name(env, pipeline_type):
 
     return template_name
 
+
 def construct_pipeline_block(env='',
                              generated=None,
                              previous_env=None,
@@ -100,7 +102,6 @@ def construct_pipeline_block(env='',
                              pipeline_data=None,
                              pipeline_type='ec2',
                              **kwargs):
-
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -155,10 +156,11 @@ def construct_pipeline_block(env='',
     })
 
     LOG.debug('Block data:\n%s', pformat(data))
-    
+
     template_name = get_template_name(env, pipeline_type)
     pipeline_json = get_template(template_file=template_name, data=data)
     return pipeline_json
+
 
 def ec2_pipeline_setup(**kwargs):
     """Handles ec2 pipeline data setup
@@ -244,4 +246,3 @@ def ec2_pipeline_setup(**kwargs):
     })
 
     return data
-

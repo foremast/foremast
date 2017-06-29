@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Create Pipelines for Spinnaker."""
 import collections
 import json
@@ -42,13 +41,7 @@ class SpinnakerPipeline:
         runway_dir (str): Path to local runway directory.
     """
 
-    def __init__(self,
-                 app='',
-                 trigger_job='',
-                 prop_path='',
-                 base='',
-                 runway_dir='',
-                 pipeline_type='ec2'):
+    def __init__(self, app='', trigger_job='', prop_path='', base='', runway_dir='', pipeline_type='ec2'):
         self.log = logging.getLogger(__name__)
 
         self.header = {'content-type': 'application/json'}
@@ -83,23 +76,17 @@ class SpinnakerPipeline:
 
         self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
-        pipeline_response = requests.post(url,
-                                          data=pipeline_json,
-                                          headers=self.header,
-                                          verify=GATE_CA_BUNDLE,
-                                          cert=GATE_CLIENT_CERT)
+        pipeline_response = requests.post(
+            url, data=pipeline_json, headers=self.header, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
-        self.log.debug('Pipeline creation response:\n%s',
-                       pipeline_response.text)
+        self.log.debug('Pipeline creation response:\n%s', pipeline_response.text)
 
         if not pipeline_response.ok:
             raise SpinnakerPipelineCreationFailed(
-                'Failed to create pipeline for {0}: {1}'.format(
-                    self.app_name, pipeline_response.json()))
+                'Failed to create pipeline for {0}: {1}'.format(self.app_name, pipeline_response.json()))
 
-
-        self.log.info('Successfully created "%s" pipeline in application "%s".',
-                      pipeline_dict['name'], pipeline_dict['application'])
+        self.log.info('Successfully created "%s" pipeline in application "%s".', pipeline_dict['name'],
+                      pipeline_dict['application'])
 
     def render_wrapper(self, region='us-east-1'):
         """Generate the base Pipeline wrapper.
@@ -128,8 +115,7 @@ class SpinnakerPipeline:
                 'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
                     root_volume_size))
 
-        ami_id = ami_lookup(name=base,
-                            region=region)
+        ami_id = ami_lookup(name=base, region=region)
 
         ami_template_file = generate_packer_filename(provider, region, baking_process)
 
@@ -153,9 +139,7 @@ class SpinnakerPipeline:
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
-        wrapper = get_template(
-            template_file='pipeline/pipeline_wrapper.json.j2',
-            data=data)
+        wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data)
 
         return json.loads(wrapper)
 
@@ -166,11 +150,8 @@ class SpinnakerPipeline:
             str: Pipeline config json
         """
         url = "{0}/applications/{1}/pipelineConfigs".format(API_URL, self.app_name)
-        resp = requests.get(url,
-                            verify=GATE_CA_BUNDLE,
-                            cert=GATE_CLIENT_CERT)
-        assert resp.ok, 'Failed to lookup pipelines for {0}: {1}'.format(
-            self.app_name, resp.text)
+        resp = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+        assert resp.ok, 'Failed to lookup pipelines for {0}: {1}'.format(self.app_name, resp.text)
 
         return resp.json()
 
@@ -222,8 +203,7 @@ class SpinnakerPipeline:
         for env in pipeline_envs:
             for region in self.settings[env]['regions']:
                 regions_envs[region].append(env)
-        self.log.info('Environments and Regions for Pipelines:\n%s',
-                      json.dumps(regions_envs, indent=4))
+        self.log.info('Environments and Regions for Pipelines:\n%s', json.dumps(regions_envs, indent=4))
 
         subnets = None
         pipelines = {}
