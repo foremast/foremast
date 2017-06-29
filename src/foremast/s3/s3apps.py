@@ -29,18 +29,16 @@ LOG = logging.getLogger(__name__)
 class S3Apps(object):
     """Handles infrastructure around depolying static content to S3. Setups Bucket and Policy"""
 
-    def __init__(self, app, group, env, region, prop_path):
+    def __init__(self, app, env, region, prop_path):
         """S3 application object. Setups Bucket and policies for S3 applications.
 
         Args:
             app (str): Application name
-            group (str): Application group name
             env (str): Environment/Account
             region (str): AWS Region
             prop_path (str): Path of environment property file
         """
         self.app_name = app
-        self.app_group = group
         self.env = env
         self.region = region
         boto_sess = boto3.session.Session(profile_name=env)
@@ -48,6 +46,7 @@ class S3Apps(object):
         self.generated = get_details(app=app, env=env)
         self.properties = get_properties(prop_path)
         self.s3props = self.properties[self.env]['s3']
+        self.group = self.generated.project()
 
         if self.s3props.get('shared_bucket_master'):
             self.bucket = self.generated.shared_s3_app_bucket()
@@ -121,7 +120,7 @@ class S3Apps(object):
             {'Key': 'app_name',
              'Value': self.app_name},
             {'Key': 'app_group',
-             'Value': self.app_group},
+             'Value': self.group},
         ]}
         self.s3client.put_bucket_tagging(Bucket='string', Tagging=tagset)
 

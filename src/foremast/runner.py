@@ -135,7 +135,6 @@ class ForemastRunner(object):
         """Create S3 infra for s3 applications"""
         utils.banner("Creating S3 App Infrastructure")
         s3obj = s3.S3Apps(app=self.app,
-                          group=self.group,
                           env=self.env,
                           region=self.region,
                           prop_path=self.json_path)
