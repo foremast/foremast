@@ -39,11 +39,14 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
                  trigger_job='',
                  prop_path='',
                  base='',
-                 onetime=''):
+                 onetime='',
+                 runway_dir=''):
         super().__init__(app=app,
                          trigger_job=trigger_job,
                          prop_path=prop_path,
-                         base=base)
+                         base=base,
+                         runway_dir=runway_dir,
+                         )
         self.environments = [onetime]
 
     def post_pipeline(self, pipeline):
