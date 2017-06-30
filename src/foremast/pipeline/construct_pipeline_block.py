@@ -101,7 +101,6 @@ def construct_pipeline_block(env='',
                              region='us-east-1',
                              settings=None,
                              pipeline_data=None,
-                             pipeline_type='ec2',
                              **kwargs):
     """Create the Pipeline JSON from template.
 
@@ -119,6 +118,7 @@ def construct_pipeline_block(env='',
             Trigger.
         region (str): AWS Region to deploy to.
         settings (dict): Environment settings from configurations.
+        pipeline_data (dict): Pipeline settings from configurations
         region_subnets (dict): Subnets for a Region, e.g.
             {'us-west-2': ['us-west-2a', 'us-west-2b', 'us-west-2c']}.
 
@@ -130,20 +130,15 @@ def construct_pipeline_block(env='',
     LOG.info('%s block for [%s].', env, region)
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
+    pipeline_type = pipeline_data['type']
     gen_app_name = generated.app_name()
-    data = copy.deepcopy(settings)
-
-    setup_kwargs = {
-        'appname': gen_app_name,
-        'settings': settings,
-        'env': env,
-        'region': region,
-        'project': generated.project
-    }
 
     if pipeline_type == 'ec2':
         setup_kwargs['region_subnets'] = kwargs['region_subnets']
-        data = ec2_pipeline_setup(**setup_kwargs)
+        data = ec2_pipeline_setup(
+            appname=gen_app_name, settings=settings, env=env, region=region, project=generated.project)
+    else:
+        data = copy.deepcopy(settings)
 
     data['app'].update({
         'appname': gen_app_name,
@@ -163,20 +158,21 @@ def construct_pipeline_block(env='',
     return pipeline_json
 
 
-def ec2_pipeline_setup(**kwargs):
+def ec2_pipeline_setup(appname=None, project=None, settings=None, env=None, region=None):
     """Handles ec2 pipeline data setup
-    
+
+    Args:
+        appname (str): Name of the application
+        project (str): Group name of application
+        settings (dict): Environment settings from configurations.
+        env (str): Deploy environment name, e.g. dev, stage, prod.
+        region (str): AWS Region to deploy to.
+
     Returns:
         dict: Updated settings to pass to templates for EC2 info
     """
 
-    settings = kwargs['settings']
-    appname = kwargs['appname']
-    env = kwargs['env']
-    region = kwargs['region']
-    project = kwargs['project']
     data = copy.deepcopy(settings)
-
     user_data = generate_encoded_user_data(env=env, region=region, app_name=appname, group_name=project)
 
     # Use different variable to keep template simple
