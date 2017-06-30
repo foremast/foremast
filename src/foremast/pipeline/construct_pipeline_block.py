@@ -80,16 +80,17 @@ def get_template_name(env, pipeline_type):
     Returns:
         str: Name of template
     """
-    if pipeline_type == 'ec2' and env.startswith('prod'):
-        template_name_format = '{pipeline_base}_{env}.json.j2'
-    elif pipeline_type == 'ec2':
-        template_name_format = '{pipeline_base}_stages.json.j2'
-    elif pipeline_type != 'ec2' and env.startswith('prod'):
-        template_name_format = '{pipeline_base}_{env}_{pipeline_type}.json.j2'
-    else:
-        template_name_format = '{pipeline_base}_stages_{pipeline_type}.json.j2'
-
     pipeline_base = 'pipeline/pipeline'
+    template_name_format = '{pipeline_base}'
+    if env.startswith('prod'):
+        template_name_format = template_name_format + '_{env}'
+    else:
+        template_name_format = template_name_format + '_stages'
+
+    if pipeline_type != 'ec2':
+        template_name_format = template_name_format + '_{pipeline_type}'
+
+    template_name_format = template_name_format + '.json.j2'
     template_name = template_name_format.format(pipeline_base=pipeline_base, env=env, pipeline_type=pipeline_type)
 
     return template_name
@@ -134,9 +135,13 @@ def construct_pipeline_block(env='',
     gen_app_name = generated.app_name()
 
     if pipeline_type == 'ec2':
-        setup_kwargs['region_subnets'] = kwargs['region_subnets']
         data = ec2_pipeline_setup(
-            appname=gen_app_name, settings=settings, env=env, region=region, project=generated.project)
+            appname=gen_app_name,
+            settings=settings,
+            env=env,
+            region=region,
+            project=generated.project,
+            region_subnets=kwargs.get('region_subnets'))
     else:
         data = copy.deepcopy(settings)
 
@@ -158,7 +163,7 @@ def construct_pipeline_block(env='',
     return pipeline_json
 
 
-def ec2_pipeline_setup(appname=None, project=None, settings=None, env=None, region=None):
+def ec2_pipeline_setup(appname=None, project=None, settings=None, env=None, region=None, region_subnets=None):
     """Handles ec2 pipeline data setup
 
     Args:
@@ -167,6 +172,8 @@ def ec2_pipeline_setup(appname=None, project=None, settings=None, env=None, regi
         settings (dict): Environment settings from configurations.
         env (str): Deploy environment name, e.g. dev, stage, prod.
         region (str): AWS Region to deploy to.
+        region_subnets (dict): Subnets for a Region, e.g.
+            {'us-west-2': ['us-west-2a', 'us-west-2b', 'us-west-2c']}.
 
     Returns:
         dict: Updated settings to pass to templates for EC2 info
@@ -235,7 +242,7 @@ def ec2_pipeline_setup(appname=None, project=None, settings=None, env=None, regi
     })
 
     data['app'].update({
-        'az_dict': json.dumps(kwargs['region_subnets']),
+        'az_dict': json.dumps(region_subnets),
         'encoded_user_data': user_data,
         'instance_security_groups': json.dumps(instance_security_groups),
         'elb': json.dumps(elb),
