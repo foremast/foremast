@@ -41,7 +41,7 @@ class SpinnakerPipeline:
         runway_dir (str): Path to local runway directory.
     """
 
-    def __init__(self, app='', trigger_job='', prop_path='', base='', runway_dir='', pipeline_type='ec2'):
+    def __init__(self, app='', trigger_job='', prop_path='', base='', runway_dir=''):
         self.log = logging.getLogger(__name__)
 
         self.header = {'content-type': 'application/json'}
@@ -57,7 +57,6 @@ class SpinnakerPipeline:
 
         self.settings = get_properties(prop_path)
         self.environments = self.settings['pipeline']['env']
-        self.pipeline_type = pipeline_type
 
     def post_pipeline(self, pipeline):
         """Send Pipeline JSON to Spinnaker.
@@ -215,7 +214,6 @@ class SpinnakerPipeline:
             previous_env = None
             for env in envs:
                 pipeline_block_data = {
-                    "pipeline_type": self.pipeline_type,
                     "env": env,
                     "generated": self.generated,
                     "previous_env": previous_env,
@@ -224,7 +222,7 @@ class SpinnakerPipeline:
                     "pipeline_data": self.settings['pipeline'],
                 }
 
-                if self.pipeline_type == 'ec2':
+                if self.settings['pipeline']['type'] == 'ec2':
                     if not subnets:
                         subnets = get_subnets()
                     try:
