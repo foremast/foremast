@@ -80,16 +80,17 @@ def get_template_name(env, pipeline_type):
     Returns:
         str: Name of template
     """
-    if pipeline_type == 'ec2':
-        if env.startswith('prod'):
-            template_name = 'pipeline/pipeline_{}.json.j2'.format(env)
-        else:
-            template_name = 'pipeline/pipeline_stages.json.j2'
+    if pipeline_type == 'ec2' and env.startswith('prod'):
+        template_name_format = '{pipeline_base}_{env}.json.j2'
+    elif pipeline_type == 'ec2':
+        template_name_format = '{pipeline_base}_stages.json.j2'
+    elif pipeline_type != 'ec2' and env.startswith('prod'):
+        template_name_format = '{pipeline_base}_{env}_{pipeline_type}.json.j2'
     else:
-        if env.startswith('prod'):
-            template_name = 'pipeline/pipeline_{}_{}.json.j2'.format(env, pipeline_type)
-        else:
-            template_name = 'pipeline/pipeline_stages_{}.json.j2'.format(pipeline_type)
+        template_name_format = '{pipeline_base}_stages_{pipeline_type}.json.j2'
+
+    pipeline_base = 'pipeline/pipeline'
+    template_name = template_name_format.format(pipeline_base=pipeline_base, env=env, pipeline_type=pipeline_type)
 
     return template_name
 
