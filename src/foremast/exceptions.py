@@ -18,12 +18,10 @@
 
 class ForemastError(Exception):
     """Foremast related error."""
-    pass
 
 
 class ForemastTemplateNotFound(Exception):
     """Foremast Template was not found."""
-    pass
 
 
 class ForemastConfigurationFileError(ForemastError):
@@ -36,42 +34,34 @@ class GitLabApiError(ForemastError):
 
 class SpinnakerError(ForemastError):
     """Spinnaker related error."""
-    pass
 
 
 class SpinnakerAppNotFound(SpinnakerError):
     """Spinnaker app not found error."""
-    pass
 
 
 class SpinnakerApplicationListError(SpinnakerError):
     """Spinnaker application list error."""
-    pass
 
 
 class SpinnakerDnsCreationFailed(SpinnakerError):
     """Spinnaker DNS creation error."""
-    pass
 
 
 class SpinnakerElbNotFound(SpinnakerError):
     """Spinnaker Elb not found."""
-    pass
 
 
 class SpinnakerTimeout(SpinnakerError):
     """Spinnaker Timeout error."""
-    pass
 
 
 class SpinnakerVPCNotFound(SpinnakerError):
     """Spinnaker did not find a VPC."""
-    pass
 
 
 class SpinnakerVPCIDNotFound(SpinnakerError):
     """Spinnaker did not find the VPC ID."""
-    pass
 
 
 class SpinnakerTaskError(SpinnakerError):
@@ -93,7 +83,6 @@ class SpinnakerTaskError(SpinnakerError):
 
 class SpinnakerPipelineCreationFailed(SpinnakerError):
     """Could not create Spinnaker Pipeline."""
-    pass
 
 
 class SpinnakerPipelineDeletionFailed(SpinnakerError):
@@ -102,12 +91,10 @@ class SpinnakerPipelineDeletionFailed(SpinnakerError):
 
 class SpinnakerSecurityGroupCreationFailed(SpinnakerError):
     """Could not create Security Group."""
-    pass
 
 
 class SpinnakerSecurityGroupError(SpinnakerError):
     """Could not create Security Group."""
-    pass
 
 
 class SpinnakerSubnetError(SpinnakerError):
@@ -120,17 +107,14 @@ class SpinnakerSubnetError(SpinnakerError):
 
 class InvalidEventConfiguration(ForemastError):
     """Invalid AWS Lambda event configuration."""
-    pass
 
 
 class SNSTopicNotFound(ForemastError):
     """SNS Topic was not found."""
-    pass
 
 
 class SNSSubscriptionDoesNotExist(ForemastError):
     """SNS Subscriptions does not exist."""
-    pass
 
 
 class LambdaFunctionDoesNotExist(ForemastError):
@@ -143,20 +127,19 @@ class LambdaAliasDoesNotExist(ForemastError):
 
 class RequiredKeyNotFound(ForemastError):
     """Required key in json config not found"""
-    pass
+
 
 class PrimaryDNSRecordNotFound(ForemastError):
     """Required Primary DNS record does not exist"""
-    pass
+
 
 class S3ArtifactNotFound(ForemastError):
     """Could not find Artifact to upload to S3"""
-    pass
+
 
 class S3SharedBucketNotFound(ForemastError):
     """Shared S3 Bucket does not exist"""
-    pass
+
 
 class DataPipelineDefinitionError(ForemastError):
     """Error Creating Data Pipeline"""
-    pass
