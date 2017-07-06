@@ -23,6 +23,7 @@ import gitlab
 import requests
 
 from ..consts import AMI_JSON_URL, GIT_URL, GITLAB_TOKEN
+from ..exceptions import GitLabApiError
 
 LOG = logging.getLogger(__name__)
 
@@ -80,12 +81,35 @@ class FileLookup():
     """
 
     def __init__(self, git_short='', runway_dir=''):
+        self.git_short = git_short
         self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir))
 
+        self.server = None
+        self.project_id = ''
+
         if not self.runway_dir:
-            self.git_short = git_short
-            self.server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
-            self.project_id = self.server.getproject(self.git_short)['id']
+            self.get_gitlab_project_id()
+
+    def get_gitlab_project_id(self):
+        """Get numerical GitLab Project ID.
+
+        Returns:
+            int: Project ID number.
+
+        Raises:
+            foremast.exceptions.GitLabApiError: GitLab responded with bad status
+                code.
+
+        """
+        self.server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
+
+        project = self.server.getproject(self.git_short)
+
+        if not project:
+            raise GitLabApiError('Could not get Project "{0}" from GitLab API.'.format(self.git_short))
+
+        self.project_id = project['id']
+        return self.project_id
 
     def local_file(self, filename):
         """Read the local file in _self.runway_dir_.
