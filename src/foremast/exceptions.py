@@ -122,20 +122,20 @@ class LambdaAliasDoesNotExist(ForemastError):
 
 
 class RequiredKeyNotFound(ForemastError):
-    """Required key in json config not found"""
+    """Required key in json config not found."""
 
 
 class PrimaryDNSRecordNotFound(ForemastError):
-    """Required Primary DNS record does not exist"""
+    """Required Primary DNS record does not exist."""
 
 
 class S3ArtifactNotFound(ForemastError):
-    """Could not find Artifact to upload to S3"""
+    """Could not find Artifact to upload to S3."""
 
 
 class S3SharedBucketNotFound(ForemastError):
-    """Shared S3 Bucket does not exist"""
+    """Shared S3 Bucket does not exist."""
 
 
 class DataPipelineDefinitionError(ForemastError):
-    """Error Creating Data Pipeline"""
+    """Error Creating Data Pipeline."""
