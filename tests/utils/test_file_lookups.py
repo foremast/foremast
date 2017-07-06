@@ -18,6 +18,8 @@ import base64
 from unittest import mock
 
 import pytest
+
+from foremast.exceptions import GitLabApiError
 from foremast.utils import FileLookup
 
 TEST_JSON = '''{
@@ -34,6 +36,27 @@ def test_init(gitlab):
     assert my_git.git_short == ''
     assert my_git.server == gitlab.Gitlab.return_value
     my_git.server.getproject.assert_called_with(my_git.git_short)
+
+
+@mock.patch('foremast.utils.lookups.gitlab')
+def test_project_id_exception(mock_gitlab):
+    """Check resolving GitLab Project ID fails with exception."""
+    mock_gitlab.Gitlab.return_value.getproject.return_value = False
+
+    with pytest.raises(GitLabApiError):
+        FileLookup()
+
+
+@mock.patch('foremast.utils.lookups.gitlab')
+def test_project_id_success(mock_gitlab):
+    """Check resolving GitLab Project ID is successful."""
+    project_id = 30
+
+    mock_gitlab.Gitlab.return_value.getproject.return_value = {'id': project_id}
+
+    seeker = FileLookup()
+
+    assert seeker.project_id == project_id
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
