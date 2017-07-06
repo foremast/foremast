@@ -30,6 +30,10 @@ class ForemastConfigurationFileError(ForemastError):
     """Foremast configuration file misconfigured."""
 
 
+class GitLabApiError(ForemastError):
+    """GitLab API did not return a good status."""
+
+
 class SpinnakerError(ForemastError):
     """Spinnaker related error."""
     pass
