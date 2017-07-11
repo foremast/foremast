@@ -117,5 +117,5 @@ class AWSDataPipeline(object):
 
     def activate_pipeline(self):
         """Activates a deployed pipeline, useful for OnDemand pipelines"""
-        self.client.activate_pipeline(PipelineId=self.pipeline_id)
+        self.client.activate_pipeline(pipelineId=self.pipeline_id)
         LOG.info("Activated Pipeline %s", self.pipeline_id)
