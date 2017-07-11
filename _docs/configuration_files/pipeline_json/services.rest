@@ -21,6 +21,14 @@ Add CloudWatch Logs access. Lambda Functions will automatically have this added.
    | *Type*: bool
    | *Default*: ``false``
 
+``cloudwatch``
+******************
+
+Add CloudWatch Limited access.
+
+   | *Type*: bool
+   | *Default*: ``false``
+
 ``dynamodb``
 ************
 
