@@ -30,10 +30,9 @@ import ast
 import json
 import logging
 import sys
-
 from configparser import ConfigParser, DuplicateSectionError
-from os.path import expanduser, expandvars, exists
 from os import getcwd, path
+from os.path import exists, expanduser, expandvars
 
 LOG = logging.getLogger(__name__)
 LOGGING_FORMAT = '%(asctime)s [%(levelname)s] %(name)s:%(funcName)s:%(lineno)d - %(message)s'
@@ -200,8 +199,16 @@ REGIONS = set(validate_key_values(config, 'base', 'regions', default='').split('
 ALLOWED_TYPES = set(validate_key_values(config, 'base', 'types', default='ec2,lambda,s3,datapipeline').split(','))
 TEMPLATES_PATH = validate_key_values(config, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(config, 'base', 'ami_json_url')
+<<<<<<< HEAD
 DEFAULT_EC2_SECURITYGROUPS = _generate_security_groups('default_ec2_securitygroups')
 DEFAULT_ELB_SECURITYGROUPS = _generate_security_groups('default_elb_securitygroups')
+=======
+DEFAULT_EC2_SECURITYGROUPS = set(validate_key_values(config, 'base', 'default_ec2_securitygroups',
+                                 default='').split(','))
+DEFAULT_ELB_SECURITYGROUPS = set(validate_key_values(config, 'base', 'default_elb_securitygroups',
+                                 default='').split(','))
+DEFAULT_SECURITYGROUP_RULES = json.loads(validate_key_values(config, 'default_securitygroup_rules', 'rules', default="[]"))
+>>>>>>> Added ability to have default application securitygroup rules
 GITLAB_TOKEN = validate_key_values(config, 'credentials', 'gitlab_token')
 SLACK_TOKEN = validate_key_values(config, 'credentials', 'slack_token')
 DEFAULT_TASK_TIMEOUT = validate_key_values(config, 'task_timeouts', 'default', default=120)
