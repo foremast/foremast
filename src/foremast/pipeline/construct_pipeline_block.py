@@ -113,7 +113,7 @@ def construct_pipeline_block(env='',
     user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project)
 
     # Use different variable to keep template simple
-    instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS)
+    instance_security_groups = DEFAULT_EC2_SECURITYGROUPS[env]
     instance_security_groups.append(gen_app_name)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
 
