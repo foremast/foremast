@@ -78,7 +78,7 @@ class SpinnakerELB:
         access_log = elb_settings.get('access_log', {})
         connection_draining_timeout = elb_settings.get('connection_draining_timeout', None)
 
-        security_groups = list(DEFAULT_ELB_SECURITYGROUPS)
+        security_groups = DEFAULT_ELB_SECURITYGROUPS[env]
         security_groups.append(self.app)
         security_groups.extend(self.properties['security_group']['elb_extras'])
 
