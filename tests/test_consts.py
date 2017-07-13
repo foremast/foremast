@@ -15,8 +15,9 @@
 #   limitations under the License.
 
 from configparser import ConfigParser
+from unittest.mock import patch
 
-from foremast.consts import ALLOWED_TYPES, extract_formats
+from foremast.consts import ALLOWED_TYPES, extract_formats, _generate_security_groups
 
 
 def test_consts_extract_formats():
@@ -38,3 +39,16 @@ def test_consts_pipeline_types():
     """Default types should be set."""
     assert 'ec2' in ALLOWED_TYPES
     assert 'lambda' in ALLOWED_TYPES
+
+
+@patch('foremast.consts.validate_key_values')
+def test_parse_security_group(values):
+    """Parse out security group entries"""
+    values.return_value = 'g1'
+    assert {'': ['g1']} == _generate_security_groups('default_ec2_securitygroups')
+
+    values.return_value = 'g1,g2'
+    assert {'': ['g1', 'g2']} == _generate_security_groups('default_ec2_securitygroups')
+
+    values.return_value = {'dev': ['g1', 'g2'], 'stage': ['g3']}
+    assert {'dev': ['g1', 'g2'], 'stage': ['g3']} == _generate_security_groups('default_ec2_securitygroups')
