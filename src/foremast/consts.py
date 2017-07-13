@@ -139,6 +139,35 @@ def find_config():
 
     return configurations
 
+def _generate_security_groups(config_key):
+    """Read config file and generate security group dict by environemnt
+
+    Args:
+        config_key (str): Configuration file key
+
+    Returns:
+        dict: of environments in {$env: [$group1, group2]} format
+    """
+    default_groups = validate_key_values(config, 'base', config_key, default='')
+    LOG.debug('Default security group for %s is %s', config_key, default_groups)
+
+    if isinstance(default_groups, (str)):
+        try:
+            default_groups = json.loads(default_groups)
+        except json.JSONDecodeError:
+            default_groups = default_groups.split(',')
+
+
+    entries = {}
+    if isinstance(default_groups, (list)):
+        # convert single entries to all accounts
+        for env in ENVS:
+            entries[env] = sorted(set(default_groups))
+    else:
+        entries = default_groups
+
+    LOG.debug('Generated security group: %s', entries)
+    return entries
 
 config = find_config()
 
@@ -150,10 +179,8 @@ REGIONS = set(validate_key_values(config, 'base', 'regions', default='').split('
 ALLOWED_TYPES = set(validate_key_values(config, 'base', 'types', default='ec2,lambda,s3,datapipeline').split(','))
 TEMPLATES_PATH = validate_key_values(config, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(config, 'base', 'ami_json_url')
-DEFAULT_EC2_SECURITYGROUPS = set(validate_key_values(config, 'base', 'default_ec2_securitygroups',
-                                 default='').split(','))
-DEFAULT_ELB_SECURITYGROUPS = set(validate_key_values(config, 'base', 'default_elb_securitygroups',
-                                 default='').split(','))
+DEFAULT_EC2_SECURITYGROUPS = _generate_security_groups('default_ec2_securitygroups')
+DEFAULT_ELB_SECURITYGROUPS = _generate_security_groups('default_elb_securitygroups')
 GITLAB_TOKEN = validate_key_values(config, 'credentials', 'gitlab_token')
 SLACK_TOKEN = validate_key_values(config, 'credentials', 'slack_token')
 DEFAULT_TASK_TIMEOUT = validate_key_values(config, 'task_timeouts', 'default', default=120)
