@@ -147,7 +147,7 @@ def construct_pipeline_block(env='',
     hc_grace_period = data['asg'].get('hc_grace_period')
     app_grace_period = data['asg'].get('app_grace_period')
     grace_period = hc_grace_period + app_grace_period
-    
+
     # TODO: Migrate the naming logic to an external library to make it easier
     #       to update in the future. Gogo-Utils looks like a good candidate
     ssh_keypair = data['asg'].get('ssh_keypair', None)

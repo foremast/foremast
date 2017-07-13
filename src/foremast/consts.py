@@ -41,6 +41,7 @@ SHORT_LOGGING_FORMAT = '[%(levelname)s] %(message)s'
 logging.basicConfig(format=LOGGING_FORMAT)
 logging.getLogger(__package__.split('.')[0]).setLevel(logging.INFO)
 
+
 def validate_key_values(config_handle, section, key, default=None):
     """Warn when *key* is missing from configuration *section*.
 
@@ -99,10 +100,10 @@ def load_dynamic_config(configurations, config_dir=getcwd()):
     try:
         config_module = __import__('config')
 
-        for k, v in config_module.CONFIG.items():
-            LOG.debug('Importing %s with key %s', k, v)
+        for key, value in config_module.CONFIG.items():
+            LOG.debug('Importing %s with key %s', key, value)
             # Update configparser object
-            configurations.update({k: v})
+            configurations.update({key: value})
     except ImportError:
         # Provide a default if config not found
         configurations = {}
@@ -139,6 +140,7 @@ def find_config():
 
     return configurations
 
+
 def _generate_security_groups(config_key):
     """Read config file and generate security group dict by environemnt
 
@@ -156,7 +158,6 @@ def _generate_security_groups(config_key):
             default_groups = json.loads(default_groups)
         except json.JSONDecodeError:
             default_groups = default_groups.split(',')
-
 
     entries = {}
     if isinstance(default_groups, (list)):
