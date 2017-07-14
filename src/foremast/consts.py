@@ -140,6 +140,13 @@ def find_config():
 
     return configurations
 
+def _remove_empty_entries(entries):
+    """Remove emtpy entries in a list"""
+    for entry in entries:
+        if entry in ['', None]:
+            entries.pop()
+    return entries
+
 
 def _generate_security_groups(config_key):
     """Read config file and generate security group dict by environemnt
@@ -157,7 +164,8 @@ def _generate_security_groups(config_key):
         try:
             default_groups = json.loads(default_groups)
         except json.JSONDecodeError:
-            default_groups = default_groups.split(',')
+            groups = default_groups.split(',')
+            default_groups = _remove_empty_entries(groups)
 
     entries = {}
     if isinstance(default_groups, (list)):
