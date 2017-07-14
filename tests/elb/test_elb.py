@@ -136,6 +136,7 @@ def test_elb_create_elb(mock_get_properties, mock_elb_json, mock_wait_for_task, 
     mock_listener_policy.assert_called_with(mock_elb_json())
 
 
+@mock.patch.dict('foremast.elb.create_elb.DEFAULT_ELB_SECURITYGROUPS', {"dev": []})
 @mock.patch('foremast.elb.create_elb.get_vpc_id', return_value='vpc-100')
 @mock.patch('foremast.elb.create_elb.format_listeners')
 @mock.patch('foremast.elb.create_elb.get_subnets')
