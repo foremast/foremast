@@ -26,6 +26,7 @@ descending order. First found wins.
 .. literalinclude:: ../../src/foremast/templates/configs/foremast.cfg.example
    :language: ini
 """
+import ast
 import json
 import logging
 import sys
@@ -148,6 +149,18 @@ def _remove_empty_entries(entries):
     return entries
 
 
+def _convert_string_to_native(value):
+    """Convert a string to its native python type"""
+    result = None
+
+    try:
+        result = ast.literal_eval(value)
+    except (SyntaxError, ValueError):
+        # Likely a string
+        result = value.split(',')
+    return result
+
+
 def _generate_security_groups(config_key):
     """Read config file and generate security group dict by environemnt
 
@@ -157,7 +170,8 @@ def _generate_security_groups(config_key):
     Returns:
         dict: of environments in {$env: [$group1, group2]} format
     """
-    default_groups = validate_key_values(config, 'base', config_key, default='')
+    raw_default_groups = validate_key_values(config, 'base', config_key, default='')
+    default_groups = _convert_string_to_native(raw_default_groups)
     LOG.debug('Default security group for %s is %s', config_key, default_groups)
 
     if isinstance(default_groups, (str)):
