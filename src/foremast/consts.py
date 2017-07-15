@@ -143,9 +143,9 @@ def find_config():
 
 def _remove_empty_entries(entries):
     """Remove emtpy entries in a list"""
-    for entry in entries:
+    for count, entry in enumerate(entries):
         if entry in ['', None]:
-            entries.pop()
+            entries.pop(count)
     return entries
 
 
