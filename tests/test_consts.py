@@ -50,5 +50,8 @@ def test_parse_security_group(values):
     values.return_value = 'g1,g2'
     assert {'': ['g1', 'g2']} == _generate_security_groups('default_ec2_securitygroups')
 
-    values.return_value = {'dev': ['g1', 'g2'], 'stage': ['g3']}
-    assert {'dev': ['g1', 'g2'], 'stage': ['g3']} == _generate_security_groups('default_ec2_securitygroups')
+
+@patch('foremast.consts.validate_key_values', return_value="{'': ['g3']}")
+def test_parse_security_group_dict(mock_keys):
+    """Validate security groups are handled properly if dictionary is in dyanmic config"""
+    assert {'': ['g3']} == _generate_security_groups('default_elb_securitygroups')
