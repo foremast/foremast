@@ -174,20 +174,17 @@ def _generate_security_groups(config_key):
     default_groups = _convert_string_to_native(raw_default_groups)
     LOG.debug('Default security group for %s is %s', config_key, default_groups)
 
-    if isinstance(default_groups, (str)):
-        try:
-            default_groups = json.loads(default_groups)
-        except json.JSONDecodeError:
-            groups = default_groups.split(',')
-            default_groups = _remove_empty_entries(groups)
-
     entries = {}
+    for env in ENVS:
+        entries[env] = []
+
     if isinstance(default_groups, (list)):
-        # convert single entries to all accounts
-        for env in ENVS:
-            entries[env] = sorted(set(default_groups))
-    else:
-        entries = default_groups
+        groups = _remove_empty_entries(default_groups)
+        for env in entries:
+            entries[env] = sorted(set(groups))
+
+    if isinstance(default_groups, (dict)):
+        entries.update(default_groups)
 
     LOG.debug('Generated security group: %s', entries)
     return entries
