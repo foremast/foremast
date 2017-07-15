@@ -186,7 +186,7 @@ class SpinnakerPipeline:
         pipeline_id = None
         found = False
         for pipeline in pipelines:
-            correct_app_and_region = (pipeline['application'] == self.app_name) and (region in pipeline['name']) 
+            correct_app_and_region = (pipeline['application'] == self.app_name) and (region in pipeline['name'])
             if onetime:
                 onetime_str = "(onetime-{})".format(self.environments[0])
                 if correct_app_and_region and onetime_str in pipeline['name']:
