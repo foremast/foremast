@@ -116,14 +116,37 @@ class S3Apps(object):
         LOG.info("Created DNS %s for Bucket", self.bucket)
 
     def _put_bucket_tagging(self):
-        tagset = {'TagSet': [
-            {'Key': 'app_name',
-             'Value': self.app_name},
-            {'Key': 'app_group',
-             'Value': self.group},
-        ]}
-        self.s3client.put_bucket_tagging(Bucket=self.bucket, Tagging=tagset)
-        LOG.info("Adding tagging %s for Bucket", tagset)
+        """Regular put_bucket_tagging sets TagSet which overwrites old tags.
+        Below logic keeps the old tags in place as well.
+        """
+        app_group_tag = {'Key': 'app_group', 'Value': self.group}
+        app_name_tag = {'Key': 'app_name', 'Value': self.app_name}
+        name_tag_count, group_tag_count = 0, 0
+        try:
+            # Get current tags list, if no tags exist will get an exception.
+            result = self.s3client.get_bucket_tagging(Bucket=self.bucket)['TagSet']
+            for item in result:
+                if 'app_group' in item['Key']:
+                    item.update(app_group_tag)
+                    group_tag_count += 1
+                elif 'app_name' in item['Key']:
+                    item.update(app_name_tag)
+                    name_tag_count += 1
+        except ClientError as e:
+            LOG.warning(e)
+            result = []
+
+        # If app_group tag key does not exist add it.
+        if group_tag_count == 0:
+            result.append(app_group_tag)
+        # If app_name tag key does not exist add it.
+        if name_tag_count == 0:
+            result.append(app_name_tag)
+
+        tag_set = {'TagSet': result}
+
+        self.s3client.put_bucket_tagging(Bucket=self.bucket, Tagging=tag_set)
+        LOG.info("Adding tagging %s for Bucket", tag_set)
 
     def _bucket_exists(self):
         """Checks if the bucket exists"""
