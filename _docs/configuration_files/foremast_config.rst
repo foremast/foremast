@@ -102,18 +102,21 @@ Path to custome templates directory. If provided, Foremast will first look in th
 ``default_ec2_securitygroups``
 ******************************
 
-Comma seperated list of EC2 security groups to include for all deployments
+Comma separated list or json of EC2 security groups to include for all deployments. If a command separated list is given, the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
 
     | *Required*: No
     | *Example*: ``office,test_sg,example``
+    | *Example (json)*: ``{"dev": ["sg1", "sg2"], "stage": ["sg3"]}``
 
 ``default_elb_securitygroups``
 ******************************
 
-Comma seperated list of ELB security groups to include for all deployments
+Comma separated list or json of ELB security groups to include for all deployments. If a command separated list is given, the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
 
     | *Required*: No
     | *Example*: ``test_sg,example_elb_sg``
+    | *Example (json)*: ``{"dev": ["sg1", "sg2"], "stage": ["sg3"]}``
+
 
 ``gate_client_cert``
 ********************
@@ -224,7 +227,7 @@ An string of the format of the application's jenkins job name
 
 Section handling customization of task timeouts when communicating with Spinnaker.
 
-Timeouts can vary per environment and per task. 
+Timeouts can vary per environment and per task.
 
 ``default``
 ***********
