@@ -122,6 +122,11 @@ the groups are applied to all environments. If a json is provide, it assigns gro
     | *Example (json)*: ``{"dev": ["sg1", "sg2"], "stage": ["sg3"]}``
 
 
+''default_securitygroup_rules''
+*******************************
+    | *Required*: No
+    | *Example*: ``{ "bastion" : [ { "start_port": "22", "end_port": "22", "protocol": "tcp" } ] }``
+
 ``gate_client_cert``
 ********************
 
