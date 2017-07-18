@@ -119,22 +119,24 @@ class S3Apps(object):
         """Regular put_bucket_tagging sets TagSet which overwrites old tags.
         Below logic keeps the old tags in place as well.
         """
-        app_group_tag = {'Key': 'app_group', 'Value': self.group}
-        app_name_tag = {'Key': 'app_name', 'Value': self.app_name}
-        name_tag_count, group_tag_count = 0, 0
         try:
             # Get current tags list, if no tags exist will get an exception.
             result = self.s3client.get_bucket_tagging(Bucket=self.bucket)['TagSet']
-            for item in result:
-                if 'app_group' in item['Key']:
-                    item.update(app_group_tag)
-                    group_tag_count += 1
-                elif 'app_name' in item['Key']:
-                    item.update(app_name_tag)
-                    name_tag_count += 1
         except ClientError as e:
             LOG.warning(e)
             result = []
+
+        app_group_tag = {'Key': 'app_group', 'Value': self.group}
+        app_name_tag = {'Key': 'app_name', 'Value': self.app_name}
+        name_tag_count, group_tag_count = 0, 0
+
+        for item in result:
+            if 'app_group' in item['Key']:
+                item.update(app_group_tag)
+                group_tag_count += 1
+            elif 'app_name' in item['Key']:
+                item.update(app_name_tag)
+                name_tag_count += 1
 
         # If app_group tag key does not exist add it.
         if group_tag_count == 0:
