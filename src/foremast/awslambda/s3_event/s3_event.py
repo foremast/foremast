@@ -15,6 +15,7 @@
 #   limitations under the License.
 
 import json
+import hashlib
 import logging
 
 import boto3
@@ -32,7 +33,7 @@ def create_s3_event(app_name, env, region, rules):
         app_name (str): name of the lambda function
         env (str): Environment/Account for lambda function
         region (str): AWS region of the lambda function
-        rules (str): Trigger rules from the settings
+        rules (obj): Trigger rules from the settings
     """
 
     session = boto3.Session(profile_name=env, region_name=region)
@@ -72,7 +73,8 @@ def create_s3_event(app_name, env, region, rules):
     config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
 
     principal = 's3.amazonaws.com'
-    statement_id = "{}_s3_{}".format(app_name, bucket).replace('.','')
+    rules_hash = hashlib.md5(json.dumps(rules, sort_keys=True)).hexdigest()
+    statement_id = "{}_s3_{}".format(app_name, rules_hash)
     source_arn = "arn:aws:s3:::{}".format(bucket)
     add_lambda_permissions(function=lambda_alias_arn,
                            env=env,
