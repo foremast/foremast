@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Create Pipelines for Spinnaker."""
 import collections
 import json
@@ -25,9 +24,10 @@ import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import ami_lookup, generate_packer_filename, get_details, get_properties, get_subnets, get_template
+from ..utils import (ami_lookup, generate_packer_filename, get_details,
+                     get_properties, get_subnets, get_template)
 from .clean_pipelines import clean_pipelines
-from .construct_pipeline_block import construct_pipeline_block
+from .construct_pipeline_block import construct_pipeline_block, ec2_bake_data
 from .renumerate_stages import renumerate_stages
 
 
@@ -42,12 +42,7 @@ class SpinnakerPipeline:
         runway_dir (str): Path to local runway directory.
     """
 
-    def __init__(self,
-                 app='',
-                 trigger_job='',
-                 prop_path='',
-                 base='',
-                 runway_dir=''):
+    def __init__(self, app='', trigger_job='', prop_path='', base='', runway_dir='', pipeline_type='ec2'):
         self.log = logging.getLogger(__name__)
 
         self.header = {'content-type': 'application/json'}
@@ -63,6 +58,7 @@ class SpinnakerPipeline:
 
         self.settings = get_properties(prop_path)
         self.environments = self.settings['pipeline']['env']
+        self.pipeline_type = pipeline_type
 
     def post_pipeline(self, pipeline):
         """Send Pipeline JSON to Spinnaker.
@@ -81,23 +77,17 @@ class SpinnakerPipeline:
 
         self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
-        pipeline_response = requests.post(url,
-                                          data=pipeline_json,
-                                          headers=self.header,
-                                          verify=GATE_CA_BUNDLE,
-                                          cert=GATE_CLIENT_CERT)
+        pipeline_response = requests.post(
+            url, data=pipeline_json, headers=self.header, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
-        self.log.debug('Pipeline creation response:\n%s',
-                       pipeline_response.text)
+        self.log.debug('Pipeline creation response:\n%s', pipeline_response.text)
 
         if not pipeline_response.ok:
             raise SpinnakerPipelineCreationFailed(
-                'Failed to create pipeline for {0}: {1}'.format(
-                    self.app_name, pipeline_response.json()))
+                'Failed to create pipeline for {0}: {1}'.format(self.app_name, pipeline_response.json()))
 
-
-        self.log.info('Successfully created "%s" pipeline in application "%s".',
-                      pipeline_dict['name'], pipeline_dict['application'])
+        self.log.info('Successfully created "%s" pipeline in application "%s".', pipeline_dict['name'],
+                      pipeline_dict['application'])
 
     def render_wrapper(self, region='us-east-1'):
         """Generate the base Pipeline wrapper.
@@ -110,50 +100,35 @@ class SpinnakerPipeline:
         Returns:
             dict: Rendered Pipeline wrapper.
         """
-        base = self.settings['pipeline']['base']
-
-        if self.base:
-            base = self.base
-
+        base = self.base or self.settings['pipeline']['base']
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
-        baking_process = self.settings['pipeline']['image']['builder']
-        provider = 'aws'
-        root_volume_size = self.settings['pipeline']['image']['root_volume_size']
-
-        if root_volume_size > 50:
-            raise SpinnakerPipelineCreationFailed(
-                'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
-                    root_volume_size))
-
-        ami_id = ami_lookup(name=base,
-                            region=region)
-
-        ami_template_file = generate_packer_filename(provider, region, baking_process)
-
         pipeline_id = self.compare_with_existing(region=region)
+
+        bake_data = {}
+        if self.pipeline_type == 'ec2':
+            bake_data = ec2_bake_data(settings=self.settings, base=base, region=region)
 
         data = {
             'app': {
-                'ami_id': ami_id,
                 'appname': self.app_name,
                 'base': base,
+                'deploy_type': self.pipeline_type,
                 'environment': 'packaging',
                 'region': region,
                 'triggerjob': self.trigger_job,
                 'email': email,
                 'slack': slack,
-                'root_volume_size': root_volume_size,
-                'ami_template_file': ami_template_file,
             },
             'id': pipeline_id
         }
 
-        self.log.debug('Wrapper app data:\n%s', pformat(data))
+        data['app'].update(bake_data)
 
-        wrapper = get_template(
-            template_file='pipeline/pipeline_wrapper.json.j2',
-            data=data)
+        self.log.debug('Wrapper app data:\n%s', pformat(data))
+        print(pformat(data))
+
+        wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data)
 
         return json.loads(wrapper)
 
@@ -164,11 +139,8 @@ class SpinnakerPipeline:
             str: Pipeline config json
         """
         url = "{0}/applications/{1}/pipelineConfigs".format(API_URL, self.app_name)
-        resp = requests.get(url,
-                            verify=GATE_CA_BUNDLE,
-                            cert=GATE_CLIENT_CERT)
-        assert resp.ok, 'Failed to lookup pipelines for {0}: {1}'.format(
-            self.app_name, resp.text)
+        resp = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+        assert resp.ok, 'Failed to lookup pipelines for {0}: {1}'.format(self.app_name, resp.text)
 
         return resp.json()
 
@@ -220,11 +192,10 @@ class SpinnakerPipeline:
         for env in pipeline_envs:
             for region in self.settings[env]['regions']:
                 regions_envs[region].append(env)
-        self.log.info('Environments and Regions for Pipelines:\n%s',
-                      json.dumps(regions_envs, indent=4))
+        self.log.info('Environments and Regions for Pipelines:\n%s', json.dumps(regions_envs, indent=4))
 
-        subnets = get_subnets()
-
+        subnets = None
+        types_with_subnets = ['ec2', 'lambda']
         pipelines = {}
         for region, envs in regions_envs.items():
             # TODO: Overrides for an environment no longer makes sense. Need to
@@ -233,30 +204,34 @@ class SpinnakerPipeline:
 
             previous_env = None
             for env in envs:
-                try:
-                    region_subnets = {region: subnets[env][region]}
-                except KeyError:
-                    self.log.info('%s is not available for %s.', env, region)
-                    continue
+                pipeline_block_data = {
+                    "pipeline_type": self.pipeline_type,
+                    "env": env,
+                    "generated": self.generated,
+                    "previous_env": previous_env,
+                    "region": region,
+                    "settings": self.settings[env],
+                    "pipeline_data": self.settings['pipeline'],
+                }
 
-                block = construct_pipeline_block(
-                    env=env,
-                    generated=self.generated,
-                    previous_env=previous_env,
-                    region=region,
-                    region_subnets=region_subnets,
-                    settings=self.settings[env],
-                    pipeline_data=self.settings['pipeline'])
+                if self.pipeline_type in types_with_subnets:
+                    if not subnets:
+                        subnets = get_subnets()
+                    try:
+                        region_subnets = {region: subnets[env][region]}
+                    except KeyError:
+                        self.log.info('%s is not available for %s.', env, region)
+                        continue
+                    pipeline_block_data['region_subnets'] = region_subnets
 
+                block = construct_pipeline_block(**pipeline_block_data)
                 pipelines[region]['stages'].extend(json.loads(block))
-
                 previous_env = env
 
         self.log.debug('Assembled Pipelines:\n%s', pformat(pipelines))
 
         for region, pipeline in pipelines.items():
             renumerate_stages(pipeline)
-
             self.post_pipeline(pipeline)
 
         return True

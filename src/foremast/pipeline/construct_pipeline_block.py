@@ -70,13 +70,14 @@ def check_provider_healthcheck(settings, default_provider='Discovery'):
     return ProviderHealthCheck(providers=health_check_providers, has_healthcheck=has_healthcheck)
 
 
-def construct_pipeline_block(env='',
+def construct_pipeline_block(pipeline_type='ec2',
+                             env='',
                              generated=None,
                              previous_env=None,
                              region='us-east-1',
-                             region_subnets=None,
                              settings=None,
-                             pipeline_data=None):
+                             pipeline_data=None,
+                             **kwargs):
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -102,19 +103,104 @@ def construct_pipeline_block(env='',
     """
     LOG.info('%s block for [%s].', env, region)
 
-    if env.startswith('prod'):
-        template_name = 'pipeline/pipeline_{}.json.j2'.format(env)
+    if pipeline_type == 'ec2':
+        if env.startswith('prod'):
+            template_name = 'pipeline/pipeline_{}.json.j2'.format(env)
+        else:
+            template_name = 'pipeline/pipeline_stages.json.j2'
     else:
-        template_name = 'pipeline/pipeline_stages.json.j2'
+        if env.startswith('prod'):
+            template_name = 'pipeline/pipeline_{}_{}.json.j2'.format(env, pipeline_type)
+        else:
+            template_name = 'pipeline/pipeline_stages_{}.json.j2'.format(pipeline_type)
 
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
     gen_app_name = generated.app_name()
-    user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project)
+    data = copy.deepcopy(settings)
+
+    setup_kwargs = {
+        'appname': gen_app_name,
+        'settings': settings,
+        'env': env,
+        'region': region,
+        'project': generated.project
+    }
+    if pipeline_type == 'ec2':
+        setup_kwargs['region_subnets'] = kwargs['region_subnets']
+        data = ec2_pipeline_setup(**setup_kwargs)
+    elif pipeline_type == 'lambda':
+        setup_kwargs['region_subnets'] = kwargs['region_subnets']
+        data = lambda_pipeline_setup(**setup_kwargs)
+
+    data['app'].update({
+        'appname': gen_app_name,
+        'repo_name': generated.repo,
+        'group_name': generated.project,
+        'environment': env,
+        'region': region,
+        'previous_env': previous_env,
+        'promote_restrict': pipeline_data['promote_restrict'],
+        'owner_email': pipeline_data['owner_email'],
+    })
+
+    LOG.debug('Block data:\n%s', pformat(data))
+
+    pipeline_json = get_template(template_file=template_name, data=data)
+    return pipeline_json
+
+
+def lambda_pipeline_setup(**kwargs):
+    """Handles lambda pipeline data setup
+    
+    Returns:
+        dict: Updated settings to pass to templates for lambda info
+    """
+
+    settings = kwargs['settings']
+    appname = kwargs['appname']
+    env = kwargs['env']
+    region = kwargs['region']
+    project = kwargs['project']
+    data = copy.deepcopy(settings)
 
     # Use different variable to keep template simple
     instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS)
-    instance_security_groups.append(gen_app_name)
+    instance_security_groups.append(appname)
+    instance_security_groups.extend(settings['security_group']['instance_extras'])
+
+    LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
+
+    data = copy.deepcopy(settings)
+
+    data['app'].update({
+        'az_dict': json.dumps(kwargs['region_subnets']),
+        'instance_security_groups': json.dumps(instance_security_groups),
+        'function_name': pipeline_data['lambda']['handler']
+    })
+
+    return data
+
+
+def ec2_pipeline_setup(**kwargs):
+    """Handles ec2 pipeline data setup
+    
+    Returns:
+        dict: Updated settings to pass to templates for EC2 info
+    """
+
+    settings = kwargs['settings']
+    appname = kwargs['appname']
+    env = kwargs['env']
+    region = kwargs['region']
+    project = kwargs['project']
+    data = copy.deepcopy(settings)
+
+    user_data = generate_encoded_user_data(env=env, region=region, app_name=appname, group_name=project)
+
+    # Use different variable to keep template simple
+    instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS)
+    instance_security_groups.append(appname)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
 
     LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
@@ -130,12 +216,10 @@ def construct_pipeline_block(env='',
     if settings['app']['eureka_enabled']:
         elb = []
     else:
-        elb = ['{0}'.format(gen_app_name)]
+        elb = ['{0}'.format(appname)]
     LOG.info('Attaching the following ELB: {0}'.format(elb))
 
     health_checks = check_provider_healthcheck(settings)
-
-    data = copy.deepcopy(settings)
 
     # Use EC2 Health Check for DEV or Eureka enabled
     if env == 'dev' or settings['app']['eureka_enabled']:
@@ -147,7 +231,7 @@ def construct_pipeline_block(env='',
     hc_grace_period = data['asg'].get('hc_grace_period')
     app_grace_period = data['asg'].get('app_grace_period')
     grace_period = hc_grace_period + app_grace_period
-    
+
     # TODO: Migrate the naming logic to an external library to make it easier
     #       to update in the future. Gogo-Utils looks like a good candidate
     ssh_keypair = data['asg'].get('ssh_keypair', None)
@@ -156,24 +240,9 @@ def construct_pipeline_block(env='',
         ssh_keypair = '{0}_{1}_default'.format(env, region)
     LOG.info('SSH keypair ({0}) used'.format(ssh_keypair))
 
-    data['app'].update({
-        'appname': gen_app_name,
-        'repo_name': generated.repo,
-        'group_name': generated.project,
-        'environment': env,
-        'region': region,
-        'az_dict': json.dumps(region_subnets),
-        'previous_env': previous_env,
-        'encoded_user_data': user_data,
-        'instance_security_groups': json.dumps(instance_security_groups),
-        'elb': json.dumps(elb),
-        'promote_restrict': pipeline_data['promote_restrict'],
-        'owner_email': pipeline_data['owner_email'],
-        'scalingpolicy': scalingpolicy,
-    })
-
     if settings['app']['canary']:
-        canary_user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project, canary=True)
+        canary_user_data = generate_encoded_user_data(
+            env=env, region=region, app_name=appname, group_name=project, canary=True)
         data['app'].update({
             'canary_encoded_user_data': canary_user_data,
         })
@@ -188,7 +257,27 @@ def construct_pipeline_block(env='',
         'asg_whitelist': ASG_WHITELIST,
     })
 
-    LOG.debug('Block data:\n%s', pformat(data))
+    data['app'].update({
+        'az_dict': json.dumps(kwargs['region_subnets']),
+        'encoded_user_data': user_data,
+        'instance_security_groups': json.dumps(instance_security_groups),
+        'elb': json.dumps(elb),
+        'scalingpolicy': scalingpolicy,
+    })
 
-    pipeline_json = get_template(template_file=template_name, data=data)
-    return pipeline_json
+    return data
+
+
+def ec2_bake_data(settings=None, base=None, region='us-east-1', provider='aws'):
+    """Sets up extra data for EC2 wrapper/baking stage"""
+
+    baking_process = settings['pipeline']['image']['builder']
+    root_volume_size = settings['pipeline']['image']['root_volume_size']
+    if root_volume_size > 50:
+        raise SpinnakerPipelineCreationFailed(
+            'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
+                root_volume_size))
+    ami_id = ami_lookup(name=base, region=region)
+    ami_template_file = generate_packer_filename(provider, region, baking_process)
+    bake_data = {'ami_id': ami_id, 'root_volume_size': root_volume_size, 'ami_template_file': ami_template_file}
+    return bake_data
