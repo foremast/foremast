@@ -22,9 +22,10 @@ from botocore.client import ClientError
 
 from ..exceptions import S3SharedBucketNotFound
 from ..utils import (get_details, get_dns_zone_ids, get_properties,
-                     update_dns_zone_record)
+                     update_dns_zone_record, generate_s3_tags)
 
 LOG = logging.getLogger(__name__)
+
 
 class S3Apps(object):
     """Handles infrastructure around depolying static content to S3. Setups Bucket and Policy"""
@@ -90,7 +91,7 @@ class S3Apps(object):
         """Sets S3 static website setting on bucket"""
         website_config = {'ErrorDocument': {'Key': self.s3props['website']['error_document']},
                           'IndexDocument': {'Suffix': self.s3props['website']['index_suffix']}
-                         }
+                          }
         resp = self.s3client.put_bucket_website(Bucket=self.bucket,
                                                 WebsiteConfiguration=website_config)
         LOG.info('S3 website settings updated')
@@ -99,7 +100,7 @@ class S3Apps(object):
         """Creates CNAME for s3 endpoint"""
 
         # Different regions have different s3 endpoint formats
-        dotformat_regions =["eu-west-2", "eu-central-1", "ap-northeast-2", "ap-south-1", "ca-central-1", "us-east-2"]
+        dotformat_regions = ["eu-west-2", "eu-central-1", "ap-northeast-2", "ap-south-1", "ca-central-1", "us-east-2"]
         if self.region in dotformat_regions:
             s3_endpoint = "{0}.s3-website.{1}.amazonaws.com".format(self.bucket, self.region)
         else:
@@ -126,28 +127,16 @@ class S3Apps(object):
             LOG.warning(e)
             result = []
 
-        app_group_tag = {'Key': 'app_group', 'Value': self.group}
-        app_name_tag = {'Key': 'app_name', 'Value': self.app_name}
-        name_tag_count, group_tag_count = 0, 0
+        # Make simplified dictionary of tags from result
+        all_tags = {}
+        for tag in result:
+            all_tags.update({tag.get('Key'): tag.get('Value')})
 
-        for item in result:
-            if 'app_group' in item['Key']:
-                item.update(app_group_tag)
-                group_tag_count += 1
-            elif 'app_name' in item['Key']:
-                item.update(app_name_tag)
-                name_tag_count += 1
+        all_tags.update({'app_group': self.group, 'app_name': self.app_name})
 
-        # If app_group tag key does not exist add it.
-        if group_tag_count == 0:
-            result.append(app_group_tag)
-        # If app_name tag key does not exist add it.
-        if name_tag_count == 0:
-            result.append(app_name_tag)
+        tag_set = generate_s3_tags.generated_tag_data(all_tags)
 
-        tag_set = {'TagSet': result}
-
-        self.s3client.put_bucket_tagging(Bucket=self.bucket, Tagging=tag_set)
+        self.s3client.put_bucket_tagging(Bucket=self.bucket, Tagging={'TagSet': tag_set})
         LOG.info("Adding tagging %s for Bucket", tag_set)
 
     def _bucket_exists(self):
