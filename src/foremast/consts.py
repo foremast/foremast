@@ -142,7 +142,7 @@ def find_config():
     return configurations
 
 def _remove_empty_entries(entries):
-    """Remove emtpy entries in a list"""
+    """Remove empty entries in a list"""
     for count, entry in enumerate(entries):
         if entry in ['', None]:
             entries.pop(count)
@@ -162,13 +162,13 @@ def _convert_string_to_native(value):
 
 
 def _generate_security_groups(config_key):
-    """Read config file and generate security group dict by environemnt
+    """Read config file and generate security group dict by environment
 
     Args:
         config_key (str): Configuration file key
 
     Returns:
-        dict: of environments in {$env: [$group1, group2]} format
+        dict: of environments in {'env1': ['group1', 'group2']} format
     """
     raw_default_groups = validate_key_values(config, 'base', config_key, default='')
     default_groups = _convert_string_to_native(raw_default_groups)
