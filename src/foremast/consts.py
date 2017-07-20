@@ -184,8 +184,7 @@ def _generate_security_groups(config_key):
         groups = _remove_empty_entries(default_groups)
         for env in entries:
             entries[env] = groups
-
-    if isinstance(default_groups, (dict)):
+    elif isinstance(default_groups, (dict)):
         entries.update(default_groups)
 
     LOG.debug('Generated security group: %s', entries)
