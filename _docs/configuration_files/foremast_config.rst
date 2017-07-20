@@ -45,7 +45,7 @@ The base domain of your applications. Used for generating DNS
 ``envs``
 ********
 
-Comma delimiated list of environments/applications that will be managed with Foremast
+Comma delimited list of environments/applications that will be managed with Foremast
 
     | *Example*: ``dev,stage,prod``
     | *Required*: Yes
@@ -102,7 +102,7 @@ Path to custome templates directory. If provided, Foremast will first look in th
 ``default_ec2_securitygroups``
 ******************************
 
-Comma separated list or json of EC2 security groups to include for all deployments. If a command separated list is given, the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
+Comma separated list or json of EC2 security groups to include for all deployments. If a comma separated list is given, the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
 
     | *Required*: No
     | *Example*: ``office,test_sg,example``
@@ -111,7 +111,7 @@ Comma separated list or json of EC2 security groups to include for all deploymen
 ``default_elb_securitygroups``
 ******************************
 
-Comma separated list or json of ELB security groups to include for all deployments. If a command separated list is given, the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
+Comma separated list or json of ELB security groups to include for all deployments. If a comma separated list is given, the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
 
     | *Required*: No
     | *Example*: ``test_sg,example_elb_sg``
