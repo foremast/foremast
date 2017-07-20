@@ -141,12 +141,14 @@ def find_config():
 
     return configurations
 
+
 def _remove_empty_entries(entries):
     """Remove empty entries in a list"""
-    for count, entry in enumerate(entries):
-        if entry in ['', None]:
-            entries.pop(count)
-    return entries
+    valid_entries = []
+    for entry in entries:
+        if entry:
+            valid_entries.append(entry)
+    return sorted(set(valid_entries))
 
 
 def _convert_string_to_native(value):
@@ -181,7 +183,7 @@ def _generate_security_groups(config_key):
     if isinstance(default_groups, (list)):
         groups = _remove_empty_entries(default_groups)
         for env in entries:
-            entries[env] = sorted(set(groups))
+            entries[env] = groups
 
     if isinstance(default_groups, (dict)):
         entries.update(default_groups)
