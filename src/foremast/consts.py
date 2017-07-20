@@ -164,7 +164,7 @@ def _convert_string_to_native(value):
 
 
 def _generate_security_groups(config_key):
-    """Read config file and generate security group dict by environment
+    """Read config file and generate security group dict by environment.
 
     Args:
         config_key (str): Configuration file key
