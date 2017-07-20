@@ -95,14 +95,17 @@ FQDN Of your spinnaker Gate instance. This is where all API calls to Spinnaker w
 ``templates_path``
 ******************
 
-Path to custome templates directory. If provided, Foremast will first look in this directory for any templates. This can be an absolute path, or a path relative to where you where you are running the Foremast commands. See :ref:`pipeline_examples` for more details on custom templates.
+Path to custom templates directory. If provided, Foremast will first look in this directory for any templates. This can
+be an absolute path, or a path relative to where you where you are running the Foremast commands. See
+:ref:`pipeline_examples` for more details on custom templates.
 
     | *Required*: No
 
 ``default_ec2_securitygroups``
 ******************************
 
-Comma separated list or json of EC2 security groups to include for all deployments. If a comma separated list is given, the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
+Comma separated list or json of EC2 security groups to include for all deployments. If a comma separated list is given,
+the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
 
     | *Required*: No
     | *Example*: ``office,test_sg,example``
@@ -111,7 +114,8 @@ Comma separated list or json of EC2 security groups to include for all deploymen
 ``default_elb_securitygroups``
 ******************************
 
-Comma separated list or json of ELB security groups to include for all deployments. If a comma separated list is given, the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
+Comma separated list or json of ELB security groups to include for all deployments. If a comma separated list is given,
+the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
 
     | *Required*: No
     | *Example*: ``test_sg,example_elb_sg``
@@ -121,7 +125,8 @@ Comma separated list or json of ELB security groups to include for all deploymen
 ``gate_client_cert``
 ********************
 
-If accessing Gate via x509 certificate authentication, this value provides the local path to the certificate. Only PEM certs are supported at this time (containing both the key and certificate in the PEM).
+If accessing Gate via x509 certificate authentication, this value provides the local path to the certificate. Only PEM
+certs are supported at this time (containing both the key and certificate in the PEM).
 
     | *Required*: No
     | *Example*: ``/var/certs/gate-cert.pem``
@@ -129,7 +134,9 @@ If accessing Gate via x509 certificate authentication, this value provides the l
 ``gate_ca_bundle``
 ********************
 
-If accessing Gate via x509 leveraging a custom certificate authority (such as acting as your own CA), this value provides the local path to the CA bundle. It is recommended to use an existing CA Bundle and append your CA certificate to it (https://certifi.io/en/latest/)
+If accessing Gate via x509 leveraging a custom certificate authority (such as acting as your own CA), this value
+provides the local path to the CA bundle. It is recommended to use an existing CA Bundle and append your CA certificate
+to it (https://certifi.io/en/latest/)
 
     | *Required*: No
     | *Example*: ``/var/certs/CA.pem``
@@ -171,7 +178,8 @@ Comma delimiated list of applications to whitelist from ASG rules
 
 Section handling the naming convention of applications, elb, iam, s3 buckets and other services.
 
-The most common sections are shown. The complete list of sections and defaults are defined by the underlying library gogo-utils_.
+The most common sections are shown. The complete list of sections and defaults are defined by the underlying library
+gogo-utils_.
 
 Any of the possible variables below can be used as the value.
 
