@@ -145,10 +145,10 @@ def find_config():
 def _remove_empty_entries(entries):
     """Remove empty entries in a list"""
     valid_entries = []
-    for entry in entries:
+    for entry in set(entries):
         if entry:
             valid_entries.append(entry)
-    return sorted(set(valid_entries))
+    return sorted(valid_entries)
 
 
 def _convert_string_to_native(value):
