@@ -98,11 +98,11 @@ def get_template_name(env, pipeline_type):
 
 def construct_pipeline_block(env='',
                              generated=None,
-                             previous_env=None,
+                             previous_env='',
                              region='us-east-1',
                              settings=None,
                              pipeline_data=None,
-                             **kwargs):
+                             region_subnets=None):
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -141,7 +141,7 @@ def construct_pipeline_block(env='',
             env=env,
             region=region,
             project=generated.project,
-            region_subnets=kwargs.get('region_subnets'))
+            region_subnets=region_subnets)
     else:
         data = copy.deepcopy(settings)
 
@@ -163,7 +163,7 @@ def construct_pipeline_block(env='',
     return pipeline_json
 
 
-def ec2_pipeline_setup(appname=None, project=None, settings=None, env=None, region=None, region_subnets=None):
+def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='', region_subnets=None):
     """Handles ec2 pipeline data setup
 
     Args:
@@ -184,7 +184,7 @@ def ec2_pipeline_setup(appname=None, project=None, settings=None, env=None, regi
 
     # Use different variable to keep template simple
     instance_security_groups = DEFAULT_EC2_SECURITYGROUPS[env]
-    instance_security_groups.append(gen_app_name)
+    instance_security_groups.append(appname)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
 
     LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
