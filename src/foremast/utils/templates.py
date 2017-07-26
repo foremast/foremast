@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Render Jinja2 template."""
 import logging
 import os
@@ -41,8 +40,7 @@ def get_template_object(template_file=''):
 
     if TEMPLATES_PATH:
         external_templates = os.path.expanduser(TEMPLATES_PATH)
-        assert os.path.isdir(external_templates), 'Template path {0} not found'.format(
-            external_templates)
+        assert os.path.isdir(external_templates), 'Template path {0} not found'.format(external_templates)
         jinja_lst.append(external_templates)
     jinja_lst.append(local_templates)
 
@@ -52,8 +50,8 @@ def get_template_object(template_file=''):
         template = jinjaenv.get_template(template_file)
     except jinja2.TemplateNotFound:
         LOG.debug("Unable to find template %s in specified template path %s", template_file, TEMPLATES_PATH)
-        raise ForemastTemplateNotFound("Unable to find template %s in specified template path %s",
-                                       template_file, TEMPLATES_PATH)
+        raise ForemastTemplateNotFound("Unable to find template %s in specified template path %s", template_file,
+                                       TEMPLATES_PATH)
 
     return template
 
