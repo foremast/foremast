@@ -81,7 +81,7 @@ def render_policy_template(  # pylint: disable=R0913
             template.
 
     Returns:
-        list: :obj:`dict`
+        list: IAM Policy :obj:`dict` statements for the given service.
 
     """
     statements = []
