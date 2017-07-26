@@ -54,6 +54,60 @@ def auto_service(pipeline_settings={}, services={}):  # pylint: disable=W0102
     return services
 
 
+def render_policy_template(  # pylint: disable=R0913
+        account_number='',
+        app='coreforrest',
+        env='dev',
+        group='forrest',
+        items=None,
+        pipeline_settings=None,
+        region='us-east-1',
+        service=''):
+    """Render IAM Policy template.
+
+    To support multiple statement blocks, JSON objects can be separated by a
+    comma. This function attempts to turn any invalid JSON into a valid list
+    based on this comma separated assumption.
+
+    Args:
+        account_number (str): AWS Account number.
+        app (str): Name of Spinnaker Application.
+        env (str): Environment/Account in AWS
+        group (str):A Application group/namespace
+        items (list): Resource names used to create a Policy per Resource.
+        region (str): AWS region.
+        pipeline_settings (dict): Settings from *pipeline.json*.
+        service (str): Name of cloud service to find matching IAM Policy
+            template.
+
+    Returns:
+        list: :obj:`dict`
+
+    """
+    statements = []
+
+    rendered_service_policy = get_template(
+        'infrastructure/iam/{0}.json.j2'.format(service),
+        account_number=account_number,
+        app=app,
+        env=env,
+        group=group,
+        region=region,
+        items=items,
+        settings=pipeline_settings)
+
+    try:
+        statement_block = json.loads(rendered_service_policy)
+        statements = statements.append(statement_block)
+    except ValueError:
+        LOG.debug('Need to make %s template into list.', service)
+        statements = json.loads('[{0}]'.format(rendered_service_policy))
+
+    LOG.debug('Rendered IAM Policy statements: %s', statements)
+
+    return statements
+
+
 def construct_policy(app='coreforrest', env='dev', group='forrest', region='us-east-1', pipeline_settings=None):
     """Assemble IAM Policy for _app_.
 
@@ -88,22 +142,17 @@ def construct_policy(app='coreforrest', env='dev', group='forrest', region='us-e
         else:
             items = value
 
-        try:
-            statement_block = get_template(
-                'infrastructure/iam/{0}.json.j2'.format(service),
-                account_number=account_number,
-                app=app,
-                env=env,
-                group=group,
-                region=region,
-                items=items,
-                settings=pipeline_settings)
-            statement = json.loads(statement_block)
-            statements.append(statement)
-        except ValueError:
-            LOG.debug('Need to make %s template into list.', service)
-            statement_block_list = json.loads('[{0}]'.format(statement_block))
-            statements.extend(statement_block_list)
+        rendered_statements = render_policy_template(
+            account_number=account_number,
+            app=app,
+            env=env,
+            group=group,
+            items=items,
+            pipeline_settings=pipeline_settings,
+            region=region,
+            service=service)
+
+        statements.extend(rendered_statements)
 
     if statements:
         policy_json = get_template('infrastructure/iam/wrapper.json.j2', statements=json.dumps(statements))
