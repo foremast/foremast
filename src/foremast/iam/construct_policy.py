@@ -98,7 +98,7 @@ def render_policy_template(  # pylint: disable=R0913
 
     try:
         statement_block = json.loads(rendered_service_policy)
-        statements = statements.append(statement_block)
+        statements.append(statement_block)
     except ValueError:
         LOG.debug('Need to make %s template into list.', service)
         statements = json.loads('[{0}]'.format(rendered_service_policy))
