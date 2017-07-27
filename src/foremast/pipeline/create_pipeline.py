@@ -26,7 +26,7 @@ from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import get_details, get_properties, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
-from .construct_pipeline_block import construct_pipeline_block, 
+from .construct_pipeline_block import construct_pipeline_block, ec2_bake_data
 from .renumerate_stages import renumerate_stages
 
 
@@ -108,7 +108,6 @@ class SpinnakerPipeline:
 
         data = {
             'app': {
-                'ami_id': ami_id,
                 'appname': self.app_name,
                 'base': base,
                 'environment': 'packaging',
@@ -116,14 +115,12 @@ class SpinnakerPipeline:
                 'triggerjob': self.trigger_job,
                 'email': email,
                 'slack': slack,
-                'root_volume_size': root_volume_size,
-                'ami_template_file': ami_template_file,
             },
             'id': pipeline_id
         }
 
         if pipeline_type == 'ec2':
-            bake_data = ec2_bake_data(settings=self.settings, base=base, region=region
+            bake_data = ec2_bake_data(settings=self.settings, base=base, region=region)
             data['app'].update(bake_data)
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
