@@ -154,6 +154,7 @@ def construct_pipeline_block(env='',
         'previous_env': previous_env,
         'promote_restrict': pipeline_data['promote_restrict'],
         'owner_email': pipeline_data['owner_email'],
+        'pipeline': pipeline_data,
     })
 
     LOG.debug('Block data:\n%s', pformat(data))
