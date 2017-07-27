@@ -21,6 +21,7 @@ import logging
 from pprint import pformat
 
 from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
+from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import ami_lookup, generate_encoded_user_data, generate_packer_filename, get_template
 
 LOG = logging.getLogger(__name__)
