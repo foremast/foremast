@@ -21,7 +21,7 @@ import logging
 from pprint import pformat
 
 from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
-from ..utils import generate_encoded_user_data, get_template
+from ..utils import ami_lookup, generate_encoded_user_data, generate_packer_filename, get_template
 
 LOG = logging.getLogger(__name__)
 
@@ -251,3 +251,30 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
     })
 
     return data
+
+
+def ec2_bake_data(settings=None, base=None, region='us-east-1', provider='aws'):
+    """Sets up extra data for EC2 wrapper/baking stage
+    
+    Args:
+        settings (dict): settings from configurations
+        base (str): Name of the base AMI
+        region (str): Aws Region of AMI
+        provider (str): Image provider
+    
+    Returns:
+        dict: Generated bake data
+    """
+
+    baking_process = settings['pipeline']['image']['builder']
+    root_volume_size = settings['pipeline']['image']['root_volume_size']
+    
+    if root_volume_size > 50:
+        raise SpinnakerPipelineCreationFailed(
+            'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
+                root_volume_size))
+
+    ami_id = ami_lookup(name=base, region=region)
+    ami_template_file = generate_packer_filename(provider, region, baking_process)
+    bake_data = {'ami_id': ami_id, 'root_volume_size': root_volume_size, 'ami_template_file': ami_template_file}
+    return bake_data

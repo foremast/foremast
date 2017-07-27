@@ -24,9 +24,9 @@ import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import ami_lookup, generate_packer_filename, get_details, get_properties, get_subnets, get_template
+from ..utils import get_details, get_properties, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
-from .construct_pipeline_block import construct_pipeline_block
+from .construct_pipeline_block import construct_pipeline_block, 
 from .renumerate_stages import renumerate_stages
 
 
@@ -98,25 +98,11 @@ class SpinnakerPipeline:
         Returns:
             dict: Rendered Pipeline wrapper.
         """
-        base = self.settings['pipeline']['base']
 
-        if self.base:
-            base = self.base
-
+        base = self.base or self.settings['pipeline']['base']
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
-        baking_process = self.settings['pipeline']['image']['builder']
-        provider = 'aws'
-        root_volume_size = self.settings['pipeline']['image']['root_volume_size']
-
-        if root_volume_size > 50:
-            raise SpinnakerPipelineCreationFailed(
-                'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
-                    root_volume_size))
-
-        ami_id = ami_lookup(name=base, region=region)
-
-        ami_template_file = generate_packer_filename(provider, region, baking_process)
+        pipeline_type = self.settings['pipeline']['type']
 
         pipeline_id = self.compare_with_existing(region=region)
 
@@ -135,6 +121,10 @@ class SpinnakerPipeline:
             },
             'id': pipeline_id
         }
+
+        if pipeline_type == 'ec2':
+            bake_data = ec2_bake_data(settings=self.settings, base=base, region=region
+            data['app'].update(bake_data)
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
