@@ -16,13 +16,39 @@
 
 """Test ec2_bake_data functionality"""
 
+import pytest
 from unittest import mock
 
 from foremast.pipeline.construct_pipeline_block import ec2_bake_data
 from foremast.exceptions import SpinnakerPipelineCreationFailed
 
+TEST_SETTINGS = {'pipeline': {
+                    'image': {
+                        'builder': 'ebs',
+                        'root_volume_size': 10}
+                    }
+                }
 
 @mock.patch('foremast.pipeline.construct_pipeline_block.ami_lookup')
 @mock.patch('foremast.pipeline.construct_pipeline_block.generate_packer_filename')
-def test_ec2_bake_data():
-    return
+def test_ec2_bake_data(mock_packer, mock_ami_lookup):
+    """Test that return dict is expected values"""
+    mock_ami_lookup.return_value = 'abc123'
+    mock_packer.return_value = 'test'
+
+    bake_data = ec2_bake_data(settings=TEST_SETTINGS)
+    expected_data = {'ami_id': 'abc123', 'root_volume_size': 10, 'ami_template_file': 'test'}
+
+    assert bake_data == expected_data
+
+
+@mock.patch('foremast.pipeline.construct_pipeline_block.ami_lookup')
+@mock.patch('foremast.pipeline.construct_pipeline_block.generate_packer_filename')
+def test_ec2_bake_assert(mock_packer, mock_ami_lookup):
+    """Test that exception is thrown for high image sizes"""
+    setting_high_size = TEST_SETTINGS
+    setting_high_size['pipeline']['image']['root_volume_size'] = 60
+
+    with pytest.raises(SpinnakerPipelineCreationFailed):
+        ec2_bake_data(settings=setting_high_size)
+
