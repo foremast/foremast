@@ -184,7 +184,7 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
     user_data = generate_encoded_user_data(env=env, region=region, app_name=appname, group_name=project)
 
     # Use different variable to keep template simple
-    instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS[env])
+    instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
     instance_security_groups.append(appname)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
 
