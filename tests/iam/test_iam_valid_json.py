@@ -5,18 +5,19 @@ from foremast.iam.construct_policy import render_policy_template
 from foremast.utils.templates import LOCAL_TEMPLATES
 
 
-def test_all_iam_templates():
-    """Verify all IAM templates render as proper JSON."""
+def iam_templates():
+    """Generate list of IAM templates."""
     jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader([LOCAL_TEMPLATES]))
 
-    iam_templates = jinjaenv.list_templates(filter_func=lambda x: all([
+    iam_template_names = jinjaenv.list_templates(filter_func=lambda x: all([
         x.startswith('infrastructure/iam/'),
         'trust' not in x,
         'wrapper' not in x, ]))
 
-    for template in iam_templates:
-        *_, service_json = template.split('/')
-        service, *_ = service_json.split('.')
+    for iam_template_name in iam_template_names:
+        yield iam_template_name
+
+
 
         items = ['resource1', 'resource2']
 
