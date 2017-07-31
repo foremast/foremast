@@ -17,7 +17,8 @@
 from configparser import ConfigParser
 from unittest.mock import patch
 
-from foremast.consts import ALLOWED_TYPES, extract_formats, _generate_security_groups
+from foremast.consts import (ALLOWED_TYPES, DEFAULT_SECURITYGROUP_RULES,
+                             extract_formats, _generate_security_groups)
 
 
 def test_consts_extract_formats():
@@ -55,3 +56,9 @@ def test_parse_security_group(values):
 def test_parse_security_group_dict(mock_keys):
     """Validate security groups are handled properly if dictionary is in dyanmic config"""
     assert {'': ['g3']} == _generate_security_groups('default_elb_securitygroups')
+
+
+def test_consts_default_securitygroup_rules():
+    """Test this const is a dict"""
+    assert isinstance(DEFAULT_SECURITYGROUP_RULES, dict)
+    assert DEFAULT_SECURITYGROUP_RULES == {}
