@@ -1,5 +1,8 @@
 """Test IAM Policy templates are valid JSON."""
+import json
+
 import jinja2
+import pytest
 
 from foremast.iam.construct_policy import render_policy_template
 from foremast.utils.templates import LOCAL_TEMPLATES
@@ -18,15 +21,21 @@ def iam_templates():
         yield iam_template_name
 
 
+@pytest.mark.parametrize(argnames='template_name', argvalues=iam_templates())
+def test_all_iam_templates(template_name):
+    """Verify all IAM templates render as proper JSON."""
+    *_, service_json = template_name.split('/')
+    service, *_ = service_json.split('.')
 
-        items = ['resource1', 'resource2']
+    items = ['resource1', 'resource2']
 
-        if service == 'rds-db':
-            items = {
-                'resource1': 'user1',
-                'resource2': 'user2',
-            }
+    if service == 'rds-db':
+        items = {
+            'resource1': 'user1',
+            'resource2': 'user2',
+        }
 
+    try:
         rendered = render_policy_template(
             account_number='',
             app='coreforrest',
@@ -40,5 +49,7 @@ def iam_templates():
             },
             region='us-east-1',
             service=service)
+    except json.decoder.JSONDecodeError:
+        pytest.fail('Bad template: {0}'.format(template_name), pytrace=False)
 
-        assert isinstance(rendered, list)
+    assert isinstance(rendered, list)
