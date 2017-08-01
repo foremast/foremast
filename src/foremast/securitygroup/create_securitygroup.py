@@ -205,6 +205,11 @@ class SpinnakerSecurityGroup(object):
 
         return True
 
+    def update_default_securitygroup_rules(self):
+        ingress = self.properties['security_group']['ingress']
+        ingress.update(DEFAULT_SECURITYGROUP_RULES)
+        return ingress
+
     def create_security_group(self):
         """Send a POST to spinnaker to create a new security group.
 
@@ -218,8 +223,7 @@ class SpinnakerSecurityGroup(object):
         ingress_rules = []
 
         try:
-            ingress = self.properties['security_group']['ingress']
-            ingress.update(DEFAULT_SECURITYGROUP_RULES)
+            ingress = self.update_default_securitygroup_rules()
         except KeyError:
             msg = 'Possible missing configuration for "{0}".'.format(self.env)
             self.log.error(msg)
