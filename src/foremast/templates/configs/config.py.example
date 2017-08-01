@@ -9,6 +9,7 @@ CONFIG = {
         'git_url': 'https://git.example.com',
         'gate_api_url': 'http://gate-api.example.com:8084',
         'templates_path': '../../foremast-templates',
+        'default_securitygroup_rules': {'myapp1': '[{\'start_port\': \'22\', \'end_port\': \'22\', \'protocol\': \'tcp\'}]', 'myapp2': '[{\'start_port\': \'8080\', \'end_port\': \'8080\', \'protocol\': \'tcp\' }]'},
     },
     'credentials': {
         'gitlab_token': '123token23423343',
