@@ -43,8 +43,9 @@ SAMPLE_JSON = """{"security_group": {
 @patch('foremast.securitygroup.create_securitygroup.get_vpc_id')
 @patch('foremast.securitygroup.create_securitygroup.wait_for_task')
 @patch("foremast.securitygroup.create_securitygroup.get_properties")
-def test_create_crossaccount_securitygroup(pipeline_config, wait_for_task, get_vpc_id, get_security_group_id,
-                                           boto3):
+@patch("foremast.securitygroup.create_securitygroup.get_details")
+def test_create_crossaccount_securitygroup(get_details, pipeline_config, wait_for_task, get_vpc_id,
+                                           get_security_group_id, boto3):
     """Should create SG with cross account true"""
     pipeline_config.return_value = json.loads(SAMPLE_JSON)
 
@@ -56,7 +57,8 @@ def test_create_crossaccount_securitygroup(pipeline_config, wait_for_task, get_v
 
 
 @patch('foremast.securitygroup.create_securitygroup.get_properties')
-def test_missing_configuration(get_properties):
+@patch("foremast.securitygroup.create_securitygroup.get_details")
+def test_missing_configuration(get_details, get_properties):
     """Make missing Security Group configurations more apparent."""
     get_properties.return_value = {}
 
@@ -67,7 +69,8 @@ def test_missing_configuration(get_properties):
 
 
 @patch('foremast.securitygroup.create_securitygroup.get_properties')
-def test_misconfiguration(get_properties):
+@patch("foremast.securitygroup.create_securitygroup.get_details")
+def test_misconfiguration(get_details, get_properties):
     """Make bad Security Group definitions more apparent."""
     get_properties.return_value = {'security_group': {}}
 
@@ -75,3 +78,5 @@ def test_misconfiguration(get_properties):
 
     with pytest.raises(ForemastConfigurationFileError):
         security_group.create_security_group()
+
+
