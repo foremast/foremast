@@ -42,6 +42,12 @@ def test_consts_pipeline_types():
     assert 'lambda' in ALLOWED_TYPES
 
 
+def test_consts_default_securitygroup_rules():
+    """Test this const is a dict"""
+    assert isinstance(DEFAULT_SECURITYGROUP_RULES, dict)
+    # assert DEFAULT_SECURITYGROUP_RULES == {} or {'': []}
+
+
 @patch('foremast.consts.validate_key_values')
 def test_parse_security_group(values):
     """Parse out security group entries"""
@@ -56,9 +62,3 @@ def test_parse_security_group(values):
 def test_parse_security_group_dict(mock_keys):
     """Validate security groups are handled properly if dictionary is in dyanmic config"""
     assert {'': ['g3']} == _generate_security_groups('default_elb_securitygroups')
-
-
-def test_consts_default_securitygroup_rules():
-    """Test this const is a dict"""
-    assert isinstance(DEFAULT_SECURITYGROUP_RULES, dict)
-    assert DEFAULT_SECURITYGROUP_RULES == {}
