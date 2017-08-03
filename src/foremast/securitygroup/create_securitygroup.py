@@ -121,8 +121,42 @@ class SpinnakerSecurityGroup(object):
         self.log.debug('SG reference rules: %s', non_cidr)
         return non_cidr, cidr
 
+    def add_tags(self, group_id):
+        """
+        Add tags to security group.
+        Args:
+            group_id (str): Security group id.
+
+        Returns:
+            True: Upon successful completion.
+        """
+        session = boto3.session.Session(profile_name=self.env,
+                                        region_name=self.region)
+        resource = session.resource('ec2')
+        security_group = resource.SecurityGroup(group_id)
+
+        try:
+            tag = security_group.create_tags(
+                DryRun=False,
+                Tags=[
+                    {
+                        'Key': 'app_group',
+                        'Value': self.group
+                    },
+                    {
+                        'Key': 'app_name',
+                        'Value': self.app_name
+                    }
+                ]
+            )
+            self.log.debug('Security group has been tagged: %s', tag)
+        except botocore.exceptions.ClientError as error:
+            self.log.warning(error)
+
+        return True
+
     def add_cidr_rules(self, rules):
-        """Add cidr rules to security group and tag via boto.
+        """Add cidr rules to security group via boto.
 
         Args:
             rules (list): Allowed Security Group ports and protocols.
@@ -170,25 +204,7 @@ class SpinnakerSecurityGroup(object):
                     raise SpinnakerSecurityGroupError(msg)
 
         # Tag security group
-        try:
-            resource = session.resource('ec2')
-            security_group = resource.SecurityGroup(group_id)
-            tag = security_group.create_tags(
-                DryRun=False,
-                Tags=[
-                    {
-                        'Key': 'app_group',
-                        'Value': self.group
-                    },
-                    {
-                        'Key': 'app_name',
-                        'Value': self.app_name
-                    }
-                ]
-            )
-            self.log.debug('Security group has been tagged: %s', tag)
-        except botocore.exceptions.ClientError as error:
-            self.log.warning(error)
+        self.add_tags(group_id)
 
         return True
 
