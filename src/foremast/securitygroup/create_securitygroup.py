@@ -121,11 +121,8 @@ class SpinnakerSecurityGroup(object):
         self.log.debug('SG reference rules: %s', non_cidr)
         return non_cidr, cidr
 
-    def add_tags(self, group_id):
-        """
-        Add tags to security group.
-        Args:
-            group_id (str): Security group id.
+    def add_tags(self):
+        """Add tags to security group.
 
         Returns:
             True: Upon successful completion.
@@ -133,6 +130,7 @@ class SpinnakerSecurityGroup(object):
         session = boto3.session.Session(profile_name=self.env,
                                         region_name=self.region)
         resource = session.resource('ec2')
+        group_id = get_security_group_id(self.app_name, self.env, self.region)
         security_group = resource.SecurityGroup(group_id)
 
         try:
@@ -202,9 +200,6 @@ class SpinnakerSecurityGroup(object):
                     msg = 'Unable to add cidr rules to {}'.format(rule.get('app'))
                     self.log.error(msg)
                     raise SpinnakerSecurityGroupError(msg)
-
-        # Tag security group
-        self.add_tags(group_id)
 
         return True
 
@@ -288,6 +283,9 @@ class SpinnakerSecurityGroup(object):
 
         # Append cidr rules
         self.add_cidr_rules(ingress_rules_cidr)
+
+        # Tag security group
+        self.add_tags()
 
         self.log.info('Successfully created %s security group', self.app_name)
         return True
