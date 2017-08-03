@@ -199,6 +199,7 @@ REGIONS = set(validate_key_values(config, 'base', 'regions', default='').split('
 ALLOWED_TYPES = set(validate_key_values(config, 'base', 'types', default='ec2,lambda,s3,datapipeline').split(','))
 TEMPLATES_PATH = validate_key_values(config, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(config, 'base', 'ami_json_url')
+DEFAULT_SECURITYGROUP_RULES = _generate_security_groups('default_securitygroup_rules')
 DEFAULT_EC2_SECURITYGROUPS = _generate_security_groups('default_ec2_securitygroups')
 DEFAULT_ELB_SECURITYGROUPS = _generate_security_groups('default_elb_securitygroups')
 DEFAULT_SECURITYGROUP_RULES = json.loads(validate_key_values(config, 'base', 'default_securitygroup_rules',
