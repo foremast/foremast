@@ -80,3 +80,15 @@ def test_misconfiguration(get_details, get_properties):
         security_group.create_security_group()
 
 
+@patch('foremast.securitygroup.create_securitygroup.boto3')
+@patch('foremast.securitygroup.create_securitygroup.get_properties')
+@patch('foremast.securitygroup.create_securitygroup.get_security_group_id')
+@patch("foremast.securitygroup.create_securitygroup.get_details")
+def test_tags(get_details, get_security_group_id, get_properties, boto3):
+    """Make bad Security Group definitions more apparent."""
+    get_properties.return_value = {'security_group': {}}
+    get_security_group_id.return_value = 'SGID'
+
+    security_group = SpinnakerSecurityGroup()
+    assert security_group.add_tags() is True
+
