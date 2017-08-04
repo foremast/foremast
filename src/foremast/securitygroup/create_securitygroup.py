@@ -206,6 +206,7 @@ class SpinnakerSecurityGroup(object):
         return True
 
     def update_default_securitygroup_rules(self):
+        """Concatinate application and global security group rules"""
         ingress = self.properties['security_group']['ingress']
         ingress.update(DEFAULT_SECURITYGROUP_RULES)
         return ingress
