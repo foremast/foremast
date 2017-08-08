@@ -96,7 +96,7 @@ class S3Deployment(object):
             self._upload_artifacts_to_version()
             self._sync_to_canary()
         else:
-            raise NotImplemented
+            raise NotImplementedError
 
     def promote_artifacts(self):
         """Promotes artifact version to LATEST"""
