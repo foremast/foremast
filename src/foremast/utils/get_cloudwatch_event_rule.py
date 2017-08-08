@@ -1,3 +1,4 @@
+"""CloudWatch Event functions."""
 import logging
 
 import boto3
@@ -8,6 +9,7 @@ LOG = logging.getLogger(__name__)
 
 
 def get_cloudwatch_event_rule(app_name, account, region):
+    """Get CloudWatch Event rule names."""
     session = boto3.Session(profile_name=account, region_name=region)
     cloudwatch_client = session.client('events')
 

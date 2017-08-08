@@ -33,6 +33,7 @@ def get_vpc_id(account, region):
 
     Returns:
         str: ID for the requested _account_ in _region_.
+
     """
     url = '{0}/vpcs'.format(API_URL)
     response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)

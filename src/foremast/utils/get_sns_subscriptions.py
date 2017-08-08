@@ -1,3 +1,4 @@
+"""SNS Subscription functions."""
 import logging
 
 import boto3
@@ -8,10 +9,11 @@ LOG = logging.getLogger(__name__)
 
 
 def get_sns_subscriptions(app_name, env, region):
-    """ Lists SNS lambda subscriptions
+    """List SNS lambda subscriptions.
 
     Returns:
         list: List of Lambda subscribed SNS ARNs.
+
     """
     session = boto3.Session(profile_name=env, region_name=region)
     sns_client = session.client('sns')

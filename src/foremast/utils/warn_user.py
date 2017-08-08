@@ -18,7 +18,7 @@ import warnings
 
 
 def warning_format(message, category, *_, **__):
-    """Warning format"""
+    """Warning format."""
     return '{}: {}\n'.format(category.__name__, message)
 
 

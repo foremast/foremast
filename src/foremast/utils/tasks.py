@@ -12,7 +12,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""POST a new task or check status of running task"""
+"""POST a new task or check status of running task."""
 import json
 import logging
 from functools import partial
@@ -34,8 +34,8 @@ def post_task(task_data):
 
     Returns:
         str: taskid.
-    """
 
+    """
     url = '{}/tasks'.format(API_URL)
 
     if isinstance(task_data, str):
@@ -61,6 +61,7 @@ def _check_task(taskid):
 
     Returns:
         polls for task status.
+
     """
     try:
         taskurl = taskid.get('ref', '0000')
@@ -91,10 +92,10 @@ def _check_task(taskid):
 
 
 def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT, wait=2):
-    """wrapper for check_task
+    """Wrap check_task.
 
     Args:
-        taskid (str): the task id returned from post_task 
+        taskid (str): the task id returned from post_task
         timeout (int) (optional): how long to wait before failing the task
         wait (int, optional): Seconds to pause between polling attempts.
 
@@ -119,13 +120,14 @@ def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT, wait=2):
 
 
 def wait_for_task(task_data):
-    """Run task and check the result
+    """Run task and check the result.
 
     Args:
-        task_data (str): the task json to execute 
+        task_data (str): the task json to execute
 
     Returns:
         polls for task status
+
     """
     taskid = post_task(task_data)
 

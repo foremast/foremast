@@ -29,8 +29,8 @@ def post_slack_message(message=None, channel=None, username=None, icon_emoji=Non
     Args:
         message (str): Message to post to slack
         channel (str): Desired channel. Must start with #
-    """
 
+    """
     LOG.debug('Slack Channel: %s\nSlack Message: %s', channel, message)
     slack = slacker.Slacker(SLACK_TOKEN)
     try:

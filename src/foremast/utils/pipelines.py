@@ -36,6 +36,7 @@ def check_managed_pipeline(name='', app_name=''):
 
     Raises:
         ValueError: Pipeline is not managed.
+
     """
     *pipeline_name_prefix, bracket_region = name.split()
     region = bracket_region.strip('[]')
@@ -69,6 +70,7 @@ def get_all_pipelines(app=''):
 
     Returns:
         requests.models.Response: Response from Gate containing Pipelines.
+
     """
     url = murl.Url(API_URL)
     url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
@@ -92,6 +94,7 @@ def get_pipeline_id(app='', name=''):
     Returns:
         str: ID of specified Pipeline.
         None: Pipeline or Spinnaker Appliation not found.
+
     """
     return_id = None
 

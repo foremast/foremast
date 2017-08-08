@@ -95,6 +95,7 @@ Examples:
         # Succeeds because e.path == '/applications/coreforest'
         e.edgeforrest.get()
         # Fails because e.path == '/applications/coreforrest/edgeforrest'
+
 """
 import json
 import logging
@@ -146,6 +147,7 @@ class Gate(object):
 
         Raises:
             AssertionError: Gate API did not return a 200 status code.
+
         """
         LOG.debug('json_data=%(json_data)s\nkwargs=%(kwargs)s', locals())
 
@@ -184,6 +186,7 @@ class Gate(object):
                     'data': {'extra': 'arguments', ...},
                     'json': {'name': 'coreforrest', ...}
                 }
+
         """
         request_kwargs = {'headers': HEADERS}
 

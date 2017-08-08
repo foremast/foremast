@@ -49,6 +49,7 @@ def construct_pipeline_block_lambda(env='',
 
     Returns:
         dict: Pipeline JSON template rendered with configurations.
+
     """
     LOG.info('%s block for [%s].', env, region)
 

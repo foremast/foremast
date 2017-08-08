@@ -37,6 +37,7 @@ def find_elb(name='', env='', region=''):
 
     Returns:
         str: elb DNS record
+
     """
     LOG.info('Find %s ELB in %s [%s].', name, env, region)
 
@@ -67,6 +68,7 @@ def find_elb_dns_zone_id(name='', env='dev', region='us-east-1'):
 
     Returns:
         str: elb DNS zone ID
+
     """
     LOG.info('Find %s ELB DNS Zone ID in %s [%s].', name, env, region)
     client = boto3.Session(profile_name=env).client('elb', region_name=region)

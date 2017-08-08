@@ -38,6 +38,7 @@ def get_dns_zone_ids(env='dev', facing='internal'):
     Returns:
         list: Hosted Zone IDs for _env_. Only *PrivateZone* when _facing_ is
         internal.
+
     """
     client = boto3.Session(profile_name=env).client('route53')
 
@@ -96,7 +97,7 @@ def update_dns_zone_record(env, zone_id, **kwargs):
 
 
 def find_existing_record(env, zone_id, dns_name, check_key=None, check_value=None):
-    """Checks if a specific DNS record exists
+    """Check if a specific DNS record exists.
 
     Args:
         env (str): Deployment environment.
@@ -104,8 +105,10 @@ def find_existing_record(env, zone_id, dns_name, check_key=None, check_value=Non
         dns_name (str): FQDN of application's dns entry to add/update.
         check_key(str): Key to look for in record. Example: "Type"
         check_value(str): Value to look for with check_key. Example: "CNAME"
+
     Returns:
         json: Found Record. Returns None if no record found
+
     """
     client = boto3.Session(profile_name=env).client('route53')
     pager = client.get_paginator('list_resource_record_sets')
@@ -121,9 +124,10 @@ def find_existing_record(env, zone_id, dns_name, check_key=None, check_value=Non
 
 
 def delete_existing_cname(env, zone_id, dns_name):
-    """Function to delete an existing CNAME record. This is
-    used when updating to multi-region for deleting old records.
-    The record can not just be upserted since it changes types.
+    """Delete an existing CNAME record.
+
+    This is used when updating to multi-region for deleting old records. The
+    record can not just be upserted since it changes types.
 
     Args:
         env (str): Deployment environment.

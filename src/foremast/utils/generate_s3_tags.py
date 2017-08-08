@@ -1,11 +1,15 @@
+"""S3 Tag functions."""
+
+
 def generated_tag_data(tags):
-    """Gets normal dictionary then converts to S3 tag set list.
+    """Convert :obj:`dict` to S3 Tag list.
 
     Args:
         tags (dict): Dictonary of tag key and tag value passed.
 
     Returns:
         list: List of dictionaries.
+
     """
     generated_tags = []
     for key, value in tags.items():

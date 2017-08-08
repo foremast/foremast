@@ -1,3 +1,4 @@
+"""SNS Topic functions."""
 import logging
 
 import boto3
@@ -8,7 +9,7 @@ LOG = logging.getLogger(__name__)
 
 
 def get_sns_topic_arn(topic_name, account, region):
-    """ Get SNS topic ARN
+    """Get SNS topic ARN.
 
     Args:
         topic_name (str): Name of the topic to lookup.
@@ -17,6 +18,7 @@ def get_sns_topic_arn(topic_name, account, region):
 
     Returns:
         str: ARN for requested topic name
+
     """
     session = boto3.Session(profile_name=account, region_name=region)
     sns_client = session.client('sns')
