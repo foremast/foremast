@@ -67,7 +67,7 @@ def construct_pipeline_block_lambda(env='',
     instance_security_groups.append(gen_app_name)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
 
-    LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
+    LOG.info('Instance security groups to attach: %s', instance_security_groups)
 
     data = copy.deepcopy(settings)
 
