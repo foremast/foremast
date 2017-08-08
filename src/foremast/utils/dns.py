@@ -85,10 +85,10 @@ def update_dns_zone_record(env, zone_id, **kwargs):
                 HostedZoneId=zone_id,
                 ChangeBatch=json.loads(dns_json), )
             LOG.info('Upserted DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id, zone_name)
-        except botocore.exceptions.ClientError as e:
+        except botocore.exceptions.ClientError as error:
             LOG.info('Error creating DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id,
                      zone_name)
-            LOG.debug(e)
+            LOG.debug(error)
     else:
         LOG.info('Skipping creating DNS record %s in non-matching Hosted Zone %s (%s)', dns_name, zone_id, zone_name)
 
@@ -183,10 +183,10 @@ def update_failover_dns_record(env, zone_id, **kwargs):
                 ChangeBatch=json.loads(dns_json), )
             LOG.info('Upserted DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, kwargs['elb_aws_dns'],
                      zone_id, zone_name)
-        except botocore.exceptions.ClientError as e:
+        except botocore.exceptions.ClientError as error:
             LOG.info('Error creating DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name,
                      kwargs['elb_aws_dns'], zone_id, zone_name)
-            LOG.debug(e)
+            LOG.debug(error)
     else:
         LOG.info('Skipping creating DNS record %s in non-matching Hosted Zone %s (%s)', dns_name, zone_id, zone_name)
 

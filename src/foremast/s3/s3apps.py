@@ -124,8 +124,8 @@ class S3Apps(object):
         try:
             # Get current tags list, if no tags exist will get an exception.
             result = self.s3client.get_bucket_tagging(Bucket=self.bucket)['TagSet']
-        except ClientError as e:
-            LOG.warning(e)
+        except ClientError as error:
+            LOG.warning(error)
             result = []
 
         # Make simplified dictionary of tags from result
@@ -145,6 +145,6 @@ class S3Apps(object):
         try:
             self.s3client.get_bucket_location(Bucket=self.bucket)
             return True
-        except ClientError as e:
-            LOG.error(e)
+        except ClientError as error:
+            LOG.error(error)
             return False

@@ -108,8 +108,8 @@ class S3Deployment(object):
             raise S3ArtifactNotFound
         cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
                                                                                   self.s3_version_uri, self.env)
-        p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Upload Command Ouput: %s", p.stdout)
+        result = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
+        LOG.debug("Upload Command Ouput: %s", result.stdout)
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
     def _sync_to_latest(self):
