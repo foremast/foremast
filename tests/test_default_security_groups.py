@@ -26,7 +26,11 @@ def test_default_security_groups(mock_properties, mock_details):
 
     test_sg = {
         'myapp': [
-            {'start_port': '22', 'end_port': '22', 'protocol': 'tcp'},
+            {
+                'start_port': '22',
+                'end_port': '22',
+                'protocol': 'tcp'
+            },
         ]
     }
     with mock.patch.dict('foremast.securitygroup.create_securitygroup.DEFAULT_SECURITYGROUP_RULES', test_sg):

@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Create onetime Pipelines for Spinnaker.
 
 These are circumventions for redployments to a specific Environment in a Region.
@@ -34,19 +33,13 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
         onetime (str): Environment to build onetime pipeline for.
     """
 
-    def __init__(self,
-                 app='',
-                 trigger_job='',
-                 prop_path='',
-                 base='',
-                 onetime='',
-                 runway_dir=''):
-        super().__init__(app=app,
-                         trigger_job=trigger_job,
-                         prop_path=prop_path,
-                         base=base,
-                         runway_dir=runway_dir,
-                         )
+    def __init__(self, app='', trigger_job='', prop_path='', base='', onetime='', runway_dir=''):
+        super().__init__(
+            app=app,
+            trigger_job=trigger_job,
+            prop_path=prop_path,
+            base=base,
+            runway_dir=runway_dir, )
         self.environments = [onetime]
 
     def post_pipeline(self, pipeline):
@@ -63,8 +56,7 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
         pipeline_json = json.loads(pipeline_str)
 
         # Note pipeline name is manual
-        name = '{0} (onetime-{1})'.format(pipeline_json['name'],
-                                          self.environments[0])
+        name = '{0} (onetime-{1})'.format(pipeline_json['name'], self.environments[0])
         pipeline_json['name'] = name
 
         #Inject pipeline Id so that it does not override existing pipelines

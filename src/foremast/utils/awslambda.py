@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Lambda related utilities"""
 import logging
 import json
@@ -24,6 +23,7 @@ from ..exceptions import LambdaAliasDoesNotExist, LambdaFunctionDoesNotExist
 
 LOG = logging.getLogger(__name__)
 FOREMAST_PREFIX = "foremast-"
+
 
 def get_lambda_arn(app, account, region):
     """Get lambda ARN.
@@ -53,7 +53,8 @@ def get_lambda_arn(app, account, region):
 
     if not lambda_arn:
         LOG.fatal('Lambda function with name %s not found in %s %s', app, account, region)
-        raise LambdaFunctionDoesNotExist('Lambda function with name {0} not found in {1} {2}'.format(app, account, region))
+        raise LambdaFunctionDoesNotExist(
+            'Lambda function with name {0} not found in {1} {2}'.format(app, account, region))
 
     return lambda_arn
 
@@ -128,6 +129,7 @@ def add_lambda_permissions(function='',
     LOG.debug('Related StatementId (SID): %s', prefixed_sid)
     LOG.info(response_action)
 
+
 def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
     """removes all foremast-* permissions from lambda
 
@@ -156,8 +158,7 @@ def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
         LOG.debug("Found Policy: %s", response)
         for perm in policy_json['Statement']:
             if perm['Sid'].startswith(FOREMAST_PREFIX) or perm['Sid'].startswith(legacy_prefix):
-                lambda_client.remove_permission(FunctionName=arn,
-                                                StatementId=perm['Sid'])
+                lambda_client.remove_permission(FunctionName=arn, StatementId=perm['Sid'])
                 LOG.info('removed permission: %s', perm['Sid'])
             else:
                 LOG.info('Skipping deleting permission %s - Not managed by Foremast', perm['Sid'])

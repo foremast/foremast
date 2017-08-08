@@ -13,18 +13,13 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Generate base64 encoded User Data."""
 import base64
 
 from .templates import get_template
 
 
-def generate_encoded_user_data(env='dev',
-                               region='us-east-1',
-                               app_name='',
-                               group_name='',
-                               canary=False):
+def generate_encoded_user_data(env='dev', region='us-east-1', app_name='', group_name='', canary=False):
     r"""Generate base64 encoded User Data.
 
     Args:
@@ -53,13 +48,14 @@ def generate_encoded_user_data(env='dev',
         env_c, env_p, env_s = "prod", "prodp", "prods"
     else:
         env_c, env_p, env_s = env, env, env
-    user_data = get_template(template_file='infrastructure/user_data.sh.j2',
-                             env=env,
-                             env_c=env_c,
-                             env_p=env_p,
-                             env_s=env_s,
-                             region=region,
-                             app_name=app_name,
-                             group_name=group_name,
-                             canary=canary, )
+    user_data = get_template(
+        template_file='infrastructure/user_data.sh.j2',
+        env=env,
+        env_c=env_c,
+        env_p=env_p,
+        env_s=env_s,
+        region=region,
+        app_name=app_name,
+        group_name=group_name,
+        canary=canary, )
     return base64.b64encode(user_data.encode()).decode()

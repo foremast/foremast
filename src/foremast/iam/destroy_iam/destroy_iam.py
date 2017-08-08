@@ -51,21 +51,16 @@ def destroy_iam(app='', env='dev', **_):
         log_format='Removed user from group: %(UserName)s ~> %(GroupName)s',
         GroupName=details.group,
         UserName=details.user)
-    resource_action(client,
-                    action='delete_user',
-                    log_format='Destroyed user: %(UserName)s',
-                    UserName=details.user)
-    resource_action(client,
-                    action='delete_group',
-                    log_format='Destroyed group: %(GroupName)s',
-                    GroupName=details.group)
+    resource_action(client, action='delete_user', log_format='Destroyed user: %(UserName)s', UserName=details.user)
+    resource_action(client, action='delete_group', log_format='Destroyed group: %(GroupName)s', GroupName=details.group)
 
-    resource_action(client,
-                    action='remove_role_from_instance_profile',
-                    log_format='Destroyed Instance Profile from Role: '
-                    '%(InstanceProfileName)s ~> %(RoleName)s',
-                    InstanceProfileName=details.profile,
-                    RoleName=details.role)
+    resource_action(
+        client,
+        action='remove_role_from_instance_profile',
+        log_format='Destroyed Instance Profile from Role: '
+        '%(InstanceProfileName)s ~> %(RoleName)s',
+        InstanceProfileName=details.profile,
+        RoleName=details.role)
     resource_action(
         client,
         action='delete_instance_profile',
@@ -83,12 +78,13 @@ def destroy_iam(app='', env='dev', **_):
         LOG.info('Role %s not found.', details.role)
 
     for policy in role_policies:
-        resource_action(client,
-                        action='delete_role_policy',
-                        log_format='Removed Inline Policy from Role: '
-                        '%(PolicyName)s ~> %(RoleName)s',
-                        RoleName=details.role,
-                        PolicyName=policy)
+        resource_action(
+            client,
+            action='delete_role_policy',
+            log_format='Removed Inline Policy from Role: '
+            '%(PolicyName)s ~> %(RoleName)s',
+            RoleName=details.role,
+            PolicyName=policy)
 
     attached_role_policies = []
     try:
@@ -101,14 +97,12 @@ def destroy_iam(app='', env='dev', **_):
         LOG.info('Role %s not found.', details.role)
 
     for policy in attached_role_policies:
-        resource_action(client,
-                        action='detach_role_policy',
-                        log_format='Detached Policy from Role: '
-                        '%(PolicyArn)s ~> %(RoleName)s',
-                        RoleName=details.role,
-                        PolicyArn=policy['PolicyArn'])
+        resource_action(
+            client,
+            action='detach_role_policy',
+            log_format='Detached Policy from Role: '
+            '%(PolicyArn)s ~> %(RoleName)s',
+            RoleName=details.role,
+            PolicyArn=policy['PolicyArn'])
 
-    resource_action(client,
-                    action='delete_role',
-                    log_format='Destroyed Role: %(RoleName)s',
-                    RoleName=details.role)
+    resource_action(client, action='delete_role', log_format='Destroyed Role: %(RoleName)s', RoleName=details.role)

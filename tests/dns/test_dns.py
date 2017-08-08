@@ -26,10 +26,8 @@ from unittest.mock import patch, MagicMock
 @patch('foremast.dns.create_dns.get_details')
 def test_dns_creation(mock_get_details, mock_properties, mock_find_elb, mock_dns_zones, mock_update_dns):
     # mocked data
-    hosted_zones = [ 500, 501 ]
-    dns_elb = {
-        'elb': 'myapp.dev1.example.com'
-    }
+    hosted_zones = [500, 501]
+    dns_elb = {'elb': 'myapp.dev1.example.com'}
 
     # mock results
     mock_get_details.return_value.app_name.return_value = 'myapp'

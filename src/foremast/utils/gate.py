@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Dynamic Gate API interface.
 
 It is best to use a new Class Instance for each request unless something is
@@ -155,8 +154,8 @@ class Gate(object):
 
         response = getattr(requests, self.verb)(url.url, **request_kwargs)
 
-        assert response.ok, 'Gate API {0} request to {1} failed: {2}'.format(
-            self.verb.upper(), self.path, response.text)
+        assert response.ok, 'Gate API {0} request to {1} failed: {2}'.format(self.verb.upper(), self.path,
+                                                                             response.text)
 
         LOG.debug('Gate response: %s', response.text)
 

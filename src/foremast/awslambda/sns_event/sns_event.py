@@ -42,13 +42,14 @@ def create_sns_event(app_name, env, region, rules):
 
     statement_id = '{}_sns_{}'.format(app_name, topic_name)
     principal = 'sns.amazonaws.com'
-    add_lambda_permissions(function=lambda_alias_arn,
-                           statement_id=statement_id,
-                           action='lambda:InvokeFunction',
-                           principal=principal,
-                           source_arn=topic_arn,
-                           env=env,
-                           region=region)
+    add_lambda_permissions(
+        function=lambda_alias_arn,
+        statement_id=statement_id,
+        action='lambda:InvokeFunction',
+        principal=principal,
+        source_arn=topic_arn,
+        env=env,
+        region=region)
 
     sns_client.subscribe(TopicArn=topic_arn, Protocol=protocol, Endpoint=lambda_alias_arn)
     LOG.debug("SNS Lambda event created")

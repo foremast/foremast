@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Get security group id"""
 import logging
 
@@ -48,11 +47,8 @@ def get_security_group_id(name='', env='', region=''):
 
     LOG.info('Find %s sg in %s [%s] in %s', name, env, region, vpc_id)
 
-    url = '{0}/securityGroups/{1}/{2}/{3}?vpcId={4}'.format(
-        API_URL, env, region, name, vpc_id)
-    response = requests.get(url,
-                            verify=GATE_CA_BUNDLE,
-                            cert=GATE_CLIENT_CERT)
+    url = '{0}/securityGroups/{1}/{2}/{3}?vpcId={4}'.format(API_URL, env, region, name, vpc_id)
+    response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
     assert response.ok
 
     result = response.json()

@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Construct a block section of Stages in a Spinnaker Pipeline."""
 import copy
 import json
@@ -26,11 +25,11 @@ LOG = logging.getLogger(__name__)
 
 
 def construct_pipeline_block_s3(env='',
-                             generated=None,
-                             previous_env=None,
-                             region='us-east-1',
-                             settings=None,
-                             pipeline_data=None):
+                                generated=None,
+                                previous_env=None,
+                                region='us-east-1',
+                                settings=None,
+                                pipeline_data=None):
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -57,10 +56,7 @@ def construct_pipeline_block_s3(env='',
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
     gen_app_name = generated.app_name()
-    user_data = generate_encoded_user_data(env=env,
-                                           region=region,
-                                           app_name=gen_app_name,
-                                           group_name=generated.project)
+    user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project)
 
     data = copy.deepcopy(settings)
 

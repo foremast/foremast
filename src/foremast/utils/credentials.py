@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Retrieve Account Credential from Gate API."""
 import logging
 
@@ -74,9 +73,7 @@ def get_env_credential(env='dev'):
     """
     url = murl.Url(API_URL)
     url.path = '/'.join(['credentials', env])
-    credential_response = requests.get(url.url,
-                                       verify=GATE_CA_BUNDLE,
-                                       cert=GATE_CLIENT_CERT)
+    credential_response = requests.get(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     assert credential_response.ok, 'Could not get credentials from Spinnaker.'
 

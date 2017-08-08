@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Get VPC ID."""
 import logging
 
@@ -36,9 +35,7 @@ def get_vpc_id(account, region):
         str: ID for the requested _account_ in _region_.
     """
     url = '{0}/vpcs'.format(API_URL)
-    response = requests.get(url,
-                            verify=GATE_CA_BUNDLE,
-                            cert=GATE_CLIENT_CERT)
+    response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     if not response.ok:
         raise SpinnakerVPCNotFound(response.text)
@@ -47,18 +44,12 @@ def get_vpc_id(account, region):
 
     for vpc in vpcs:
         LOG.debug('VPC: %(name)s, %(account)s, %(region)s => %(id)s', vpc)
-        if all([
-                vpc['name'] == 'vpc',
-                vpc['account'] == account,
-                vpc['region'] == region
-        ]):
-            LOG.info('Found VPC ID for %s in %s: %s', account, region,
-                     vpc['id'])
+        if all([vpc['name'] == 'vpc', vpc['account'] == account, vpc['region'] == region]):
+            LOG.info('Found VPC ID for %s in %s: %s', account, region, vpc['id'])
             vpc_id = vpc['id']
             break
     else:
         LOG.fatal('VPC list: %s', vpcs)
-        raise SpinnakerVPCIDNotFound('No VPC available for {0} [{1}].'.format(
-            account, region))
+        raise SpinnakerVPCIDNotFound('No VPC available for {0} [{1}].'.format(account, region))
 
     return vpc_id

@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Deletes existing scaling policy on application and then creates
 new Autoscaling Policy based on provided configurations
 
@@ -44,10 +43,7 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    asgpolicy = AutoScalingPolicy(app=args.app,
-                                  prop_path=args.properties,
-                                  env=args.env,
-                                  region=args.region)
+    asgpolicy = AutoScalingPolicy(app=args.app, prop_path=args.properties, env=args.env, region=args.region)
 
     asgpolicy.create_policy()
 

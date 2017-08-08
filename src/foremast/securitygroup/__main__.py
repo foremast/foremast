@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """CLI entry point for security group creaation
 
 Help: ``python -m src.foremast.securitygroup -h``
@@ -43,10 +42,7 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    spinnakerapps = SpinnakerSecurityGroup(app=args.app,
-                                           env=args.env,
-                                           region=args.region,
-                                           prop_path=args.properties)
+    spinnakerapps = SpinnakerSecurityGroup(app=args.app, env=args.env, region=args.region, prop_path=args.properties)
     spinnakerapps.create_security_group()
 
 

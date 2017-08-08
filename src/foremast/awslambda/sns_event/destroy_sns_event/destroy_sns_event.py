@@ -40,9 +40,7 @@ def destroy_sns_event(app_name, env, region):
     lambda_subscriptions = get_sns_subscriptions(app_name=app_name, env=env, region=region)
 
     for subscription_arn in lambda_subscriptions:
-        sns_client.unsubscribe(
-            SubscriptionArn=subscription_arn
-        )
+        sns_client.unsubscribe(SubscriptionArn=subscription_arn)
 
     LOG.debug("Lambda SNS event deleted")
     return True

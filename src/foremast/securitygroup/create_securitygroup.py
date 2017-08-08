@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Create Security Groups for Spinnaker Pipelines.
 
 Security Group port specifications will be sourced from the `application.json`
@@ -47,11 +46,10 @@ import boto3
 from boto3.exceptions import botocore
 
 from ..consts import DEFAULT_SECURITYGROUP_RULES
-from ..exceptions import (ForemastConfigurationFileError,
-                          SpinnakerSecurityGroupCreationFailed,
+from ..exceptions import (ForemastConfigurationFileError, SpinnakerSecurityGroupCreationFailed,
                           SpinnakerSecurityGroupError)
-from ..utils import (get_properties, get_security_group_id, get_template,
-                     get_vpc_id, wait_for_task, warn_user, get_details)
+from ..utils import (get_properties, get_security_group_id, get_template, get_vpc_id, wait_for_task, warn_user,
+                     get_details)
 
 
 class SpinnakerSecurityGroup(object):
@@ -92,8 +90,7 @@ class SpinnakerSecurityGroup(object):
             raise SpinnakerSecurityGroupCreationFailed(error)
 
         if network.prefixlen < 13:
-            msg = 'The network range ({0}) specified is too open.'.format(rule[
-                'app'])
+            msg = 'The network range ({0}) specified is too open.'.format(rule['app'])
             raise SpinnakerSecurityGroupCreationFailed(msg)
 
         return True
@@ -129,8 +126,7 @@ class SpinnakerSecurityGroup(object):
         Returns:
             True: Upon successful completion.
         """
-        session = boto3.session.Session(profile_name=self.env,
-                                        region_name=self.region)
+        session = boto3.session.Session(profile_name=self.env, region_name=self.region)
         resource = session.resource('ec2')
         group_id = get_security_group_id(self.app_name, self.env, self.region)
         security_group = resource.SecurityGroup(group_id)
@@ -138,17 +134,13 @@ class SpinnakerSecurityGroup(object):
         try:
             tag = security_group.create_tags(
                 DryRun=False,
-                Tags=[
-                    {
-                        'Key': 'app_group',
-                        'Value': self.group
-                    },
-                    {
-                        'Key': 'app_name',
-                        'Value': self.app_name
-                    }
-                ]
-            )
+                Tags=[{
+                    'Key': 'app_group',
+                    'Value': self.group
+                }, {
+                    'Key': 'app_name',
+                    'Value': self.app_name
+                }])
             self.log.debug('Security group has been tagged: %s', tag)
         except botocore.exceptions.ClientError as error:
             self.log.warning(error)
@@ -168,28 +160,25 @@ class SpinnakerSecurityGroup(object):
             SpinnakerSecurityGroupError: boto3 call failed to add CIDR block to
                 Security Group.
         """
-        session = boto3.session.Session(profile_name=self.env,
-                                        region_name=self.region)
+        session = boto3.session.Session(profile_name=self.env, region_name=self.region)
         client = session.client('ec2')
 
         group_id = get_security_group_id(self.app_name, self.env, self.region)
 
         for rule in rules:
             data = {
-                'DryRun': False,
-                'GroupId': group_id,
-                'IpPermissions': [
-                    {
-                        'IpProtocol': rule['protocol'],
-                        'FromPort': rule['start_port'],
-                        'ToPort': rule['end_port'],
-                        'IpRanges': [
-                            {
-                                'CidrIp': rule['app']
-                            }
-                        ]
-                    }
-                ]
+                'DryRun':
+                False,
+                'GroupId':
+                group_id,
+                'IpPermissions': [{
+                    'IpProtocol': rule['protocol'],
+                    'FromPort': rule['start_port'],
+                    'ToPort': rule['end_port'],
+                    'IpRanges': [{
+                        'CidrIp': rule['app']
+                    }]
+                }]
             }
             self.log.debug('Security Group rule: %s', data)
 
@@ -234,9 +223,8 @@ class SpinnakerSecurityGroup(object):
             rules = ingress[app]
 
             if app in ('app_a', 'app_b'):
-                msg = (
-                    'Using "{0}" in your security group will be ignored. '
-                    'Please remove them to suppress this warning.').format(app)
+                msg = ('Using "{0}" in your security group will be ignored. '
+                       'Please remove them to suppress this warning.').format(app)
                 warn_user(msg)
                 continue
 
@@ -259,8 +247,7 @@ class SpinnakerSecurityGroup(object):
                     cross_account_vpc_id = None
 
                 if cross_account_env:
-                    cross_account_vpc_id = get_vpc_id(cross_account_env,
-                                                      self.region)
+                    cross_account_vpc_id = get_vpc_id(cross_account_env, self.region)
 
                 ingress_rules.append({
                     'app': app,
@@ -271,8 +258,7 @@ class SpinnakerSecurityGroup(object):
                     'cross_account_vpc_id': cross_account_vpc_id
                 })
 
-        ingress_rules_no_cidr, ingress_rules_cidr = self._process_rules(
-            ingress_rules)
+        ingress_rules_no_cidr, ingress_rules_cidr = self._process_rules(ingress_rules)
 
         template_kwargs = {
             'app': self.app_name,
@@ -283,9 +269,7 @@ class SpinnakerSecurityGroup(object):
             'ingress': ingress_rules_no_cidr,
         }
 
-        secgroup_json = get_template(
-            template_file='infrastructure/securitygroup_data.json.j2',
-            **template_kwargs)
+        secgroup_json = get_template(template_file='infrastructure/securitygroup_data.json.j2', **template_kwargs)
 
         wait_for_task(secgroup_json)
 

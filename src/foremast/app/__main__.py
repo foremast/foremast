@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """CLI entry point for creating a Spinnaker application.
 
 Help: ``python -m src.foremast.app -h``
@@ -34,15 +33,10 @@ def main():
     parser = argparse.ArgumentParser()
     add_debug(parser)
     add_app(parser)
-    parser.add_argument('--email',
-                        help='Email address to associate with application',
-                        default='PS-DevOpsTooling@example.com')
-    parser.add_argument('--project',
-                        help='Git project to associate with application',
-                        default='None')
-    parser.add_argument('--repo',
-                        help='Git repo to associate with application',
-                        default='None')
+    parser.add_argument(
+        '--email', help='Email address to associate with application', default='PS-DevOpsTooling@example.com')
+    parser.add_argument('--project', help='Git project to associate with application', default='None')
+    parser.add_argument('--repo', help='Git repo to associate with application', default='None')
     parser.add_argument('--git', help='Git URI', default=None)
     args = parser.parse_args()
 
@@ -58,10 +52,7 @@ def main():
         project = args.project
         repo = args.repo
 
-    spinnakerapps = SpinnakerApp(app=args.app,
-                                 email=args.email,
-                                 project=project,
-                                 repo=repo)
+    spinnakerapps = SpinnakerApp(app=args.app, email=args.email, project=project, repo=repo)
     spinnakerapps.create_app()
 
 

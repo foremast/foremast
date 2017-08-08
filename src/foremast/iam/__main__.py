@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """CLI entry point to create IAM Instance Profiles, Roles, Users, and Groups.
 
 Help: ``python -m src.foremast.iam -h``

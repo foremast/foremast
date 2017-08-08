@@ -21,8 +21,7 @@ import boto3
 from tryagain import retries
 
 from ..exceptions import RequiredKeyNotFound
-from ..utils import (get_details, get_lambda_arn, get_properties, get_role_arn,
-                     get_security_group_id, get_subnets)
+from ..utils import (get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets)
 
 LOG = logging.getLogger(__name__)
 
@@ -139,8 +138,7 @@ class LambdaFunction(object):
                 FunctionName=self.app_name,
                 Name=self.env,
                 FunctionVersion='$LATEST',
-                Description='Alias for {}'.format(self.env)
-            )
+                Description='Alias for {}'.format(self.env))
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             LOG.debug('Create alias error: %s', error)
             LOG.info("Alias creation failed. Retrying...")
@@ -152,11 +150,7 @@ class LambdaFunction(object):
         LOG.info('Updating alias %s to point to $LATEST', self.env)
 
         try:
-            self.lambda_client.update_alias(
-                FunctionName=self.app_name,
-                Name=self.env,
-                FunctionVersion='$LATEST'
-            )
+            self.lambda_client.update_alias(FunctionName=self.app_name, Name=self.env, FunctionVersion='$LATEST')
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             LOG.debug('Update alias error: %s', error)
             LOG.info("Alias update failed. Retrying...")
@@ -182,8 +176,7 @@ class LambdaFunction(object):
                 Description=self.description,
                 Timeout=int(self.timeout),
                 MemorySize=int(self.memory),
-                VpcConfig=vpc_config
-            )
+                VpcConfig=vpc_config)
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
@@ -194,12 +187,7 @@ class LambdaFunction(object):
         LOG.info('Updating Lambda function tags')
 
         lambda_arn = get_lambda_arn(self.app_name, self.env, self.region)
-        self.lambda_client.tag_resource(
-            Resource=lambda_arn,
-            Tags={
-                'app_group': self.group,
-                'app_name': self.app_name
-            })
+        self.lambda_client.tag_resource(Resource=lambda_arn, Tags={'app_group': self.group, 'app_name': self.app_name})
 
         LOG.info("Successfully updated Lambda configuration.")
 
@@ -232,18 +220,14 @@ class LambdaFunction(object):
                 Runtime=self.runtime,
                 Role=self.role_arn,
                 Handler=self.handler,
-                Code={
-                    'ZipFile': contents
-                },
+                Code={'ZipFile': contents},
                 Description=self.description,
                 Timeout=int(self.timeout),
                 MemorySize=int(self.memory),
                 Publish=False,
                 VpcConfig=vpc_config,
-                Tags={
-                    'app_group': self.group,
-                    'app_name': self.app_name
-                })
+                Tags={'app_group': self.group,
+                      'app_name': self.app_name})
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)

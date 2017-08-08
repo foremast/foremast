@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Destroy any cloudwatch log events."""
 import logging
 
@@ -38,9 +37,6 @@ def destroy_cloudwatch_log_event(app='', env='dev', region=''):
 
     # FIXME: see below
     # TODO: Log group name is required, where do we get it if it is not in application-master-env.json?
-    cloudwatch_client.delete_subscription_filter(
-        logGroupName='/aws/lambda/awslimitchecker',
-        filterName=app
-    )
+    cloudwatch_client.delete_subscription_filter(logGroupName='/aws/lambda/awslimitchecker', filterName=app)
 
     return True

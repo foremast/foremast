@@ -13,14 +13,13 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Destroy Security Group Resources."""
 import logging
 
 import requests
 
 from ...consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
-from ...utils import Gate, get_template, get_vpc_id, wait_for_task 
+from ...utils import Gate, get_template, get_vpc_id, wait_for_task
 
 LOG = logging.getLogger(__name__)
 
@@ -39,27 +38,18 @@ def destroy_sg(app='', env='', region='', **_):
     vpc = get_vpc_id(account=env, region=region)
 
     try:
-        url = '{api}/securityGroups/{env}/{region}/{app}'.format(
-            api=API_URL, env=env, region=region, app=app)
+        url = '{api}/securityGroups/{env}/{region}/{app}'.format(api=API_URL, env=env, region=region, app=app)
         payload = {'vpcId': vpc}
-        security_group = requests.get(url,
-                                      params=payload,
-                                      verify=GATE_CA_BUNDLE,
-                                      cert=GATE_CLIENT_CERT)
+        security_group = requests.get(url, params=payload, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
     except AssertionError:
         raise
 
     if not security_group:
         LOG.info('Nothing to delete.')
     else:
-        LOG.info('Found Security Group in %(region)s: %(name)s',
-                 security_group)
+        LOG.info('Found Security Group in %(region)s: %(name)s', security_group)
 
-        destroy_request = get_template('destroy/destroy_sg.json.j2',
-                                       app=app,
-                                       env=env,
-                                       region=region,
-                                       vpc=vpc)
+        destroy_request = get_template('destroy/destroy_sg.json.j2', app=app, env=env, region=region, vpc=vpc)
         wait_for_task(destroy_request)
 
     return True

@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Create Lambda event triggers."""
 import logging
 
@@ -66,6 +65,6 @@ class LambdaEvent(object):
                 create_cloudwatch_log_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
             if trigger['type'] == 'api-gateway':
-                apigateway = APIGateway(app=self.app_name, env=self.env, region=self.region, rules=trigger,
-                                        prop_path=self.prop_path)
+                apigateway = APIGateway(
+                    app=self.app_name, env=self.env, region=self.region, rules=trigger, prop_path=self.prop_path)
                 apigateway.setup_lambda_api()

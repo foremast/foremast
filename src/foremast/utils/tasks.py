@@ -12,14 +12,13 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """POST a new task or check status of running task"""
 from functools import partial
 import json
 import logging
 
 import requests
-from tryagain import call as retry_call 
+from tryagain import call as retry_call
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, HEADERS, DEFAULT_TASK_TIMEOUT, TASK_TIMEOUTS
 from ..exceptions import SpinnakerTaskError, SpinnakerTaskInconclusiveError
@@ -44,17 +43,12 @@ def post_task(task_data):
     else:
         task_json = json.dumps(task_data)
 
-    resp = requests.post(url,
-                         data=task_json,
-                         headers=HEADERS,
-                         verify=GATE_CA_BUNDLE,
-                         cert=GATE_CLIENT_CERT)
+    resp = requests.post(url, data=task_json, headers=HEADERS, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
     resp_json = resp.json()
 
     LOG.debug(resp_json)
 
-    assert resp.ok, 'Spinnaker communication error: {0}'.format(
-        resp.text)
+    assert resp.ok, 'Spinnaker communication error: {0}'.format(resp.text)
 
     return resp_json['ref']
 
@@ -78,15 +72,11 @@ def _check_task(taskid):
     LOG.info('Checking taskid %s', taskid)
 
     url = '{}/tasks/{}'.format(API_URL, taskid)
-    task_response = requests.get(url,
-                                 headers=HEADERS,
-                                 verify=GATE_CA_BUNDLE,
-                                 cert=GATE_CLIENT_CERT)
+    task_response = requests.get(url, headers=HEADERS, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     LOG.debug(task_response.json())
 
-    assert task_response.ok, 'Spinnaker communication error: {0}'.format(
-        task_response.text)
+    assert task_response.ok, 'Spinnaker communication error: {0}'.format(task_response.text)
 
     task_state = task_response.json()
     status = task_state['status']
@@ -140,7 +130,7 @@ def wait_for_task(task_data):
     taskid = post_task(task_data)
 
     if isinstance(task_data, str):
-        json_data = json.loads(task_data) 
+        json_data = json.loads(task_data)
     else:
         json_data = task_data
 

@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Renumerate the Pipeline Stages."""
 import logging
 
@@ -57,14 +56,13 @@ def renumerate_stages(pipeline):
                 branch_index += 1
             else:
                 branch_index = 0
-            stage['refId'] = str((main_index*100)+branch_index)
+            stage['refId'] = str((main_index * 100) + branch_index)
             stage['requisiteStageRefIds'] = [str(main_index)]
         elif current_refId == 'merge':
             # ToDo: Added logic to handle merge stages.
             pass
 
         previous_refId = current_refId
-        LOG.debug('step=%(name)s\trefId=%(refId)s\t'
-                  'requisiteStageRefIds=%(requisiteStageRefIds)s', stage)
+        LOG.debug('step=%(name)s\trefId=%(refId)s\t' 'requisiteStageRefIds=%(requisiteStageRefIds)s', stage)
 
     return pipeline

@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Load base config and export package constants.
 
 The ``foremast`` configuration file is read from the following locations in
@@ -188,6 +187,7 @@ def _generate_security_groups(config_key):
 
     LOG.debug('Generated security group: %s', entries)
     return entries
+
 
 config = find_config()
 

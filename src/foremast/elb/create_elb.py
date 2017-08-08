@@ -156,9 +156,8 @@ class SpinnakerELB:
                     policies.append(stickiness.get(ext_port))
                 if policies:
                     log.info('Adding listener policies: %s', policies)
-                    elbclient.set_load_balancer_policies_of_listener(LoadBalancerName=self.app,
-                                                                     LoadBalancerPort=ext_port,
-                                                                     PolicyNames=policies)
+                    elbclient.set_load_balancer_policies_of_listener(
+                        LoadBalancerName=self.app, LoadBalancerPort=ext_port, PolicyNames=policies)
 
     def add_backend_policy(self, json_data):
         """Attaches backend server policies to an ELB
@@ -176,9 +175,8 @@ class SpinnakerELB:
                 backend_policy_list = listener['backendPolicies']
                 if backend_policy_list:
                     log.info('Adding backend server policies: %s', backend_policy_list)
-                    elbclient.set_load_balancer_policies_for_backend_server(LoadBalancerName=self.app,
-                                                                            InstancePort=instance_port,
-                                                                            PolicyNames=backend_policy_list)
+                    elbclient.set_load_balancer_policies_for_backend_server(
+                        LoadBalancerName=self.app, InstancePort=instance_port, PolicyNames=backend_policy_list)
 
     def add_stickiness(self):
         """ Adds stickiness policy to created ELB
@@ -204,20 +202,17 @@ class SpinnakerELB:
                     cookiename = listener['stickiness']['cookie_name']
                     policy_key = cookiename.replace('.', '')
                     policyname = policyname_tmp.format(self.app, sticky_type, externalport, policy_key)
-                    elbclient.create_app_cookie_stickiness_policy(LoadBalancerName=self.app,
-                                                                  PolicyName=policyname,
-                                                                  CookieName=cookiename)
+                    elbclient.create_app_cookie_stickiness_policy(
+                        LoadBalancerName=self.app, PolicyName=policyname, CookieName=cookiename)
                     stickiness_dict[externalport] = policyname
                 elif sticky_type == 'elb':
                     cookie_ttl = listener['stickiness'].get('cookie_ttl', None)
                     policyname = policyname_tmp.format(self.app, sticky_type, externalport, cookie_ttl)
                     if cookie_ttl:
-                        elbclient.create_lb_cookie_stickiness_policy(LoadBalancerName=self.app,
-                                                                     PolicyName=policyname,
-                                                                     CookieExpirationPeriod=cookie_ttl)
+                        elbclient.create_lb_cookie_stickiness_policy(
+                            LoadBalancerName=self.app, PolicyName=policyname, CookieExpirationPeriod=cookie_ttl)
                     else:
-                        elbclient.create_lb_cookie_stickiness_policy(LoadBalancerName=self.app,
-                                                                     PolicyName=policyname)
+                        elbclient.create_lb_cookie_stickiness_policy(LoadBalancerName=self.app, PolicyName=policyname)
                     stickiness_dict[externalport] = policyname
         return stickiness_dict
 
@@ -250,8 +245,7 @@ class SpinnakerELB:
             }
             if elb_settings.get('connection_draining_timeout'):
                 connection_draining_timeout = int(elb_settings['connection_draining_timeout'])
-                log.info('Applying Custom Load Balancer Connection Draining Timeout: %d',
-                         connection_draining_timeout)
+                log.info('Applying Custom Load Balancer Connection Draining Timeout: %d', connection_draining_timeout)
                 load_balancer_attributes['ConnectionDraining'] = {
                     'Enabled': True,
                     'Timeout': connection_draining_timeout
@@ -259,17 +253,13 @@ class SpinnakerELB:
             if elb_settings.get('idle_timeout'):
                 idle_timeout = int(elb_settings['idle_timeout'])
                 log.info('Applying Custom Load Balancer Idle Timeout: %d', idle_timeout)
-                load_balancer_attributes['ConnectionSettings'] = {
-                    'IdleTimeout': idle_timeout
-                }
+                load_balancer_attributes['ConnectionSettings'] = {'IdleTimeout': idle_timeout}
             if elb_settings.get('access_log'):
                 access_log_bucket_name = elb_settings['access_log']['bucket_name']
                 access_log_bucket_prefix = elb_settings['access_log']['bucket_prefix']
                 access_log_emit_interval = int(elb_settings['access_log']['emit_interval'])
-                log.info('Applying Custom Load Balancer Access Log: %s/%s every %d minutes',
-                         access_log_bucket_name,
-                         access_log_bucket_prefix,
-                         access_log_emit_interval)
+                log.info('Applying Custom Load Balancer Access Log: %s/%s every %d minutes', access_log_bucket_name,
+                         access_log_bucket_prefix, access_log_emit_interval)
                 load_balancer_attributes['AccessLog'] = {
                     'Enabled': True,
                     'S3BucketName': access_log_bucket_name,
@@ -279,5 +269,5 @@ class SpinnakerELB:
 
             log.info('Applying Load Balancer Attributes')
             log.debug('Load Balancer Attributes:\n%s', pformat(load_balancer_attributes))
-            elbclient.modify_load_balancer_attributes(LoadBalancerName=self.app,
-                                                      LoadBalancerAttributes=load_balancer_attributes)
+            elbclient.modify_load_balancer_attributes(
+                LoadBalancerName=self.app, LoadBalancerAttributes=load_balancer_attributes)

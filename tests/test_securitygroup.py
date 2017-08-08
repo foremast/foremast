@@ -91,4 +91,3 @@ def test_tags(get_details, get_security_group_id, get_properties, boto3):
 
     security_group = SpinnakerSecurityGroup()
     assert security_group.add_tags() is True
-

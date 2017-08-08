@@ -13,7 +13,5 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Package for managing the creation and attachment of AWS scaling policies"""
 from .create_policy import AutoScalingPolicy
-

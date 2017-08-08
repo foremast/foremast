@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Package for managing security groups in AWS"""
 from .create_securitygroup import SpinnakerSecurityGroup
 from .destroy_sg import *

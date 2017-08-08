@@ -81,7 +81,9 @@ def update_dns_zone_record(env, zone_id, **kwargs):
         LOG.info('Attempting to create DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id,
                  zone_name)
         try:
-            response = client.change_resource_record_sets(HostedZoneId=zone_id, ChangeBatch=json.loads(dns_json), )
+            response = client.change_resource_record_sets(
+                HostedZoneId=zone_id,
+                ChangeBatch=json.loads(dns_json), )
             LOG.info('Upserted DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id, zone_name)
         except botocore.exceptions.ClientError as e:
             LOG.info('Error creating DNS record %s (%s) in Hosted Zone %s (%s)', dns_name, dns_name_aws, zone_id,
@@ -91,6 +93,7 @@ def update_dns_zone_record(env, zone_id, **kwargs):
         LOG.info('Skipping creating DNS record %s in non-matching Hosted Zone %s (%s)', dns_name, zone_id, zone_name)
 
     LOG.debug('Route53 JSON Response: \n%s', pformat(response))
+
 
 def find_existing_record(env, zone_id, dns_name, check_key=None, check_value=None):
     """Checks if a specific DNS record exists
@@ -116,6 +119,7 @@ def find_existing_record(env, zone_id, dns_name, check_key=None, check_value=Non
                     break
     return existingrecord
 
+
 def delete_existing_cname(env, zone_id, dns_name):
     """Function to delete an existing CNAME record. This is
     used when updating to multi-region for deleting old records.
@@ -133,15 +137,11 @@ def delete_existing_cname(env, zone_id, dns_name):
     if startrecord:
         LOG.info("Deleting old record: %s", newrecord_name)
         del_response = client.change_resource_record_sets(
-            HostedZoneId=zone_id,
-            ChangeBatch={
-                'Changes': [
-                    {
-                        'Action': 'DELETE',
-                        'ResourceRecordSet': startrecord
-                    }]
-            }
-        )
+            HostedZoneId=zone_id, ChangeBatch={'Changes': [{
+                'Action': 'DELETE',
+                'ResourceRecordSet': startrecord
+            }]})
+
 
 def update_failover_dns_record(env, zone_id, **kwargs):
     """Create a Failover Route53 alias record in _env_ zone.
@@ -178,7 +178,9 @@ def update_failover_dns_record(env, zone_id, **kwargs):
                  kwargs['elb_aws_dns'], zone_id, zone_name)
         try:
             delete_existing_cname(env, zone_id, dns_name)
-            response = client.change_resource_record_sets(HostedZoneId=zone_id, ChangeBatch=json.loads(dns_json), )
+            response = client.change_resource_record_sets(
+                HostedZoneId=zone_id,
+                ChangeBatch=json.loads(dns_json), )
             LOG.info('Upserted DNS Failover record %s (%s) in Hosted Zone %s (%s)', dns_name, kwargs['elb_aws_dns'],
                      zone_id, zone_name)
         except botocore.exceptions.ClientError as e:

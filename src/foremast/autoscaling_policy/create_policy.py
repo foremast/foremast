@@ -135,19 +135,19 @@ class AutoScalingPolicy:
         """
         self.log.info("Deleting policy %s on %s", scaling_policy['policyName'], server_group)
         delete_dict = {
-            "application": self.app,
-            "description": "Delete scaling policy",
-            "job": [
-                {
-                    "policyName": scaling_policy['policyName'],
-                    "serverGroupName": server_group,
-                    "credentials": self.env,
-                    "region": self.region,
-                    "provider": "aws",
-                    "type": "deleteScalingPolicy",
-                    "user": "pipes-autoscaling-policy"
-                }
-            ]
+            "application":
+            self.app,
+            "description":
+            "Delete scaling policy",
+            "job": [{
+                "policyName": scaling_policy['policyName'],
+                "serverGroupName": server_group,
+                "credentials": self.env,
+                "region": self.region,
+                "provider": "aws",
+                "type": "deleteScalingPolicy",
+                "user": "pipes-autoscaling-policy"
+            }]
         }
         wait_for_task(json.dumps(delete_dict))
 

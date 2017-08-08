@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Add the appropriate ELB Listeners."""
 import json
 import logging
@@ -153,8 +152,8 @@ def format_cert_name(env='', account='', certificate=None):
                 cert_name = generated_cert_name
             else:
                 LOG.info("Using default certificate name logic")
-                cert_name = ('arn:aws:iam::{account}:server-certificate/{name}'.format(account=account,
-                                                                                       name=certificate))
+                cert_name = ('arn:aws:iam::{account}:server-certificate/{name}'.format(
+                    account=account, name=certificate))
     LOG.debug('Certificate name: %s', cert_name)
 
     return cert_name
@@ -173,10 +172,7 @@ def generate_custom_cert_name(env='', account='', certificate=None):
         None: Template doesn't exist.
     """
     cert_name = None
-    template_kwargs = {
-        'account': account,
-        'name': certificate
-    }
+    template_kwargs = {'account': account, 'name': certificate}
 
     # TODO: Investigate moving this to a remote API, then fallback to local file if unable to connect
     try:

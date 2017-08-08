@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Check Pipeline name to match format."""
 import logging
 
@@ -73,9 +72,7 @@ def get_all_pipelines(app=''):
     """
     url = murl.Url(API_URL)
     url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
-    response = requests.get(url.url,
-                            verify=GATE_CA_BUNDLE,
-                            cert=GATE_CLIENT_CERT)
+    response = requests.get(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     assert response.ok, 'Could not retrieve Pipelines for {0}.'.format(app)
 

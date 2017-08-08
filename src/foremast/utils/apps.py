@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Application related utilities"""
 import logging
 
@@ -36,9 +35,7 @@ def get_all_apps():
     LOG.info('Retreiving list of all Spinnaker applications')
     url = murl.Url(API_URL)
     url.path = 'applications'
-    response = requests.get(url.url,
-                            verify=GATE_CA_BUNDLE,
-                            cert=GATE_CLIENT_CERT)
+    response = requests.get(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     assert response.ok, 'Could not retrieve application list'
 
@@ -62,9 +59,7 @@ def get_details(app='groupproject', env='dev', region='us-east-1'):
     api = murl.Url(API_URL)
     api.path = 'applications/{app}'.format(app=app)
 
-    request = requests.get(api.url,
-                           verify=GATE_CA_BUNDLE,
-                           cert=GATE_CLIENT_CERT)
+    request = requests.get(api.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     if not request.ok:
         raise SpinnakerAppNotFound('"{0}" not found.'.format(app))
@@ -74,8 +69,7 @@ def get_details(app='groupproject', env='dev', region='us-east-1'):
     LOG.debug('App details: %s', app_details)
     group = app_details['attributes'].get('repoProjectKey')
     project = app_details['attributes'].get('repoSlug')
-    generated = gogoutils.Generator(group, project, env=env,
-                                    region=region, formats=APP_FORMATS)
+    generated = gogoutils.Generator(group, project, env=env, region=region, formats=APP_FORMATS)
 
     LOG.debug('Application details: %s', generated)
     return generated

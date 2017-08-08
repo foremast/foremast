@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Test create_pipeline functionality"""
 
 import pytest
@@ -21,26 +20,30 @@ from unittest import mock
 
 from foremast.pipeline import SpinnakerPipeline
 
-
-TEST_SETTINGS = { 
-        'dev': {
-                'app': 
-                    {'app_description': 'Test App Demo application'},
-                'deploy_strategy': 'highlander',
-                'regions': ['us-east-1'],
+TEST_SETTINGS = {
+    'dev': {
+        'app': {
+            'app_description': 'Test App Demo application'
         },
-        'pipeline': {
-                'base': 'tomcat8',
-                'config_commit': '',
-                'deployment': 'spinnaker',
-                'documentation': '',
-                'env': ['dev'],
-                'eureka': True,
-                'image': {'builder': 'ebs', 'root_volume_size': 6},
-                'regions': ['us-east-1', 'us-west-2'],
-                'type': 'ec2'
-        }
+        'deploy_strategy': 'highlander',
+        'regions': ['us-east-1'],
+    },
+    'pipeline': {
+        'base': 'tomcat8',
+        'config_commit': '',
+        'deployment': 'spinnaker',
+        'documentation': '',
+        'env': ['dev'],
+        'eureka': True,
+        'image': {
+            'builder': 'ebs',
+            'root_volume_size': 6
+        },
+        'regions': ['us-east-1', 'us-west-2'],
+        'type': 'ec2'
+    }
 }
+
 
 @mock.patch('foremast.pipeline.create_pipeline.get_properties')
 @mock.patch('foremast.pipeline.create_pipeline.get_details')
@@ -49,11 +52,14 @@ TEST_SETTINGS = {
 def spinnaker_pipeline(mock_os, mock_get_details, mock_get_prop):
     """Sets up pipeline fixture object"""
     mock_get_prop.return_value = TEST_SETTINGS
-    pipelineObj = SpinnakerPipeline(app='appgroup', trigger_job='a_group_app', )
+    pipelineObj = SpinnakerPipeline(
+        app='appgroup',
+        trigger_job='a_group_app', )
     pipelineObj.generated = 'test'
     pipelineObj.app_name = 'appgroup'
     pipelineObj.group_name = 'group'
     return pipelineObj
+
 
 @mock.patch('foremast.pipeline.create_pipeline.clean_pipelines')
 @mock.patch.object(SpinnakerPipeline, 'render_wrapper')
@@ -61,20 +67,23 @@ def spinnaker_pipeline(mock_os, mock_get_details, mock_get_prop):
 @mock.patch('foremast.pipeline.create_pipeline.construct_pipeline_block')
 @mock.patch('foremast.pipeline.create_pipeline.renumerate_stages')
 @mock.patch.object(SpinnakerPipeline, 'post_pipeline')
-def test_create_pipeline_ec2(mock_post, mock_renumerate, mock_construct, mock_subnets, mock_wrapper, mock_clean, spinnaker_pipeline):
+def test_create_pipeline_ec2(mock_post, mock_renumerate, mock_construct, mock_subnets, mock_wrapper, mock_clean,
+                             spinnaker_pipeline):
     """test pipeline creation if ec2 pipeline."""
     test_block_data = {
-                    "env": "dev",
-                    "generated": "test",
-                    "previous_env": None,
-                    "region": "us-east-1",
-                    "settings": spinnaker_pipeline.settings["dev"],
-                    "pipeline_data": spinnaker_pipeline.settings['pipeline'],
-                    "region_subnets": {'us-east-1': ['us-east-1d', 'us-east-1a', 'us-east-1e']}
-                }
+        "env": "dev",
+        "generated": "test",
+        "previous_env": None,
+        "region": "us-east-1",
+        "settings": spinnaker_pipeline.settings["dev"],
+        "pipeline_data": spinnaker_pipeline.settings['pipeline'],
+        "region_subnets": {
+            'us-east-1': ['us-east-1d', 'us-east-1a', 'us-east-1e']
+        }
+    }
     mock_subnets.return_value = {'dev': {'us-east-1': ['us-east-1d', 'us-east-1a', 'us-east-1e']}}
     mock_construct.return_value = '{"test": "stuff"}'
-    mock_wrapper.return_value = {'stages':[]}
+    mock_wrapper.return_value = {'stages': []}
     created = spinnaker_pipeline.create_pipeline()
 
     mock_construct.assert_called_with(**test_block_data)

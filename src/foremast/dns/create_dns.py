@@ -70,7 +70,11 @@ class SpinnakerDns:
 
         self.log.info('Updating Application URL: %s', dns_elb)
 
-        dns_kwargs = {'dns_name': dns_elb, 'dns_name_aws': dns_elb_aws, 'dns_ttl': self.dns_ttl, }
+        dns_kwargs = {
+            'dns_name': dns_elb,
+            'dns_name_aws': dns_elb_aws,
+            'dns_ttl': self.dns_ttl,
+        }
 
         for zone_id in zone_ids:
             self.log.debug('zone_id: %s', zone_id)

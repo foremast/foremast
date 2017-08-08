@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """CLI entry point to create Spinnaker Pipelines.
 
 Help: ``python -m src.foremast.pipeline -h``
@@ -38,23 +37,11 @@ def main():
     add_debug(parser)
     add_app(parser)
     add_properties(parser)
-    parser.add_argument('-b',
-                        '--base',
-                        help='Base AMI name to use, e.g. fedora, tomcat')
+    parser.add_argument('-b', '--base', help='Base AMI name to use, e.g. fedora, tomcat')
+    parser.add_argument("--triggerjob", help="The jenkins job to monitor for pipeline triggering", required=True)
+    parser.add_argument('--onetime', required=False, choices=ENVS, help='Onetime deployment environment')
     parser.add_argument(
-        "--triggerjob",
-        help="The jenkins job to monitor for pipeline triggering",
-        required=True)
-    parser.add_argument('--onetime',
-                        required=False,
-                        choices=ENVS,
-                        help='Onetime deployment environment')
-    parser.add_argument('-t',
-                        '--type',
-                        dest='type',
-                        required=False,
-                        default='ec2',
-                        help='Deployment type, e.g. ec2, lambda')
+        '-t', '--type', dest='type', required=False, default='ec2', help='Deployment type, e.g. ec2, lambda')
     args = parser.parse_args()
 
     if args.base and '"' in args.base:
@@ -65,31 +52,22 @@ def main():
     log.debug('Parsed arguments: %s', args)
 
     if args.onetime:
-        spinnakerapps = SpinnakerPipelineOnetime(app=args.app,
-                                                 onetime=args.onetime,
-                                                 trigger_job=args.triggerjob,
-                                                 prop_path=args.properties,
-                                                 base=args.base)
+        spinnakerapps = SpinnakerPipelineOnetime(
+            app=args.app, onetime=args.onetime, trigger_job=args.triggerjob, prop_path=args.properties, base=args.base)
         spinnakerapps.create_pipeline()
     else:
 
         if args.type == "ec2":
-            spinnakerapps = SpinnakerPipeline(app=args.app,
-                                              trigger_job=args.triggerjob,
-                                              prop_path=args.properties,
-                                              base=args.base)
+            spinnakerapps = SpinnakerPipeline(
+                app=args.app, trigger_job=args.triggerjob, prop_path=args.properties, base=args.base)
             spinnakerapps.create_pipeline()
         elif args.type == "lambda":
-            spinnakerapps = SpinnakerPipelineLambda(app=args.app,
-                                                    trigger_job=args.triggerjob,
-                                                    prop_path=args.properties,
-                                                    base=args.base)
+            spinnakerapps = SpinnakerPipelineLambda(
+                app=args.app, trigger_job=args.triggerjob, prop_path=args.properties, base=args.base)
             spinnakerapps.create_pipeline()
         elif args.type == "s3":
-            spinnakerapps = SpinnakerPipelineS3(app=args.app,
-                                                trigger_job=args.triggerjob,
-                                                prop_path=args.properties,
-                                                base=args.base)
+            spinnakerapps = SpinnakerPipelineS3(
+                app=args.app, trigger_job=args.triggerjob, prop_path=args.properties, base=args.base)
             spinnakerapps.create_pipeline()
 
 

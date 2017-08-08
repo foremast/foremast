@@ -21,7 +21,9 @@ TEST_PROPERTIES = {
         }
     },
 }
-GENERATED_IAM = {'lambda_role': 'generated_role', }
+GENERATED_IAM = {
+    'lambda_role': 'generated_role',
+}
 
 
 @mock.patch('foremast.awslambda.awslambda.boto3')

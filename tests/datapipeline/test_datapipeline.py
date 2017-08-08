@@ -6,17 +6,9 @@ import copy
 from foremast.exceptions import DataPipelineDefinitionError
 from foremast.datapipeline.datapipeline import AWSDataPipeline
 
-GOOD_DEF = 	{
-        "objects": [],
-        "parameters": [],
-        "values": {}
-        }
+GOOD_DEF = {"objects": [], "parameters": [], "values": {}}
 
-BAD_DEF = 	{
-        "no_object": [],
-        "parameters": [],
-        "values": {}
-        }
+BAD_DEF = {"no_object": [], "parameters": [], "values": {}}
 
 TEST_PROPERTIES = {
     'test_env': {
@@ -28,6 +20,7 @@ TEST_PROPERTIES = {
     }
 }
 
+
 @mock.patch('foremast.datapipeline.datapipeline.boto3.Session.client')
 @mock.patch('foremast.datapipeline.datapipeline.get_details')
 @mock.patch('foremast.datapipeline.datapipeline.get_properties')
@@ -37,11 +30,12 @@ def test_create_datapipeline(mock_get_properties, mock_get_details, mock_boto3):
     properties = copy.deepcopy(TEST_PROPERTIES)
     mock_get_details.return_value.data = generated
     mock_get_properties.return_value = properties
-    mock_boto3.return_value.create_pipeline.return_value = { 'pipelineId': '1234'}
+    mock_boto3.return_value.create_pipeline.return_value = {'pipelineId': '1234'}
 
     dp = AWSDataPipeline(app='test_app', env='test_env', region='us-east-1', prop_path='other')
     dp.create_datapipeline()
     assert dp.pipeline_id == '1234'
+
 
 @mock.patch('foremast.datapipeline.datapipeline.boto3.Session.client')
 @mock.patch('foremast.datapipeline.datapipeline.get_details')
@@ -54,7 +48,7 @@ def test_good_set_pipeline_definition(mock_get_properties, mock_get_details, moc
     mock_get_properties.return_value = properties
 
     good_dp = AWSDataPipeline(app='test_app', env='test_env', region='us-east-1', prop_path='other')
-    good_dp.pipeline_id='1'
+    good_dp.pipeline_id = '1'
     assert good_dp.set_pipeline_definition()
 
 
@@ -70,27 +64,26 @@ def test_bad_set_pipeline_definition(mock_get_properties, mock_get_details, mock
     mock_get_properties.return_value = properties
 
     bad_dp = AWSDataPipeline(app='test_app', env='test_env', region='us-east-1', prop_path='other')
-    bad_dp.pipeline_id='1'
+    bad_dp.pipeline_id = '1'
     with pytest.raises(DataPipelineDefinitionError):
         bad_dp.set_pipeline_definition()
+
 
 @mock.patch('foremast.datapipeline.datapipeline.boto3.Session.client')
 @mock.patch('foremast.datapipeline.datapipeline.get_details')
 @mock.patch('foremast.datapipeline.datapipeline.get_properties')
 def test_get_pipeline_id(mock_get_properties, mock_get_details, mock_boto3):
     """Tests getting the pipeline ID from boto3"""
-    test_pipelines = [{'pipelineIdList': [
-        {
+    test_pipelines = [{
+        'pipelineIdList': [{
             "name": "Test Pipeline",
             "id": "1234"
-        },
-        {
+        }, {
             "name": "Other",
             "id": "5678"
-        }
-        ],
-        "hasMoreResults": False 
-        }]
+        }],
+        "hasMoreResults": False
+    }]
     generated = {"project": "test"}
     properties = copy.deepcopy(TEST_PROPERTIES)
     mock_get_details.return_value.data = generated

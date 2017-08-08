@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Test ELB creation functions."""
 from unittest import mock
 import json
@@ -53,7 +52,7 @@ def test_elb_splay():
 @mock.patch('foremast.elb.format_listeners.get_env_credential')
 def test_elb_format_listeners(mock_creds):
     """Listeners should be formatted in list of dicts."""
-    mock_creds.return_value = { 'accountId': '0100' }
+    mock_creds.return_value = {'accountId': '0100'}
 
     config = {
         'certificate': None,
@@ -129,7 +128,8 @@ def test_elb_format_cert_name():
 @mock.patch('foremast.elb.create_elb.wait_for_task')
 @mock.patch.object(SpinnakerELB, 'make_elb_json', return_value={})
 @mock.patch('foremast.elb.create_elb.get_properties')
-def test_elb_create_elb(mock_get_properties, mock_elb_json, mock_wait_for_task, mock_listener_policy, mock_backend_policy, mock_load_balancer_attributes):
+def test_elb_create_elb(mock_get_properties, mock_elb_json, mock_wait_for_task, mock_listener_policy,
+                        mock_backend_policy, mock_load_balancer_attributes):
     """Test SpinnakerELB create_elb method"""
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb.create_elb()
@@ -152,7 +152,9 @@ def test_elb_make_elb_json(mock_get_properties, mock_get_subnets, mock_format_li
                 'unhealthy_threshold': 3,
             }
         },
-        'security_group': {'elb_extras': []},
+        'security_group': {
+            'elb_extras': []
+        },
     }
 
     subnets = {'us-east-1': ['subnet-1']}
@@ -184,22 +186,22 @@ def test_elb_add_listener_policy(mock_get_properties, mock_boto3_session):
     test_policy_list = ['policy_name']
 
     json_data = {
-       'job': [
-            {
-                'listeners': [
-                    {
-                        'externalPort': test_port,
-                        'listenerPolicies': test_policy_list
-                    },
-                ],
-            }
-       ],
+        'job': [{
+            'listeners': [
+                {
+                    'externalPort': test_port,
+                    'listenerPolicies': test_policy_list
+                },
+            ],
+        }],
     }
     client = mock_boto3_session.return_value.client.return_value
 
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb.add_listener_policy(json.dumps(json_data))
-    client.set_load_balancer_policies_of_listener.assert_called_with(LoadBalancerName=test_app, LoadBalancerPort=test_port, PolicyNames=test_policy_list)
+    client.set_load_balancer_policies_of_listener.assert_called_with(
+        LoadBalancerName=test_app, LoadBalancerPort=test_port, PolicyNames=test_policy_list)
+
 
 @mock.patch('foremast.elb.create_elb.boto3.session.Session')
 @mock.patch('foremast.elb.create_elb.get_properties')
@@ -209,19 +211,18 @@ def test_elb_add_backend_policy(mock_get_properties, mock_boto3_session):
     test_policy_list = ['policy_name']
 
     json_data = {
-       'job': [
-            {
-                'listeners': [
-                    {
-                        'internalPort': test_port,
-                        'backendPolicies': test_policy_list
-                    },
-                ],
-            }
-       ],
+        'job': [{
+            'listeners': [
+                {
+                    'internalPort': test_port,
+                    'backendPolicies': test_policy_list
+                },
+            ],
+        }],
     }
     client = mock_boto3_session.return_value.client.return_value
 
     elb = SpinnakerELB(app='myapp', env='dev', region='us-east-1')
     elb.add_backend_policy(json.dumps(json_data))
-    client.set_load_balancer_policies_for_backend_server.assert_called_with(LoadBalancerName=test_app, InstancePort=test_port, PolicyNames=test_policy_list)
+    client.set_load_balancer_policies_for_backend_server.assert_called_with(
+        LoadBalancerName=test_app, InstancePort=test_port, PolicyNames=test_policy_list)

@@ -56,16 +56,12 @@ class AWSDataPipeline(object):
                 dict: the response of the Boto3 command
         """
 
-        tags = [
-                {"key": "app_group",
-                "value": self.group},
-                {"key": "app_name",
-                "value": self.app_name}
-                ]
-        response = self.client.create_pipeline(name=self.datapipeline_data.get('name', self.app_name),
-                                            uniqueId=self.app_name,
-                                            description=self.datapipeline_data['description'],
-                                            tags=tags)
+        tags = [{"key": "app_group", "value": self.group}, {"key": "app_name", "value": self.app_name}]
+        response = self.client.create_pipeline(
+            name=self.datapipeline_data.get('name', self.app_name),
+            uniqueId=self.app_name,
+            description=self.datapipeline_data['description'],
+            tags=tags)
         self.pipeline_id = response.get('pipelineId')
 
         LOG.debug(response)
@@ -92,22 +88,22 @@ class AWSDataPipeline(object):
             raise DataPipelineDefinitionError
 
         response = self.client.put_pipeline_definition(
-                            pipelineId=self.pipeline_id,
-                            pipelineObjects=pipelineObjects,
-                            parameterObjects=parameterObjects,
-                            parameterValues=parameterValues)
+            pipelineId=self.pipeline_id,
+            pipelineObjects=pipelineObjects,
+            parameterObjects=parameterObjects,
+            parameterValues=parameterValues)
         LOG.debug(response)
         LOG.info("Successfully applied pipeline definition")
         return response
 
     def get_pipeline_id(self):
         """Finds the pipeline ID for configured pipeline"""
-        
+
         all_pipelines = []
         paginiator = self.client.get_paginator('list_pipelines')
         for page in paginiator.paginate():
             all_pipelines.extend(page['pipelineIdList'])
-            
+
         for pipeline in all_pipelines:
             if pipeline['name'] == self.datapipeline_data.get('name', self.app_name):
                 self.pipeline_id = pipeline['id']

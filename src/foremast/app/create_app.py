@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Module for creating an application in spinnaker.
 
 Looks to see if the application exists, and if not creates the application.
@@ -45,10 +44,7 @@ class SpinnakerApp:
     def __init__(self, app=None, email=None, project=None, repo=None):
         self.log = logging.getLogger(__name__)
 
-        self.appinfo = {'app': app,
-                        'email': email,
-                        'project': project,
-                        'repo': repo}
+        self.appinfo = {'app': app, 'email': email, 'project': project, 'repo': repo}
         self.appname = app
 
     def get_accounts(self, provider='aws'):
@@ -64,9 +60,7 @@ class SpinnakerApp:
             AssertionError: Failure getting accounts from Spinnaker.
         """
         url = '{gate}/credentials'.format(gate=API_URL)
-        response = requests.get(url,
-                                verify=GATE_CA_BUNDLE,
-                                cert=GATE_CLIENT_CERT)
+        response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
         assert response.ok, 'Failed to get accounts: {0}'.format(response.text)
 
         all_accounts = response.json()
@@ -91,8 +85,7 @@ class SpinnakerApp:
         self.appinfo['accounts'] = self.get_accounts()
         self.log.debug('App info:\n%s', pformat(self.appinfo))
 
-        jsondata = get_template(template_file='infrastructure/app_data.json.j2',
-                                appinfo=self.appinfo)
+        jsondata = get_template(template_file='infrastructure/app_data.json.j2', appinfo=self.appinfo)
 
         wait_for_task(jsondata)
 

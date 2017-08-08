@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Package for managing IAM policies in AWS. Spinnaker does not
 directly interfact with IAM so this package mostly uses Boto3
 """

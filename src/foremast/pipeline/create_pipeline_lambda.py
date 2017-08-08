@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Create Pipelines for Spinnaker."""
 import collections
 import json
@@ -80,9 +79,7 @@ class SpinnakerPipelineLambda(SpinnakerPipeline):
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
-        wrapper = get_template(
-            template_file='pipeline/pipeline_wrapper.json.j2',
-            data=data)
+        wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data)
 
         return json.loads(wrapper)
 
@@ -103,8 +100,7 @@ class SpinnakerPipelineLambda(SpinnakerPipeline):
         for env in pipeline_envs:
             for region in self.settings[env]['regions']:
                 regions_envs[region].append(env)
-        self.log.info('Environments and Regions for Pipelines:\n%s',
-                      json.dumps(regions_envs, indent=4))
+        self.log.info('Environments and Regions for Pipelines:\n%s', json.dumps(regions_envs, indent=4))
 
         subnets = get_subnets()
 

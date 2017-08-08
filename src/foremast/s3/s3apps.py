@@ -21,8 +21,7 @@ import boto3
 from botocore.client import ClientError
 
 from ..exceptions import S3SharedBucketNotFound
-from ..utils import (get_details, get_dns_zone_ids, get_properties,
-                     update_dns_zone_record, generate_s3_tags)
+from ..utils import (get_details, get_dns_zone_ids, get_properties, update_dns_zone_record, generate_s3_tags)
 
 LOG = logging.getLogger(__name__)
 
@@ -68,10 +67,7 @@ class S3Apps(object):
                 LOG.error("Shared bucket %s does not exist", self.bucket)
                 raise S3SharedBucketNotFound
         else:
-            resp = self.s3client.create_bucket(
-                ACL=self.s3props['bucket_acl'],
-                Bucket=self.bucket
-            )
+            resp = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket)
             LOG.info('%s - S3 Bucket Upserted', self.bucket)
             if self.s3props['bucket_policy']:
                 self._attach_bucket_policy()
@@ -83,17 +79,20 @@ class S3Apps(object):
     def _attach_bucket_policy(self):
         """attaches a bucket policy to app bucket"""
         policy_str = json.dumps(self.s3props['bucket_policy'])
-        resp = self.s3client.put_bucket_policy(Bucket=self.bucket,
-                                               Policy=policy_str)
+        resp = self.s3client.put_bucket_policy(Bucket=self.bucket, Policy=policy_str)
         LOG.info('S3 Bucket Policy Attached')
 
     def _set_website_settings(self):
         """Sets S3 static website setting on bucket"""
-        website_config = {'ErrorDocument': {'Key': self.s3props['website']['error_document']},
-                          'IndexDocument': {'Suffix': self.s3props['website']['index_suffix']}
-                          }
-        resp = self.s3client.put_bucket_website(Bucket=self.bucket,
-                                                WebsiteConfiguration=website_config)
+        website_config = {
+            'ErrorDocument': {
+                'Key': self.s3props['website']['error_document']
+            },
+            'IndexDocument': {
+                'Suffix': self.s3props['website']['index_suffix']
+            }
+        }
+        resp = self.s3client.put_bucket_website(Bucket=self.bucket, WebsiteConfiguration=website_config)
         LOG.info('S3 website settings updated')
 
     def _set_bucket_dns(self):
@@ -107,9 +106,11 @@ class S3Apps(object):
             s3_endpoint = "{0}.s3-website-{1}.amazonaws.com".format(self.bucket, self.region)
 
         zone_ids = get_dns_zone_ids(env=self.env, facing="public")
-        dns_kwargs = {'dns_name': self.bucket,
-                      'dns_name_aws': s3_endpoint,
-                      'dns_ttl': self.properties[self.env]['dns']['ttl']}
+        dns_kwargs = {
+            'dns_name': self.bucket,
+            'dns_name_aws': s3_endpoint,
+            'dns_ttl': self.properties[self.env]['dns']['ttl']
+        }
 
         for zone_id in zone_ids:
             LOG.debug('zone_id: %s', zone_id)

@@ -84,22 +84,24 @@ class APIGateway:
     def add_lambda_integration(self):
         """Attach lambda found to API."""
         lambda_uri = self.generate_uris()['lambda_uri']
-        self.client.put_integration(restApiId=self.api_id,
-                                    resourceId=self.resource_id,
-                                    httpMethod=self.trigger_settings['method'],
-                                    integrationHttpMethod='POST',
-                                    uri=lambda_uri,
-                                    type='AWS')
+        self.client.put_integration(
+            restApiId=self.api_id,
+            resourceId=self.resource_id,
+            httpMethod=self.trigger_settings['method'],
+            integrationHttpMethod='POST',
+            uri=lambda_uri,
+            type='AWS')
         self.add_integration_response()
         self.log.info("Successfully added Lambda intergration to API")
 
     def add_integration_response(self):
         """Add an intergation response to the API for the lambda integration."""
-        self.client.put_integration_response(restApiId=self.api_id,
-                                             resourceId=self.resource_id,
-                                             httpMethod=self.trigger_settings['method'],
-                                             statusCode='200',
-                                             responseTemplates={'application/json': ''})
+        self.client.put_integration_response(
+            restApiId=self.api_id,
+            resourceId=self.resource_id,
+            httpMethod=self.trigger_settings['method'],
+            statusCode='200',
+            responseTemplates={'application/json': ''})
 
     def add_permission(self):
         """Add permission to Lambda for the API Trigger."""
@@ -109,36 +111,42 @@ class APIGateway:
         lambda_unqualified_arn = get_lambda_arn(self.app_name, self.env, self.region)
         resource_name = self.trigger_settings.get('resource', '')
         resource_name = resource_name.replace('/', '')
-        method_api_source_arn = 'arn:aws:execute-api:{}:{}:{}/{}/{}/{}'.format(self.region, self.account_id, self.api_id, self.env, self.trigger_settings['method'], resource_name)
-        global_api_source_arn = 'arn:aws:execute-api:{}:{}:{}/*/*/{}'.format(self.region, self.account_id, self.api_id, resource_name)
-        add_lambda_permissions(function=lambda_alias_arn,
-                               statement_id=statement_id + self.trigger_settings['method'],
-                               action='lambda:InvokeFunction',
-                               principal=principal,
-                               env=self.env,
-                               region=self.region,
-                               source_arn=method_api_source_arn)
-        add_lambda_permissions(function=lambda_alias_arn,
-                               statement_id=statement_id,
-                               action='lambda:InvokeFunction',
-                               principal=principal,
-                               env=self.env,
-                               region=self.region,
-                               source_arn=global_api_source_arn)
-        add_lambda_permissions(function=lambda_unqualified_arn,
-                               statement_id=statement_id + self.trigger_settings['method'],
-                               action='lambda:InvokeFunction',
-                               principal=principal,
-                               env=self.env,
-                               region=self.region,
-                               source_arn=method_api_source_arn)
-        add_lambda_permissions(function=lambda_unqualified_arn,
-                               statement_id=statement_id,
-                               action='lambda:InvokeFunction',
-                               principal=principal,
-                               env=self.env,
-                               region=self.region,
-                               source_arn=global_api_source_arn)
+        method_api_source_arn = 'arn:aws:execute-api:{}:{}:{}/{}/{}/{}'.format(
+            self.region, self.account_id, self.api_id, self.env, self.trigger_settings['method'], resource_name)
+        global_api_source_arn = 'arn:aws:execute-api:{}:{}:{}/*/*/{}'.format(self.region, self.account_id, self.api_id,
+                                                                             resource_name)
+        add_lambda_permissions(
+            function=lambda_alias_arn,
+            statement_id=statement_id + self.trigger_settings['method'],
+            action='lambda:InvokeFunction',
+            principal=principal,
+            env=self.env,
+            region=self.region,
+            source_arn=method_api_source_arn)
+        add_lambda_permissions(
+            function=lambda_alias_arn,
+            statement_id=statement_id,
+            action='lambda:InvokeFunction',
+            principal=principal,
+            env=self.env,
+            region=self.region,
+            source_arn=global_api_source_arn)
+        add_lambda_permissions(
+            function=lambda_unqualified_arn,
+            statement_id=statement_id + self.trigger_settings['method'],
+            action='lambda:InvokeFunction',
+            principal=principal,
+            env=self.env,
+            region=self.region,
+            source_arn=method_api_source_arn)
+        add_lambda_permissions(
+            function=lambda_unqualified_arn,
+            statement_id=statement_id,
+            action='lambda:InvokeFunction',
+            principal=principal,
+            env=self.env,
+            region=self.region,
+            source_arn=global_api_source_arn)
 
     @retries(max_attempts=5, wait=2, exceptions=(botocore.exceptions.ClientError))
     def create_api_deployment(self):
@@ -161,14 +169,11 @@ class APIGateway:
                 self.log.info("Key %s already exists", self.app_name)
                 break
         else:
-            self.client.create_api_key(name=self.app_name,
-                                       enabled=True,
-                                       stageKeys=[
-                                           {
-                                               'restApiId': self.api_id,
-                                               'stageName': self.env
-                                           }
-                                       ])
+            self.client.create_api_key(
+                name=self.app_name, enabled=True, stageKeys=[{
+                    'restApiId': self.api_id,
+                    'stageName': self.env
+                }])
             self.log.info("Successfully created API Key %s. Look in the AWS console for the key", self.app_name)
 
     def _format_base_path(self, api_name):
@@ -232,26 +237,28 @@ class APIGateway:
         resource_name = self.trigger_settings.get('resource', '')
         resource_name = resource_name.replace('/', '')
         if not self.resource_id:
-            created_resource = self.client.create_resource(restApiId=self.api_id,
-                                                           parentId=parent_id,
-                                                           pathPart=resource_name)
+            created_resource = self.client.create_resource(
+                restApiId=self.api_id, parentId=parent_id, pathPart=resource_name)
             self.resource_id = created_resource['id']
             self.log.info("Successfully created resource")
         else:
-            self.log.info("Resource already exists. To update resource please delete existing resource: %s", resource_name)
+            self.log.info("Resource already exists. To update resource please delete existing resource: %s",
+                          resource_name)
 
     def attach_method(self, resource_id):
         """Attach the defined method."""
         try:
-            method_r = self.client.put_method(restApiId=self.api_id,
-                                   resourceId=resource_id,
-                                   httpMethod=self.trigger_settings['method'],
-                                   authorizationType="NONE",
-                                   apiKeyRequired=False, )
-            resp_r = self.client.put_method_response(restApiId=self.api_id,
-                                            resourceId=resource_id,
-                                            httpMethod=self.trigger_settings['method'],
-                                            statusCode='200')
+            method_r = self.client.put_method(
+                restApiId=self.api_id,
+                resourceId=resource_id,
+                httpMethod=self.trigger_settings['method'],
+                authorizationType="NONE",
+                apiKeyRequired=False, )
+            resp_r = self.client.put_method_response(
+                restApiId=self.api_id,
+                resourceId=resource_id,
+                httpMethod=self.trigger_settings['method'],
+                statusCode='200')
 
             self.log.info("Successfully attached method: %s", self.trigger_settings['method'])
         except botocore.exceptions.ClientError:

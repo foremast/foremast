@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Get available Subnets for specific Targets."""
 import logging
 from collections import defaultdict
@@ -30,10 +29,11 @@ LOG = logging.getLogger(__name__)
 
 # TODO: split up into get_az, and get_subnet_id
 @retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)
-def get_subnets(target='ec2',
-                purpose='internal',
-                env='',
-                region='', ):
+def get_subnets(
+        target='ec2',
+        purpose='internal',
+        env='',
+        region='', ):
     """Get all availability zones for a given target.
 
     Args:
@@ -51,9 +51,7 @@ def get_subnets(target='ec2',
     subnet_id_dict = defaultdict(defaultdict)
 
     subnet_url = '{0}/subnets/aws'.format(API_URL)
-    subnet_response = requests.get(subnet_url,
-                                   verify=GATE_CA_BUNDLE,
-                                   cert=GATE_CLIENT_CERT)
+    subnet_response = requests.get(subnet_url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     if not subnet_response.ok:
         raise SpinnakerTimeout(subnet_response.text)
@@ -61,8 +59,7 @@ def get_subnets(target='ec2',
     subnet_list = subnet_response.json()
 
     for subnet in subnet_list:
-        LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t'
-                  '%(availabilityZone)s', subnet)
+        LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t' '%(availabilityZone)s', subnet)
 
         if subnet['target'] == target:
             az = subnet['availabilityZone']
@@ -81,8 +78,7 @@ def get_subnets(target='ec2',
                 except KeyError:
                     subnet_id_dict[account][subnet_region] = [subnet_id]
 
-            LOG.debug('%s regions: %s', account,
-                      list(account_az_dict[account].keys()))
+            LOG.debug('%s regions: %s', account, list(account_az_dict[account].keys()))
 
     if all([env, region]):
         try:

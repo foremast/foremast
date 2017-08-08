@@ -76,12 +76,13 @@ def create_s3_event(app_name, env, region, rules):
     rules_hash = hashlib.md5(json.dumps(rules, sort_keys=True)).hexdigest()
     statement_id = "{}_s3_{}".format(app_name, rules_hash)
     source_arn = "arn:aws:s3:::{}".format(bucket)
-    add_lambda_permissions(function=lambda_alias_arn,
-                           env=env,
-                           region=region,
-                           principal=principal,
-                           statement_id=statement_id,
-                           source_arn=source_arn)
+    add_lambda_permissions(
+        function=lambda_alias_arn,
+        env=env,
+        region=region,
+        principal=principal,
+        statement_id=statement_id,
+        source_arn=source_arn)
 
     s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=json.loads(config))
     LOG.info("Created lambda %s S3 event on bucket %s", app_name, bucket)

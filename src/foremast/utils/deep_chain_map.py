@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """ChainMap modification to handle nested dict objects."""
 import collections
 
@@ -49,8 +48,7 @@ class DeepChainMap(collections.ChainMap):
             try:
                 value = mapping[key]
                 if isinstance(value, dict):
-                    return dict(DeepChainMap(*list(mapping.get(key, {})
-                                                   for mapping in self.maps)))
+                    return dict(DeepChainMap(*list(mapping.get(key, {}) for mapping in self.maps)))
                 else:
                     return value
             except KeyError:

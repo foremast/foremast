@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Overwriting the default output of warnings package."""
 import warnings
 
@@ -21,6 +20,7 @@ import warnings
 def warning_format(message, category, *_, **__):
     """Warning format"""
     return '{}: {}\n'.format(category.__name__, message)
+
 
 warnings.formatwarning = warning_format
 warn_user = warnings.warn

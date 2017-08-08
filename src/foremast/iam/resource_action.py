@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Generic boto3 Resource action caller."""
 import logging
 
@@ -22,10 +21,7 @@ from boto3.exceptions import botocore
 LOG = logging.getLogger(__name__)
 
 
-def resource_action(client,
-                    action='',
-                    log_format='item: %(key)s',
-                    **kwargs):
+def resource_action(client, action='', log_format='item: %(key)s', **kwargs):
     """Call _action_ using boto3 _client_ with _kwargs_.
 
     This is meant for _action_ methods that will create or implicitely prove a

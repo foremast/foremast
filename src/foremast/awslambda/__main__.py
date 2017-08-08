@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """CLI entry point for aws events creation.
 
 Help: ``python -m src.foremast.awslambdaevent -h``
@@ -44,18 +43,13 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    lambda_function = LambdaFunction(app=args.app,
-                                     env=args.env,
-                                     region=args.region,
-                                     prop_path=args.properties)
+    lambda_function = LambdaFunction(app=args.app, env=args.env, region=args.region, prop_path=args.properties)
 
     lambda_function.create_lambda_function()
 
-    lambda_event = LambdaEvent(app=args.app,
-                               env=args.env,
-                               region=args.region,
-                               prop_path=args.properties)
+    lambda_event = LambdaEvent(app=args.app, env=args.env, region=args.region, prop_path=args.properties)
     lambda_event.create_lambda_events()
+
 
 if __name__ == "__main__":
     main()

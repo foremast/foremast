@@ -29,20 +29,23 @@ def test_utils_banner(mock_log):
 
 def test_utils_deep_chain_map():
 
-    first = {'key1': {
+    first = {
+        'key1': {
             'subkey1': 1,
         },
     }
-    second = {'key1': {
+    second = {
+        'key1': {
             'subkey2': 2,
         },
-     }
+    }
 
-    result = {'key1': {
+    result = {
+        'key1': {
             'subkey1': 1,
             'subkey2': 2,
         }
-     }
+    }
 
     assert DeepChainMap(first, second) == result
     with pytest.raises(KeyError):
@@ -64,7 +67,7 @@ def test_utils_pipeline_check_managed():
         'app name',
         'app2 [us-east-1]',
         'app name [us-east-1]',
-        ]
+    ]
 
     for name in bad_names:
         with pytest.raises(ValueError):
@@ -83,7 +86,10 @@ def test_utils_pipeline_get_all_pipelines(mock_murl, mock_requests_get):
 def test_utils_pipeline_get_pipeline_id(mock_get_pipelines):
     """Verify Pipeline ID response."""
     data = [
-        {'name': 'app', 'id': 100},
+        {
+            'name': 'app',
+            'id': 100
+        },
     ]
     mock_get_pipelines.return_value = data
 
@@ -103,9 +109,7 @@ def test_utils_generate_packer_filename():
 
 @mock.patch('requests.get')
 def test_utils_find_elb(requests_get_mock):
-    results = [
-        {'account': 'dev', 'region': 'us-east-1', 'dnsname': 'appdns' }
-    ]
+    results = [{'account': 'dev', 'region': 'us-east-1', 'dnsname': 'appdns'}]
     requests_get_mock.return_value.json.return_value = results
     a = find_elb('app', 'dev', 'us-east-1')
     assert a == 'appdns'
@@ -126,12 +130,7 @@ def test_utils_post_slack_message(mock_slack):
 @mock.patch('foremast.utils.pipelines.murl')
 @mock.patch('foremast.utils.apps.API_URL', 'http://test.com')
 def test_utils_apps_get_details(mock_murl, mock_requests_get):
-    data = {
-        'attributes': {
-            'repoProjectKey': 'group',
-            'repoSlug': 'repo1'
-        }
-    }
+    data = {'attributes': {'repoProjectKey': 'group', 'repoSlug': 'repo1'}}
     mock_requests_get.return_value.json.return_value = data
 
     result = get_details(app='repo1group', env='dev')
@@ -163,16 +162,40 @@ def test_utils_apps_get_all_apps(mock_murl, mock_requests_get):
 def test_utils_dns_get_zone_ids(mock_boto3):
     data = {
         'HostedZones': [
-                {'Name': 'internal.example.com', 'Id': 100, 'Config': {'PrivateZone': True}},
-                {'Name': 'external.example.com', 'Id': 101, 'Config': {'PrivateZone': False}},
-            ]
+            {
+                'Name': 'internal.example.com',
+                'Id': 100,
+                'Config': {
+                    'PrivateZone': True
+                }
+            },
+            {
+                'Name': 'external.example.com',
+                'Id': 101,
+                'Config': {
+                    'PrivateZone': False
+                }
+            },
+        ]
     }
 
     data_external = {
         'HostedZones': [
-                {'Name': 'internal.example.com', 'Id': 100, 'Config': {'PrivateZone': False}},
-                {'Name': 'external.example.com', 'Id': 101, 'Config': {'PrivateZone': False}},
-            ]
+            {
+                'Name': 'internal.example.com',
+                'Id': 100,
+                'Config': {
+                    'PrivateZone': False
+                }
+            },
+            {
+                'Name': 'external.example.com',
+                'Id': 101,
+                'Config': {
+                    'PrivateZone': False
+                }
+            },
+        ]
     }
 
     mock_boto3.return_value.client.return_value.list_hosted_zones_by_name.return_value = data
@@ -202,37 +225,44 @@ def test_utils_dns_get_zone_ids(mock_boto3):
     result = get_dns_zone_ids(facing='wrong_param')
     assert result == []
 
+
 @mock.patch('foremast.utils.dns.boto3.Session')
 def test_find_existing_record(mock_session):
     """Check that a record is found correctly"""
 
-    dns_values = {
-        'env': 'dev',
-        'zone_id': '/hostedzone/TESTTESTS279',
-        'dns_name': 'test.example.com'
-    }
-    test_records = [
-    {'ResourceRecordSets': [{'Name': 'test.example.com.', 'Type': 'CNAME' }]},
-    {'ResourceRecordSets': [{'Name': 'test.example.com.', 'Failover': 'PRIMARY' }]},
-    {'ResourceRecordSets': [{'Name': 'test.example.com.', 'Type': 'A' }]}
-    ]
+    dns_values = {'env': 'dev', 'zone_id': '/hostedzone/TESTTESTS279', 'dns_name': 'test.example.com'}
+    test_records = [{
+        'ResourceRecordSets': [{
+            'Name': 'test.example.com.',
+            'Type': 'CNAME'
+        }]
+    }, {
+        'ResourceRecordSets': [{
+            'Name': 'test.example.com.',
+            'Failover': 'PRIMARY'
+        }]
+    }, {
+        'ResourceRecordSets': [{
+            'Name': 'test.example.com.',
+            'Type': 'A'
+        }]
+    }]
     client = mock_session.return_value.client.return_value
     client.get_paginator.return_value.paginate.return_value = test_records
-    assert find_existing_record(dns_values['env'],
-                                dns_values['zone_id'],
-                                dns_values['dns_name'],
-                                check_key='Type',
-                                check_value='CNAME') == {'Name': 'test.example.com.', 'Type': 'CNAME' }
-    assert find_existing_record(dns_values['env'],
-                                dns_values['zone_id'],
-                                dns_values['dns_name'],
-                                check_key='Failover',
-                                check_value='PRIMARY') == {'Name': 'test.example.com.', 'Failover': 'PRIMARY' }
-    assert find_existing_record(dns_values['env'],
-                                dns_values['zone_id'],
-                                'bad.example.com',
-                                check_key='Type',
-                                check_value='CNAME') == None
+    assert find_existing_record(
+        dns_values['env'], dns_values['zone_id'], dns_values['dns_name'], check_key='Type', check_value='CNAME') == {
+            'Name': 'test.example.com.',
+            'Type': 'CNAME'
+        }
+    assert find_existing_record(
+        dns_values['env'], dns_values['zone_id'], dns_values['dns_name'], check_key='Failover',
+        check_value='PRIMARY') == {
+            'Name': 'test.example.com.',
+            'Failover': 'PRIMARY'
+        }
+    assert find_existing_record(
+        dns_values['env'], dns_values['zone_id'], 'bad.example.com', check_key='Type', check_value='CNAME') == None
+
 
 @mock.patch('requests.get')
 @mock.patch('foremast.utils.security_group.get_vpc_id')
@@ -258,7 +288,12 @@ def test_utils_sg_get_security_group_id(mock_vpc_id, mock_requests_get):
 @mock.patch('requests.get')
 def test_utils_vpc_get_vpc_id(mock_requests_get):
     data = [
-        {'id': 100, 'name': 'vpc','account': 'dev', 'region': 'us-east-1'},
+        {
+            'id': 100,
+            'name': 'vpc',
+            'account': 'dev',
+            'region': 'us-east-1'
+        },
     ]
     mock_requests_get.return_value.json.return_value = data
 
@@ -350,11 +385,11 @@ def test_utils_subnets_get_subnets_api_error(mock_requests_get):
 @mock.patch('foremast.utils.tasks.post_task')
 @mock.patch('foremast.utils.tasks.TASK_TIMEOUTS')
 def test_utils_timeout_per_env(mock_check_task, mock_requests_post, mock_timeouts):
-    """Verify custom timeout propagates to check_task""" 
+    """Verify custom timeout propagates to check_task"""
     mock_requests_post.return_value = 5
-    task_data = { "job": [{ "credentials": "dev", "type": "fake_task"} ]}
-    mock_timeouts.side_effect = {"dev": {"fake_task": "240"} }
-    tasks.wait_for_task(task_data) 
+    task_data = {"job": [{"credentials": "dev", "type": "fake_task"}]}
+    mock_timeouts.side_effect = {"dev": {"fake_task": "240"}}
+    tasks.wait_for_task(task_data)
     assert mock_check_task.called_with("fake_task", 240)
     assert mock_check_task.called_with("fake_task", tasks.DEFAULT_TASK_TIMEOUT)
 
@@ -365,7 +400,7 @@ def test_utils_timeout_per_env(mock_check_task, mock_requests_post, mock_timeout
 def test_utils_default_timeout(mock_check_task, mock_requests_post, mock_timeouts):
     """default timeout for tasks is applied if missing from timeout data"""
     mock_requests_post.return_value = 5
-    task_data = { "job": [{ "credentials": "dev", "type": "really_fake_task"} ]}
-    mock_timeouts.side_effect = {"dev": {"fake_task": "240"} }
-    tasks.wait_for_task(task_data) 
+    task_data = {"job": [{"credentials": "dev", "type": "really_fake_task"}]}
+    mock_timeouts.side_effect = {"dev": {"fake_task": "240"}}
+    tasks.wait_for_task(task_data)
     assert mock_check_task.called_with("really_fake_task", tasks.DEFAULT_TASK_TIMEOUT)

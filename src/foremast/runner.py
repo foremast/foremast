@@ -31,9 +31,8 @@ import logging
 import os
 
 import gogoutils
-from foremast import (app, autoscaling_policy, awslambda, configs, consts,
-                      datapipeline, dns, elb, iam, pipeline, s3, securitygroup,
-                      slacknotify, utils)
+from foremast import (app, autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
+                      securitygroup, slacknotify, utils)
 
 from .args import add_debug
 
@@ -76,9 +75,8 @@ class ForemastRunner(object):
         else:
             app_configs = configs.process_runway_configs(runway_dir=self.runway_dir)
 
-        self.configs = configs.write_variables(app_configs=app_configs,
-                                               out_file=self.raw_path,
-                                               git_short=self.git_short)
+        self.configs = configs.write_variables(
+            app_configs=app_configs, out_file=self.raw_path, git_short=self.git_short)
 
     def create_app(self):
         """Create the spinnaker application."""
@@ -134,50 +132,45 @@ class ForemastRunner(object):
     def create_s3app(self):
         """Create S3 infra for s3 applications"""
         utils.banner("Creating S3 App Infrastructure")
-        s3obj = s3.S3Apps(app=self.app,
-                          env=self.env,
-                          region=self.region,
-                          prop_path=self.json_path)
+        s3obj = s3.S3Apps(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
         s3obj.create_bucket()
 
     def deploy_s3app(self):
         """Deploys artifacts contents to S3 bucket"""
         utils.banner("Deploying S3 App")
-        s3obj = s3.S3Deployment(app=self.app,
-                                env=self.env,
-                                region=self.region,
-                                prop_path=self.json_path,
-                                artifact_path=self.artifact_path,
-                                artifact_version=self.artifact_version)
+        s3obj = s3.S3Deployment(
+            app=self.app,
+            env=self.env,
+            region=self.region,
+            prop_path=self.json_path,
+            artifact_path=self.artifact_path,
+            artifact_version=self.artifact_version)
         s3obj.upload_artifacts()
 
     def promote_s3app(self):
         """promotes S3 deployment to LATEST"""
         utils.banner("Promoting S3 App")
-        s3obj = s3.S3Deployment(app=self.app,
-                                env=self.env,
-                                region=self.region,
-                                prop_path=self.json_path,
-                                artifact_path=self.artifact_path,
-                                artifact_version=self.artifact_version)
+        s3obj = s3.S3Deployment(
+            app=self.app,
+            env=self.env,
+            region=self.region,
+            prop_path=self.json_path,
+            artifact_path=self.artifact_path,
+            artifact_version=self.artifact_version)
         s3obj.promote_artifacts()
 
     def create_secgroups(self):
         """Create security groups as defined in the configs."""
         utils.banner("Creating Security Group")
-        sgobj = securitygroup.SpinnakerSecurityGroup(app=self.app,
-                                                     env=self.env,
-                                                     region=self.region,
-                                                     prop_path=self.json_path)
+        sgobj = securitygroup.SpinnakerSecurityGroup(
+            app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
         sgobj.create_security_group()
 
     def create_awslambda(self):
         """Create security groups as defined in the configs."""
         utils.banner("Creating Lambda Function")
-        awslambdaobj = awslambda.LambdaFunction(app=self.app,
-                                                env=self.env,
-                                                region=self.region,
-                                                prop_path=self.json_path)
+        awslambdaobj = awslambda.LambdaFunction(
+            app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
         awslambdaobj.create_lambda_function()
 
         utils.banner("Creating Lambda Event")
@@ -198,37 +191,28 @@ class ForemastRunner(object):
         failover = self.configs[self.env]['dns']['failover_dns']
         regionspecific_dns = self.configs[self.env]['dns']['region_specific']
 
-        dnsobj = dns.SpinnakerDns(app=self.app,
-                                  env=self.env,
-                                  region=self.region,
-                                  prop_path=self.json_path,
-                                  elb_subnet=elb_subnet)
+        dnsobj = dns.SpinnakerDns(
+            app=self.app, env=self.env, region=self.region, prop_path=self.json_path, elb_subnet=elb_subnet)
         if len(regions) > 1 and failover:
             dnsobj.create_elb_dns(regionspecific=True)
             primary_region = self.configs['pipeline']['primary_region']
             dnsobj.create_failover_dns(primary_region=primary_region)
         else:
             dnsobj.create_elb_dns(regionspecific=False)
-            if regionspecific_dns: #If true, Also create a region specific DNS record
+            if regionspecific_dns:  #If true, Also create a region specific DNS record
                 dnsobj.create_elb_dns(regionspecific=True)
-
 
     def create_autoscaling_policy(self):
         """Create Scaling Policy for app in environment"""
         utils.banner("Creating Scaling Policy")
-        policyobj = autoscaling_policy.AutoScalingPolicy(app=self.app,
-                                                         env=self.env,
-                                                         region=self.region,
-                                                         prop_path=self.json_path)
+        policyobj = autoscaling_policy.AutoScalingPolicy(
+            app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
         policyobj.create_policy()
 
     def create_datapipeline(self):
         """Creates data pipeline and adds definition"""
         utils.banner("Creating Data Pipeline")
-        dpobj = datapipeline.AWSDataPipeline(app=self.app,
-                                           env=self.env,
-                                           region=self.region,
-                                           prop_path=self.json_path)
+        dpobj = datapipeline.AWSDataPipeline(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
         dpobj.create_datapipeline()
         dpobj.set_pipeline_definition()
         if self.configs[self.env].get('datapipeline').get('activate_on_deploy'):
@@ -259,7 +243,7 @@ def prepare_infrastructure():
     eureka = runner.configs[runner.env]['app']['eureka_enabled']
     deploy_type = runner.configs['pipeline']['type']
 
-    if  deploy_type not in  ['s3', 'datapipeline']:
+    if deploy_type not in ['s3', 'datapipeline']:
         runner.create_iam()
         runner.create_archaius()
         runner.create_secgroups()
@@ -353,17 +337,20 @@ def rebuild_pipelines(*args):
             except Exception as error:
                 LOG.warning('Error updating pipeline for %s', app_name)
 
+
 def deploy_s3app():
     """Entry point for application setup and s3 deployments"""
     runner = ForemastRunner()
     runner.write_configs()
     runner.deploy_s3app()
 
+
 def promote_s3app():
     """Entry point for application setup and s3 promotions"""
     runner = ForemastRunner()
     runner.write_configs()
     runner.promote_s3app()
+
 
 def debug_flag():
     """Set logging level for entry points."""
