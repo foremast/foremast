@@ -19,5 +19,7 @@ def validate_gate():
 
 def validate_all(args):
     """Run all validate steps."""
+    LOG.debug('Args: %s', args)
+
     LOG.info('Running all validate steps.')
     validate_gate()
