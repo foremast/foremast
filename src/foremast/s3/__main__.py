@@ -21,7 +21,7 @@ Help: ``python -m src.foremast.s3 -h``
 import argparse
 import logging
 
-from ..args import (add_app, add_artifact_path, add_artifact_version, add_debug, add_env, add_properties, add_region)
+from ..args import add_app, add_artifact_path, add_artifact_version, add_debug, add_env, add_properties, add_region
 from ..consts import LOGGING_FORMAT
 from ..utils import get_properties
 from .create_archaius import init_properties

@@ -14,8 +14,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from unittest.mock import MagicMock, patch
+
 from foremast import dns
-from unittest.mock import patch, MagicMock
 
 
 @patch('foremast.dns.create_dns.update_dns_zone_record')

@@ -15,8 +15,9 @@
 #   limitations under the License.
 """Test create_pipeline functionality"""
 
-import pytest
 from unittest import mock
+
+import pytest
 
 from foremast.pipeline import SpinnakerPipeline
 

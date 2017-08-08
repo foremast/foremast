@@ -14,11 +14,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Test validity of json in templates"""
-import pytest
 import json
 
-from foremast.exceptions import ForemastTemplateNotFound
+import pytest
 
+from foremast.exceptions import ForemastTemplateNotFound
 from foremast.utils import get_template
 
 

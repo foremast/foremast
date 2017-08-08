@@ -21,7 +21,7 @@ import boto3
 from botocore.client import ClientError
 
 from ..exceptions import S3SharedBucketNotFound
-from ..utils import (get_details, get_dns_zone_ids, get_properties, update_dns_zone_record, generate_s3_tags)
+from ..utils import generate_s3_tags, get_details, get_dns_zone_ids, get_properties, update_dns_zone_record
 
 LOG = logging.getLogger(__name__)
 

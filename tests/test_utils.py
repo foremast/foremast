@@ -15,10 +15,12 @@
 #   limitations under the License.
 """Test utils."""
 
-import pytest
 from unittest import mock
-from foremast.utils import *
+
+import pytest
+
 from foremast.exceptions import *
+from foremast.utils import *
 
 
 @mock.patch('foremast.utils.banners.LOG')

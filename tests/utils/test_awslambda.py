@@ -4,8 +4,8 @@ from unittest import mock
 import boto3
 import pytest
 
-from foremast.utils.awslambda import add_lambda_permissions, get_lambda_alias_arn
 from foremast.exceptions import LambdaAliasDoesNotExist
+from foremast.utils.awslambda import add_lambda_permissions, get_lambda_alias_arn
 
 ERROR_RESPONSE = {'Error': {}}
 

@@ -22,6 +22,7 @@ import pytest
 from foremast.exceptions import ForemastConfigurationFileError
 from foremast.securitygroup import SpinnakerSecurityGroup
 
+
 SAMPLE_JSON = """{"security_group": {
                     "description": "something useful",
                     "egress": "0.0.0.0/0",

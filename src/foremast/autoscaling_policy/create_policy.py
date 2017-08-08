@@ -19,8 +19,8 @@ This module also creates an inverse policy for scaling down
 """
 import json
 import logging
-from math import floor
 import os
+from math import floor
 
 import requests
 

@@ -13,14 +13,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """POST a new task or check status of running task"""
-from functools import partial
 import json
 import logging
+from functools import partial
 
 import requests
 from tryagain import call as retry_call
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, HEADERS, DEFAULT_TASK_TIMEOUT, TASK_TIMEOUTS
+from ..consts import API_URL, DEFAULT_TASK_TIMEOUT, GATE_CA_BUNDLE, GATE_CLIENT_CERT, HEADERS, TASK_TIMEOUTS
 from ..exceptions import SpinnakerTaskError, SpinnakerTaskInconclusiveError
 
 LOG = logging.getLogger(__name__)

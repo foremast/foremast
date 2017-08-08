@@ -1,7 +1,7 @@
 """Verify AWS Lambda Function creation."""
+import copy
 from unittest import mock
 
-import copy
 from foremast.awslambda.awslambda import LambdaFunction
 
 TEST_PROPERTIES = {

@@ -14,12 +14,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Test ELB creation functions."""
-from unittest import mock
 import json
+from unittest import mock
 
-from foremast.elb.format_listeners import format_listeners, format_cert_name
-from foremast.elb.splay_health import splay_health
 from foremast.elb import SpinnakerELB
+from foremast.elb.format_listeners import format_cert_name, format_listeners
+from foremast.elb.splay_health import splay_health
 
 
 def test_elb_splay():

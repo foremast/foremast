@@ -1,10 +1,11 @@
 """Verify AWS Data Pipeline Creation."""
+import copy
 from unittest import mock
+
 import pytest
 
-import copy
-from foremast.exceptions import DataPipelineDefinitionError
 from foremast.datapipeline.datapipeline import AWSDataPipeline
+from foremast.exceptions import DataPipelineDefinitionError
 
 GOOD_DEF = {"objects": [], "parameters": [], "values": {}}
 

@@ -18,8 +18,8 @@ import logging
 import os
 import subprocess
 
-from ..utils import get_properties, get_details
 from ..exceptions import S3ArtifactNotFound
+from ..utils import get_details, get_properties
 
 LOG = logging.getLogger(__name__)
 

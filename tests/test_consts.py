@@ -17,7 +17,7 @@
 from configparser import ConfigParser
 from unittest.mock import patch
 
-from foremast.consts import (ALLOWED_TYPES, DEFAULT_SECURITYGROUP_RULES, extract_formats, _generate_security_groups)
+from foremast.consts import ALLOWED_TYPES, DEFAULT_SECURITYGROUP_RULES, _generate_security_groups, extract_formats
 
 
 def test_consts_extract_formats():
