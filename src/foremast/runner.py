@@ -83,7 +83,7 @@ class ForemastRunner(object):
         """Create the spinnaker application."""
         utils.banner("Creating Spinnaker App")
         spinnakerapp = app.SpinnakerApp(app=self.app, email=self.email, project=self.group, repo=self.repo)
-        spinnakerapp.create_app(self.configs['pipeline'])
+        spinnakerapp.create_app(pipeline_configs=self.configs['pipeline'])
 
     def create_pipeline(self, onetime=None):
         """Create the spinnaker pipeline(s)."""
