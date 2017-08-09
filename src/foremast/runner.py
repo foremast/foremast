@@ -270,8 +270,8 @@ def prepare_infrastructure():
 def prepare_app_pipeline():
     """Entry point for application setup and initial pipeline in Spinnaker."""
     runner = ForemastRunner()
-    runner.create_app()
     runner.write_configs()
+    runner.create_app()
     runner.create_pipeline()
     runner.cleanup()
 
