@@ -62,15 +62,15 @@ def get_subnets(
         LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t' '%(availabilityZone)s', subnet)
 
         if subnet['target'] == target:
-            az = subnet['availabilityZone']
+            availability_zone = subnet['availabilityZone']
             account = subnet['account']
             subnet_region = subnet['region']
             subnet_id = subnet['id']
             try:
-                if az not in account_az_dict[account][subnet_region]:
-                    account_az_dict[account][subnet_region].append(az)
+                if availability_zone not in account_az_dict[account][subnet_region]:
+                    account_az_dict[account][subnet_region].append(availability_zone)
             except KeyError:
-                account_az_dict[account][subnet_region] = [az]
+                account_az_dict[account][subnet_region] = [availability_zone]
             # get list of all subnet IDs with correct purpose
             if subnet['purpose'] == purpose:
                 try:
