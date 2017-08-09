@@ -30,6 +30,7 @@ def get_properties(properties_file='raw.properties.json', env=None):
     Returns:
         dict: JSON loaded Application properties for _env_.
         None: Given _env_ was not found in `create-configs` JSON output.
+
     """
     with open(properties_file, 'rt') as file_handle:
         properties = json.load(file_handle)

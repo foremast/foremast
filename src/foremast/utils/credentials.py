@@ -70,6 +70,7 @@ def get_env_credential(env='dev'):
                 'sessionName': 'Spinnaker',
                 'type': 'aws'
             }
+
     """
     url = murl.Url(API_URL)
     url.path = '/'.join(['credentials', env])

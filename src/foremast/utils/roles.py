@@ -1,3 +1,4 @@
+"""IAM Role functions."""
 import logging
 
 import boto3
@@ -15,6 +16,7 @@ def get_role_arn(role_name, env, region):
 
     Returns:
         ARN if role found
+
     """
     session = boto3.Session(profile_name=env, region_name=region)
     iam_client = session.client('iam')

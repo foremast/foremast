@@ -42,6 +42,7 @@ def generate_encoded_user_data(env='dev', region='us-east-1', app_name='', group
             export EC2_REGION=us-east-1
             export CLOUD_DOMAIN=dev.example.com
             printenv | grep 'CLOUD\|EC2' | awk '$0="export "$0'>> /etc/gogo/cloud_env
+
     """
     # We need to handle the case of prodp and prods for different URL generation
     if env in ["prod", "prodp", "prods"]:

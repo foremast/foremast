@@ -29,13 +29,14 @@ LOCAL_TEMPLATES = '{0}/../templates/'.format(HERE)
 
 
 def get_template_object(template_file=''):
-    """Get the Jinja2 template and returns Template object
+    """Get the Jinja2 template and returns Template object.
 
     Args:
         template_file (str): name of the template file
 
     Returns:
         jinja2.Template: Template jinja2 object
+
     """
     jinja_lst = []
 
@@ -67,6 +68,7 @@ def get_template(template_file='', **kwargs):
 
     Returns:
         String of rendered JSON template.
+
     """
     try:
         template = get_template_object(template_file)

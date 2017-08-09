@@ -13,7 +13,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
+"""Deploy artifacts to S3."""
 import logging
 import os
 import subprocess
@@ -25,7 +25,7 @@ LOG = logging.getLogger(__name__)
 
 
 class S3Deployment(object):
-    """Handles uploading artifact to S3 and S3 deployment strategies"""
+    """Handle uploading artifacts to S3 and S3 deployment strategies."""
 
     def __init__(self, app, env, region, prop_path, artifact_path, artifact_version):
         """S3 deployment object.
@@ -63,19 +63,20 @@ class S3Deployment(object):
         self.setup_pathing()
 
     def setup_pathing(self):
-        """Formats pathing for S3 deployments"""
+        """Format pathing for S3 deployments."""
         self.s3_version_uri = self._path_formatter(self.version)
         self.s3_latest_uri = self._path_formatter("LATEST")
         self.s3_canary_uri = self._path_formatter("CANARY")
 
     def _path_formatter(self, suffix):
-        """Formats the s3 path properly
+        """Format the s3 path properly.
 
         Args:
             suffix (str): suffix to add on to an s3 path
-        
+
         Returns:
             str: formatted path
+
         """
         path_format = "{}/{}/{}"
         s3_format = "s3://{}"
@@ -85,7 +86,7 @@ class S3Deployment(object):
         return full_path
 
     def upload_artifacts(self):
-        """Uploads the artifacts to S3 and copies to LATEST depending on strategy"""
+        """Upload artifacts to S3 and copy to LATEST depending on strategy."""
         deploy_strategy = self.properties[self.env]["deploy_strategy"]
         if deploy_strategy == "highlander":
             self._upload_artifacts_to_version()
@@ -96,24 +97,24 @@ class S3Deployment(object):
             self._upload_artifacts_to_version()
             self._sync_to_canary()
         else:
-            raise NotImplemented
+            raise NotImplementedError
 
     def promote_artifacts(self):
-        """Promotes artifact version to LATEST"""
+        """Promote artifact version to LATEST."""
         self._sync_to_latest()
 
     def _upload_artifacts_to_version(self):
-        """Recursively uploads a directory and all files and subdirectories to S3"""
+        """Recursively upload directory contents to S3."""
         if not os.listdir(self.artifact_path) or not self.artifact_path:
             raise S3ArtifactNotFound
         cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
                                                                                   self.s3_version_uri, self.env)
-        p = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Upload Command Ouput: %s", p.stdout)
+        result = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
+        LOG.debug("Upload Command Ouput: %s", result.stdout)
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
     def _sync_to_latest(self):
-        """Uses AWS CLI to cp first then sync versioned directory to LATEST directory in S3"""
+        """Copy and sync versioned directory to LATEST in S3."""
         cmd_cp = 'aws s3 cp {} {} --recursive --profile {}'.format(self.s3_version_uri, self.s3_latest_uri, self.env)
         # AWS CLI sync does not work as expected bucket to bucket with exact timestamp sync.
         cmd_sync = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(
@@ -128,7 +129,7 @@ class S3Deployment(object):
         LOG.info("Synced version %s to %s", self.version, self.s3_latest_uri)
 
     def _sync_to_canary(self):
-        """Uses AWS CLI to cp first then sync versioned directory to CANARY directory in S3"""
+        """Copy and sync versioned directory to CANARY in S3."""
         cmd_cp = 'aws s3 cp {} {} --recursive --profile {}'.format(self.s3_version_uri, self.s3_canary_uri, self.env)
         # AWS CLI sync does not work as expected bucket to bucket with exact timestamp sync.
         cmd_sync = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(

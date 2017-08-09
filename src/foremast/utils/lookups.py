@@ -29,8 +29,10 @@ LOG = logging.getLogger(__name__)
 
 
 def ami_lookup(region='us-east-1', name='tomcat8'):
-    """Use _name_ to find AMI ID. If no ami_base_url or gitlab_token is provided,
-    _name_ is returned as the ami id
+    """Look up AMI ID.
+
+    Use _name_ to find AMI ID. If no ami_base_url or gitlab_token is provided,
+    _name_ is returned as the ami id.
 
     Args:
         region (str): AWS Region to find AMI ID.
@@ -38,8 +40,8 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
 
     Returns:
         str: AMI ID for _name_ in _region_.
-    """
 
+    """
     if AMI_JSON_URL:
         LOG.info("Getting AMI from %s", AMI_JSON_URL)
         response = requests.get(AMI_JSON_URL)
@@ -123,6 +125,7 @@ class FileLookup():
 
         Raises:
             FileNotFoundError: Requested file missing.
+
         """
         LOG.info('Retrieving "%s" from "%s".', filename, self.runway_dir)
 
@@ -153,6 +156,7 @@ class FileLookup():
 
         Raises:
             FileNotFoundError: Requested file missing.
+
         """
         LOG.info('Retrieving "%s" from "%s".', filename, self.git_short)
 
@@ -181,6 +185,7 @@ class FileLookup():
 
         Returns:
             str: Contents of file.
+
         """
         file_contents = ''
 
@@ -203,6 +208,7 @@ class FileLookup():
 
         Raises:
             SystemExit: Invalid JSON provided.
+
         """
         file_contents = self.get(branch=branch, filename=filename)
 

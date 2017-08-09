@@ -13,7 +13,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""Application related utilities"""
+"""Application related utilities."""
 import logging
 
 import gogoutils
@@ -31,6 +31,7 @@ def get_all_apps():
 
     Returns:
         requests.models.Response: Response from Gate containing list of all apps.
+
     """
     LOG.info('Retreiving list of all Spinnaker applications')
     url = murl.Url(API_URL)
@@ -55,6 +56,7 @@ def get_details(app='groupproject', env='dev', region='us-east-1'):
     Returns:
         collections.namedtuple with _group_, _policy_, _profile_, _role_,
             _user_.
+
     """
     api = murl.Url(API_URL)
     api.path = 'applications/{app}'.format(app=app)

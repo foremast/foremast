@@ -13,7 +13,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""Package for foremast supporting utilities"""
+"""Package for foremast supporting utilities."""
 from .apps import *
 from .banners import *
 from .pipelines import *

@@ -13,7 +13,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""Lambda related utilities"""
+"""Lambda related utilities."""
 import json
 import logging
 
@@ -35,6 +35,7 @@ def get_lambda_arn(app, account, region):
 
     Returns:
         str: ARN for requested lambda function
+
     """
     session = boto3.Session(profile_name=account, region_name=region)
     lambda_client = session.client('lambda')
@@ -69,6 +70,7 @@ def get_lambda_alias_arn(app, account, region):
 
     Returns:
         str: ARN for requested lambda alias
+
     """
     session = boto3.Session(profile_name=account, region_name=region)
     lambda_client = session.client('lambda')
@@ -131,7 +133,7 @@ def add_lambda_permissions(function='',
 
 
 def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
-    """removes all foremast-* permissions from lambda
+    """Remove all foremast-* permissions from lambda.
 
     Args:
         app_name (str): Application name

@@ -13,7 +13,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""Get security group id"""
+"""Get security group id."""
 import logging
 
 import requests
@@ -42,6 +42,7 @@ def get_security_group_id(name='', env='', region=''):
         AssertionError: Call to Gate API was not successful.
         SpinnakerSecurityGroupError: Security Group _name_ was not found for
             _env_ in _region_.
+
     """
     vpc_id = get_vpc_id(env, region)
 

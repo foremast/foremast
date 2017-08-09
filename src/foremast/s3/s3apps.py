@@ -13,7 +13,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
+"""S3 web application infrastructure."""
 import json
 import logging
 
@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
 
 
 class S3Apps(object):
-    """Handles infrastructure around depolying static content to S3. Setups Bucket and Policy"""
+    """Configure infrastructure and policies for S3 web applications."""
 
     def __init__(self, app, env, region, prop_path):
         """S3 application object. Setups Bucket and policies for S3 applications.
@@ -58,8 +58,7 @@ class S3Apps(object):
             self.bucket = self.generated.s3_app_bucket()
 
     def create_bucket(self):
-        """Creates or updates bucket based on app name"""
-
+        """Create or update bucket based on app name."""
         if self.s3props.get('shared_bucket_target'):
             if self._bucket_exists():
                 LOG.info('App uses shared bucket - %s ', self.bucket)
@@ -77,13 +76,13 @@ class S3Apps(object):
         self._put_bucket_tagging()
 
     def _attach_bucket_policy(self):
-        """attaches a bucket policy to app bucket"""
+        """Attach a bucket policy to app bucket."""
         policy_str = json.dumps(self.s3props['bucket_policy'])
         resp = self.s3client.put_bucket_policy(Bucket=self.bucket, Policy=policy_str)
         LOG.info('S3 Bucket Policy Attached')
 
     def _set_website_settings(self):
-        """Sets S3 static website setting on bucket"""
+        """Configure static website on S3 bucket."""
         website_config = {
             'ErrorDocument': {
                 'Key': self.s3props['website']['error_document']
@@ -96,8 +95,7 @@ class S3Apps(object):
         LOG.info('S3 website settings updated')
 
     def _set_bucket_dns(self):
-        """Creates CNAME for s3 endpoint"""
-
+        """Create CNAME for S3 endpoint."""
         # Different regions have different s3 endpoint formats
         dotformat_regions = ["eu-west-2", "eu-central-1", "ap-northeast-2", "ap-south-1", "ca-central-1", "us-east-2"]
         if self.region in dotformat_regions:
@@ -118,14 +116,16 @@ class S3Apps(object):
         LOG.info("Created DNS %s for Bucket", self.bucket)
 
     def _put_bucket_tagging(self):
-        """Regular put_bucket_tagging sets TagSet which overwrites old tags.
-        Below logic keeps the old tags in place as well.
+        """Add new Tags without overwriting old Tags.
+
+        Regular put_bucket_tagging sets TagSet which overwrites old tags. Below
+        logic keeps the old tags in place as well.
         """
         try:
             # Get current tags list, if no tags exist will get an exception.
             result = self.s3client.get_bucket_tagging(Bucket=self.bucket)['TagSet']
-        except ClientError as e:
-            LOG.warning(e)
+        except ClientError as error:
+            LOG.warning(error)
             result = []
 
         # Make simplified dictionary of tags from result
@@ -141,10 +141,10 @@ class S3Apps(object):
         LOG.info("Adding tagging %s for Bucket", tag_set)
 
     def _bucket_exists(self):
-        """Checks if the bucket exists"""
+        """Check if the bucket exists."""
         try:
             self.s3client.get_bucket_location(Bucket=self.bucket)
             return True
-        except ClientError as e:
-            LOG.error(e)
+        except ClientError as error:
+            LOG.error(error)
             return False
