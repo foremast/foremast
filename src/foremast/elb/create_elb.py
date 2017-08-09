@@ -25,7 +25,7 @@ from ..utils import get_properties, get_subnets, get_template, get_vpc_id, wait_
 from .format_listeners import format_listeners
 from .splay_health import splay_health
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class SpinnakerELB:
@@ -53,7 +53,7 @@ class SpinnakerELB:
         env = self.env
         region = self.region
         elb_settings = self.properties['elb']
-        log.debug('Block ELB Settings:\n%s', pformat(elb_settings))
+        LOG.debug('Block ELB Settings:\n%s', pformat(elb_settings))
 
         health_settings = elb_settings['health']
         elb_subnet_purpose = elb_settings.get('subnet_purpose', 'internal')
@@ -116,7 +116,7 @@ class SpinnakerELB:
         """
 
         json_data = self.make_elb_json()
-        log.debug('Block ELB JSON Data:\n%s', pformat(json_data))
+        LOG.debug('Block ELB JSON Data:\n%s', pformat(json_data))
 
         wait_for_task(json_data)
 
@@ -142,7 +142,7 @@ class SpinnakerELB:
             for listener in ports:
                 if listener.get("stickiness"):
                     stickiness = self.add_stickiness()
-                    log.info('Stickiness Found: %s', stickiness)
+                    LOG.info('Stickiness Found: %s', stickiness)
                     break
 
         # Attach policies to created ELB
@@ -155,7 +155,7 @@ class SpinnakerELB:
                 if stickiness.get(ext_port):
                     policies.append(stickiness.get(ext_port))
                 if policies:
-                    log.info('Adding listener policies: %s', policies)
+                    LOG.info('Adding listener policies: %s', policies)
                     elbclient.set_load_balancer_policies_of_listener(
                         LoadBalancerName=self.app, LoadBalancerPort=ext_port, PolicyNames=policies)
 
@@ -174,7 +174,7 @@ class SpinnakerELB:
                 instance_port = listener['internalPort']
                 backend_policy_list = listener['backendPolicies']
                 if backend_policy_list:
-                    log.info('Adding backend server policies: %s', backend_policy_list)
+                    LOG.info('Adding backend server policies: %s', backend_policy_list)
                     elbclient.set_load_balancer_policies_for_backend_server(
                         LoadBalancerName=self.app, InstancePort=instance_port, PolicyNames=backend_policy_list)
 
@@ -226,7 +226,7 @@ class SpinnakerELB:
         elbclient = env.client('elb')
 
         elb_settings = self.properties['elb']
-        log.debug('Block ELB Settings Pre Configure Load Balancer Attributes:\n%s', pformat(elb_settings))
+        LOG.debug('Block ELB Settings Pre Configure Load Balancer Attributes:\n%s', pformat(elb_settings))
 
         for job in json.loads(json_data)['job']:
             load_balancer_attributes = {
@@ -245,20 +245,20 @@ class SpinnakerELB:
             }
             if elb_settings.get('connection_draining_timeout'):
                 connection_draining_timeout = int(elb_settings['connection_draining_timeout'])
-                log.info('Applying Custom Load Balancer Connection Draining Timeout: %d', connection_draining_timeout)
+                LOG.info('Applying Custom Load Balancer Connection Draining Timeout: %d', connection_draining_timeout)
                 load_balancer_attributes['ConnectionDraining'] = {
                     'Enabled': True,
                     'Timeout': connection_draining_timeout
                 }
             if elb_settings.get('idle_timeout'):
                 idle_timeout = int(elb_settings['idle_timeout'])
-                log.info('Applying Custom Load Balancer Idle Timeout: %d', idle_timeout)
+                LOG.info('Applying Custom Load Balancer Idle Timeout: %d', idle_timeout)
                 load_balancer_attributes['ConnectionSettings'] = {'IdleTimeout': idle_timeout}
             if elb_settings.get('access_log'):
                 access_log_bucket_name = elb_settings['access_log']['bucket_name']
                 access_log_bucket_prefix = elb_settings['access_log']['bucket_prefix']
                 access_log_emit_interval = int(elb_settings['access_log']['emit_interval'])
-                log.info('Applying Custom Load Balancer Access Log: %s/%s every %d minutes', access_log_bucket_name,
+                LOG.info('Applying Custom Load Balancer Access Log: %s/%s every %d minutes', access_log_bucket_name,
                          access_log_bucket_prefix, access_log_emit_interval)
                 load_balancer_attributes['AccessLog'] = {
                     'Enabled': True,
@@ -267,7 +267,7 @@ class SpinnakerELB:
                     'S3BucketPrefix': access_log_bucket_prefix
                 }
 
-            log.info('Applying Load Balancer Attributes')
-            log.debug('Load Balancer Attributes:\n%s', pformat(load_balancer_attributes))
+            LOG.info('Applying Load Balancer Attributes')
+            LOG.debug('Load Balancer Attributes:\n%s', pformat(load_balancer_attributes))
             elbclient.modify_load_balancer_attributes(
                 LoadBalancerName=self.app, LoadBalancerAttributes=load_balancer_attributes)
