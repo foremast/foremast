@@ -76,8 +76,11 @@ class SpinnakerApp:
 
         return filtered_accounts
 
-    def create_app(self, pipeline_configs):
+    def create_app(self, pipeline_configs=None):
         """Send a POST to spinnaker to create a new application with class variables.
+
+        Args:
+            pipeline_configs (dict): A dictionary containing the pipeline.json info
 
         Raises:
             AssertionError: Application creation failed.
