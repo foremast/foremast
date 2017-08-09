@@ -59,7 +59,7 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
         name = '{0} (onetime-{1})'.format(pipeline_json['name'], self.environments[0])
         pipeline_json['name'] = name
 
-        #Inject pipeline Id so that it does not override existing pipelines
+        # Inject pipeline Id so that it does not override existing pipelines
         pipeline_id = super().compare_with_existing(onetime=True)
         if pipeline_id:
             pipeline_json['id'] = pipeline_id

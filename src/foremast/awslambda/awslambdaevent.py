@@ -46,7 +46,7 @@ class LambdaEvent(object):
     def create_lambda_events(self):
         """Create all defined lambda events for an lambda application."""
 
-        #Clean up lambda permissions before creating triggers
+        # Clean up lambda permissions before creating triggers
         remove_all_lambda_permissions(app_name=self.app_name, env=self.env, region=self.region)
 
         triggers = self.properties['lambda_triggers']

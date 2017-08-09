@@ -51,7 +51,7 @@ def renumerate_stages(pipeline):
             main_index += 1
             stage['refId'] = str(main_index)
         elif current_refId == 'branch':
-            #increments a branch_index to account for multiple parrallel stages
+            # increments a branch_index to account for multiple parrallel stages
             if previous_refId == 'branch':
                 branch_index += 1
             else:
@@ -59,7 +59,7 @@ def renumerate_stages(pipeline):
             stage['refId'] = str((main_index * 100) + branch_index)
             stage['requisiteStageRefIds'] = [str(main_index)]
         elif current_refId == 'merge':
-            # ToDo: Added logic to handle merge stages.
+            # TODO: Added logic to handle merge stages.
             pass
 
         previous_refId = current_refId

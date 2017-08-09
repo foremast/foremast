@@ -200,7 +200,7 @@ class ForemastRunner(object):
             dnsobj.create_failover_dns(primary_region=primary_region)
         else:
             dnsobj.create_elb_dns(regionspecific=False)
-            if regionspecific_dns:  #If true, Also create a region specific DNS record
+            if regionspecific_dns:  # If true, Also create a region specific DNS record
                 dnsobj.create_elb_dns(regionspecific=True)
 
     def create_autoscaling_policy(self):

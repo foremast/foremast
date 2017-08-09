@@ -169,7 +169,7 @@ def update_failover_dns_record(env, zone_id, **kwargs):
     zone_name = hosted_zone_info['HostedZone']['Name'].rstrip('.')
     dns_name = kwargs.get('dns_name')
 
-    #Check that the primary record exists
+    # Check that the primary record exists
     failover_state = kwargs.get('failover_state')
     if failover_state.lower() != 'primary':
         primary_record = find_existing_record(env, zone_id, dns_name, check_key='Failover', check_value='PRIMARY')
