@@ -23,17 +23,6 @@
                 {"account": {{ exception | tojson }}, "region": "*", "stack": "*" }
                 {% if not loop.last %},{% endif %}
                 {% endfor %}
-                {% if 'prod' not in pipeline_configs.chaos_monkey.exceptions %}
-                 ,{"account": "prod", "region": "*", "stack": "*"}
-                {% endif %}
-
-                {% if 'prods' not in pipeline_configs.chaos_monkey.exceptions %}
-                 ,{"account": "prods", "region": "*", "stack": "*"}
-                {% endif %}
-
-                {% if 'prodp' not in pipeline_configs.chaos_monkey.exceptions %}
-                 ,{"account": "prodp", "region": "*", "stack": "*"}
-                {% endif %}
                 ]
 
             }
