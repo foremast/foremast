@@ -76,7 +76,7 @@ class SpinnakerApp:
 
         return filtered_accounts
 
-    def create_app(self):
+    def create_app(self, pipeline_configs):
         """Send a POST to spinnaker to create a new application with class variables.
 
         Raises:
@@ -85,7 +85,8 @@ class SpinnakerApp:
         self.appinfo['accounts'] = self.get_accounts()
         self.log.debug('App info:\n%s', pformat(self.appinfo))
 
-        jsondata = get_template(template_file='infrastructure/app_data.json.j2', appinfo=self.appinfo)
+        jsondata = get_template(template_file='infrastructure/app_data.json.j2',
+                                appinfo=self.appinfo, pipeline_configs=pipeline_configs)
 
         wait_for_task(jsondata)
 
