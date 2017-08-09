@@ -54,7 +54,6 @@ class SpinnakerPipelineLambda(SpinnakerPipeline):
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
         deploy_type = self.settings['pipeline']['type']
-        provider = 'aws'
         pipeline_id = self.compare_with_existing(region=region)
 
         data = {

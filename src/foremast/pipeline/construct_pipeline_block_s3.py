@@ -55,7 +55,6 @@ def construct_pipeline_block_s3(env='',
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
     gen_app_name = generated.app_name()
-    user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project)
 
     data = copy.deepcopy(settings)
 
