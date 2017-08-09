@@ -81,7 +81,7 @@ class S3Deployment(object):
         path_format = "{}/{}/{}"
         s3_format = "s3://{}"
         path = path_format.format(self.bucket, self.s3path, suffix)
-        formatted_path = path.replace('//', '/')  #removes configuration errors
+        formatted_path = path.replace('//', '/')  # removes configuration errors
         full_path = s3_format.format(formatted_path)
         return full_path
 
