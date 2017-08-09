@@ -250,13 +250,13 @@ class APIGateway:
     def attach_method(self, resource_id):
         """Attach the defined method."""
         try:
-            method_r = self.client.put_method(
+            _response = self.client.put_method(
                 restApiId=self.api_id,
                 resourceId=resource_id,
                 httpMethod=self.trigger_settings['method'],
                 authorizationType="NONE",
                 apiKeyRequired=False, )
-            resp_r = self.client.put_method_response(
+            _response = self.client.put_method_response(
                 restApiId=self.api_id,
                 resourceId=resource_id,
                 httpMethod=self.trigger_settings['method'],
