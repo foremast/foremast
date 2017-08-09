@@ -20,5 +20,11 @@
         "handler": "main",
         "vpc_enabled": false
     },
-    "pipeline_files": []
+    "pipeline_files": [],
+    "chaos_monkey": {
+      "enabled": false,
+      "mean_time": 5,
+      "min_time": 3,
+      "exceptions": ["prod", "prods", "prodp"]
+    }
 }

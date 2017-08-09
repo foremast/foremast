@@ -11,13 +11,37 @@
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
             "repoSlug": "{{ appinfo.repo }}",
-            "platformHealthOnlyShowOverride": true
+            "platformHealthOnlyShowOverride": true,
+            "chaosMonkey": {
+                "enabled": {{ pipeline_configs.chaos_monkey.enabled | tojson }},
+                "meanTimeBetweenKillsInWorkDays": {{ pipeline_configs.chaos_monkey.mean_time }},
+                "minTimeBetweenKillsInWorkDays": {{ pipeline_configs.chaos_monkey.min_time }},
+                "grouping": "cluster",
+                "regionsAreIndependent": true,
+                "exceptions":
+                [{% for exception in pipeline_configs.chaos_monkey.exceptions %}
+                {"account": {{ exception | tojson }}, "region": "*", "stack": "*" }
+                {% if not loop.last %},{% endif %}
+                {% endfor %}
+                {% if 'prod' not in pipeline_configs.chaos_monkey.exceptions %}
+                 ,{"account": "prod", "region": "*", "stack": "*"}
+                {% endif %}
+
+                {% if 'prods' not in pipeline_configs.chaos_monkey.exceptions %}
+                 ,{"account": "prods", "region": "*", "stack": "*"}
+                {% endif %}
+
+                {% if 'prodp' not in pipeline_configs.chaos_monkey.exceptions %}
+                 ,{"account": "prodp", "region": "*", "stack": "*"}
+                {% endif %}
+                ]
+
+            }
         },
-        "user":"foremast"
-    }{% if not loop.last %},{% endif %}
+        "user":"foremast" }{% if not loop.last %},{% endif %}
+
     {% endfor %}
   ],
 "application": "{{ appinfo.app }}",
 "description": "Created application {{ appinfo.app }}"
 }
-
