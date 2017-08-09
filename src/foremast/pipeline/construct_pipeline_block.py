@@ -64,7 +64,7 @@ def check_provider_healthcheck(settings, default_provider='Discovery'):
             health_check_providers.append(provider.capitalize())
     LOG.info('Provider healthchecks: %s', health_check_providers)
 
-    if len(health_check_providers) > 0:
+    if health_check_providers:
         has_healthcheck = True
 
     return ProviderHealthCheck(providers=health_check_providers, has_healthcheck=has_healthcheck)
