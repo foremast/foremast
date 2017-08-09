@@ -326,7 +326,7 @@ def rebuild_pipelines(*args):
             continue
 
         app_name = '{}/{}'.format(apps['repoProjectKey'], apps['repoSlug'])
-        if (apps['repoProjectKey'].lower() == rebuild_project.lower() or rebuild_all):
+        if apps['repoProjectKey'].lower() == rebuild_project.lower() or rebuild_all:
             os.environ["PROJECT"] = apps['repoProjectKey']
             os.environ["GIT_REPO"] = apps['repoSlug']
             LOG.info('Rebuilding pipelines for %s', app_name)
