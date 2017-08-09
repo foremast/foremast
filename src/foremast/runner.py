@@ -322,7 +322,7 @@ def rebuild_pipelines(*args):
 
     for apps in all_apps:
         if 'repoProjectKey' not in apps:
-            LOG.info("Skipping {}. No project key found".format(apps['name']))
+            LOG.info('Skipping %s. No project key found', apps['name'])
             continue
 
         app_name = '{}/{}'.format(apps['repoProjectKey'], apps['repoSlug'])

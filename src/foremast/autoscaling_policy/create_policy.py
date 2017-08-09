@@ -82,11 +82,11 @@ class AutoScalingPolicy:
             template_kwargs['comparisonOperator'] = 'LessThanThreshold'
             template_kwargs['scalingAdjustment'] = -1
 
-        self.log.info('Rendering Scaling Policy Template: {0}'.format(template_kwargs))
+        self.log.info('Rendering Scaling Policy Template: %s', template_kwargs)
         rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
         self.log.debug(rendered_template)
         wait_for_task(rendered_template)
-        self.log.info('Successfully created scaling policy in {0}'.format(self.env))
+        self.log.info('Successfully created scaling policy in %s', self.env)
 
     def create_policy(self):
         """Wrapper function. Gets the server group, sets sane defaults,

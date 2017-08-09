@@ -76,7 +76,7 @@ def get_template_name(env, pipeline_type):
     Args:
         env (str): environment to generate templates for
         pipeline_type (str): Type of pipeline like ec2 or lambda
-    
+
     Returns:
         str: Name of template
     """
@@ -188,7 +188,7 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
     instance_security_groups.append(appname)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
 
-    LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
+    LOG.info('Instance security groups to attach: %s', instance_security_groups)
 
     # check if scaling policy exists
     if settings['asg']['scaling_policy']:
@@ -202,7 +202,7 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
         elb = []
     else:
         elb = ['{0}'.format(appname)]
-    LOG.info('Attaching the following ELB: {0}'.format(elb))
+    LOG.info('Attaching the following ELB: %s', elb)
 
     health_checks = check_provider_healthcheck(settings)
 
@@ -220,10 +220,9 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
     # TODO: Migrate the naming logic to an external library to make it easier
     #       to update in the future. Gogo-Utils looks like a good candidate
     ssh_keypair = data['asg'].get('ssh_keypair', None)
-    LOG.info('SSH keypair ({0}) used'.format(ssh_keypair))
     if not ssh_keypair:
         ssh_keypair = '{0}_{1}_default'.format(env, region)
-    LOG.info('SSH keypair ({0}) used'.format(ssh_keypair))
+    LOG.info('SSH keypair (%s) used', ssh_keypair)
 
     if settings['app']['canary']:
         canary_user_data = generate_encoded_user_data(
