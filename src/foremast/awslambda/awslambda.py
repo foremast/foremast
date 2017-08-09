@@ -123,8 +123,8 @@ class LambdaFunction(object):
 
         security_groups = [self.app_name] + lambda_extras
         sg_ids = []
-        for sg in security_groups:
-            sg_id = get_security_group_id(name=sg, env=self.env, region=self.region)
+        for security_group in security_groups:
+            sg_id = get_security_group_id(name=security_group, env=self.env, region=self.region)
             sg_ids.append(sg_id)
         return sg_ids
 
@@ -204,8 +204,8 @@ class LambdaFunction(object):
                                a VPC in lambda
         """
         zip_file = 'lambda-holder.zip'
-        with zipfile.ZipFile(zip_file, mode='w') as z:
-            z.writestr('index.py', 'print "Hello world"')
+        with zipfile.ZipFile(zip_file, mode='w') as zipped:
+            zipped.writestr('index.py', 'print "Hello world"')
 
         contents = ''
         with open('lambda-holder.zip', 'rb') as openfile:

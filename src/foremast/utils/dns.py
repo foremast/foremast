@@ -140,7 +140,7 @@ def delete_existing_cname(env, zone_id, dns_name):
     startrecord = find_existing_record(env, zone_id, newrecord_name, check_key='Type', check_value='CNAME')
     if startrecord:
         LOG.info("Deleting old record: %s", newrecord_name)
-        del_response = client.change_resource_record_sets(
+        _response = client.change_resource_record_sets(
             HostedZoneId=zone_id, ChangeBatch={'Changes': [{
                 'Action': 'DELETE',
                 'ResourceRecordSet': startrecord

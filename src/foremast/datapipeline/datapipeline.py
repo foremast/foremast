@@ -80,18 +80,18 @@ class AWSDataPipeline(object):
 
         json_def = self.datapipeline_data['json_definition']
         try:
-            pipelineObjects = translator.definition_to_api_objects(json_def)
-            parameterObjects = translator.definition_to_api_parameters(json_def)
-            parameterValues = translator.definition_to_parameter_values(json_def)
-        except translator.PipelineDefinitionError as e:
-            LOG.warning(e)
+            pipelineobjects = translator.definition_to_api_objects(json_def)
+            parameterobjects = translator.definition_to_api_parameters(json_def)
+            parametervalues = translator.definition_to_parameter_values(json_def)
+        except translator.PipelineDefinitionError as error:
+            LOG.warning(error)
             raise DataPipelineDefinitionError
 
         response = self.client.put_pipeline_definition(
             pipelineId=self.pipeline_id,
-            pipelineObjects=pipelineObjects,
-            parameterObjects=parameterObjects,
-            parameterValues=parameterValues)
+            pipelineObjects=pipelineobjects,
+            parameterObjects=parameterobjects,
+            parameterValues=parametervalues)
         LOG.debug(response)
         LOG.info("Successfully applied pipeline definition")
         return response
