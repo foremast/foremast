@@ -16,15 +16,9 @@
 """Create Pipelines for Spinnaker."""
 import collections
 import json
-import logging
-import os
 from pprint import pformat
 
-import requests
-
-from ..consts import API_URL
-from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import get_details, get_properties, get_subnets, get_template
+from ..utils import get_subnets, get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_lambda import construct_pipeline_block_lambda
 from .create_pipeline import SpinnakerPipeline

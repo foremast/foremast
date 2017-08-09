@@ -19,7 +19,7 @@ import logging
 import requests
 
 from ...consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
-from ...utils import Gate, get_template, get_vpc_id, wait_for_task
+from ...utils import get_template, get_vpc_id, wait_for_task
 
 LOG = logging.getLogger(__name__)
 

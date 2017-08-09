@@ -14,8 +14,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Create Lambda event triggers."""
-import logging
-
 from foremast.utils import get_properties, remove_all_lambda_permissions
 
 from .api_gateway_event import APIGateway

@@ -15,7 +15,6 @@
 #   limitations under the License.
 """Construct a block section of Stages in a Spinnaker Pipeline."""
 import copy
-import json
 import logging
 from pprint import pformat
 
