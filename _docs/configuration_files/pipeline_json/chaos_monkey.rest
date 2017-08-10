@@ -1,0 +1,39 @@
+.. _chaos_monkey:
+
+``chaos_monkey`` Block
+~~~~~~~~~~~~~~~~~~~~~~
+
+Key that configures Chaos Monkey
+
+``enabled``
+***********
+
+Enable or disable Chaos Monkey
+
+    | *Type*: Boolean
+    | *Default*: ``false``
+
+``mean_time``
+*************
+
+Mean time between terminations
+
+    | *Type*: Int
+    | *Default*: ``5``
+
+``min_time``
+************
+
+Min time between terminations
+
+    | *Type*: Int
+    | *Default*: ``3``
+
+``exceptions``
+**************
+
+Accounts that Chaos MOnkey will not affect
+
+    | *Type*: List of strings
+    | *Default*: ``[]``
+
