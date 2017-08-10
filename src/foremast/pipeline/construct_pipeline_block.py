@@ -35,6 +35,7 @@ def check_provider_healthcheck(settings, default_provider='Discovery'):
             * providers (list): Providers set to use native Health Check.
             * has_healthcheck (bool): If any native Health Checks requested.
     """
+    # pylint: disable=invalid-name
     ProviderHealthCheck = collections.namedtuple('ProviderHealthCheck', ['providers', 'has_healthcheck'])
 
     eureka_enabled = settings['app']['eureka_enabled']
