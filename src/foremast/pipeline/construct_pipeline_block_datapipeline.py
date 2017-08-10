@@ -18,7 +18,7 @@ import copy
 import logging
 from pprint import pformat
 
-from ..utils import generate_encoded_user_data, get_template
+from ..utils import get_template
 
 LOG = logging.getLogger(__name__)
 
