@@ -83,7 +83,7 @@ def write_variables(app_configs=None, out_file='', git_short=''):
 
     json_configs = {}
     for env, configs in app_configs.items():
-        if env is not 'pipeline':
+        if env != 'pipeline':
             instance_profile = generated.iam()['profile']
             rendered_configs = json.loads(
                 get_template('configs/configs.json.j2', env=env, app=generated.app_name(), profile=instance_profile))
