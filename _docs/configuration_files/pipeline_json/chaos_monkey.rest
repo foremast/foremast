@@ -16,7 +16,7 @@ Enable or disable Chaos Monkey
 ``mean_time``
 *************
 
-Mean time between terminations
+Mean time between terminations. If mean_time is n, then the probability of a termination on each day is 1/n
 
     | *Type*: Int
     | *Default*: ``5``
