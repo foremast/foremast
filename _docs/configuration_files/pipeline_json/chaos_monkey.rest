@@ -22,10 +22,10 @@ Mean time between terminations. If mean_time is n, then the probability of a ter
     | *Default*: ``5``
     | *Units*: Days
 
-``min_time``
+``minimum_time``
 ************
 
-Min time between terminations
+Minimum time between terminations
 
     | *Type*: Int
     | *Default*: ``3``
