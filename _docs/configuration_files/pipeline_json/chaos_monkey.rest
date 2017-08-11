@@ -34,7 +34,7 @@ Minimum time between terminations
 ``exceptions``
 **************
 
-Accounts that Chaos MOnkey will not affect
+Accounts that Chaos Monkey will not affect
 
     | *Type*: List of strings
     | *Default*: ``[]``
