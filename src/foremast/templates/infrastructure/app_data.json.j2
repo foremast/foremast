@@ -15,7 +15,7 @@
             "chaosMonkey": {
                 "enabled": {{ pipeline_configs.chaos_monkey.enabled | tojson }},
                 "meanTimeBetweenKillsInWorkDays": {{ pipeline_configs.chaos_monkey.mean_time }},
-                "minTimeBetweenKillsInWorkDays": {{ pipeline_configs.chaos_monkey.min_time }},
+                "minTimeBetweenKillsInWorkDays": {{ pipeline_configs.chaos_monkey.minimum_time }},
                 "grouping": "cluster",
                 "regionsAreIndependent": true,
                 "exceptions":
