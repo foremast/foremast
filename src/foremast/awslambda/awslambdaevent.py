@@ -23,6 +23,7 @@ from .s3_event import create_s3_event
 from .sns_event import create_sns_event
 
 
+# pylint: disable=too-few-public-methods
 class LambdaEvent(object):
     """Manipulate Lambda events."""
 

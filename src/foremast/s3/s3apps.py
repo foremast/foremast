@@ -26,6 +26,7 @@ from ..utils import generate_s3_tags, get_details, get_dns_zone_ids, get_propert
 LOG = logging.getLogger(__name__)
 
 
+# pylint: disable=too-few-public-methods
 class S3Apps(object):
     """Configure infrastructure and policies for S3 web applications."""
 

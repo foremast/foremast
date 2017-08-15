@@ -154,6 +154,7 @@ class Gate(object):
         url = self.normalize_url()
         request_kwargs = self.assemble_request_kwargs(json_data, kwargs)
 
+        # pylint: disable=not-callable
         response = getattr(requests, self.verb)(url.url, **request_kwargs)
 
         assert response.ok, 'Gate API {0} request to {1} failed: {2}'.format(self.verb.upper(), self.path,
