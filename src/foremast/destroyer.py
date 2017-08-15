@@ -31,7 +31,7 @@ from .securitygroup.destroy_sg.destroy_sg import destroy_sg
 LOG = logging.getLogger(__name__)
 
 
-def main():
+def main():  # noqa
     """Attempt to fully destroy AWS Resources for a Spinnaker Application."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
