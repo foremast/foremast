@@ -19,7 +19,7 @@
 from setuptools import find_packages, setup
 
 with open('requirements.txt', 'rt') as reqs_file:
-    reqs_list = reqs_file.readlines()
+    REQUIREMENTS = reqs_file.readlines()
 
 setup(
     name='foremast',
@@ -31,7 +31,7 @@ setup(
     package_dir={'': 'src'},
     setup_requires=['setuptools_scm'],
     use_scm_version={'local_scheme': 'dirty-tag'},
-    install_requires=reqs_list,
+    install_requires=REQUIREMENTS,
     include_package_data=True,
     keywords="aws gogo infrastructure netflixoss python spinnaker",
     url='https://github.com/gogoair/foremast',
