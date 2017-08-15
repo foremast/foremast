@@ -28,7 +28,7 @@ LOG = logging.getLogger(__name__)
 
 
 # TODO: split up into get_az, and get_subnet_id
-@retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)
+@retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)  # noqa
 def get_subnets(
         target='ec2',
         purpose='internal',
