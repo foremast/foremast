@@ -17,6 +17,7 @@
 import collections
 
 
+# pylint: disable=too-many-ancestors
 class DeepChainMap(collections.ChainMap):
     """Deep lookups for collections.ChainMap objects.
 
