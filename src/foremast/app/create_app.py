@@ -86,7 +86,7 @@ class SpinnakerApp:
         """
         self.appinfo['accounts'] = self.get_accounts()
         self.log.debug('App info:\n%s', pformat(self.appinfo))
-
+        self.add_to_instance_links(pipeline_configs=pipeline_configs)
         jsondata = get_template(template_file='infrastructure/app_data.json.j2',
                                 appinfo=self.appinfo, pipeline_configs=pipeline_configs)
 
@@ -94,3 +94,18 @@ class SpinnakerApp:
 
         self.log.info("Successfully created %s application", self.appname)
         return
+
+    def add_to_instance_links(self, pipeline_configs):
+        """Appends on existing instance links
+
+        Args:
+            pipeline_configs (dict): A dictionary containing the pipline.json info
+
+        Returns:
+            pipeline_configs (dict): The dictionary now containing instance links
+        """
+        if pipeline_configs['type'] == 'ec2':
+            for key, value in LINKS.items():
+                if key not in pipeline_configs['instance_links']:
+                    pipeline_configs['instance_links'][key] = value
+        return pipeline_configs
