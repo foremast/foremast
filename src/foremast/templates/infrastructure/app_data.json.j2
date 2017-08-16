@@ -24,10 +24,15 @@
                 {% if not loop.last %},{% endif %}
                 {% endfor %}
                 ]
-
-            }
+            },
+            "instanceLinks": [{
+                "title": "Internal Tools", "links": 
+                [{% for key, value in pipeline_configs.instance_links.items() %}
+                {"title": "{{ key }}", "path": "{{ value }}" }{% if not loop.last %},{% endif %}
+                {% endfor %}]
+            }]
         },
-        "user":"foremast" 
+        "user": "foremast"
     }{% if not loop.last %},{% endif %}
     {% endfor %}
   ],
