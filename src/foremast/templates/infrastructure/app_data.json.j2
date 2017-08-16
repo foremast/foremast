@@ -26,8 +26,8 @@
                 ]
             },
             "instanceLinks": [{
-                "title": "Links", "links": 
-                [{% for key, value in pipeline_config.instance_links.items() %}
+                "title": "Internal Tools", "links": 
+                [{% for key, value in pipeline_configs.instance_links.items() %}
                 {"title": "{{ key }}", "path": "{{ value }}" }{% if not loop.last %},{% endif %}
                 {% endfor %}]
             }]
