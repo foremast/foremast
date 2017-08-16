@@ -170,7 +170,7 @@ def _generate_security_groups(config_key):
     Returns:
         dict: of environments in {'env1': ['group1', 'group2']} format
     """
-    raw_default_groups = validate_key_values(config, 'base', config_key, default='')
+    raw_default_groups = validate_key_values(CONFIG, 'base', config_key, default='')
     default_groups = _convert_string_to_native(raw_default_groups)
     LOG.debug('Default security group for %s is %s', config_key, default_groups)
 
@@ -189,27 +189,27 @@ def _generate_security_groups(config_key):
     return entries
 
 
-config = find_config()
+CONFIG = find_config()
 
-API_URL = validate_key_values(config, 'base', 'gate_api_url')
-GIT_URL = validate_key_values(config, 'base', 'git_url')
-DOMAIN = validate_key_values(config, 'base', 'domain', default='example.com')
-ENVS = set(validate_key_values(config, 'base', 'envs', default='').split(','))
-REGIONS = set(validate_key_values(config, 'base', 'regions', default='').split(','))
-ALLOWED_TYPES = set(validate_key_values(config, 'base', 'types', default='ec2,lambda,s3,datapipeline').split(','))
-TEMPLATES_PATH = validate_key_values(config, 'base', 'templates_path')
-AMI_JSON_URL = validate_key_values(config, 'base', 'ami_json_url')
+API_URL = validate_key_values(CONFIG, 'base', 'gate_api_url')
+GIT_URL = validate_key_values(CONFIG, 'base', 'git_url')
+DOMAIN = validate_key_values(CONFIG, 'base', 'domain', default='example.com')
+ENVS = set(validate_key_values(CONFIG, 'base', 'envs', default='').split(','))
+REGIONS = set(validate_key_values(CONFIG, 'base', 'regions', default='').split(','))
+ALLOWED_TYPES = set(validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline').split(','))
+TEMPLATES_PATH = validate_key_values(CONFIG, 'base', 'templates_path')
+AMI_JSON_URL = validate_key_values(CONFIG, 'base', 'ami_json_url')
 DEFAULT_SECURITYGROUP_RULES = _generate_security_groups('default_securitygroup_rules')
 DEFAULT_EC2_SECURITYGROUPS = _generate_security_groups('default_ec2_securitygroups')
 DEFAULT_ELB_SECURITYGROUPS = _generate_security_groups('default_elb_securitygroups')
-GITLAB_TOKEN = validate_key_values(config, 'credentials', 'gitlab_token')
-SLACK_TOKEN = validate_key_values(config, 'credentials', 'slack_token')
-DEFAULT_TASK_TIMEOUT = validate_key_values(config, 'task_timeouts', 'default', default=120)
-TASK_TIMEOUTS = json.loads(validate_key_values(config, 'task_timeouts', 'envs', default="{}"))
-ASG_WHITELIST = set(validate_key_values(config, 'whitelists', 'asg_whitelist', default='').split(','))
-APP_FORMATS = extract_formats(config)
-GATE_CLIENT_CERT = expandvars(expanduser(validate_key_values(config, 'base', 'gate_client_cert', default='')))
-GATE_CA_BUNDLE = expandvars(expanduser(validate_key_values(config, 'base', 'gate_ca_bundle', default='')))
+GITLAB_TOKEN = validate_key_values(CONFIG, 'credentials', 'gitlab_token')
+SLACK_TOKEN = validate_key_values(CONFIG, 'credentials', 'slack_token')
+DEFAULT_TASK_TIMEOUT = validate_key_values(CONFIG, 'task_timeouts', 'default', default=120)
+TASK_TIMEOUTS = json.loads(validate_key_values(CONFIG, 'task_timeouts', 'envs', default="{}"))
+ASG_WHITELIST = set(validate_key_values(CONFIG, 'whitelists', 'asg_whitelist', default='').split(','))
+APP_FORMATS = extract_formats(CONFIG)
+GATE_CLIENT_CERT = expandvars(expanduser(validate_key_values(CONFIG, 'base', 'gate_client_cert', default='')))
+GATE_CA_BUNDLE = expandvars(expanduser(validate_key_values(CONFIG, 'base', 'gate_ca_bundle', default='')))
 
 HEADERS = {
     'accept': '*/*',
