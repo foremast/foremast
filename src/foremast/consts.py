@@ -59,7 +59,7 @@ def validate_key_values(config_handle, section, key, default=None):
     except DuplicateSectionError:
         pass
 
-    section_handle = config[section]
+    section_handle = config_handle[section]
 
     try:
         value = section_handle[key]
