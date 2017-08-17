@@ -16,12 +16,12 @@ file. If your account is named dev, you would want an
 application-master-dev.json file.
 
 Example Configuration
-----------------------
+---------------------
 
 .. literalinclude:: ../../src/foremast/templates/configs/configs.json.j2
 
 Configuration Details
-----------------------
+---------------------
 
 ``app`` Block
 ~~~~~~~~~~~~~
@@ -29,7 +29,7 @@ Configuration Details
 Top level key that contains information on the application and EC2 details
 
 ``app_description``
-************************
+*******************
 
 Describes the application.
 
@@ -39,7 +39,7 @@ Describes the application.
 .. _eureka_enabled:
 
 ``eureka_enabled``
-***********************
+******************
 
 Setting this value to ``true`` will not create an ELB, DNS record, and set the
 ASG health check to EC2.
@@ -48,7 +48,7 @@ ASG health check to EC2.
     | *Default*: ``false``
 
 ``instance_profile``
-**************************
+********************
 
 The instance profile to start EC2 instances with. Foremast creates default
 instance profile based on the default string. Specifying a different profile
@@ -58,7 +58,7 @@ name assumes the profile exists.
     | *Default*: ``"${stack}_${app}_profile"``
 
 ``instance_type``
-**********************
+*****************
 
 The size/type of the EC2 instance. Uses Standard AWS instance names. See
 https://aws.amazon.com/ec2/instance-types/ for details
@@ -160,7 +160,7 @@ calculate the overall hc_grace_period of 210 seconds.
     | *Units*: Seconds
 
 ``max_inst``
-*************
+************
 
 Maximum number of instances ASG will scale to.
 
@@ -177,7 +177,7 @@ This is also the default number of instances
     | *Default*: ``1``
 
 ``ssh_keypair``
-*******************
+***************
 
 SSH key that your EC2 instances will use. Must already be created in AWS. This
 replaces the non-functional and deprecated app_ssh_key configuration key.
@@ -220,7 +220,7 @@ Defines scaling policy to attach to ASG. If this block does not exist, no
 scaling policy will be attached
 
 ``scaling_policy`` *Keys*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``metric`` : The CloudWatch metric to trigger auto-scaling events.
 
@@ -256,7 +256,7 @@ was met
       - ``"Sum"``
 
 ``scaling_policy`` *Example*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: json
 
@@ -270,7 +270,7 @@ was met
    }
 
 ``elb`` Block
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 Top level key for ELB configuration
 
@@ -327,7 +327,7 @@ first.
 Health check configuration block
 
 ``health`` *Keys*
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 ``interval`` : ELB health check interval
 
@@ -371,7 +371,7 @@ closed by the load balancer.
 Defines ELB listeners. Expects a list of listeners.
 
 ``ports`` *Keys*
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
 ``instance`` : The protocol:port of the instance
 
@@ -473,7 +473,7 @@ Determines if the load balancer should be public (external) or non-public
        - ``"external"``
 
 ``target``
-***********
+**********
 
 The check the ELB will use to validate application is online.
 
@@ -481,7 +481,7 @@ The check the ELB will use to validate application is online.
     | *Default*: ``"TCP:8080"``
 
 ``regions`` Key
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 List of AWS regions that application will be deployed to.
 
@@ -489,7 +489,7 @@ List of AWS regions that application will be deployed to.
     | *Default*: ``[ "us-east-1" ]``
 
 ``deploy_strategy`` Key
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Spinnaker strategy to use for deployments.
 
@@ -516,7 +516,7 @@ Description of the security group. Used in AWS for creation
     | *Default*: ``"Auto-Gen SG for {{ app }}"``
 
 ``elb_extras``
-***************
+**************
 
 A list of extra security groups to assign to ELB
 
@@ -540,7 +540,7 @@ Provides a list of other security groups and ports to allow inbound access to
 application
 
 ``egress``
-***********
+**********
 
 Provides info about outbound access from application
 
@@ -577,12 +577,12 @@ example of this see below:
    }
 
 ``dns`` Block
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 Top level key for dns settings
 
 ``ttl``
-********
+*******
 
 Defines DNS TTL for generated DNS records
 
