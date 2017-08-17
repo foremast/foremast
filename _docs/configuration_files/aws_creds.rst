@@ -17,7 +17,7 @@ account/environment must be specified.
 Example Configuration
 ---------------------
 
-::
+.. code-block:: ini
 
     [build]
     aws_access_key_id = XXXXXXXXXXXXXXXXXXXXXXXXXX
