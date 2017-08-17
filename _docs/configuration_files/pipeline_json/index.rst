@@ -26,6 +26,7 @@ Configuration Details
 
 Specifies what type of pipeline to use for the application.
 
+    | *Type*: string
     | *Default*: ``"ec2"``
     | *Options*:
 
@@ -39,6 +40,7 @@ Specifies what type of pipeline to use for the application.
 
 The application owners email address. This is not used directly in the pipeline but can be consumed by other tools
 
+    | *Type*: string
     | *Default*: ``null``
 
 ``documentation``
@@ -46,6 +48,7 @@ The application owners email address. This is not used directly in the pipeline 
 
 Link to the applications documentation. This is not used directly in the pipeline but can be consumed by other tools
 
+    | *Type*: string
     | *Default*: ``null``
 
 .. include:: notifications.rest
@@ -55,6 +58,7 @@ Link to the applications documentation. This is not used directly in the pipelin
 
 Restriction setting for promotions to prod* accounts.
 
+    | *Type*: string
     | *Default*: ``"none"``
     | *Options*:
 
@@ -67,6 +71,7 @@ Restriction setting for promotions to prod* accounts.
 
 The base AMI to use for baking the application. This can be an alias defined in :ref:`ami-lookup.json` or an AMI Id.
 
+    | *Type*: string
     | *Default*: ``"tomcat8"``
 
 ``env``
@@ -74,7 +79,7 @@ The base AMI to use for baking the application. This can be an alias defined in 
 
 List of accounts that the application will be deployed to. Order matters as it defines the order of the pipeline. The accounts should be named the same as you have them in Spinnaker Clouddriver
 
-    | *Type*: List of strings
+    | *Type*: array
     | *Default*: ``["stage", "prod"]``
 
 .. include:: manual.rest

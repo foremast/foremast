@@ -8,6 +8,7 @@ Where to send pipeline failure notifications
 
 Email address to send pipeline failures (email must be configured in Spinnaker Echo)
 
+    | *Type*: string
     | *Default*: ``null``
 
 ``slack``
@@ -15,4 +16,5 @@ Email address to send pipeline failures (email must be configured in Spinnaker E
 
 Slack channel to send pipeline failures (Slack must be configured in Spinnaker Echo)
 
+    | *Type*: string
     | *Default*: ``null``

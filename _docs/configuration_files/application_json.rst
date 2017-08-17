@@ -29,6 +29,7 @@ Top level key that contains information on the application and EC2 details
 
 Describes the application.
 
+    | *Type*: string
     | *Default*: ``null``
 
 .. _eureka_enabled:
@@ -38,7 +39,7 @@ Describes the application.
 
 Setting this value to ``true`` will not create an ELB, DNS record, and set the ASG health check to EC2.
 
-    | *Type*: Boolean
+    | *Type*: boolean
     | *Default*: ``false``
 
 ``instance_profile``
@@ -46,6 +47,7 @@ Setting this value to ``true`` will not create an ELB, DNS record, and set the A
 
 The instance profile to start EC2 instances with.
 
+    | *Type*: string
     | *Default*: ``"${stack}_${app}_profile"`` - Profile with this name will be created by default. Other profiles need to be created before usage
 
 ``instance_type``
@@ -53,6 +55,7 @@ The instance profile to start EC2 instances with.
 
 The size/type of the EC2 instance. Uses Standard AWS instance names. See https://aws.amazon.com/ec2/instance-types/ for details
 
+    | *Type*: string
     | *Default*: ``"t2.micro"``
 
 ``lambda_environment``
@@ -65,7 +68,7 @@ Environment variables which are passed to the lambda function.
 
     ``Variables`` : Dictionary of environment variables.
 
-        | *Type*: Dict
+        | *Type*: object
         | *Default*: ``null``
 
 ``lambda_environment`` *Example*
@@ -85,6 +88,7 @@ Environment variables which are passed to the lambda function.
 
 The amount of memory to give a Lambda function
 
+    | *Type*: string
     | *Default*: ``"128"``
     | *Units*: Megabytes
 
@@ -93,6 +97,7 @@ The amount of memory to give a Lambda function
 
 Override the default generated IAM Role name.
 
+    | *Type*: string
     | *Default*: ``"${stack}_${app}_role"``
 
 ``lambda_timeout``
@@ -100,6 +105,7 @@ Override the default generated IAM Role name.
 
 The timeout setting for Lambda function
 
+    | *Type*: string
     | *Default*: ``"3600"``
     | *Units*: Seconds
 
@@ -119,6 +125,7 @@ Top level key containing information regarding application ASGs
 
 ASG Health check type (EC2 or ELB)
 
+    | *Type*: string
     | *Default*: ``"ELB"``
     | *Options*:
 
@@ -134,6 +141,7 @@ default hc_grace_period defined in templates. For example, hc_grace_period may b
 may need a variable amount of time to boot (say 30 seconds extra). This will add 180 + 30 to calculate
 the overall hc_grace_period of 210 seconds.
 
+    | *Type*: number
     | *Default*: ``0``
     | *Units*: Seconds
 
@@ -142,7 +150,7 @@ the overall hc_grace_period of 210 seconds.
 
 Maximum number of instances ASG will scale to.
 
-    | *Type*: int
+    | *Type*: number
     | *Default*: ``3``
 
 ``min_inst``
@@ -150,7 +158,7 @@ Maximum number of instances ASG will scale to.
 
 Minimum number of instances your auto-scaling group should have at all times. This is also the default number of instances
 
-    | *Type*: int
+    | *Type*: number
     | *Default*: ``1``
 
 ``ssh_keypair``
@@ -158,6 +166,7 @@ Minimum number of instances your auto-scaling group should have at all times. Th
 
 SSH key that your EC2 instances will use. Must already be created in AWS. This replaces the non-functional and deprecated app_ssh_key configuration key.
 
+    | *Type*: string
     | *Default*: ``"{{ account }}_{{ region }}_default"`` - {{ account }} being the AWS account in the configuration name
 
 ``subnet_purpose``
@@ -165,6 +174,7 @@ SSH key that your EC2 instances will use. Must already be created in AWS. This r
 
 Determines if the instances should be public (external) or non-public (internal).
 
+    | *Type*: string
     | *Default*: ``"internal"``
     | *Options*
 
@@ -193,6 +203,7 @@ Defines scaling policy to attach to ASG. If this block does not exist, no scalin
 
         ``metric`` : The CloudWatch metric to trigger auto-scaling events.
 
+            | *Type*: string
             | *Default*: ``"CPUUtilization"``
             | *Options*:
 
@@ -203,15 +214,16 @@ Defines scaling policy to attach to ASG. If this block does not exist, no scalin
 
         ``threshold`` : Metrics value limit for scaling up
 
-            | *Type*: int
+            | *Type*: number
 
         ``period_minutes`` : Time period to look across for determining if threshold was met
 
-            | *Type*: int
+            | *Type*: number
             | *Units*: Minutes
 
         ``statistic``: Statistic to calculate at the period to determine if threshold was met
 
+            | *Type*: string
             | *Default*: ``"Average"``
             | *Options*:
 
@@ -256,7 +268,7 @@ Access Log configuration block. Ensure S3 bucket has proper bucket policy to ena
 
     ``emit_interval`` : ELB Access Log write delay
 
-        | *Type*: int
+        | *Type*: number
         | *Range*: 5-60
         | *Units*: seconds
         | *Default*: Null
@@ -266,7 +278,7 @@ Access Log configuration block. Ensure S3 bucket has proper bucket policy to ena
 
 Connection Draining Timeout to set on the ELB. This allows existing requests to complete before the load balancer shifts traffic away from a deregistered or unhealthy instance.
 
-    | *Type*: int
+    | *Type*: number
     | *Range*: 1-3600
     | *Units*: seconds
     | *Default*: Null
@@ -276,6 +288,7 @@ Connection Draining Timeout to set on the ELB. This allows existing requests to 
 
 Name of SSL certification for ELB. SSL certificate must be uploaded to AWS first
 
+    | *Type*: string
     | *Default*: Null
 
 ``health``
@@ -288,22 +301,24 @@ Health check configuration block
 
     ``interval`` : ELB health check interval
 
-        | *Type*: int
+        | *Type*: number
         | *Units*: seconds
         | *Default*: ``20``
 
     ``threshold`` : Number of consecutive health check succeses before declaring EC2 instance healthy.
 
+        | *Type*: number
         | *Default*: ``2``
 
     ``timeout`` : Health check response timeout
 
-        | *Type*: int
+        | *Type*: number
         | *Units*: seconds
         | *Default*: ``10``
 
     ``unhealthy_threshold`` : number of consecutive health check failures before declaring EC2 instance unhealthy
 
+        | *Type*: number
         | *Default*: ``5``
 
 ``idle_timeout``
@@ -311,7 +326,7 @@ Health check configuration block
 
 Idle Timeout to set on the ELB. This the time, in seconds, that the connection is allowed to be idle (no data has been sent over the connection) before it is closed by the load balancer.
 
-    | *Type*: int
+    | *Type*: number
     | *Range*: 1-3600
     | *Units*: seconds
     | *Default*: 60
@@ -326,14 +341,17 @@ Defines ELB listeners. Expects a list of listeners.
 
     ``instance`` : The protocol:port of the instance
 
+        | *Type*: string
         | *Default*: ``"HTTP:8080"``
 
     ``loadbalancer`` : the protocol:port of the load balancer
 
+        | *Type*: string
         | *Default*: ``"HTTP:80"``
 
     ``stickiness`` : defines stickiness on ELB; if app, specify cookie_name, if elb, specify cookie_ttl
 
+        | *Type*: object
         | *Default*: ``None``
 
         | *Supported Types*: ``elb``, ``app``
@@ -355,18 +373,18 @@ Defines ELB listeners. Expects a list of listeners.
 
     ``certificate`` : The name of the certificate to use if required
 
+        | *Type*: string
         | *Default*: ``null``
 
     ``listener_policies`` : A list of listener policies to associate to an ELB. Must be created in AWS first.
 
+        | *Type*: array
         | *Default*: ``[]``
-
-        | *Type*: List of strings
 
     ``backend_policies`` : A list of backend server policies to associate to an ELB. Must be created in AWS first.
 
+        | *Type*: array
         | *Default*: ``[]``
-        | *Type*: List of strings
         | *Example*: ``["WebSocket-Proxy-Protocol"]```
 
 ``ports`` *Example*
@@ -400,6 +418,7 @@ Defines ELB listeners. Expects a list of listeners.
 
 Determines if the load balancer should be public (external) or non-public (internal).
 
+    | *Type*: string
     | *Default*: ``"internal"``
     | *Options*:
 
@@ -411,6 +430,7 @@ Determines if the load balancer should be public (external) or non-public (inter
 
 The check the ELB will use to validate application is online.
 
+    | *Type*: string
     | *Default*: ``"TCP:8080"``
 
 ``regions`` Key
@@ -418,7 +438,7 @@ The check the ELB will use to validate application is online.
 
 List of AWS regions that application will be deployed to.
 
-    | *Type*: List of strings
+    | *Type*: array
     | *Default*: ``[ "us-east-1" ]``
 
 ``deploy_strategy`` Key
@@ -426,6 +446,7 @@ List of AWS regions that application will be deployed to.
 
 Spinnaker strategy to use for deployments.
 
+    | *Type*: string
     | *Default*: "highlander"
     | *Options*:
 
@@ -443,6 +464,7 @@ Hold configuration for creating application specific security group
 
 Description of the security group. Used in AWS for creation
 
+    | *Type*: string
     | *Default*: ``"Auto-Gen SG for {{ app }}"``
 
 ``elb_extras``
@@ -450,7 +472,7 @@ Description of the security group. Used in AWS for creation
 
 A list of extra security groups to assign to ELB
 
-    | *Type*: List of strings
+    | *Type*: array
     | *Default*: ``[]``
     | *Example*: ``["all_access", "test_sg"]```
 
@@ -459,7 +481,7 @@ A list of extra security groups to assign to ELB
 
 A list of extra security groups to assign to each instance
 
-    | *Type*: List of strings
+    | *Type*: array
     | *Default*: ``[]``
     | *Example*: ``["all_access", "test_sg"]```
 
@@ -473,6 +495,7 @@ Provides a list of other security groups and ports to allow inbound access to ap
 
 Provides info about outbound access from application
 
+    | *Type*: string
     | *Default*: ``"0.0.0.0/0"```
 
 ``security_group`` *Example*
@@ -510,7 +533,7 @@ Top level key for dns settings
 
 Defines DNS TTL for generated DNS records
 
-    | *Type*: int
+    | *Type*: number
     | *Units*: seconds
     | *Default*: ``60``
 
@@ -521,7 +544,7 @@ Defines DNS TTL for generated DNS records
 
 A list of all events to trigger a Lambda function. See :ref:`lambda_events` for details
 
-    | *Type*: List
+    | *Type*: array
     | *Default*: ``[]``
 
 ``datapipeline`` Block
@@ -550,7 +573,7 @@ Description of the Data Pipeline.
 
 Activates a Data Pipeline after deployment. Useful for OnDemand pipelines
 
-    | *Type*: bool
+    | *Type*: boolean
     | *Default*: ``false``
 
 ``json_definition``
@@ -559,5 +582,5 @@ Activates a Data Pipeline after deployment. Useful for OnDemand pipelines
 The exported JSON definition of the AWS Data Pipeline. You can get this by clicking "Export" in the
 AWS Console when creating the Data Pipeline.
 
-    | *Type*: json
+    | *Type*: object
     | *Default*: ``{}``

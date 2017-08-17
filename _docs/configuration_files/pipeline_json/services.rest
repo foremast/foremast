@@ -10,7 +10,7 @@ Role. Keys must match with a corresponding template in
 
 Add CloudFormation access.
 
-   | *Type*: bool
+   | *Type*: boolean
    | *Default*: ``false``
 
 ``cloudwatchlogs``
@@ -18,7 +18,7 @@ Add CloudFormation access.
 
 Add CloudWatch Logs access. Lambda Functions will automatically have this added.
 
-   | *Type*: bool
+   | *Type*: boolean
    | *Default*: ``false``
 
 ``cloudwatch``
@@ -26,7 +26,7 @@ Add CloudWatch Logs access. Lambda Functions will automatically have this added.
 
 Add CloudWatch Limited access.
 
-   | *Type*: bool
+   | *Type*: boolean
    | *Default*: ``false``
 
 ``dynamodb``
@@ -34,7 +34,7 @@ Add CloudWatch Limited access.
 
 Add DynamoDB access to tables listed.
 
-   | *Type*: list
+   | *Type*: array
    | *Default*: ``[]``
 
 ``elasticsearch``
@@ -42,7 +42,7 @@ Add DynamoDB access to tables listed.
 
 Add ElasticSearch access to domains listed.
 
-   | *Type*: list
+   | *Type*: array
    | *Default*: ``[]``
 
 ``firehose``
@@ -50,7 +50,7 @@ Add ElasticSearch access to domains listed.
 
 Add Firehose access to streams listed.
 
-   | *Type*: list
+   | *Type*: array
    | *Default*: ``[]``
 
 ``kinesis``
@@ -58,7 +58,7 @@ Add Firehose access to streams listed.
 
 Add Kinesis Streams access to streams listed.
 
-   | *Type*: list
+   | *Type*: array
    | *Default*: ``[]``
 
 ``lambda``
@@ -66,7 +66,7 @@ Add Kinesis Streams access to streams listed.
 
 Add Lambda access.
 
-   | *Type*: bool
+   | *Type*: boolean
    | *Default*: ``false``
 
 ``rds-db``
@@ -75,7 +75,7 @@ Add Lambda access.
 Add RDS-DB Connect access to RDS DB Name/RDS DB User key pairs listed.
 (http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html)
 
-   | *Type*: dict
+   | *Type*: object
    | *Default*: ``{}``
    | *Example*: ``{"dbi_resource_id": "db_user", "*": "example_user"}```
 
@@ -109,7 +109,7 @@ of names to add.
 
 Add SimpleDB access to SimpleDB Domains listed.
 
-   | *Type*: list
+   | *Type*: array
    | *Default*: ``[]``
 
 ``ses``
@@ -117,7 +117,7 @@ Add SimpleDB access to SimpleDB Domains listed.
 
 Add SES access.
 
-   | *Type*: bool
+   | *Type*: boolean
    | *Default*: ``false``
 
 ``sns``
@@ -125,7 +125,7 @@ Add SES access.
 
 Add SNS access.
 
-   | *Type*: bool
+   | *Type*: boolean
    | *Default*: ``false``
 
 ``sqs``
@@ -133,5 +133,5 @@ Add SNS access.
 
 Add SQS access.
 
-   | *Type*: bool
+   | *Type*: boolean
    | *Default*: ``false``

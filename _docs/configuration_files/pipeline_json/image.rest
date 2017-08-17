@@ -8,6 +8,6 @@ Holds settings for the baked image
 
 Defines the root volume size of the resulting AMI in GB
 
-    | *Type*: int
+    | *Type*: number
     | *Units*: Gigabyte
     | *Default*: `6`

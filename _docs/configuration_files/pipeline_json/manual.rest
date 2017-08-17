@@ -5,5 +5,5 @@
 
 List of JSON files to use for ``manual`` :ref:`pipeline_type`.
 
-    | *Type*: list
+    | *Type*: array
     | *Default*: ``[]``

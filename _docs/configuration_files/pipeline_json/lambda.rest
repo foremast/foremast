@@ -10,6 +10,7 @@ Holds settings related to lambda deployments
 
 Lambda function description
 
+    | *Type*: string
     | *Default*: ``"default description"``
 
 ``runtime``
@@ -17,6 +18,7 @@ Lambda function description
 
 The runtime environment for the Lambda function
 
+    | *Type*: string
     | *Default*: ``"java8"``
     | *Options*:
 
@@ -31,6 +33,7 @@ The runtime environment for the Lambda function
 
 The function that Lambda calls to beign execution
 
+    | *Type*: string
     | *Default*: ``"main"``
 
 ``vpc_enabled``
@@ -38,5 +41,5 @@ The function that Lambda calls to beign execution
 
 Wether or not the Lambda function should use a VPC
 
-    | *Type*: Boolean
+    | *Type*: boolean
     | *Default*: ``false``
