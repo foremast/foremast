@@ -82,11 +82,11 @@ Add RDS-DB Connect access to RDS DB Name/RDS DB User key pairs listed.
 ``s3``
 ******
 
-Add S3 access. You may need to override default templates, see
-:ref:`templates_path`. Alternatively, you can provide a list of s3 bucket names
-to be added to the instance profile.
+Add S3 access to the provided Bucket. You may need to override default
+templates, see :ref:`templates_path`. To access other S3 Buckets, provide a list
+of names to add.
 
-   | *Type*: bool -or- list
+   | *Type*: bool XOR list
    | *Default*: ``false``
 
 ``sdb``
