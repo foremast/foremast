@@ -90,30 +90,26 @@ internal templates on the `foremast-templates repo`_.
    application's git repository
 
 #. A server-side git hook detects a change and triggers a Jenkins job to run
-   Foremast ``prepare-app-pipeline`` This regenerates the application and
-   pipeline in Spinnaker
+   Foremast ``prepare-app-pipeline``
 
-#. The application artifacts are build using a Jenkins job and stored as an RPM
+   - Regenerates the application and pipeline in Spinnaker
 
-#. Spinnaker triggers detect a completed Jenkins jobs and starts a new
-   deployment pipeline
+#. Build application artifacts using a Jenkins job and stored as an RPM
 
-   #. Bakes an AMI using build RPM
+#. Spinnaker triggers detect a completed Jenkins job and starts a new deployment
+   pipeline
 
-   #. Runs a Jenkins job to run Foremast ``prepare-infrastructure``. This
-      builds out the AWS ELB, SG, S3 bucket, and IAM roles
+   #. Bake an AMI using built RPM
+   #. Jenkins Stage runs Foremast ``prepare-infrastructure``
 
-   #. Runs a Jenkins jobs to tag the effected git repository with AMI info
+      - Creates the AWS ELB, SG, S3 bucket, and IAM roles
 
-   #. Deploys the generated AMI to desired environments
-
-   #. Runs QE/QA checks against deployed application
-
-   #. Tags the repository with deployment information
-
-   #. Attaches defined scaling policies
-
-   #. Wants for manual judgment before continuing to the next stage
+   #. Jenkins Stage tags the source repository with AMI info
+   #. Deploy the generated AMI to desired environments
+   #. Jenkins Stage runs Quality Engineering tests against deployed application
+   #. Jenkins Stage tags the source repository with deployment information
+   #. Jenkins Stage attaches defined scaling policies
+   #. Manual judgment before continuing to the next environment
 
 
 .. _`foremast-templates repo`: https://github.com/gogoair/foremast-template-examples
