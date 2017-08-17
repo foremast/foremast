@@ -9,7 +9,11 @@ application-master-$account.json
 
 Purpose
 -------
-This configuration file holds infrastruction information for $account. Each AWS account in your pipeline would need a seperate application-master-$account.json file. If your account is named dev, you would want an application-master-dev.json file.
+
+This configuration file holds infrastruction information for $account. Each AWS
+account in your pipeline would need a seperate application-master-$account.json
+file. If your account is named dev, you would want an
+application-master-dev.json file.
 
 Example Configuration
 ----------------------
@@ -37,7 +41,8 @@ Describes the application.
 ``eureka_enabled``
 ***********************
 
-Setting this value to ``true`` will not create an ELB, DNS record, and set the ASG health check to EC2.
+Setting this value to ``true`` will not create an ELB, DNS record, and set the
+ASG health check to EC2.
 
     | *Type*: boolean
     | *Default*: ``false``
@@ -45,15 +50,18 @@ Setting this value to ``true`` will not create an ELB, DNS record, and set the A
 ``instance_profile``
 **************************
 
-The instance profile to start EC2 instances with.
+The instance profile to start EC2 instances with. Foremast creates default
+instance profile based on the default string. Specifying a different profile
+name assumes the profile exists.
 
     | *Type*: string
-    | *Default*: ``"${stack}_${app}_profile"`` - Profile with this name will be created by default. Other profiles need to be created before usage
+    | *Default*: ``"${stack}_${app}_profile"``
 
 ``instance_type``
 **********************
 
-The size/type of the EC2 instance. Uses Standard AWS instance names. See https://aws.amazon.com/ec2/instance-types/ for details
+The size/type of the EC2 instance. Uses Standard AWS instance names. See
+https://aws.amazon.com/ec2/instance-types/ for details
 
     | *Type*: string
     | *Default*: ``"t2.micro"``
@@ -135,11 +143,14 @@ ASG Health check type (EC2 or ELB)
 ``app_grace_period``
 ********************
 
-App specific health check grace period (added onto default ASG healthcheck grace period) to delay sending
-of health check requests. This is useful in the event your application takes longer to boot than the
-default hc_grace_period defined in templates. For example, hc_grace_period may be 180 seconds, but an app
-may need a variable amount of time to boot (say 30 seconds extra). This will add 180 + 30 to calculate
-the overall hc_grace_period of 210 seconds.
+App specific health check grace period (added onto default ASG healthcheck grace
+period) to delay sending of health check requests. This is useful in the event
+your application takes longer to boot than the default hc_grace_period defined
+in templates.
+
+For example, hc_grace_period may be 180 seconds, but an app may need a variable
+amount of time to boot (say 30 seconds extra). This will add 180 + 30 to
+calculate the overall hc_grace_period of 210 seconds.
 
     | *Type*: number
     | *Default*: ``0``
@@ -156,7 +167,8 @@ Maximum number of instances ASG will scale to.
 ``min_inst``
 ************
 
-Minimum number of instances your auto-scaling group should have at all times. This is also the default number of instances
+Minimum number of instances your auto-scaling group should have at all times.
+This is also the default number of instances
 
     | *Type*: number
     | *Default*: ``1``
@@ -164,15 +176,18 @@ Minimum number of instances your auto-scaling group should have at all times. Th
 ``ssh_keypair``
 *******************
 
-SSH key that your EC2 instances will use. Must already be created in AWS. This replaces the non-functional and deprecated app_ssh_key configuration key.
+SSH key that your EC2 instances will use. Must already be created in AWS. This
+replaces the non-functional and deprecated app_ssh_key configuration key.
 
     | *Type*: string
-    | *Default*: ``"{{ account }}_{{ region }}_default"`` - {{ account }} being the AWS account in the configuration name
+    | *Default*: ``"{{ account }}_{{ region }}_default"`` - {{ account }} being
+      the AWS account in the configuration name
 
 ``subnet_purpose``
 ******************
 
-Determines if the instances should be public (external) or non-public (internal).
+Determines if the instances should be public (external) or non-public
+(internal).
 
     | *Type*: string
     | *Default*: ``"internal"``
@@ -184,7 +199,9 @@ Determines if the instances should be public (external) or non-public (internal)
 ``enable_public_ips``
 *********************
 
-Determines if instances in an cluster should have public IPs associated. By default, this is set to null which means it uses default behavior configured for your subnets in your cloud provider.
+Determines if instances in an cluster should have public IPs associated. By
+default, this is set to null which means it uses default behavior configured for
+your subnets in your cloud provider.
 
     | *Type*: boolean
     | *Default*: `null`
@@ -196,52 +213,58 @@ Determines if instances in an cluster should have public IPs associated. By defa
 ``scaling_policy``
 ******************
 
-Defines scaling policy to attach to ASG. If this block does not exist, no scaling policy will be attached
+Defines scaling policy to attach to ASG. If this block does not exist, no
+scaling policy will be attached
 
 ``scaling_policy`` *Keys*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-        ``metric`` : The CloudWatch metric to trigger auto-scaling events.
+``metric`` : The CloudWatch metric to trigger auto-scaling events.
 
-            | *Type*: string
-            | *Default*: ``"CPUUtilization"``
-            | *Options*:
+   | *Type*: string
+   | *Default*: ``"CPUUtilization"``
+   | *Options*:
 
-               - ``"CPUUtilization"``
-               -  ``"NetworkIn"``
-               -  ``"NetworkOut"``
-               -  ``"DiskReadBytes"``
+      - ``"CPUUtilization"``
+      -  ``"NetworkIn"``
+      -  ``"NetworkOut"``
+      -  ``"DiskReadBytes"``
 
-        ``threshold`` : Metrics value limit for scaling up
+``threshold`` : Metrics value limit for scaling up
 
-            | *Type*: number
+   | *Type*: number
 
-        ``period_minutes`` : Time period to look across for determining if threshold was met
+``period_minutes`` : Time period to look across for determining if threshold was
+met
 
-            | *Type*: number
-            | *Units*: Minutes
+   | *Type*: number
+   | *Units*: Minutes
 
-        ``statistic``: Statistic to calculate at the period to determine if threshold was met
+``statistic``: Statistic to calculate at the period to determine if threshold
+was met
 
-            | *Type*: string
-            | *Default*: ``"Average"``
-            | *Options*:
+   | *Type*: string
+   | *Default*: ``"Average"``
+   | *Options*:
 
-               - ``"Average"``
-               - ``"Maximum"``
-               - ``"Minimum"``
-               - ``"Sum"``
+      - ``"Average"``
+      - ``"Maximum"``
+      - ``"Minimum"``
+      - ``"Sum"``
 
 ``scaling_policy`` *Example*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-::
 
-      "scaling_policy": {
-          "metric": "CPUUtilization",
-          "threshold": 90,
-          "period_minutes": 10,
-          "statistic": "Average"
-          }
+.. code-block:: json
+
+   {
+       "scaling_policy": {
+           "metric": "CPUUtilization",
+           "threshold": 90,
+           "period_minutes": 10,
+           "statistic": "Average"
+       }
+   }
 
 ``elb`` Block
 ~~~~~~~~~~~~~~
@@ -251,7 +274,8 @@ Top level key for ELB configuration
 ``access_log``
 **************
 
-Access Log configuration block. Ensure S3 bucket has proper bucket policy to enable writing.
+Access Log configuration block. Ensure S3 bucket has proper bucket policy to
+enable writing.
 
 ``access_log`` *Keys*
 ^^^^^^^^^^^^^^^^^^^^^
@@ -276,7 +300,9 @@ Access Log configuration block. Ensure S3 bucket has proper bucket policy to ena
 ``connection_draining_timeout``
 *******************************
 
-Connection Draining Timeout to set on the ELB. This allows existing requests to complete before the load balancer shifts traffic away from a deregistered or unhealthy instance.
+Connection Draining Timeout to set on the ELB. This allows existing requests to
+complete before the load balancer shifts traffic away from a deregistered or
+unhealthy instance.
 
     | *Type*: number
     | *Range*: 1-3600
@@ -286,7 +312,8 @@ Connection Draining Timeout to set on the ELB. This allows existing requests to 
 ``certificate``
 ***************
 
-Name of SSL certification for ELB. SSL certificate must be uploaded to AWS first
+Name of SSL certification for ELB. SSL certificate must be uploaded to AWS
+first.
 
     | *Type*: string
     | *Default*: Null
@@ -299,32 +326,36 @@ Health check configuration block
 ``health`` *Keys*
 ^^^^^^^^^^^^^^^^^^^^^
 
-    ``interval`` : ELB health check interval
+``interval`` : ELB health check interval
 
-        | *Type*: number
-        | *Units*: seconds
-        | *Default*: ``20``
+   | *Type*: number
+   | *Units*: seconds
+   | *Default*: ``20``
 
-    ``threshold`` : Number of consecutive health check succeses before declaring EC2 instance healthy.
+``threshold`` : Number of consecutive health check succeses before declaring EC2
+instance healthy.
 
-        | *Type*: number
-        | *Default*: ``2``
+   | *Type*: number
+   | *Default*: ``2``
 
-    ``timeout`` : Health check response timeout
+``timeout`` : Health check response timeout
 
-        | *Type*: number
-        | *Units*: seconds
-        | *Default*: ``10``
+   | *Type*: number
+   | *Units*: seconds
+   | *Default*: ``10``
 
-    ``unhealthy_threshold`` : number of consecutive health check failures before declaring EC2 instance unhealthy
+``unhealthy_threshold`` : number of consecutive health check failures before
+declaring EC2 instance unhealthy
 
-        | *Type*: number
-        | *Default*: ``5``
+   | *Type*: number
+   | *Default*: ``5``
 
 ``idle_timeout``
 ****************
 
-Idle Timeout to set on the ELB. This the time, in seconds, that the connection is allowed to be idle (no data has been sent over the connection) before it is closed by the load balancer.
+Idle Timeout to set on the ELB. This the time, in seconds, that the connection
+is allowed to be idle (no data has been sent over the connection) before it is
+closed by the load balancer.
 
     | *Type*: number
     | *Range*: 1-3600
@@ -339,84 +370,97 @@ Defines ELB listeners. Expects a list of listeners.
 ``ports`` *Keys*
 ^^^^^^^^^^^^^^^^^^^^
 
-    ``instance`` : The protocol:port of the instance
+``instance`` : The protocol:port of the instance
 
-        | *Type*: string
-        | *Default*: ``"HTTP:8080"``
+   | *Type*: string
+   | *Default*: ``"HTTP:8080"``
 
-    ``loadbalancer`` : the protocol:port of the load balancer
+``loadbalancer`` : the protocol:port of the load balancer
 
-        | *Type*: string
-        | *Default*: ``"HTTP:80"``
+   | *Type*: string
+   | *Default*: ``"HTTP:80"``
 
-    ``stickiness`` : defines stickiness on ELB; if app, specify cookie_name, if elb, specify cookie_ttl
+``stickiness`` : defines stickiness on ELB; if app, specify cookie_name, if elb,
+specify cookie_ttl
 
-        | *Type*: object
-        | *Default*: ``None``
+   | *Type*: object
+   | *Default*: ``None``
+   | *Supported Types*: ``elb``, ``app``
+   | *Example app*:
 
-        | *Supported Types*: ``elb``, ``app``
+      .. code-block:: json
 
-        | *Example*:
+         {
+             "stickiness": {
+                 "type": "app",
+                 "cookie_name": "$cookiename"
+             }
+         }
 
-            ::
+   | *Example elb*:
 
-                "stickiness": {
-                    "type": "app",
-                    "cookie_name": "$cookiename"
-                }
+      .. code-block:: json
 
-                "stickiness": {
-                    "type": "elb",
-                    "cookie_ttl": 300
-                }
+         {
+             "stickiness": {
+                 "type": "elb",
+                 "cookie_ttl": 300
+             }
+         }
 
+``certificate`` : The name of the certificate to use if required
 
-    ``certificate`` : The name of the certificate to use if required
+   | *Type*: string
+   | *Default*: ``null``
 
-        | *Type*: string
-        | *Default*: ``null``
+``listener_policies`` : A list of listener policies to associate to an ELB. Must
+be created in AWS first.
 
-    ``listener_policies`` : A list of listener policies to associate to an ELB. Must be created in AWS first.
+   | *Type*: array
+   | *Default*: ``[]``
 
-        | *Type*: array
-        | *Default*: ``[]``
+``backend_policies`` : A list of backend server policies to associate to an ELB.
+Must be created in AWS first.
 
-    ``backend_policies`` : A list of backend server policies to associate to an ELB. Must be created in AWS first.
-
-        | *Type*: array
-        | *Default*: ``[]``
-        | *Example*: ``["WebSocket-Proxy-Protocol"]```
+   | *Type*: array
+   | *Default*: ``[]``
+   | *Example*: ``["WebSocket-Proxy-Protocol"]```
 
 ``ports`` *Example*
 ^^^^^^^^^^^^^^^^^^^
 
-::
+.. code-block:: json
 
-    "ports": [
-        {
-          "instance": "HTTP:8080",
-          "loadbalancer": "HTTP:80",
-          "stickiness": {
-            "type": "app",
-            "cookie_name": "cookie"
-          }
-        },
-        {
-          "certificate": "my_cert",
-          "instance": "HTTP:8443",
-          "loadbalancer": "HTTPS:443",
-          "listener_policies": ["MyExamplePolicy"],
-          "stickiness": {
-            "type": "elb",
-            "cookie_name": 300
-          }
-        }
-      ]
+   {
+       "ports": [
+           {
+               "instance": "HTTP:8080",
+               "loadbalancer": "HTTP:80",
+               "stickiness": {
+                   "type": "app",
+                   "cookie_name": "cookie"
+               }
+           },
+           {
+               "certificate": "my_cert",
+               "instance": "HTTP:8443",
+               "loadbalancer": "HTTPS:443",
+               "listener_policies": [
+                   "MyExamplePolicy"
+               ],
+               "stickiness": {
+                   "type": "elb",
+                   "cookie_name": 300
+               }
+           }
+       ]
+   }
 
 ``subnet_purpose``
 ******************
 
-Determines if the load balancer should be public (external) or non-public (internal).
+Determines if the load balancer should be public (external) or non-public
+(internal).
 
     | *Type*: string
     | *Default*: ``"internal"``
@@ -452,7 +496,8 @@ Spinnaker strategy to use for deployments.
 
        - ``"highlander"`` - destroy old server group
        - ``"redblack"`` - disables old server group but do not destroy
-       - ``"canary"`` - Only used in S3 deployments. Causes pipeline to first deploy to CANARY path
+       - ``"canary"`` - Only used in S3 deployments. Causes pipeline to first
+         deploy to CANARY path
 
 ``security_group`` Block
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -488,7 +533,8 @@ A list of extra security groups to assign to each instance
 ``ingress``
 ***********
 
-Provides a list of other security groups and ports to allow inbound access to application
+Provides a list of other security groups and ports to allow inbound access to
+application
 
 ``egress``
 ***********
@@ -501,27 +547,31 @@ Provides info about outbound access from application
 ``security_group`` *Example*
 ****************************
 
-You can reference SG by name or by cidr block, you can also specify cross account SG by name by referring to the spinnaker environment name. To see an example of this see below:
+You can reference SG by name or by cidr block, you can also specify cross
+account SG by name by referring to the spinnaker environment name. To see an
+example of this see below:
 
-::
+.. code-block:: json
 
-    "security_group": {
-        "ingress": {
-            "examplesecuritygroupname": [
-                { "start_port": 80, "end_port": 80, "protocol": "tcp" },
-                { "start_port": 443, "end_port": 443, "protocol": "tcp" },
-                { "start_port": 443, "end_port": 443, "protocol": "tcp", "env": "prod" },
-            ],
-            "192.168.100.0/24": [
-                { "start_port": 80, "end_port": 80, "protocol": "tcp" }
-            ]
-        },
-        "egress": {
-            "192.168.100.0/24": [
-                { "start_port": 80, "end_port": 80, "protocol": "tcp" }
-            ]
-        }
-    }
+   {
+       "security_group": {
+           "ingress": {
+               "examplesecuritygroupname": [
+                   {"start_port": 80, "end_port": 80, "protocol": "tcp"},
+                   {"start_port": 443, "end_port": 443, "protocol": "tcp"},
+                   {"start_port": 443, "end_port": 443, "protocol": "tcp", "env": "prod"}
+               ],
+               "192.168.100.0/24": [
+                   {"start_port": 80, "end_port": 80, "protocol": "tcp"}
+               ]
+           },
+           "egress": {
+               "192.168.100.0/24": [
+                   {"start_port": 80, "end_port": 80, "protocol": "tcp"}
+               ]
+           }
+       }
+   }
 
 ``dns`` Block
 ~~~~~~~~~~~~~~
@@ -542,7 +592,8 @@ Defines DNS TTL for generated DNS records
 ``lambda_triggers``
 ~~~~~~~~~~~~~~~~~~~
 
-A list of all events to trigger a Lambda function. See :ref:`lambda_events` for details
+A list of all events to trigger a Lambda function. See :ref:`lambda_events` for
+details
 
     | *Type*: array
     | *Default*: ``[]``
@@ -550,7 +601,8 @@ A list of all events to trigger a Lambda function. See :ref:`lambda_events` for 
 ``datapipeline`` Block
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Top level key for AWS Data Pipeline settings. Only necessary for Data Pipeline deployments.
+Top level key for AWS Data Pipeline settings. Only necessary for Data Pipeline
+deployments.
 
 ``name``
 ********
@@ -579,8 +631,8 @@ Activates a Data Pipeline after deployment. Useful for OnDemand pipelines
 ``json_definition``
 *******************
 
-The exported JSON definition of the AWS Data Pipeline. You can get this by clicking "Export" in the
-AWS Console when creating the Data Pipeline.
+The exported JSON definition of the AWS Data Pipeline. You can get this by
+clicking "Export" in the AWS Console when creating the Data Pipeline.
 
     | *Type*: object
     | *Default*: ``{}``
