@@ -22,7 +22,7 @@ Add CloudWatch Logs access. Lambda Functions will automatically have this added.
    | *Default*: ``false``
 
 ``cloudwatch``
-******************
+**************
 
 Add CloudWatch Limited access.
 
@@ -54,7 +54,7 @@ Add Firehose access to streams listed.
    | *Default*: ``[]``
 
 ``kinesis``
-************
+***********
 
 Add Kinesis Streams access to streams listed.
 
@@ -70,7 +70,7 @@ Add Lambda access.
    | *Default*: ``false``
 
 ``rds-db``
-************
+**********
 
 Add RDS-DB Connect access to RDS DB Name/RDS DB User key pairs listed.
 (http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html)
@@ -105,7 +105,7 @@ of names to add.
         }
 
 ``sdb``
-************
+*******
 
 Add SimpleDB access to SimpleDB Domains listed.
 

@@ -23,7 +23,7 @@ Mean time between terminations. If mean_time is n, then the probability of a ter
     | *Units*: Days
 
 ``minimum_time``
-************
+****************
 
 Minimum time between terminations
 

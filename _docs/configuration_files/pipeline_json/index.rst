@@ -9,6 +9,7 @@ pipeline.json
 
 Purpose
 -------
+
 This configuration file is used for defining pipeline settings that affect the pipeline as a whole, not a specific account/environment.
 
 Example Configuration
@@ -17,7 +18,7 @@ Example Configuration
 .. literalinclude:: ../../../src/foremast/templates/configs/pipeline.json.j2
 
 Configuration Details
-----------------------
+---------------------
 
 .. _pipeline_type:
 
@@ -75,7 +76,7 @@ The base AMI to use for baking the application. This can be an alias defined in 
     | *Default*: ``"tomcat8"``
 
 ``env``
-~~~~~~~~
+~~~~~~~
 
 List of accounts that the application will be deployed to. Order matters as it defines the order of the pipeline. The accounts should be named the same as you have them in Spinnaker Clouddriver
 

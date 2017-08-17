@@ -1,7 +1,7 @@
 .. _lambda_block:
 
 ``lambda`` Block
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 Holds settings related to lambda deployments
 
