@@ -9,7 +9,9 @@ foremast.cfg / config.py
 
 Purpose
 -------
-This configuration holds information necessary for running foremast such as auth tokens, URLs, whitelists etc
+
+This configuration holds information necessary for running foremast such as auth
+tokens, URLs, whitelists etc
 
 Example Configuration
 ---------------------
@@ -20,7 +22,8 @@ Example Configuration
 Configuration Locations
 -----------------------
 
-Foremast will look in the following locations, in order, for the ``foremast.cfg`` or ``config.py`` config file.
+Foremast will look in the following locations, in order, for the
+``foremast.cfg`` or ``config.py`` config file.
 
 1. ``./.foremast/foremast.cfg``
 2. ``~/.foremast/.foremast.cfg``
@@ -45,7 +48,8 @@ The base domain of your applications. Used for generating DNS
 ``envs``
 ********
 
-Comma delimited list of environments/applications that will be managed with Foremast
+Comma delimited list of environments/applications that will be managed with
+Foremast
 
     | *Example*: ``dev,stage,prod``
     | *Required*: Yes
@@ -86,7 +90,8 @@ FQDN of gitlab. Will be used for handling API calls to Gitlab
 ``gate_api_url``
 ****************
 
-FQDN Of your spinnaker Gate instance. This is where all API calls to Spinnaker will go
+FQDN Of your spinnaker Gate instance. This is where all API calls to Spinnaker
+will go
 
     | *Required*: Yes
 
@@ -95,8 +100,9 @@ FQDN Of your spinnaker Gate instance. This is where all API calls to Spinnaker w
 ``templates_path``
 ******************
 
-Path to custom templates directory. If provided, Foremast will first look in this directory for any templates. This can
-be an absolute path, or a path relative to where you where you are running the Foremast commands. See
+Path to custom templates directory. If provided, Foremast will first look in
+this directory for any templates. This can be an absolute path, or a path
+relative to where you where you are running the Foremast commands. See
 :ref:`pipeline_examples` for more details on custom templates.
 
     | *Required*: No
@@ -104,8 +110,10 @@ be an absolute path, or a path relative to where you where you are running the F
 ``default_ec2_securitygroups``
 ******************************
 
-Comma separated list or json of EC2 security groups to include for all deployments. If a comma separated list is given,
-the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
+Comma separated list or json of EC2 security groups to include for all
+deployments. If a comma separated list is given, the groups are applied to all
+environments. If a json is provide, it assigns groups only to the specified
+environment.
 
     | *Required*: No
     | *Example*: ``office,test_sg,example``
@@ -114,8 +122,10 @@ the groups are applied to all environments. If a json is provide, it assigns gro
 ``default_elb_securitygroups``
 ******************************
 
-Comma separated list or json of ELB security groups to include for all deployments. If a comma separated list is given,
-the groups are applied to all environments. If a json is provide, it assigns groups only to the specified environment.
+Comma separated list or json of ELB security groups to include for all
+deployments. If a comma separated list is given, the groups are applied to all
+environments. If a json is provide, it assigns groups only to the specified
+environment.
 
     | *Required*: No
     | *Example*: ``test_sg,example_elb_sg``
@@ -124,14 +134,16 @@ the groups are applied to all environments. If a json is provide, it assigns gro
 
 ''default_securitygroup_rules''
 *******************************
+
     | *Required*: No
     | *Example*: ``{ "bastion" : [ { "start_port": "22", "end_port": "22", "protocol": "tcp" } ] }``
 
 ``gate_client_cert``
 ********************
 
-If accessing Gate via x509 certificate authentication, this value provides the local path to the certificate. Only PEM
-certs are supported at this time (containing both the key and certificate in the PEM).
+If accessing Gate via x509 certificate authentication, this value provides the
+local path to the certificate. Only PEM certs are supported at this time
+(containing both the key and certificate in the PEM).
 
     | *Required*: No
     | *Example*: ``/var/certs/gate-cert.pem``
@@ -139,9 +151,10 @@ certs are supported at this time (containing both the key and certificate in the
 ``gate_ca_bundle``
 ********************
 
-If accessing Gate via x509 leveraging a custom certificate authority (such as acting as your own CA), this value
-provides the local path to the CA bundle. It is recommended to use an existing CA Bundle and append your CA certificate
-to it (https://certifi.io/en/latest/)
+If accessing Gate via x509 leveraging a custom certificate authority (such as
+acting as your own CA), this value provides the local path to the CA bundle. It
+is recommended to use an existing CA Bundle and append your CA certificate to it
+(https://certifi.io/en/latest/)
 
     | *Required*: No
     | *Example*: ``/var/certs/CA.pem``
@@ -149,7 +162,8 @@ to it (https://certifi.io/en/latest/)
 ``[credentials]``
 ~~~~~~~~~~~~~~~~~
 
-Section for handling credential configurations such as tokens, usernames, and passwords
+Section for handling credential configurations such as tokens, usernames, and
+passwords
 
 ``gitlab_token``
 ****************
@@ -181,10 +195,11 @@ Comma delimiated list of applications to whitelist from ASG rules
 ``[formats]``
 ~~~~~~~~~~~~~
 
-Section handling the naming convention of applications, elb, iam, s3 buckets and other services.
+Section handling the naming convention of applications, elb, iam, s3 buckets and
+other services.
 
-The most common sections are shown. The complete list of sections and defaults are defined by the underlying library
-gogo-utils_.
+The most common sections are shown. The complete list of sections and defaults
+are defined by the underlying library gogo-utils_.
 
 Any of the possible variables below can be used as the value.
 
@@ -238,9 +253,8 @@ An string of the format of the application's jenkins job name
 ``[task_timeouts]``
 ~~~~~~~~~~~~~~~~~~~
 
-Section handling customization of task timeouts when communicating with Spinnaker.
-
-Timeouts can vary per environment and per task.
+Section handling customization of task timeouts when communicating with
+Spinnaker. Timeouts can vary per environment and per task.
 
 ``default``
 ***********
@@ -253,7 +267,8 @@ The default task timeout value
 ``envs``
 ********
 
-A json object keyed by environment name. Each value should be a json object keyed by task name.
+A json object keyed by environment name. Each value should be a json object
+keyed by task name.
 
     | *Default*: 120
     | *Required*: No
