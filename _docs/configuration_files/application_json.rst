@@ -81,15 +81,18 @@ Environment variables which are passed to the lambda function.
 
 ``lambda_environment`` *Example*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-::
 
-      "environment": {
-          "Variables": {
-              "VAR1": "val1",
-              "VAR2": "val2",
-              "VAR3": "val3"
-          }
-      }
+.. code-block:: json
+
+   {
+       "environment": {
+           "Variables": {
+               "VAR1": "val1",
+               "VAR2": "val2",
+               "VAR3": "val3"
+           }
+       }
+   }
 
 ``lambda_memory``
 *****************
