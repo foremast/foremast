@@ -38,6 +38,7 @@ class SpinnakerApp:
     Attributes:
         appinfo (dict): A dictionary containing the provided arguments
         appname (str): The name of the application.
+        pipeline_configs (dict): The dictionary containing the info from pipeline.json
     """
 
     def __init__(self, app=None, email=None, project=None, repo=None):
@@ -45,6 +46,7 @@ class SpinnakerApp:
 
         self.appinfo = {'app': app, 'email': email, 'project': project, 'repo': repo}
         self.appname = app
+        self.pipeline_configs = {}
 
     def get_accounts(self, provider='aws'):
         """Get Accounts added to Spinnaker.
@@ -84,28 +86,22 @@ class SpinnakerApp:
         Raises:
             AssertionError: Application creation failed.
         """
+        self.pipeline_configs = pipeline_configs
         self.appinfo['accounts'] = self.get_accounts()
         self.log.debug('App info:\n%s', pformat(self.appinfo))
-        self.add_to_instance_links(pipeline_configs=pipeline_configs)
+        self.add_to_instance_links()
         jsondata = get_template(template_file='infrastructure/app_data.json.j2',
-                                appinfo=self.appinfo, pipeline_configs=pipeline_configs)
+                                appinfo=self.appinfo, pipeline_configs=self.pipeline_configs)
 
         wait_for_task(jsondata)
 
         self.log.info("Successfully created %s application", self.appname)
         return
 
-    def add_to_instance_links(self, pipeline_configs):
-        """Appends on existing instance links
-
-        Args:
-            pipeline_configs (dict): A dictionary containing the pipline.json info
-
-        Returns:
-            pipeline_configs (dict): The dictionary now containing instance links
-        """
-        if pipeline_configs['type'] == 'ec2':
+    def add_to_instance_links(self):
+        """Appends on existing instance links"""
+        if self.pipeline_configs['type'] == 'ec2':
             for key, value in LINKS.items():
-                if key not in pipeline_configs['instance_links']:
-                    pipeline_configs['instance_links'][key] = value
-        return pipeline_configs
+                if key not in self.pipeline_configs['instance_links']:
+                    self.pipeline_configs['instance_links'][key] = value
+
