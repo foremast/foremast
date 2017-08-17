@@ -1,6 +1,6 @@
-================
+==============
 Infrastructure
-================
+==============
 
 .. contents::
    :local:
@@ -8,14 +8,17 @@ Infrastructure
 Spinnaker
 ---------
 
-- Foremast assumes that Spinnaker is already setup. Please see the `Spinnaker documentation`_ for assistance
-- Requires connectivity to the Gate component of Spinnaker. Foremast also supports x509 authentication on Gate.
+- Foremast assumes that Spinnaker is already setup. Please see the `Spinnaker
+  documentation`_ for assistance
+- Requires connectivity to the Gate component of Spinnaker. Foremast also
+  supports x509 authentication on Gate.
 - Assumes AWS EBS is used for Packer bakes in Spinnaker Rosco
-
 
 Spinnaker Component Versions
 ****************************
-Below are the Spinnaker component versions that we use internally at Gogo and that Foremast has been tested against:
+
+Below are the Spinnaker component versions that we use internally at Gogo and
+that Foremast has been tested against:
 
     - Gate: ``2.70.0``
     - Clouddriver: ``1.286.0``
@@ -27,7 +30,8 @@ Below are the Spinnaker component versions that we use internally at Gogo and th
     - Rosco: ``0.42.0``
     - Orca: ``1.168.0``
 
-If you have any issues with Foremast at other Spinnaker versions please file an issue (or pull request).
+If you have any issues with Foremast at other Spinnaker versions please file an
+issue (or pull request).
 
 AWS
 ---
@@ -36,7 +40,8 @@ Foremast only works with AWS (for now). Below are the AWS requirements:
 
 - Foremast IAM Access:
 
-  - Will need credentials set up in a Boto3 configuration file. See :ref:`aws_creds` for details.
+  - Will need credentials set up in a Boto3 configuration file. See
+    :ref:`aws_creds` for details.
 
   - IAM user or role will need the following permissions:
 
@@ -46,7 +51,8 @@ Foremast only works with AWS (for now). Below are the AWS requirements:
 
     - ``Route53``: View, create, and delete DNS records.
 
-  - Everything else, such as ELBs and security groups, are handled through Spinnaker.
+  - Everything else, such as ELBs and security groups, are handled through
+    Spinnaker.
 
 - VPC Subnets
 
@@ -58,12 +64,14 @@ Foremast only works with AWS (for now). Below are the AWS requirements:
 
     - The  ``"purpose"`` key will dictate how this appears in Spinnaker.
 
-      - Needs to be ``"internal"`` or ``"external"`` in order to properly work with Foremast
+      - Needs to be ``"internal"`` or ``"external"`` in order to properly work
+        with Foremast
 
 Jenkins
 -------
 
-Foremast takes advantage of the Spinnaker Jenkins stage. In order for the Foremast generated pipeline to work you will need the following:
+Foremast takes advantage of the Spinnaker Jenkins stage. In order for the
+Foremast generated pipeline to work you will need the following:
 
 - Jenkins configuration named "JenkinsCI" in Spinnaker Igor
 
@@ -78,13 +86,15 @@ Foremast takes advantage of the Spinnaker Jenkins stage. In order for the Forema
               password: 'password'
 
 Necessary Jenkins Jobs
-***********************
+**********************
 
-The default generated pipeline requires a couple of Jenkins jobs to be setup in order to run.
+The default generated pipeline requires a couple of Jenkins jobs to be setup in
+order to run.
 
 - ``pipes-pipeline-prepare``
 
-  - Runs Foremast ``prepare-infrastructure`` during the "Infrastructure Setup" pipeline stage
+  - Runs Foremast ``prepare-infrastructure`` during the "Infrastructure Setup"
+    pipeline stage
 
   - Requires the following string variables
 
@@ -106,7 +116,8 @@ The default generated pipeline requires a couple of Jenkins jobs to be setup in 
 
 - ``pipes-scaling-policy``
 
-  - Runs Foremast ``create-scaling-policy`` for attaching a scaling policy if defined.
+  - Runs Foremast ``create-scaling-policy`` for attaching a scaling policy if
+    defined.
 
   - Only necessary if you plan on attaching scaling policies
 
@@ -123,17 +134,17 @@ The default generated pipeline requires a couple of Jenkins jobs to be setup in 
   - Example Shell after cloning Foremast
 
     .. code-block:: bash
-    
+
        virtualenv -p python3 venv
        . venv/bin/activate
        pip install -U --quiet .
-       
+
        create-scaling-policy
-       
+
        # You can export these variables or also pass them beforehand such as:
        export GIT_REPO=<repo_name>
        export ENV=<spinnaker_env_name>
-       
+
        PROJECT=<repo_project> RUNWAY_DIR=<OS_path_to_runway_dir> \
           REGION=<spinnaker_env_region> \
           foremast-infrastructure
@@ -141,7 +152,11 @@ The default generated pipeline requires a couple of Jenkins jobs to be setup in 
 Gitlab
 ------
 
-Gitlab is not required for Spinnaker but if it is already part of your infrastructure you can have Foremast directly look up the :ref:`pipeline_json` and :ref:`application_json` files. You will need to get the Gitlab Token of a user that has permissions to the desired repository and set them in your :ref:`foremast_config`.
+Gitlab is not required for Spinnaker but if it is already part of your
+infrastructure you can have Foremast directly look up the :ref:`pipeline_json`
+and :ref:`application_json` files. You will need to get the Gitlab Token of a
+user that has permissions to the desired repository and set them in your
+:ref:`foremast_config`.
 
 .. _`Spinnaker documentation`: http://www.spinnaker.io/docs
 .. _`Spinnaker AWS Setup guide`: http://www.spinnaker.io/v1.0/docs/target-deployment-setup#section-amazon-web-services-setup
