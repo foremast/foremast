@@ -86,8 +86,23 @@ Add S3 access to the provided Bucket. You may need to override default
 templates, see :ref:`templates_path`. To access other S3 Buckets, provide a list
 of names to add.
 
-   | *Type*: bool XOR list
+   | *Type*: boolean XOR array
    | *Default*: ``false``
+   | *Example boolean*:
+
+     .. code-block:: json
+
+        {
+          "s3": true
+        }
+
+   | *Example array*:
+
+      .. code-block:: json
+
+        {
+          "s3": ["other_bucket"]
+        }
 
 ``sdb``
 ************
