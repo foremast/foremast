@@ -145,6 +145,7 @@ def delete_existing_cname(env, zone_id, dns_name):
                 'Action': 'DELETE',
                 'ResourceRecordSet': startrecord
             }]})
+        LOG.debug('Response from deleting %s: %s', dns_name, _response)
 
 
 def update_failover_dns_record(env, zone_id, **kwargs):

@@ -257,11 +257,13 @@ class APIGateway:
                 httpMethod=self.trigger_settings['method'],
                 authorizationType="NONE",
                 apiKeyRequired=False, )
+            self.log.debug('Response for resource (%s) push authorization: %s', resource_id, _response)
             _response = self.client.put_method_response(
                 restApiId=self.api_id,
                 resourceId=resource_id,
                 httpMethod=self.trigger_settings['method'],
                 statusCode='200')
+            self.log.debug('Response for resource (%s) no authorization: %s', resource_id, _response)
 
             self.log.info("Successfully attached method: %s", self.trigger_settings['method'])
         except botocore.exceptions.ClientError:
