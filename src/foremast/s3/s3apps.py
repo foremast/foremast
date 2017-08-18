@@ -68,6 +68,7 @@ class S3Apps(object):
                 raise S3SharedBucketNotFound
         else:
             _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket)
+            LOG.debug('Response creating bucket: %s', _response)
             LOG.info('%s - S3 Bucket Upserted', self.bucket)
             if self.s3props['bucket_policy']:
                 self._attach_bucket_policy()
@@ -80,6 +81,7 @@ class S3Apps(object):
         """Attach a bucket policy to app bucket."""
         policy_str = json.dumps(self.s3props['bucket_policy'])
         _response = self.s3client.put_bucket_policy(Bucket=self.bucket, Policy=policy_str)
+        LOG.debug('Response adding bucket policy: %s', _response)
         LOG.info('S3 Bucket Policy Attached')
 
     def _set_website_settings(self):
@@ -93,6 +95,7 @@ class S3Apps(object):
             }
         }
         _response = self.s3client.put_bucket_website(Bucket=self.bucket, WebsiteConfiguration=website_config)
+        LOG.debug('Response setting up S3 website: %s', _response)
         LOG.info('S3 website settings updated')
 
     def _set_bucket_dns(self):
