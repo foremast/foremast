@@ -77,15 +77,18 @@ def get_lambda_alias_arn(app, account, region):
 
     lambda_aliases = lambda_client.list_aliases(FunctionName=app)
 
+    matched_alias = None
     for alias in lambda_aliases['Aliases']:
         if alias['Name'] == account:
             lambda_alias_arn = alias['AliasArn']
             LOG.info('Found ARN for alias %s for function %s', account, app)
-            return lambda_alias_arn
+            matched_alias = lambda_alias_arn
+            break
     else:
         fatal_message = 'Lambda alias {0} of function {1} not found'.format(account, app)
         LOG.fatal(fatal_message)
         raise LambdaAliasDoesNotExist(fatal_message)
+    return matched_alias
 
 
 def add_lambda_permissions(function='',

@@ -25,10 +25,13 @@ def get_sns_topic_arn(topic_name, account, region):
 
     topics = sns_client.list_topics()['Topics']
 
+    matched_topic = None
     for topic in topics:
         topic_arn = topic['TopicArn']
         if topic_name == topic_arn.split(':')[-1]:
-            return topic_arn
+            matched_topic = topic_arn
+            break
     else:
         LOG.critical("No topic with name %s found.", topic_name)
         raise SNSTopicNotFound('No topic with name {0} found'.format(topic_name))
+    return matched_topic
