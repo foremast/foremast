@@ -20,7 +20,7 @@ from pprint import pformat
 
 from ..utils import get_template
 from .clean_pipelines import clean_pipelines
-from .construct_pipeline_block_datapipeline import construct_pipeline_block_datapipeline
+from .construct_pipeline_block_datapipeline import construct_datapipeline
 from .create_pipeline import SpinnakerPipeline
 from .renumerate_stages import renumerate_stages
 
@@ -100,7 +100,7 @@ class SpinnakerPipelineDataPipeline(SpinnakerPipeline):
             previous_env = None
             for env in envs:
 
-                block = construct_pipeline_block_datapipeline(
+                block = construct_datapipeline(
                     env=env,
                     generated=self.generated,
                     previous_env=previous_env,

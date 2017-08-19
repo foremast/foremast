@@ -23,7 +23,7 @@ from ..utils import get_template
 LOG = logging.getLogger(__name__)
 
 
-def construct_pipeline_block_datapipeline(env='',
+def construct_datapipeline(env='',
                                           generated=None,
                                           previous_env=None,
                                           region='us-east-1',
