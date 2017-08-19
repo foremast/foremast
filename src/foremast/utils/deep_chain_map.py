@@ -48,10 +48,10 @@ class DeepChainMap(collections.ChainMap):
         for mapping in self.maps:
             try:
                 value = mapping[key]
+                map_value = value
                 if isinstance(value, dict):
-                    return dict(DeepChainMap(*list(mapping.get(key, {}) for mapping in self.maps)))
-                else:
-                    return value
+                    map_value = dict(DeepChainMap(*list(mapping.get(key, {}) for mapping in self.maps)))
+                return map_value
             except KeyError:
                 pass
         return self.__missing__(key)
