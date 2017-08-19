@@ -23,4 +23,4 @@ def warning_format(message, category, *_, **__):
 
 
 warnings.formatwarning = warning_format
-warn_user = warnings.warn
+warn_user = warnings.warn  # pylint: disable=invalid-name
