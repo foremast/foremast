@@ -122,7 +122,7 @@ def test_elb_format_cert_name():
     assert compiled_cert == format_cert_name(account='dev', certificate='mycert1')
 
 
-@mock.patch.object(SpinnakerELB, 'configure_load_balancer_attributes')
+@mock.patch.object(SpinnakerELB, 'configure_attributes')
 @mock.patch.object(SpinnakerELB, 'add_backend_policy')
 @mock.patch.object(SpinnakerELB, 'add_listener_policy')
 @mock.patch('foremast.elb.create_elb.wait_for_task')
