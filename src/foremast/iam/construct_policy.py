@@ -36,7 +36,7 @@ from ..utils import get_env_credential, get_template
 LOG = logging.getLogger(__name__)
 
 
-def auto_service(pipeline_settings={}, services={}):  # pylint: disable=W0102
+def auto_service(pipeline_settings={}, services={}):
     """Automatically enable service for deployment types.
 
     Args:
