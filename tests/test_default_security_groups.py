@@ -35,5 +35,5 @@ def test_default_security_groups(mock_properties, mock_details):
     }
     with mock.patch.dict('foremast.securitygroup.create_securitygroup.DEFAULT_SECURITYGROUP_RULES', test_sg):
         sg = SpinnakerSecurityGroup()
-        ingress = sg.update_default_securitygroup_rules()
+        ingress = sg.update_default_rules()
         assert 'myapp' in ingress

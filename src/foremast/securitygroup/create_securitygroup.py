@@ -194,7 +194,7 @@ class SpinnakerSecurityGroup(object):
 
         return True
 
-    def update_default_securitygroup_rules(self):
+    def update_default_rules(self):
         """Concatinate application and global security group rules"""
         ingress = self.properties['security_group']['ingress']
         ingress.update(DEFAULT_SECURITYGROUP_RULES)
@@ -213,7 +213,7 @@ class SpinnakerSecurityGroup(object):
         ingress_rules = []
 
         try:
-            ingress = self.update_default_securitygroup_rules()
+            ingress = self.update_default_rules()
         except KeyError:
             msg = 'Possible missing configuration for "{0}".'.format(self.env)
             self.log.error(msg)
