@@ -335,7 +335,7 @@ def rebuild_pipelines(*args):
                 runner.write_configs()
                 runner.create_pipeline()
                 runner.cleanup()
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 LOG.warning('Error updating pipeline for %s', app_name)
 
 

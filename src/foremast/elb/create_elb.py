@@ -228,6 +228,8 @@ class SpinnakerELB:
         elb_settings = self.properties['elb']
         LOG.debug('Block ELB Settings Pre Configure Load Balancer Attributes:\n%s', pformat(elb_settings))
 
+        # FIXME: Determine why 'job' is not being used
+        # pylint: disable=unused-variable
         for job in json.loads(json_data)['job']:
             load_balancer_attributes = {
                 'CrossZoneLoadBalancing': {
