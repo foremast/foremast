@@ -91,13 +91,15 @@ class LambdaFunction(object):
         """
         aliases = self.lambda_client.list_aliases(FunctionName=self.app_name)
 
+        matched_alias = False
         for alias in aliases['Aliases']:
             if alias['Name'] == self.env:
                 LOG.info('Found alias %s for function %s', self.env, self.app_name)
-                return True
+                matched_alias = True
+                break
         else:
             LOG.info('No alias %s found for function %s', self.env, self.app_name)
-            return False
+        return matched_alias
 
     def _vpc_config(self):
         """Get VPC config."""
