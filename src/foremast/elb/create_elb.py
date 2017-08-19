@@ -123,7 +123,7 @@ class SpinnakerELB:
         self.add_listener_policy(json_data)
         self.add_backend_policy(json_data)
 
-        self.configure_load_balancer_attributes(json_data)
+        self.configure_attributes(json_data)
 
     def add_listener_policy(self, json_data):
         """Attaches listerner policies to an ELB
@@ -216,7 +216,7 @@ class SpinnakerELB:
                     stickiness_dict[externalport] = policyname
         return stickiness_dict
 
-    def configure_load_balancer_attributes(self, json_data):
+    def configure_attributes(self, json_data):
         """Configure load balancer attributes such as idle timeout, connection draining, etc
 
         Args:
