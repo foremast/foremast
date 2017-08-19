@@ -24,11 +24,11 @@ LOG = logging.getLogger(__name__)
 
 
 def construct_datapipeline(env='',
-                                          generated=None,
-                                          previous_env=None,
-                                          region='us-east-1',
-                                          settings=None,
-                                          pipeline_data=None):
+                           generated=None,
+                           previous_env=None,
+                           region='us-east-1',
+                           settings=None,
+                           pipeline_data=None):
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
