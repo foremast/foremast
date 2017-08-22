@@ -74,7 +74,7 @@ def create_s3_event(app_name, env, region, rules):
     config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
 
     principal = 's3.amazonaws.com'
-    rules_hash = hashlib.md5(json.dumps(rules, sort_keys=True)).hexdigest()
+    rules_hash = hashlib.md5(json.dumps(rules, sort_keys=True).encode('utf-8')).hexdigest()
     statement_id = "{}_s3_{}".format(app_name, rules_hash)
     source_arn = "arn:aws:s3:::{}".format(bucket)
     add_lambda_permissions(
