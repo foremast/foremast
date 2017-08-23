@@ -72,12 +72,12 @@ Add Lambda access.
 ``rds-db``
 **********
 
-Add RDS-DB Connect access to RDS DB Name/RDS DB User key pairs listed.
+Add RDS-DB Connect access to RDS DB Resources. Expects RDS DB user to match Spinnaker appname.
 (http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html)
 
    | *Type*: object
    | *Default*: ``{}``
-   | *Example*: ``{"dbi_resource_id": "db_user", "*": "example_user"}```
+   | *Example*: ``["dbi_resource_id", "db-12ABC34DEFG5HIJ6KLMNOP78QR", "*"]```
 
 ``s3``
 ******
