@@ -6,7 +6,7 @@
             ],
             "Resource": [
             {%- for db_resource_id, db_user in items.items() %}
-                "arn:aws:rds-db:{{ region }}:{{ account_number }}:dbuser:{{ db_resource_id }}/{{ db_user }}"
+                "arn:aws:rds-db:{{ region }}:{{ account_number }}:dbuser:{{ db_resource_id }}/{{ app }}"
                 {{ "," if not loop.last }}
             {% endfor %} 
             ]
