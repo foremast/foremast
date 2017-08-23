@@ -50,7 +50,7 @@ def create_cloudwatch_log_event(app_name, env, region, rules):
         LOG.critical('Filter name is required and no filter_name is defined!')
         raise InvalidEventConfiguration('Filter name is required and no filter_name is defined!')
 
-    if not filter_pattern:
+    if filter_pattern is None:
         LOG.critical('Filter pattern is required and no filter_pattern is defined!')
         raise InvalidEventConfiguration('Filter pattern is required and no filter_pattern is defined!')
 
