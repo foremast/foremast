@@ -463,7 +463,9 @@ Must be created in AWS first.
 ******************
 
 Determines if the load balancer should be public (external) or non-public
-(internal).
+(internal). When changing this option, the ELB and DNS Records must be manually
+destroyed before deployment. This is necessary because the ELB Scheme is not
+modifiable.
 
     | *Type*: string
     | *Default*: ``"internal"``
