@@ -112,6 +112,6 @@ class SpinnakerApp:
         instance_links = {}
         self.log.debug("LINKS IS %s", LINKS)
         for key, value in LINKS.items():
-            if key not in self.pipeline_config['instance_links']:
+            if value not in self.pipeline_config['instance_links'].values():
                 instance_links[key] = value
         return instance_links
