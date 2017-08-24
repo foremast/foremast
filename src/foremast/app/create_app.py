@@ -87,19 +87,31 @@ class SpinnakerApp:
         self.appinfo['accounts'] = self.get_accounts()
         self.log.debug('Pipeline Config\n%s', pformat(self.pipeline_config))
         self.log.debug('App info:\n%s', pformat(self.appinfo))
-        self.add_to_instance_links()
-        jsondata = get_template(template_file='infrastructure/app_data.json.j2',
-                                appinfo=self.appinfo, pipeline_configs=self.pipeline_configs)
-
+        jsondata = self.retrieve_template()
         wait_for_task(jsondata)
 
         self.log.info("Successfully created %s application", self.appname)
         return
 
-    def add_to_instance_links(self):
-        """Appends on existing instance links"""
-        if self.pipeline_configs['type'] == 'ec2':
-            for key, value in LINKS.items():
-                if key not in self.pipeline_configs['instance_links']:
-                    self.pipeline_configs['instance_links'][key] = value
+    def retrieve_template(self):
+        """Sets the instance links with pipeline_configs and then renders template files
 
+        Returns:
+            jsondata: A json objects containing templates
+        """
+        links = self.retrieve_instance_links()
+        self.log.debug('Links is \n%s', pformat(links))
+        self.pipeline_config['instance_links'].update(links)
+        jsondata = get_template(template_file='infrastructure/app_data.json.j2',
+                                appinfo=self.appinfo, pipeline_config=self.pipeline_config)
+        self.log.debug('jsondata is %s', pformat(jsondata))
+        return jsondata
+
+    def retrieve_instance_links(self):
+        """Appends on existing instance links"""
+        instance_links = {}
+        self.log.debug("LINKS IS %s", LINKS)
+        for key, value in LINKS.items():
+            if key not in self.pipeline_config['instance_links']:
+                instance_links[key] = value
+        return instance_links
