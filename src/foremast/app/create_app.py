@@ -30,6 +30,7 @@ class SpinnakerApp:
     """Class to manage and create Spinnaker applications
 
     Args:
+        pipeline_config (dict): pipeline.json data.
         app (str): Application name.
         email (str): Email associated with application.
         project (str): Git namespace or project group
@@ -38,15 +39,15 @@ class SpinnakerApp:
     Attributes:
         appinfo (dict): A dictionary containing the provided arguments
         appname (str): The name of the application.
-        pipeline_configs (dict): The dictionary containing the info from pipeline.json
+        pipeline_config (dict): The dictionary containing the info from pipeline.json
     """
 
-    def __init__(self, app=None, email=None, project=None, repo=None):
+    def __init__(self, pipeline_config=None, app=None, email=None, project=None, repo=None):
         self.log = logging.getLogger(__name__)
 
         self.appinfo = {'app': app, 'email': email, 'project': project, 'repo': repo}
         self.appname = app
-        self.pipeline_configs = {}
+        self.pipeline_config = pipeline_config
 
     def get_accounts(self, provider='aws'):
         """Get Accounts added to Spinnaker.
@@ -77,17 +78,14 @@ class SpinnakerApp:
 
         return filtered_accounts
 
-    def create_app(self, pipeline_configs=None):
+    def create_app(self):
         """Send a POST to spinnaker to create a new application with class variables.
-
-        Args:
-            pipeline_configs (dict): A dictionary containing the pipeline.json info
 
         Raises:
             AssertionError: Application creation failed.
         """
-        self.pipeline_configs = pipeline_configs
         self.appinfo['accounts'] = self.get_accounts()
+        self.log.debug('Pipeline Config\n%s', pformat(self.pipeline_config))
         self.log.debug('App info:\n%s', pformat(self.appinfo))
         self.add_to_instance_links()
         jsondata = get_template(template_file='infrastructure/app_data.json.j2',
