@@ -84,7 +84,6 @@ class SpinnakerApp:
         Raises:
             AssertionError: Application creation failed.
         """
-        self.pipeline_configs = pipeline_configs
         self.appinfo['accounts'] = self.get_accounts()
         self.log.debug('Pipeline Config\n%s', pformat(self.pipeline_config))
         self.log.debug('App info:\n%s', pformat(self.appinfo))
