@@ -210,7 +210,7 @@ ASG_WHITELIST = set(validate_key_values(config, 'whitelists', 'asg_whitelist', d
 APP_FORMATS = extract_formats(config)
 GATE_CLIENT_CERT = expandvars(expanduser(validate_key_values(config, 'base', 'gate_client_cert', default='')))
 GATE_CA_BUNDLE = expandvars(expanduser(validate_key_values(config, 'base', 'gate_ca_bundle', default='')))
-LINKS = _convert_string_to_native(validate_key_values(config, 'default_links', 'spinnaker_links', {}))
+LINKS = _convert_string_to_native(validate_key_values(config, 'links', 'default', default='{}'))
 
 HEADERS = {
     'accept': '*/*',
