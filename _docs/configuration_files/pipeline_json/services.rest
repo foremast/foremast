@@ -77,7 +77,7 @@ Add RDS-DB Connect access to RDS DB Resources. Expects RDS DB user to match Spin
 
    | *Type*: array
    | *Default*: ``[]``
-   | *Example*: ``["dbi_resource_id", "db-12ABC34DEFG5HIJ6KLMNOP78QR", "*"]```
+   | *Example*: ``["db-12ABC34DEFG5HIJ6KLMNOP78QR", "*"]```
 
 ``s3``
 ******
