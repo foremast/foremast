@@ -108,7 +108,11 @@ class SpinnakerApp:
         return jsondata
 
     def retrieve_instance_links(self):
-        """Appends on existing instance links"""
+        """Appends on existing instance links
+
+        Returns:
+            instance_links: A dictionary containing all the instance links in LINKS and not in pipeline_config
+        """
         instance_links = {}
         self.log.debug("LINKS IS %s", LINKS)
         for key, value in LINKS.items():
