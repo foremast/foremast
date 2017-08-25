@@ -1,0 +1,16 @@
+``instance_links`` Block
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Adds custom instance links to spinnaker. This takes a dictionary
+where the key is the name of the link and the value is the destination.
+
+   | *Example*:
+
+      .. code-block:: json
+
+        {
+          "instance_links": {
+              "health": ":8080/health",
+              "documentation": "http://example.com"
+              }
+        }
