@@ -88,3 +88,4 @@ List of accounts that the application will be deployed to. Order matters as it d
 .. include:: lambda.rest
 .. include:: services.rest
 .. include:: chaos_monkey.rest
+.. include:: instance_links.rest
