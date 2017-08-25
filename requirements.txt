@@ -5,7 +5,6 @@ jinja2
 murl
 pyapi-gitlab
 requests
-requests-mock
 tryagain
 slacker
 
