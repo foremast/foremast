@@ -9,7 +9,10 @@ from foremast.app import SpinnakerApp
 
 @mock.patch('foremast.app.create_app.LINKS', new={"test1": "https://test1.com", "test2": "https://test2.com"})
 def test_instance_links():
-    """Checks if instance_links is being populated properly"""
+    """Tests to see if the instance_links are being populated properly. The retrieve_instance_links method
+    checks to see if the values in the LINKS dictionary are not in the values of pipeline_config['instance_links']
+    and if so appends onto a the instance_links dictionary which is eventually returned.
+    """
     pipeline_config = {
         "instance_links": {
             "test3": "https://test2.com",
@@ -23,7 +26,7 @@ def test_instance_links():
     pipeline_config = { "instance_links": {} }
     spinnaker_app = SpinnakerApp(pipeline_config=pipeline_config)
     instance_links = spinnaker_app.retrieve_instance_links()
-    assert instance_links == {"test1": "https://test1.com", "test2": "https://test2.com"}, "Instance Links are not being retrieved properly"
+    assert instance_links == {"test1": "https://test1.com", "test2": "https://test2.com"}
 
 
 @mock.patch('foremast.app.create_app.API_URL', new='https://test.com')
@@ -77,4 +80,4 @@ def test_retrieval_of_templates(mock_instance_links):
         if value not in mock_instance_links.return_value.values():
             expected_links[key] = value
     expected_links.update(pipeline_config['instance_links'])
-    assert actual_links == expected_links, "instance_links in app_data.json.j2 is not being populated properly"
+    assert actual_links == expected_links
