@@ -26,9 +26,8 @@ def test_instance_links():
     assert instance_links == {"test1": "https://test1.com", "test2": "https://test2.com"}, "Instance Links are not being retrieved properly"
 
 
-@mock.patch('foremast.app.create_app.API_URL', new='https://spinnaker.build.gogoair.com:7777')
-@mock.patch.object(SpinnakerApp, 'retrieve_instance_links', return_value={"test1": "https://test1.com",
-                   "test2": "https://test2.com"})
+@mock.patch('foremast.app.create_app.API_URL', new='https://test.com')
+@mock.patch.object(SpinnakerApp, 'retrieve_instance_links', return_value={"test1": "https://test1.com", "test2": "https://test2.com"})
 def test_retrieval_of_templates(mock_instance_links):
     """Checks to see if the instance links are populating app_data.json.j2 properly.
     This also mocks the return_value of the accounts on Spinnaker"""
@@ -55,7 +54,7 @@ def test_retrieval_of_templates(mock_instance_links):
         "type": "aws",
         "name": "dev",
     }]
-    mock_api_url = 'https://spinnaker.build.gogoair.com:7777/credentials'
+    mock_api_url = 'https://test.com/credentials'
     spinnaker_app = SpinnakerApp(pipeline_config=pipeline_config, app=app, email=email, 
                                  project=project, repo=repo)
     accounts = [
@@ -70,7 +69,12 @@ def test_retrieval_of_templates(mock_instance_links):
         spinnaker_app.appinfo['accounts'] = accounts
         app_data = json.loads(spinnaker_app.retrieve_template())
     instance_links = app_data['job'][0]['application']['instanceLinks'][0]['links']
-    assert_links = {}
+    actual_links = {}
     for instance_link in instance_links:
-        assert_links[instance_link['title']] = instance_link['path']
-    assert assert_links == {**pipeline_config['instance_links'], **mock_instance_links.return_value}, "instance_links in app_data.json.j2 is not being populated properly"
+        actual_links[instance_link['title']] = instance_link['path']
+    expected_links = {}
+    for key, value in pipeline_config['instance_links'].items():
+        if value not in mock_instance_links.return_value.values():
+            expected_links[key] = value
+    expected_links.update(pipeline_config['instance_links'])
+    assert actual_links == expected_links, "instance_links in app_data.json.j2 is not being populated properly"

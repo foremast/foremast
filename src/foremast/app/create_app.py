@@ -19,6 +19,7 @@ Looks to see if the application exists, and if not creates the application.
 """
 import logging
 from pprint import pformat
+
 import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
