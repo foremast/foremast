@@ -127,3 +127,22 @@ def test_default_security_groups(mock_properties, mock_details):
         sg = SpinnakerSecurityGroup()
         ingress = sg.update_default_rules()
         assert 'myapp' in ingress
+
+
+@mock.patch('foremast.securitygroup.create_securitygroup.get_details')
+@mock.patch('foremast.securitygroup.create_securitygroup.get_properties')
+def test_securitygroup_references(mock_properties, mock_details):
+    """Make sure default Security Groups are added to the ingress rules."""
+    test_sg = {
+        '$self': [
+            {
+                'start_port': '22',
+                'end_port': '22',
+                'protocol': 'tcp'
+            },
+        ]
+    }
+
+    sg = SpinnakerSecurityGroup(app='myapp')
+    ingress = sg.resolve_self_references(test_sg)
+    assert 'myapp' in ingress
