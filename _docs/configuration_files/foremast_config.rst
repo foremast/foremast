@@ -135,6 +135,9 @@ environment.
 ``default_securitygroup_rules``
 *******************************
 
+Security group rules that should be included by default for the application specific group. If `$self` is used as the
+security group name, it will self-reference to its own application name.
+
     | *Required*: No
     | *Example*: ``{ "bastion" : [ { "start_port": "22", "end_port": "22", "protocol": "tcp" } ] }``
 
