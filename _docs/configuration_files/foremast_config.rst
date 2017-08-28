@@ -132,7 +132,7 @@ environment.
     | *Example (json)*: ``{"dev": ["sg1", "sg2"], "stage": ["sg3"]}``
 
 
-''default_securitygroup_rules''
+``default_securitygroup_rules``
 *******************************
 
     | *Required*: No
