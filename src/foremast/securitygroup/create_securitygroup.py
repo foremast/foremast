@@ -39,10 +39,11 @@ Examples:
             }
         }
 """
-import ipaddress
 import logging
+from contextlib import suppress
 
 import boto3
+import ipaddress
 from boto3.exceptions import botocore
 
 from ..consts import DEFAULT_SECURITYGROUP_RULES
@@ -196,12 +197,10 @@ class SpinnakerSecurityGroup(object):
 
     def resolve_self_references(self, rules):
         """Resolves `$self` references to actual application name in security group rules."""
-        resolved_rules = {}
-        for app, rule in rules.items():
-            if app == '$self':
-                app = self.app_name
-            resolved_rules[app] = rule
-        return resolved_rules
+        with suppress(KeyError):
+            rule = rules.pop('$self')
+            rules[self.app_name] = rule
+        return rules
 
     def update_default_rules(self):
         """Concatinate application and global security group rules."""
