@@ -194,11 +194,21 @@ class SpinnakerSecurityGroup(object):
 
         return True
 
+    def resolve_self_references(self, rules):
+        """Resolves `$self` references to actual application name in security group rules."""
+        resolved_rules = {}
+        for app, rule in rules.items():
+            if app == '$self':
+                app = self.app_name
+            resolved_rules[app] = rule
+        return resolved_rules
+
     def update_default_rules(self):
-        """Concatinate application and global security group rules"""
+        """Concatinate application and global security group rules."""
         ingress = self.properties['security_group']['ingress']
         ingress.update(DEFAULT_SECURITYGROUP_RULES)
-        return ingress
+        resolved_ingress = self.resolve_self_references(ingress)
+        return resolved_ingress
 
     def create_security_group(self):
         """Send a POST to spinnaker to create a new security group.
