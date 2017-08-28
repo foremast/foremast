@@ -146,3 +146,5 @@ def test_securitygroup_references(mock_properties, mock_details):
     sg = SpinnakerSecurityGroup(app='myapp')
     ingress = sg.resolve_self_references(test_sg)
     assert 'myapp' in ingress
+    assert '22' == ingress['myapp'][0]['start_port']
+    assert '22' == ingress['myapp'][0]['end_port']
