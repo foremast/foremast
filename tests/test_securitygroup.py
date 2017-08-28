@@ -15,7 +15,7 @@
 #   limitations under the License.
 """Ensure Security Groups get created properly"""
 import json
-from unittest.mock import patch
+from unittest import mock
 
 import pytest
 
@@ -39,12 +39,12 @@ SAMPLE_JSON = """{"security_group": {
                   }}"""
 
 
-@patch('foremast.securitygroup.create_securitygroup.boto3')
-@patch('foremast.securitygroup.create_securitygroup.get_security_group_id')
-@patch('foremast.securitygroup.create_securitygroup.get_vpc_id')
-@patch('foremast.securitygroup.create_securitygroup.wait_for_task')
-@patch("foremast.securitygroup.create_securitygroup.get_properties")
-@patch("foremast.securitygroup.create_securitygroup.get_details")
+@mock.patch('foremast.securitygroup.create_securitygroup.boto3')
+@mock.patch('foremast.securitygroup.create_securitygroup.get_security_group_id')
+@mock.patch('foremast.securitygroup.create_securitygroup.get_vpc_id')
+@mock.patch('foremast.securitygroup.create_securitygroup.wait_for_task')
+@mock.patch("foremast.securitygroup.create_securitygroup.get_properties")
+@mock.patch("foremast.securitygroup.create_securitygroup.get_details")
 def test_create_crossaccount_securitygroup(get_details, pipeline_config, wait_for_task, get_vpc_id,
                                            get_security_group_id, boto3):
     """Should create SG with cross account true"""
@@ -57,8 +57,8 @@ def test_create_crossaccount_securitygroup(get_details, pipeline_config, wait_fo
     assert x.create_security_group() is True
 
 
-@patch('foremast.securitygroup.create_securitygroup.get_properties')
-@patch("foremast.securitygroup.create_securitygroup.get_details")
+@mock.patch('foremast.securitygroup.create_securitygroup.get_properties')
+@mock.patch("foremast.securitygroup.create_securitygroup.get_details")
 def test_missing_configuration(get_details, get_properties):
     """Make missing Security Group configurations more apparent."""
     get_properties.return_value = {}
@@ -69,8 +69,8 @@ def test_missing_configuration(get_details, get_properties):
         security_group.create_security_group()
 
 
-@patch('foremast.securitygroup.create_securitygroup.get_properties')
-@patch("foremast.securitygroup.create_securitygroup.get_details")
+@mock.patch('foremast.securitygroup.create_securitygroup.get_properties')
+@mock.patch("foremast.securitygroup.create_securitygroup.get_details")
 def test_misconfiguration(get_details, get_properties):
     """Make bad Security Group definitions more apparent."""
     get_properties.return_value = {'security_group': {}}
@@ -81,10 +81,10 @@ def test_misconfiguration(get_details, get_properties):
         security_group.create_security_group()
 
 
-@patch('foremast.securitygroup.create_securitygroup.boto3')
-@patch('foremast.securitygroup.create_securitygroup.get_properties')
-@patch('foremast.securitygroup.create_securitygroup.get_security_group_id')
-@patch("foremast.securitygroup.create_securitygroup.get_details")
+@mock.patch('foremast.securitygroup.create_securitygroup.boto3')
+@mock.patch('foremast.securitygroup.create_securitygroup.get_properties')
+@mock.patch('foremast.securitygroup.create_securitygroup.get_security_group_id')
+@mock.patch("foremast.securitygroup.create_securitygroup.get_details")
 def test_tags(get_details, get_security_group_id, get_properties, boto3):
     """Make bad Security Group definitions more apparent."""
     get_properties.return_value = {'security_group': {}}
@@ -92,3 +92,38 @@ def test_tags(get_details, get_security_group_id, get_properties, boto3):
 
     security_group = SpinnakerSecurityGroup()
     assert security_group.add_tags() is True
+
+
+@mock.patch('foremast.securitygroup.create_securitygroup.get_details')
+@mock.patch('foremast.securitygroup.create_securitygroup.get_properties')
+def test_default_security_groups(mock_properties, mock_details):
+    """Make sure default Security Groups are added to the ingress rules."""
+    ingress = {
+        'test_app': [
+            {
+                'start_port': 30,
+                'end_port': 30,
+            },
+        ],
+    }
+
+    mock_properties.return_value = {
+        'security_group': {
+            'ingress': ingress,
+            'description': '',
+        },
+    }
+
+    test_sg = {
+        'myapp': [
+            {
+                'start_port': '22',
+                'end_port': '22',
+                'protocol': 'tcp'
+            },
+        ]
+    }
+    with mock.patch.dict('foremast.securitygroup.create_securitygroup.DEFAULT_SECURITYGROUP_RULES', test_sg):
+        sg = SpinnakerSecurityGroup()
+        ingress = sg.update_default_rules()
+        assert 'myapp' in ingress
