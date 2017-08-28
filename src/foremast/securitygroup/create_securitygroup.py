@@ -39,11 +39,11 @@ Examples:
             }
         }
 """
+import ipaddress
 import logging
 from contextlib import suppress
 
 import boto3
-import ipaddress
 from boto3.exceptions import botocore
 
 from ..consts import DEFAULT_SECURITYGROUP_RULES
