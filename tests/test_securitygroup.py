@@ -57,9 +57,10 @@ def test_create_crossaccount_securitygroup(get_details, pipeline_config, wait_fo
     assert x.create_security_group() is True
 
 
+@mock.patch('foremast.securitygroup.create_securitygroup.get_security_group_id')
 @mock.patch('foremast.securitygroup.create_securitygroup.get_properties')
 @mock.patch("foremast.securitygroup.create_securitygroup.get_details")
-def test_missing_configuration(get_details, get_properties):
+def test_missing_configuration(get_details, get_properties, get_sec_id):
     """Make missing Security Group configurations more apparent."""
     get_properties.return_value = {}
 
@@ -69,9 +70,10 @@ def test_missing_configuration(get_details, get_properties):
         security_group.create_security_group()
 
 
+@mock.patch('foremast.securitygroup.create_securitygroup.get_security_group_id')
 @mock.patch('foremast.securitygroup.create_securitygroup.get_properties')
 @mock.patch("foremast.securitygroup.create_securitygroup.get_details")
-def test_misconfiguration(get_details, get_properties):
+def test_misconfiguration(get_details, get_properties, get_sec_id):
     """Make bad Security Group definitions more apparent."""
     get_properties.return_value = {'security_group': {}}
 
