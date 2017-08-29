@@ -243,6 +243,12 @@ class SpinnakerSecurityGroup(object):
         ingress_rules = []
 
         try:
+            _ = get_security_group_id(name=self.app_name, env=self.env, region=self.region)
+            self.log.debug('Security Group ID %s found for %s.', _, self.app_name)
+        except (SpinnakerSecurityGroupError, AssertionError):
+            self._create_security_group(ingress_rules)
+
+        try:
             ingress = self.update_default_rules()
         except KeyError:
             msg = 'Possible missing configuration for "{0}".'.format(self.env)
