@@ -209,8 +209,29 @@ class SpinnakerSecurityGroup(object):
         resolved_ingress = self.resolve_self_references(ingress)
         return resolved_ingress
 
-    def create_security_group(self):
+    def _create_security_group(self, ingress):
         """Send a POST to spinnaker to create a new security group.
+
+        Returns:
+            boolean: True if created successfully
+
+        """
+        template_kwargs = {
+            'app': self.app_name,
+            'env': self.env,
+            'region': self.region,
+            'vpc': get_vpc_id(self.env, self.region),
+            'description': self.properties['security_group']['description'],
+            'ingress': ingress,
+        }
+
+        secgroup_json = get_template(template_file='infrastructure/securitygroup_data.json.j2', **template_kwargs)
+
+        wait_for_task(secgroup_json)
+        return True
+
+    def create_security_group(self):  # noqa
+        """Send a POST to spinnaker to create or update a security group.
 
         Returns:
             boolean: True if created successfully
@@ -269,18 +290,7 @@ class SpinnakerSecurityGroup(object):
 
         ingress_rules_no_cidr, ingress_rules_cidr = self._process_rules(ingress_rules)
 
-        template_kwargs = {
-            'app': self.app_name,
-            'env': self.env,
-            'region': self.region,
-            'vpc': get_vpc_id(self.env, self.region),
-            'description': self.properties['security_group']['description'],
-            'ingress': ingress_rules_no_cidr,
-        }
-
-        secgroup_json = get_template(template_file='infrastructure/securitygroup_data.json.j2', **template_kwargs)
-
-        wait_for_task(secgroup_json)
+        self._create_security_group(ingress_rules_no_cidr)
 
         # Append cidr rules
         self.add_cidr_rules(ingress_rules_cidr)
