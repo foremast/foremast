@@ -243,10 +243,11 @@ class SpinnakerSecurityGroup(object):
         ingress_rules = []
 
         try:
-            _ = get_security_group_id(name=self.app_name, env=self.env, region=self.region)
-            self.log.debug('Security Group ID %s found for %s.', _, self.app_name)
+            security_id = get_security_group_id(name=self.app_name, env=self.env, region=self.region)
         except (SpinnakerSecurityGroupError, AssertionError):
             self._create_security_group(ingress_rules)
+        else:
+            self.log.debug('Security Group ID %s found for %s.', security_id, self.app_name)
 
         try:
             ingress = self.update_default_rules()
