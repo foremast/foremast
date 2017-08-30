@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Create Lambda event triggers."""
-from foremast.utils import get_properties, remove_all_lambda_permissions
+from ..utils import get_properties, remove_all_lambda_permissions
 
 from .api_gateway_event import APIGateway
 from .cloudwatch_event import create_cloudwatch_event
@@ -51,8 +51,6 @@ class LambdaEvent(object):
         triggers = self.properties['lambda_triggers']
 
         for trigger in triggers:
-            if trigger['type'] == 's3':
-                create_s3_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
             if trigger['type'] == 'sns':
                 create_sns_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
@@ -67,3 +65,19 @@ class LambdaEvent(object):
                 apigateway = APIGateway(
                     app=self.app_name, env=self.env, region=self.region, rules=trigger, prop_path=self.prop_path)
                 apigateway.setup_lambda_api()
+
+        # filter all triggers to isolate s3 triggers so we can operate on the entire group
+        s3_triggers = [x for x in triggers if x['type'] == 's3']
+
+        # group triggers by unique target bucket
+        bucket_triggers = dict()
+        for s3_trigger in s3_triggers:
+            bucket = s3_trigger.get('bucket')
+            if bucket in bucket_triggers:
+                bucket_triggers[bucket].append(s3_trigger)
+            else:
+                bucket_triggers[bucket] = [s3_trigger]
+
+        # apply relevant triggers to each respective bucket all at once.
+        for bucket, triggers in bucket_triggers.items():
+            create_s3_event(app_name=self.app_name, env=self.env, region=self.region, bucket=bucket, triggers=triggers)
