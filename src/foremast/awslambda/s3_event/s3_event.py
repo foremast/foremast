@@ -15,67 +15,36 @@
 #   limitations under the License.
 """Create S3 lambda event"""
 
-import hashlib
 import json
 import logging
 
 import boto3
 
-from ...exceptions import InvalidEventConfiguration
 from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_template
 
 LOG = logging.getLogger(__name__)
 
 
-def create_s3_event(app_name, env, region, rules):
-    """Create S3 lambda event from rules.
+def create_s3_event(app_name, env, region, bucket, triggers):
+    """Create S3 lambda events from triggers
 
     Args:
         app_name (str): name of the lambda function
         env (str): Environment/Account for lambda function
         region (str): AWS region of the lambda function
-        rules (obj): Trigger rules from the settings
+        triggers (list): List of triggers from the settings
     """
-
     session = boto3.Session(profile_name=env, region_name=region)
     s3_client = session.client('s3')
-
-    bucket = rules.get('bucket')
-    events = rules.get('events')
-    prefix = rules.get('prefix')
-    suffix = rules.get('suffix')
 
     lambda_alias_arn = get_lambda_alias_arn(app_name, env, region)
 
     LOG.debug("Lambda ARN for lambda function %s is %s.", app_name, lambda_alias_arn)
-    LOG.debug("Creating S3 event for bucket %s with events %s", bucket, events)
+    LOG.debug("Creating S3 events for bucket %s", bucket)
 
-    if None in (bucket, events):
-        LOG.critical("Bucket and events have to be defined")
-        raise InvalidEventConfiguration("Bucket and events have to be defined")
-
-    filters = []
-
-    if prefix:
-        prefix_dict = {"Name": "prefix", "Value": prefix}
-        filters.append(prefix_dict)
-
-    if suffix:
-        suffix_dict = {"Name": "suffix", "Value": suffix}
-        filters.append(suffix_dict)
-
-    if filters:
-        json_filters = json.dumps(filters)
-    else:
-        json_filters = None
-
-    template_kwargs = {"lambda_arn": lambda_alias_arn, "events": json.dumps(events), "filters": json_filters}
-
-    config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
-
+    # allow lambda trigger permission from bucket
     principal = 's3.amazonaws.com'
-    rules_hash = hashlib.md5(json.dumps(rules, sort_keys=True).encode('utf-8')).hexdigest()
-    statement_id = "{}_s3_{}".format(app_name, rules_hash)
+    statement_id = "{}_s3_{}".format(app_name, bucket).replace('.', '')
     source_arn = "arn:aws:s3:::{}".format(bucket)
     add_lambda_permissions(
         function=lambda_alias_arn,
@@ -85,5 +54,9 @@ def create_s3_event(app_name, env, region, rules):
         statement_id=statement_id,
         source_arn=source_arn)
 
+    # configure events on s3 bucket to trigger lambda function
+    template_kwargs = {"lambda_arn": lambda_alias_arn, "triggers": triggers}
+    config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
     s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=json.loads(config))
+
     LOG.info("Created lambda %s S3 event on bucket %s", app_name, bucket)
