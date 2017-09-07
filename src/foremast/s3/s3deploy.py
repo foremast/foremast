@@ -107,11 +107,41 @@ class S3Deployment(object):
         """Recursively upload directory contents to S3."""
         if not os.listdir(self.artifact_path) or not self.artifact_path:
             raise S3ArtifactNotFound
-        cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
+
+        uploaded = False
+        if self.s3props.get("set_content_encoding"):
+            LOG.info("Uploading in multiple parts to set content encoding")
+            uploaded = self.content_encoding_uploads()
+        
+        if not uploaded:
+            cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
                                                                                   self.s3_version_uri, self.env)
-        result = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Upload Command Ouput: %s", result.stdout)
+            result = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
+            LOG.debug("Upload Command Ouput: %s", result.stdout)
+
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
+    
+    def content_encoding_uploads(self):
+        """Finds correct directories and uploads in multiple parts, setting content-encoding for compressed dirs.""" 
+        # list of top level directories
+        dirs = [ name for name in os.listdir(self.artifact_path) if os.path.isdir(os.path.join(self.artifact_path, name)) ]
+        excludes_str = ''
+        includes_cmds = []
+        cmd_base = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path, self.s3_version_uri, self.env)
+        for directory in dirs:
+            if directory == "new_compressed_gzip":
+                encoding = directory.split("_")[-1]
+                excludes_str += '--exclude "{}/*" '.format(directory)
+                include_cmd = '{} --exclude "*", --include "{}/*" --content-encoding {} --metadata-directrive REPLACE'.format(cmd_base, directory, encoding)
+                includes_cmds.append(include_cmd)
+        
+        if excludes_str != ""
+
+        else:
+            return False
+
+        return True
+
 
     def _sync_to_latest(self):
         """Copy and sync versioned directory to LATEST in S3."""
@@ -142,3 +172,13 @@ class S3Deployment(object):
         sync_result = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
         LOG.debug("Sync to canary command output: %s", sync_result.stdout)
         LOG.info("Synced version %s to %s", self.version, self.s3_canary_uri)
+
+    def _set_content_encoding(self, prefix):
+        """Set *_compressed_* directory to have proper character encoding"""
+        aws s3 sync s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/LATEST_compressed_gzip s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/LATEST_compressed_gzip_temp --content-encoding gzip --metadata-directive REPLACE --profile=dev
+        aws s3 sync s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/LATEST_compressed_gzip_temp s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/LATEST_compressed_gzip --content-encoding gzip --metadata-directive REPLACE --profile=dev
+        aws s3 rm s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/LATEST_compressed_gzip_temp --recursive --profile=dev
+
+        aws s3 sync test/ s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/test --exclude "new_compressed_gzip/*" --profile=dev
+        aws s3 sync test/ s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/test --exclude "*"  --include "new_compressed_gzip/*" --content-encoding gzip --metadata-directive REPLACE--profile=dev
+    
