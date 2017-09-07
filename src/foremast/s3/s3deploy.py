@@ -109,9 +109,9 @@ class S3Deployment(object):
             raise S3ArtifactNotFound
 
         uploaded = False
-        if self.s3props.get("content_encodings"):
-            LOG.info("Uploading in multiple parts to set content encoding")
-            uploaded = self.content_encoding_uploads()
+        if self.s3props.get("content_metadata"):
+            LOG.info("Uploading in multiple parts to set metadata")
+            uploaded = self.content_metadata_uploads()
 
         if not uploaded:
             cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
@@ -121,9 +121,9 @@ class S3Deployment(object):
 
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
-    def content_encoding_uploads(self):
+    def content_metadata_uploads(self):
         """Finds all specified encoded directories and uploads in multiple parts,
-        setting content-encoding for compressed dirs.
+        setting metadata for objects.
 
         Returns:
             bool: True if uploaded
@@ -134,24 +134,24 @@ class S3Deployment(object):
                                                                                        self.s3_version_uri,
                                                                                        self.env)
 
-        for content in self.s3props.get('content_encodings'):
+        for content in self.s3props.get('content_metadata'):
             full_path = os.path.join(self.artifact_path, content['path'])
             if not os.listdir(full_path):
                 raise S3ArtifactNotFound
 
             excludes_str += '--exclude "{}/*" '.format(content['path'])
             include_cmd = '{} --exclude "*", --include "{}/*"'.format(cmd_base, content['path'])
-            include_cmd += ' --content-encoding {} --metadata-directive REPLACE'.format(content['encoding'])
+            include_cmd += ' --content-encoding {} --metadata-directive REPLACE'.format(content['content-encoding'])
             includes_cmds.append(include_cmd)
 
         exclude_cmd = '{} {}'.format(cmd_base, excludes_str)
         result = subprocess.run(exclude_cmd, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.info("Uploaded non-encoded files with command: %s", exclude_cmd)
+        LOG.info("Uploaded files without metadata with command: %s", exclude_cmd)
         LOG.debug("Upload Command Output: %s", result.stdout)
 
         for include_cmd in includes_cmds:
             result = subprocess.run(include_cmd, check=True, shell=True, stdout=subprocess.PIPE)
-            LOG.info("Uploaded encoded files with command: %s", include_cmd)
+            LOG.info("Uploaded files with metadata with command: %s", include_cmd)
             LOG.debug("Upload Command Output: %s", result.stdout)
 
         return True
