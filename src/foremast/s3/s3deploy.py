@@ -62,11 +62,13 @@ class S3Deployment(object):
         self.s3_latest_uri = ''
         self.setup_pathing()
 
+
     def setup_pathing(self):
         """Format pathing for S3 deployments."""
         self.s3_version_uri = self._path_formatter(self.version)
         self.s3_latest_uri = self._path_formatter("LATEST")
         self.s3_canary_uri = self._path_formatter("CANARY")
+
 
     def _path_formatter(self, suffix):
         """Format the s3 path properly.
@@ -85,6 +87,7 @@ class S3Deployment(object):
         full_path = s3_format.format(formatted_path)
         return full_path
 
+
     def upload_artifacts(self):
         """Upload artifacts to S3 and copy to LATEST depending on strategy."""
         deploy_strategy = self.properties[self.env]["deploy_strategy"]
@@ -99,13 +102,15 @@ class S3Deployment(object):
         else:
             raise NotImplementedError
 
+
     def promote_artifacts(self):
         """Promote artifact version to LATEST."""
         self._sync_to_latest()
 
+
     def _upload_artifacts_to_version(self):
         """Recursively upload directory contents to S3."""
-        if not os.listdir(self.artifact_path) or not self.arifact_path:
+        if not os.listdir(self.artifact_path) or not self.artifact_path:
             raise S3ArtifactNotFound
 
         uploaded = False
@@ -121,31 +126,38 @@ class S3Deployment(object):
 
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
     
+
     def content_encoding_uploads(self):
-        """Finds correct directories and uploads in multiple parts, setting content-encoding for compressed dirs.""" 
+        """Finds all specified encoded directories and uploads in multiple parts, setting content-encoding for compressed dirs.
+        
+        Returns:
+            bool: True if uploaded
+        """ 
         excludes_str = ''
         includes_cmds = []
         cmd_base = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path, self.s3_version_uri, self.env)
+        
         for content in self.s3props.get('content_encodings'):
             full_path = os.path.join(self.artifact_path, content['path'])
             if not os.listdir(full_path):
                 raise S3ArtifactNotFound
             
             excludes_str += '--exclude "{}/*" '.format(content['path'])
-            include_cmd = '{} --exclude "*", --include "{}/*" --content-encoding {} --metadata-directrive REPLACE'.format(cmd_base, content['path'], content['encoding'])
+            include_cmd = '{} --exclude "*", --include "{}/*" --content-encoding {} --metadata-directive REPLACE'.format(cmd_base, content['path'], content['encoding'])
             includes_cmds.append(include_cmd)
     
         exclude_cmd = '{} {}'.format(cmd_base, excludes_str)
         result = subprocess.run(exclude_cmd, check=True, shell=True, stdout=subprocess.PIPE)
         LOG.info("Uploaded non-encoded files with command: %s", exclude_cmd)
         LOG.debug("Upload Command Output: %s", result.stdout)
-        
+
         for include_cmd in includes_cmds:
             result = subprocess.run(include_cmd, check=True, shell=True, stdout=subprocess.PIPE)
             LOG.info("Uploaded encoded files with command: %s", include_cmd)
             LOG.debug("Upload Command Output: %s", result.stdout)
 
         return True
+
 
     def _sync_to_latest(self):
         """Copy and sync versioned directory to LATEST in S3."""
@@ -162,6 +174,7 @@ class S3Deployment(object):
         LOG.debug("Sync to latest command output: %s", sync_result.stdout)
         LOG.info("Synced version %s to %s", self.version, self.s3_latest_uri)
 
+
     def _sync_to_canary(self):
         """Copy and sync versioned directory to CANARY in S3."""
         cmd_cp = 'aws s3 cp {} {} --recursive --profile {}'.format(self.s3_version_uri, self.s3_canary_uri, self.env)
@@ -176,13 +189,3 @@ class S3Deployment(object):
         sync_result = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
         LOG.debug("Sync to canary command output: %s", sync_result.stdout)
         LOG.info("Synced version %s to %s", self.version, self.s3_canary_uri)
-
-    def _set_content_encoding(self, prefix):
-        """Set *_compressed_* directory to have proper character encoding"""
-        aws s3 sync s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/LATEST_compressed_gzip s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/LATEST_compressed_gzip_temp --content-encoding gzip --metadata-directive REPLACE --profile=dev
-        aws s3 sync s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/LATEST_compressed_gzip_temp s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/LATEST_compressed_gzip --content-encoding gzip --metadata-directive REPLACE --profile=dev
-        aws s3 rm s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/LATEST_compressed_gzip_temp --recursive --profile=dev
-
-        aws s3 sync test/ s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/test --exclude "new_compressed_gzip/*" --profile=dev
-        aws s3 sync test/ s3://common.s3-shared-test.devops.dev.gogoair.com/s3-ui-exampledevops/test --exclude "*"  --include "new_compressed_gzip/*" --content-encoding gzip --metadata-directive REPLACE--profile=dev
-    
