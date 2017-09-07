@@ -105,11 +105,11 @@ class S3Deployment(object):
 
     def _upload_artifacts_to_version(self):
         """Recursively upload directory contents to S3."""
-        if not os.listdir(self.artifact_path) or not self.artifact_path:
+        if not os.listdir(self.artifact_path) or not self.arifact_path:
             raise S3ArtifactNotFound
 
         uploaded = False
-        if self.s3props.get("set_content_encoding"):
+        if self.s3props.get("content_encodings"):
             LOG.info("Uploading in multiple parts to set content encoding")
             uploaded = self.content_encoding_uploads()
         
@@ -123,25 +123,29 @@ class S3Deployment(object):
     
     def content_encoding_uploads(self):
         """Finds correct directories and uploads in multiple parts, setting content-encoding for compressed dirs.""" 
-        # list of top level directories
-        dirs = [ name for name in os.listdir(self.artifact_path) if os.path.isdir(os.path.join(self.artifact_path, name)) ]
         excludes_str = ''
         includes_cmds = []
         cmd_base = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path, self.s3_version_uri, self.env)
-        for directory in dirs:
-            if directory == "new_compressed_gzip":
-                encoding = directory.split("_")[-1]
-                excludes_str += '--exclude "{}/*" '.format(directory)
-                include_cmd = '{} --exclude "*", --include "{}/*" --content-encoding {} --metadata-directrive REPLACE'.format(cmd_base, directory, encoding)
-                includes_cmds.append(include_cmd)
+        for content in self.s3props.get('content_encodings'):
+            full_path = os.path.join(self.artifact_path, content['path'])
+            if not os.listdir(full_path):
+                raise S3ArtifactNotFound
+            
+            excludes_str += '--exclude "{}/*" '.format(content['path'])
+            include_cmd = '{} --exclude "*", --include "{}/*" --content-encoding {} --metadata-directrive REPLACE'.format(cmd_base, content['path'], content['encoding'])
+            includes_cmds.append(include_cmd)
+    
+        exclude_cmd = '{} {}'.format(cmd_base, excludes_str)
+        result = subprocess.run(exclude_cmd, check=True, shell=True, stdout=subprocess.PIPE)
+        LOG.info("Uploaded non-encoded files with command: %s", exclude_cmd)
+        LOG.debug("Upload Command Output: %s", result.stdout)
         
-        if excludes_str != ""
-
-        else:
-            return False
+        for include_cmd in includes_cmds:
+            result = subprocess.run(include_cmd, check=True, shell=True, stdout=subprocess.PIPE)
+            LOG.info("Uploaded encoded files with command: %s", include_cmd)
+            LOG.debug("Upload Command Output: %s", result.stdout)
 
         return True
-
 
     def _sync_to_latest(self):
         """Copy and sync versioned directory to LATEST in S3."""
