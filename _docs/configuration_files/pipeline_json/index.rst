@@ -87,7 +87,6 @@ List of accounts that the application will be deployed to. Order matters as it d
 .. include:: manual.rest
 .. include:: image.rest
 .. include:: lambda.rest
-.. include:: s3.rest
 .. include:: services.rest
 .. include:: chaos_monkey.rest
 .. include:: instance_links.rest
