@@ -25,6 +25,7 @@ S3 Pipeline Example
 
     #. Sets up S3 bucket
     #. Attaches S3 bucket policies and metadata
+    #. Creates friendly DNS record for s3 bucket if website enabled
 
 #. Spinnaker runs a "Deploy S3" stage
 
