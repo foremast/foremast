@@ -37,7 +37,7 @@ The S3 bucket policy in json format to apply to created S3 bucket. Must be a val
 ``content_metadata``
 ********************
 
-S3 uploaded metadata configuration block
+S3 object metadata based on path. The "path" field should have NO leading or trailing slashes.
 
     | *Type*: object
     | *Default*: ``None``
