@@ -8,20 +8,22 @@ Holds settings related to s3 deployments
 ``path``
 ********
 
-Path to upload assets to in a specified s3 bucket. Only works for S3 pipelines not using shared/master bucket setup. 
+Path to upload assets to in a specified s3 bucket. Only works for S3 pipelines not using shared/master bucket setup. Refer to `s3_bucket_master` for more information. 
 
     | *Type*: string
     | *Default*: ``"/"``
-    | *Default*: ``"<app_name>"`` (master/shared bucket)
 
 ``bucket_acl``
 **************
 
-ACL to apply to S3 bucket
+General ACL to apply to S3 bucket
 
     | *Type*: string
     | *Default*: ``"private"``
+    | *Options*:
 
+       - ``"public"``
+       - ``"private"``
 
 ``bucket_policy``
 *****************
