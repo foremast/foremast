@@ -641,3 +641,6 @@ clicking "Export" in the AWS Console when creating the Data Pipeline.
 
     | *Type*: object
     | *Default*: ``{}``
+
+.. include:: s3.rest
+
