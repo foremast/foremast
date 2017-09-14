@@ -107,6 +107,8 @@ class S3Deployment(object):
         """
         if promote_stage.lower() == 'alpha':
             self._sync_to_uri(self.s3_canary_uri)
+        elif promote_stage.lower() == 'canary':
+            self._sync_to_uri(self.s3_latest_uri)
         else:
             self._sync_to_uri(self.s3_latest_uri)
 
