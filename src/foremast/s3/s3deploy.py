@@ -158,7 +158,7 @@ class S3Deployment(object):
 
     def _sync_to_uri(self, uri):
         """Copy and sync versioned directory to uri in S3.
-        
+
         Args:
             uri (str): S3 URI to sync version to.
         """
