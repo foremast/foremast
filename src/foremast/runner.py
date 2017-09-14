@@ -160,7 +160,7 @@ class ForemastRunner(object):
             prop_path=self.json_path,
             artifact_path=self.artifact_path,
             artifact_version=self.artifact_version)
-        s3obj.promote_artifacts(self.promote_stage)
+        s3obj.promote_artifacts(promote_stage=self.promote_stage)
 
     def create_secgroups(self):
         """Create security groups as defined in the configs."""

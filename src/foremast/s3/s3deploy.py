@@ -99,13 +99,13 @@ class S3Deployment(object):
         else:
             raise NotImplementedError
 
-    def promote_artifacts(self, dest):
+    def promote_artifacts(self, promote_stage='latest'):
         """Promote artifact version to dest.
-        
+
         Args:
-            dest (string): Type of URI to promote to
+            promote_stage (string): Stage that is being promoted
         """
-        if dest.lower() == 'canary':
+        if promote_stage.lower() == 'alpha':
             self._sync_to_uri(self.s3_canary_uri)
         else:
             self._sync_to_uri(self.s3_latest_uri)
