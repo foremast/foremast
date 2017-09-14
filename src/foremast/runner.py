@@ -55,6 +55,7 @@ class ForemastRunner(object):
         self.runway_dir = os.getenv("RUNWAY_DIR")
         self.artifact_path = os.getenv("ARTIFACT_PATH")
         self.artifact_version = os.getenv("ARTIFACT_VERSION")
+        self.promote_stage = os.getenv("PROMOTE_STAGE", "latest")
 
         self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
@@ -159,7 +160,7 @@ class ForemastRunner(object):
             prop_path=self.json_path,
             artifact_path=self.artifact_path,
             artifact_version=self.artifact_version)
-        s3obj.promote_artifacts()
+        s3obj.promote_artifacts(self.promote_stage)
 
     def create_secgroups(self):
         """Create security groups as defined in the configs."""
