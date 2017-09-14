@@ -503,6 +503,8 @@ Spinnaker strategy to use for deployments.
        - ``"redblack"`` - disables old server group but do not destroy
        - ``"canary"`` - Only used in S3 deployments. Causes pipeline to first
          deploy to CANARY path
+       - ``"alpha"`` - Only used in S3 deployments. Causes pipeline to first
+         deploy to an ALPHA path
 
 ``security_group`` Block
 ~~~~~~~~~~~~~~~~~~~~~~~~
