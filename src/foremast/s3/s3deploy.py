@@ -90,18 +90,18 @@ class S3Deployment(object):
         deploy_strategy = self.properties[self.env]["deploy_strategy"]
         if deploy_strategy == "highlander":
             self._upload_artifacts_to_version()
-            self._sync_to_latest()
+            self._sync_to_uri(self.s3_latest_uri)
         elif deploy_strategy == "redblack":
             self._upload_artifacts_to_version()
         elif deploy_strategy == "canary":
             self._upload_artifacts_to_version()
-            self._sync_to_canary()
+            self._sync_to_uri(self.s3_canary_uri)
         else:
             raise NotImplementedError
 
     def promote_artifacts(self):
         """Promote artifact version to LATEST."""
-        self._sync_to_latest()
+        self._sync_to_uri(self.s3_latest_uri)
 
     def _upload_artifacts_to_version(self):
         """Recursively upload directory contents to S3."""
@@ -156,32 +156,21 @@ class S3Deployment(object):
 
         return True
 
-    def _sync_to_latest(self):
-        """Copy and sync versioned directory to LATEST in S3."""
-        cmd_cp = 'aws s3 cp {} {} --recursive --profile {}'.format(self.s3_version_uri, self.s3_latest_uri, self.env)
+    def _sync_to_uri(self, uri):
+        """Copy and sync versioned directory to uri in S3.
+        
+        Args:
+            uri (str): S3 URI to sync version to.
+        """
+        cmd_cp = 'aws s3 cp {} {} --recursive --profile {}'.format(self.s3_version_uri, uri, self.env)
         # AWS CLI sync does not work as expected bucket to bucket with exact timestamp sync.
         cmd_sync = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(
-            self.s3_version_uri, self.s3_latest_uri, self.env)
+            self.s3_version_uri, uri, self.env)
 
         cp_result = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Copy to latest before sync output: %s", cp_result.stdout)
-        LOG.info("Copied version %s to %s", self.version, self.s3_latest_uri)
+        LOG.debug("Copy to %s before sync output: %s", uri, cp_result.stdout)
+        LOG.info("Copied version %s to %s", self.version, uri)
 
         sync_result = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Sync to latest command output: %s", sync_result.stdout)
-        LOG.info("Synced version %s to %s", self.version, self.s3_latest_uri)
-
-    def _sync_to_canary(self):
-        """Copy and sync versioned directory to CANARY in S3."""
-        cmd_cp = 'aws s3 cp {} {} --recursive --profile {}'.format(self.s3_version_uri, self.s3_canary_uri, self.env)
-        # AWS CLI sync does not work as expected bucket to bucket with exact timestamp sync.
-        cmd_sync = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(
-            self.s3_version_uri, self.s3_canary_uri, self.env)
-
-        cp_result = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Copy to canary before sync output: %s", cp_result.stdout)
-        LOG.info("Copied version %s to %s", self.version, self.s3_canary_uri)
-
-        sync_result = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Sync to canary command output: %s", sync_result.stdout)
-        LOG.info("Synced version %s to %s", self.version, self.s3_canary_uri)
+        LOG.debug("Sync to %s command output: %s", uri, sync_result.stdout)
+        LOG.info("Synced version %s to %s", self.version, uri)
