@@ -67,6 +67,7 @@ class S3Deployment(object):
         self.s3_version_uri = self._path_formatter(self.version)
         self.s3_latest_uri = self._path_formatter("LATEST")
         self.s3_canary_uri = self._path_formatter("CANARY")
+        self.s3_alpha_uri = self._path_formatter("ALPHA")
 
     def _path_formatter(self, suffix):
         """Format the s3 path properly.
@@ -88,20 +89,26 @@ class S3Deployment(object):
     def upload_artifacts(self):
         """Upload artifacts to S3 and copy to LATEST depending on strategy."""
         deploy_strategy = self.properties[self.env]["deploy_strategy"]
+        self._upload_artifacts_to_version()
         if deploy_strategy == "highlander":
-            self._upload_artifacts_to_version()
             self._sync_to_uri(self.s3_latest_uri)
-        elif deploy_strategy == "redblack":
-            self._upload_artifacts_to_version()
         elif deploy_strategy == "canary":
-            self._upload_artifacts_to_version()
             self._sync_to_uri(self.s3_canary_uri)
+        elif deploy_strategy == "alpha":
+            self._sync_to_uri(self.s3_alpha_uri)
         else:
             raise NotImplementedError
 
-    def promote_artifacts(self):
-        """Promote artifact version to LATEST."""
-        self._sync_to_uri(self.s3_latest_uri)
+    def promote_artifacts(self, dest):
+        """Promote artifact version to dest.
+        
+        Args:
+            dest (string): Type of URI to promote to
+        """
+        if dest.lower() == 'canary':
+            self._sync_to_uri(self.s3_canary_uri)
+        else:
+            self._sync_to_uri(self.s3_latest_uri)
 
     def _upload_artifacts_to_version(self):
         """Recursively upload directory contents to S3."""
