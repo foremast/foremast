@@ -90,10 +90,6 @@ class SpinnakerSecurityGroup(object):
         except (ipaddress.NetmaskValueError, ValueError) as error:
             raise SpinnakerSecurityGroupCreationFailed(error)
 
-        if network.prefixlen < 13:
-            msg = 'The network range ({0}) specified is too open.'.format(rule['app'])
-            raise SpinnakerSecurityGroupCreationFailed(msg)
-
         return True
 
     def _process_rules(self, rules):
