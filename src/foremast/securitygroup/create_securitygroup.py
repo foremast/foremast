@@ -74,8 +74,7 @@ class SpinnakerSecurityGroup(object):
         generated = get_details(app=self.app_name)
         self.group = generated.data['project']
 
-    @staticmethod
-    def _validate_cidr(rule):
+    def _validate_cidr(self, rule):
         """Validate the cidr block in a rule.
 
         Returns:
@@ -89,6 +88,8 @@ class SpinnakerSecurityGroup(object):
             network = ipaddress.IPv4Network(rule['app'])
         except (ipaddress.NetmaskValueError, ValueError) as error:
             raise SpinnakerSecurityGroupCreationFailed(error)
+
+        self.log.debug('Validating CIDR: %s', network.exploded)
 
         return True
 
