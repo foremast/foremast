@@ -3,8 +3,8 @@ boto3
 gogo-utils
 jinja2
 murl
+pluginbase
 pyapi-gitlab
 requests
-tryagain
 slacker
-
+tryagain
