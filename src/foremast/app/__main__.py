@@ -19,12 +19,14 @@ Help: ``python -m src.foremast.app -h``
 """
 import argparse
 import logging
+import pathlib
 
 import gogoutils
 
-from ..args import add_app, add_debug
+from ..args import add_app, add_debug, add_properties
 from ..consts import APP_FORMATS, LOGGING_FORMAT
-from .create_app import SpinnakerApp
+from ..plugin_manager import PluginManager
+from ..utils import get_properties
 
 
 def main():
@@ -33,11 +35,13 @@ def main():
     parser = argparse.ArgumentParser()
     add_debug(parser)
     add_app(parser)
+    add_properties(parser)
     parser.add_argument(
         '--email', help='Email address to associate with application', default='PS-DevOpsTooling@example.com')
     parser.add_argument('--project', help='Git project to associate with application', default='None')
     parser.add_argument('--repo', help='Git repo to associate with application', default='None')
     parser.add_argument('--git', help='Git URI', default=None)
+
     args = parser.parse_args()
 
     logging.basicConfig(format=LOGGING_FORMAT)
@@ -52,8 +56,14 @@ def main():
         project = args.project
         repo = args.repo
 
-    spinnakerapps = SpinnakerApp(app=args.app, email=args.email, project=project, repo=repo)
-    spinnakerapps.create_app()
+    path = pathlib.Path(__file__)
+    manager = PluginManager(str(path.parent), 'aws')
+    plugin = manager.load()
+
+    app_properties = get_properties(args.properties, 'pipeline')
+    spinnakerapps = plugin.SpinnakerApp(
+        app=args.app, email=args.email, project=project, repo=repo, pipeline_config=app_properties)
+    spinnakerapps.create()
 
 
 if __name__ == '__main__':
