@@ -1,11 +1,12 @@
 """Base App."""
+from pprint import pformat
+
 import requests
 
+from ..common.base import BasePlugin
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
 from ..exceptions import ForemastError
-from ..utils import get_template, wait_for_task
-from ..common.base import BasePlugin
-from pprint import pformat
+from ..utils import get_template
 
 
 class BaseApp(BasePlugin):
