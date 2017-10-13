@@ -21,7 +21,12 @@ class SpinnakerApp(BaseApp):
         """
         self.log = logging.getLogger(__name__)
 
-        self.appinfo = {'app': app, 'email': email, 'project': project, 'repo': repo,}
+        self.appinfo = {
+            'app': app,
+            'email': email,
+            'project': project,
+            'repo': repo,
+        }
         self.appname = app
         self.pipeline_config = pipeline_config
 
