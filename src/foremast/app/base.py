@@ -9,6 +9,7 @@ from ..exceptions import ForemastError
 from ..utils import get_template
 
 
+# pylint: disable=abstract-method, no-member
 class BaseApp(BasePlugin):
     """Base App."""
 
