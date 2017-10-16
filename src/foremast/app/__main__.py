@@ -23,7 +23,7 @@ import pathlib
 
 import gogoutils
 
-from ..args import add_app, add_debug, add_properties
+from ..args import add_app, add_debug, add_properties, add_provider
 from ..consts import APP_FORMATS, LOGGING_FORMAT
 from ..plugin_manager import PluginManager
 from ..utils import get_properties
@@ -36,6 +36,7 @@ def main():
     add_debug(parser)
     add_app(parser)
     add_properties(parser)
+    add_provider(parser)
     parser.add_argument(
         '--email', help='Email address to associate with application', default='PS-DevOpsTooling@example.com')
     parser.add_argument('--project', help='Git project to associate with application', default='None')
@@ -57,7 +58,7 @@ def main():
         repo = args.repo
 
     path = pathlib.Path(__file__)
-    manager = PluginManager(str(path.parent), 'aws')
+    manager = PluginManager(str(path.parent), args.provider)
     plugin = manager.load()
 
     app_properties = get_properties(args.properties, 'pipeline')
