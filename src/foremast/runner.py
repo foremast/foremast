@@ -34,6 +34,7 @@ import gogoutils
 
 from foremast import (app, autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
                       securitygroup, slacknotify, utils)
+from foremast.plugin_manager import PluginManager
 
 from .args import add_debug
 
@@ -69,6 +70,11 @@ class ForemastRunner(object):
         self.raw_path = "./raw.properties"
         self.json_path = self.raw_path + ".json"
         self.configs = None
+
+    def plugin_manager(self, service):
+        """Wrapper around PluginManager"""
+        manager = PluginManager(service, self.provider)
+        return manager
 
     def write_configs(self):
         """Generate the configurations needed for pipes."""
