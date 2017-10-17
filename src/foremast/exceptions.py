@@ -165,3 +165,7 @@ class S3SharedBucketNotFound(ForemastError):
 
 class DataPipelineDefinitionError(ForemastError):
     """Error Creating Data Pipeline."""
+
+
+class PluginNotFound(ForemastError):
+    """Error finding a plugin."""
