@@ -32,7 +32,7 @@ import os
 
 import gogoutils
 
-from foremast import (app, autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
+from foremast import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
                       securitygroup, slacknotify, utils)
 from foremast.plugin_manager import PluginManager
 
@@ -90,9 +90,16 @@ class ForemastRunner(object):
     def create_app(self):
         """Create the spinnaker application."""
         utils.banner("Creating Spinnaker App")
-        spinnakerapp = app.SpinnakerApp(app=self.app, email=self.email, project=self.group, repo=self.repo,
-                                        pipeline_config=self.configs['pipeline'])
-        spinnakerapp.create_app()
+        manager = self.plugin_manager('app')
+        plugin = manager.load()
+
+        spinnakerapp = plugin.SpinnakerApp(
+            app=self.app,
+            email=self.email,
+            project=self.group,
+            repo=self.repo,
+            pipeline_config=self.configs['pipeline'])
+        spinnakerapp.create()
 
     def create_pipeline(self, onetime=None):
         """Create the spinnaker pipeline(s)."""
