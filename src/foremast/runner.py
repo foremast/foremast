@@ -56,6 +56,7 @@ class ForemastRunner(object):
         self.artifact_path = os.getenv("ARTIFACT_PATH")
         self.artifact_version = os.getenv("ARTIFACT_VERSION")
         self.promote_stage = os.getenv("PROMOTE_STAGE", "latest")
+        self.provider = os.getenv("PROVIDER", "aws")
 
         self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
