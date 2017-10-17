@@ -74,7 +74,8 @@ class ForemastRunner(object):
     def plugin_manager(self, service):
         """Wrapper around PluginManager"""
         manager = PluginManager(service, self.provider)
-        return manager
+        plugin = manager.load()
+        return plugin
 
     def write_configs(self):
         """Generate the configurations needed for pipes."""
@@ -90,8 +91,7 @@ class ForemastRunner(object):
     def create_app(self):
         """Create the spinnaker application."""
         utils.banner("Creating Spinnaker App")
-        manager = self.plugin_manager('app')
-        plugin = manager.load()
+        plugin = self.plugin_manager('app')
 
         spinnakerapp = plugin.SpinnakerApp(
             app=self.app,
