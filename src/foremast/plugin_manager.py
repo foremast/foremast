@@ -1,4 +1,6 @@
 """Manager to handle plugins"""
+import pathlib
+
 from pluginbase import PluginBase
 
 
@@ -11,7 +13,12 @@ class PluginManager:
     """
 
     def __init__(self, paths, provider):
-        self.paths = [paths]
+        path = pathlib.Path(__file__).parent.resolve()
+        path = path / paths
+
+        all_paths = [str(path)]
+
+        self.paths = all_paths
         self.provider = provider
 
         plugin_base = PluginBase(package='foremast.plugins')
