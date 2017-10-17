@@ -3,6 +3,8 @@ import pathlib
 
 from pluginbase import PluginBase
 
+from .exceptions import PluginNotFound
+
 
 class PluginManager:
     """Class to manage and create Spinnaker applications
@@ -30,5 +32,9 @@ class PluginManager:
             yield plugin
 
     def load(self):
-        """Load the plugin object."""
-        return self.plugin_source.load_plugin(self.provider)
+        """Load the plugin."""
+        try:
+            loaded_plugin = self.plugin_source.load_plugin(self.provider)
+        except ModuleNotFoundError:
+            raise PluginNotFound('No plugin found for provider {} in {}'.format(self.provider, self.paths))
+        return loaded_plugin
