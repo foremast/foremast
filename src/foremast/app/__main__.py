@@ -19,7 +19,6 @@ Help: ``python -m src.foremast.app -h``
 """
 import argparse
 import logging
-import pathlib
 
 import gogoutils
 
@@ -57,8 +56,7 @@ def main():
         project = args.project
         repo = args.repo
 
-    path = pathlib.Path(__file__)
-    manager = PluginManager(str(path.parent), args.provider)
+    manager = PluginManager('app', args.provider)
     plugin = manager.load()
 
     app_properties = get_properties(args.properties, 'pipeline')
