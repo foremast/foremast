@@ -24,7 +24,7 @@ class PluginManager:
         self.provider = provider
 
         plugin_base = PluginBase(package='foremast.plugins')
-        self.plugin_source = plugin_base.make_plugin_source(searchpath=self.paths)
+        self.plugin_source = plugin_base.make_plugin_source(searchpath=self.paths, persist=True)
 
     def plugins(self):
         """List of all plugins available."""
