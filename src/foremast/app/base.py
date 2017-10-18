@@ -1,4 +1,5 @@
 """Base App."""
+import logging
 from pprint import pformat
 
 import requests
@@ -9,9 +10,31 @@ from ..exceptions import ForemastError
 from ..utils import get_template
 
 
-# pylint: disable=abstract-method, no-member
+# pylint: disable=abstract-method
 class BaseApp(BasePlugin):
     """Base App."""
+
+    def __init__(self, pipeline_config=None, app=None, email=None, project=None, repo=None):
+        """Class to manage and create Spinnaker applications
+
+        Args:
+            pipeline_config (dict): pipeline.json data.
+            app (str): Application name.
+            email (str): Email associated with application.
+            project (str): Git namespace or project group
+            repo (str): Repository name
+
+        """
+        self.log = logging.getLogger(__name__)
+
+        self.appinfo = {
+            'app': app,
+            'email': email,
+            'project': project,
+            'repo': repo,
+        }
+        self.appname = app
+        self.pipeline_config = pipeline_config
 
     def retrieve_template(self):
         """Sets the instance links with pipeline_configs and then renders template files
