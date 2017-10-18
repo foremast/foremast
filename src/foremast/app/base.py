@@ -14,6 +14,8 @@ from ..utils import get_template
 class BaseApp(BasePlugin):
     """Base App."""
 
+    resource = 'app'
+
     def __init__(self, pipeline_config=None, app=None, email=None, project=None, repo=None):
         """Class to manage and create Spinnaker applications
 
