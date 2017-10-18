@@ -8,6 +8,8 @@ from foremast.utils import wait_for_task
 class SpinnakerApp(base.BaseApp):
     """Create AWS Spinnaker Application."""
 
+    provider = 'aws'
+
     def create(self):
         """Send a POST to spinnaker to create a new application with class variables.
 
