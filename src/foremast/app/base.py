@@ -52,17 +52,16 @@ class BaseApp(BasePlugin):
         return jsondata
 
     def retrieve_instance_links(self):
-        """Appends on existing instance links
+        """Combine default and configuration instance links.
 
         Returns:
-            instance_links: A dictionary containing all the instance links in LINKS and not in pipeline_config
+            dict: Combined instance links.
         """
-        instance_links = {}
-        self.log.debug('Default LINKS from config are: %s', LINKS)
-        for key, value in LINKS.items():
-            if value not in self.pipeline_config['instance_links'].values():
-                instance_links[key] = value
-        self.log.debug('Reformatted instance links are: %s', links)
+        instance_links = copy.copy(LINKS)
+        self.log.debug('Default instance links: %s', instance_links)
+        instance_links.update(self.pipeline_config['instance_links'])
+        self.log.debug('Updated instance links: %s', instance_links)
+
         return instance_links
 
     def get_accounts(self, provider='aws'):
