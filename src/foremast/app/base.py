@@ -38,8 +38,8 @@ class BaseApp(BasePlugin):
         self.appname = app
         self.pipeline_config = pipeline_config
 
-    def retrieve_template(self):
-        """Sets the instance links with pipeline_configs and then renders template files
+    def render_application_template(self):
+        """Render application from configs.
 
         Returns:
             dict: Rendered application template.
