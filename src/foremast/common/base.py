@@ -1,9 +1,19 @@
 """Base Plugin class."""
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
 
 
 class BasePlugin(ABC):
     """All Plugins should inherit from this base class."""
+
+    @abstractproperty
+    def resource(self):
+        """Implement the resource property."""
+        pass
+
+    @abstractproperty
+    def provider(self):
+        """Implement the provider property."""
+        pass
 
     @abstractmethod
     def create(self):
