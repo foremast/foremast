@@ -1,7 +1,6 @@
 """Base App."""
 import copy
 import logging
-from pprint import pformat
 
 import requests
 
