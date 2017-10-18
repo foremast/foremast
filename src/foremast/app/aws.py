@@ -1,10 +1,11 @@
 """AWS Spinnaker Application."""
 from pprint import pformat
-from foremast.app.base import BaseApp
+
+from foremast.app import base
 from foremast.utils import wait_for_task
 
 
-class SpinnakerApp(BaseApp):
+class SpinnakerApp(base.BaseApp):
     """Create AWS Spinnaker Application."""
 
     def create(self):
