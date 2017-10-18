@@ -45,7 +45,6 @@ class BaseApp(BasePlugin):
             jsondata: A json objects containing templates
         """
         links = self.retrieve_instance_links()
-        self.log.debug('Links is \n%s', pformat(links))
         self.pipeline_config['instance_links'].update(links)
         jsondata = get_template(
             template_file='infrastructure/app_data.json.j2', appinfo=self.appinfo, pipeline_config=self.pipeline_config)
@@ -59,10 +58,11 @@ class BaseApp(BasePlugin):
             instance_links: A dictionary containing all the instance links in LINKS and not in pipeline_config
         """
         instance_links = {}
-        self.log.debug("LINKS IS %s", LINKS)
+        self.log.debug('Default LINKS from config are: %s', LINKS)
         for key, value in LINKS.items():
             if value not in self.pipeline_config['instance_links'].values():
                 instance_links[key] = value
+        self.log.debug('Reformatted instance links are: %s', links)
         return instance_links
 
     def get_accounts(self, provider='aws'):
