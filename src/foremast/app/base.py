@@ -42,13 +42,11 @@ class BaseApp(BasePlugin):
         """Sets the instance links with pipeline_configs and then renders template files
 
         Returns:
-            jsondata: A json objects containing templates
+            dict: Rendered application template.
         """
-        links = self.retrieve_instance_links()
-        self.pipeline_config['instance_links'].update(links)
+        self.pipeline_config['instance_links'] = self.retrieve_instance_links()
         jsondata = get_template(
             template_file='infrastructure/app_data.json.j2', appinfo=self.appinfo, pipeline_config=self.pipeline_config)
-        self.log.debug('jsondata is %s', pformat(jsondata))
         return jsondata
 
     def retrieve_instance_links(self):
