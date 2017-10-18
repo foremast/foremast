@@ -14,9 +14,9 @@ class PluginManager:
         provider (str): The name of the cloud provider.
     """
 
-    def __init__(self, paths, provider):
+    def __init__(self, resource, provider):
         path = pathlib.Path(__file__).parent.resolve()
-        path = path / paths
+        path = path / resource
 
         all_paths = [str(path)]
 
