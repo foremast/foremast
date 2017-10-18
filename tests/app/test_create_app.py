@@ -24,3 +24,18 @@ def test_default_instance_links():
     instance_links = spinnaker_app.retrieve_instance_links()
 
     assert instance_links == combined, "Instance Links are not being retrieved properly"
+
+
+@mock.patch('foremast.app.aws.base.LINKS', new={'example': 'example1', 'example': 'example2'})
+def test_duplicate_instance_links():
+    """Validate behavior when two keys are identical."""
+
+    pipeline_config = {
+        "instance_links": {}
+    }
+
+    duplicate = {'example': 'example2'}
+    spinnaker_app = PLUGIN.SpinnakerApp(pipeline_config=pipeline_config)
+    instance_links = spinnaker_app.retrieve_instance_links()
+
+    assert instance_links == duplicate, "Instance links handing duplicates are wrong."
