@@ -102,12 +102,12 @@ def get_all_subnets():
 
 
 # TODO: split up into get_az, and get_subnet_id
-@retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)  # noqa
 def get_subnets(
         target='ec2',
         purpose='internal',
         env='',
-        region='', ):
+        region='',
+):
     """Get all availability zones for a given target.
 
     Args:
@@ -132,13 +132,7 @@ def get_subnets(
     account_az_dict = defaultdict(defaultdict)
     subnet_id_dict = defaultdict(defaultdict)
 
-    subnet_url = '{0}/subnets/aws'.format(API_URL)
-    subnet_response = requests.get(subnet_url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
-
-    if not subnet_response.ok:
-        raise SpinnakerTimeout(subnet_response.text)
-
-    subnet_list = subnet_response.json()
+    subnet_list = get_all_subnets()
 
     for account, availability_zone, subnet_id, subnet_purpose, subnet_region in targeted_subnets(
             subnet_list, target=target):
