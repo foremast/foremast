@@ -29,7 +29,7 @@ SUBNET_DATA = [
 
 
 @mock.patch('foremast.utils.subnets.requests.get')
-def test_utils_subnets_get_subnets(mock_requests_get):
+def test_get_subnets(mock_requests_get):
     """Find one subnet."""
     mock_requests_get.return_value.json.return_value = SUBNET_DATA
 
@@ -46,7 +46,7 @@ def test_utils_subnets_get_subnets(mock_requests_get):
 
 
 @mock.patch('foremast.utils.subnets.requests.get')
-def test_utils_subnets_get_subnets_multiple_az(mock_requests_get):
+def test_multiple_az(mock_requests_get):
     """Find multiple Availability Zones."""
     mock_requests_get.return_value.json.return_value = SUBNET_DATA
 
@@ -61,7 +61,7 @@ def test_utils_subnets_get_subnets_multiple_az(mock_requests_get):
 
 
 @mock.patch('foremast.utils.subnets.requests.get')
-def test_utils_subnets_get_subnets_subnet_not_found(mock_requests_get):
+def test_subnet_not_found(mock_requests_get):
     """Trigger SpinnakerSubnetError when no subnets found."""
     mock_requests_get.return_value.json.return_value = SUBNET_DATA
 
@@ -71,7 +71,7 @@ def test_utils_subnets_get_subnets_subnet_not_found(mock_requests_get):
 
 
 @mock.patch('foremast.utils.subnets.requests.get')
-def test_utils_subnets_get_subnets_api_error(mock_requests_get):
+def test_api_error(mock_requests_get):
     """Trigger SpinnakerTimeout when API has error."""
     mock_requests_get.return_value.json.return_value = SUBNET_DATA
 
