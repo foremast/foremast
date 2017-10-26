@@ -76,10 +76,16 @@ def get_subnets(
         region (str): AWS Region to find Subnets for.
 
     Returns:
-        az_dict: dictionary of  availbility zones, structured like
-        { $region: [ $avaibilityzones ] }
-        or
-        { $account: $region: [ $availabilityzone] }
+        collections.defaultdict: Dictionary of availbility zones.
+
+        If ``region`` is specified, the :obj:`dict` will be structured::
+
+            {'region': ['avaibilityzones']}
+
+        Otherwise, all data will be returned structured as::
+
+            {'account': 'region': ['availabilityzones']}
+
     """
     account_az_dict = defaultdict(defaultdict)
     subnet_id_dict = defaultdict(defaultdict)
