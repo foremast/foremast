@@ -39,7 +39,7 @@ def test_utils_subnets_get_subnets(mock_requests_get):
         'subnet_ids': {
             'us-east-1': [SUBNET_DATA[0]['id']],
         },
-        'us-east-1': [[]],
+        'us-east-1': set(),
     }
 
 
@@ -50,7 +50,7 @@ def test_utils_subnets_get_subnets_multiple_az(mock_requests_get):
 
     # default - happy path w/multiple az
     result = get_subnets(env='dev', region='')
-    assert result == {'dev': {'us-west-2': [['us-west-2a', 'us-west-2b']], 'us-east-1': [[]]}}
+    assert result == {'dev': {'us-west-2': set(('us-west-2a', 'us-west-2b')), 'us-east-1': set()}}
 
 
 @mock.patch('foremast.utils.subnets.requests.get')
