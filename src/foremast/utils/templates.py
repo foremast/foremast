@@ -37,6 +37,11 @@ def get_template_object(template_file=''):
     Returns:
         jinja2.Template: Template ready to render.
 
+    Raises:
+        AssertionError: Configured path for templates does not exist.
+        :obj:`foremast.exceptions.ForemastTemplateNotFound`: Requested template
+            is not available.
+
     """
     jinja_lst = []
 
