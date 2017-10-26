@@ -66,11 +66,12 @@ def get_subnets(
             account = subnet['account']
             subnet_region = subnet['region']
             subnet_id = subnet['id']
+
             try:
-                if availability_zone not in account_az_dict[account][subnet_region]:
-                    account_az_dict[account][subnet_region].append(availability_zone)
+                account_az_dict[account][subnet_region].add(availability_zone)
             except KeyError:
-                account_az_dict[account][subnet_region] = [availability_zone]
+                account_az_dict[account][subnet_region] = set([availability_zone])
+
             # get list of all subnet IDs with correct purpose
             if subnet['purpose'] == purpose:
                 try:
