@@ -27,13 +27,16 @@ LOG = logging.getLogger(__name__)
 
 
 def post_task(task_data):
-    """POST JSON to Spinnaker /tasks.
+    """Create Spinnaker Task.
 
     Args:
-        task_data (str): the task json that needs posted.
+        task_data (str): Task JSON definition.
 
     Returns:
-        str: taskid.
+        str: Spinnaker Task ID.
+
+    Raises:
+        AssertionError: Error response from Spinnaker.
 
     """
     url = '{}/tasks'.format(API_URL)
@@ -54,10 +57,10 @@ def post_task(task_data):
 
 
 def _check_task(taskid):
-    """Check task status.
+    """Check Spinnaker Task status.
 
     Args:
-        taskid (str): the task id returned from create_elb.
+        taskid (str): Existing Spinnaker Task ID.
 
     Returns:
         polls for task status.
@@ -95,17 +98,17 @@ def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT, wait=2):
     """Wrap check_task.
 
     Args:
-        taskid (str): the task id returned from post_task
-        timeout (int) (optional): how long to wait before failing the task
+        taskid (str): Existing Spinnaker Task ID.
+        timeout (int, optional): Consider Task failed after given seconds.
         wait (int, optional): Seconds to pause between polling attempts.
 
     Returns:
         polls for task status.
 
     Raises:
-        AssertionError: API did not responde with a 200 status code.
-        foremast.exceptions.SpinnakerTaskInconclusiveError: Task did not reach a
-            terminal state in the given time.
+        AssertionError: API did not respond with a 200 status code.
+        :obj:`foremast.exceptions.SpinnakerTaskInconclusiveError`: Task did not
+            reach a terminal state before the given time out.
 
     """
     max_attempts = int(timeout / wait)
