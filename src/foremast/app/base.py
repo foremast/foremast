@@ -45,6 +45,9 @@ class BaseApp(BasePlugin):
             dict: Rendered application template.
         """
         self.pipeline_config['instance_links'] = self.retrieve_instance_links()
+
+        self.log.debug('Pipeline Config\n%s', pformat(self.pipeline_config))
+
         jsondata = get_template(
             template_file='infrastructure/app_data.json.j2', appinfo=self.appinfo, pipeline_config=self.pipeline_config)
         return jsondata
