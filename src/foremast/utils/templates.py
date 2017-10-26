@@ -47,7 +47,7 @@ def get_template_object(template_file=''):
 
     if TEMPLATES_PATH:
         external_templates = os.path.expanduser(TEMPLATES_PATH)
-        assert os.path.isdir(external_templates), 'Template path {0} not found'.format(external_templates)
+        assert os.path.isdir(external_templates), 'External template path "{0}" not found'.format(external_templates)
         jinja_lst.append(external_templates)
 
     jinja_lst.append(LOCAL_TEMPLATES)
