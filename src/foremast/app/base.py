@@ -45,15 +45,18 @@ class BaseApp(BasePlugin):
         Raises:
             AssertionError: Application creation failed.
 
+        Returns:
+            str: Task status.
+
         """
         self.appinfo['accounts'] = self.get_accounts()
         self.log.debug('App info:\n%s', pformat(self.appinfo))
 
         jsondata = self.render_application_template()
-        wait_for_task(jsondata)
+        task_status = wait_for_task(jsondata)
 
         self.log.info("Successfully created %s application in %s", self.appname, self.provider)
-        return
+        return task_status
 
     def render_application_template(self):
         """Render application from configs.
