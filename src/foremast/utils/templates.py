@@ -52,9 +52,10 @@ def get_template_object(template_file=''):
     try:
         template = jinjaenv.get_template(template_file)
     except jinja2.TemplateNotFound:
-        LOG.debug("Unable to find template %s in specified template path %s", template_file, TEMPLATES_PATH)
-        raise ForemastTemplateNotFound("Unable to find template %s in specified template path %s", template_file,
-                                       TEMPLATES_PATH)
+        message = 'Unable to find template "{template_file}" in paths {paths}'.format(
+            template_file=template_file, paths=jinjaenv.loader.searchpath)
+        LOG.error(message)
+        raise ForemastTemplateNotFound(message)
 
     return template
 
