@@ -40,7 +40,7 @@ class BaseApp(BasePlugin):
         self.pipeline_config = pipeline_config
 
     def create(self):
-        """Send a POST to spinnaker to create a new application with class variables.
+        """Create a Spinnaker Application.
 
         Raises:
             AssertionError: Application creation failed.
