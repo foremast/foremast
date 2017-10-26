@@ -105,7 +105,7 @@ def get_subnets(
         try:
             account_az_dict[account][subnet_region].add(availability_zone)
         except KeyError:
-            account_az_dict[account][subnet_region] = set([availability_zone])
+            account_az_dict[account][subnet_region] = set((availability_zone))
 
         # get list of all subnet IDs with correct purpose
         if subnet_purpose == purpose:
