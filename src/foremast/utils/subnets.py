@@ -15,7 +15,7 @@
 #   limitations under the License.
 """Get available Subnets for specific Targets."""
 import logging
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from pprint import pformat
 
 import requests
@@ -25,6 +25,40 @@ from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerSubnetError, SpinnakerTimeout
 
 LOG = logging.getLogger(__name__)
+
+SubnetAttributes = namedtuple('SubnetAttributes', [
+    'account',
+    'availability_zone',
+    'subnet_id',
+    'subnet_purpose',
+    'subnet_region',
+])
+"""Important Subnet attributes configured in Spinnaker."""
+
+
+def targeted_subnets(subnets, target='ec2'):
+    """Generate Subnets matching ``target`` Provider.
+
+    Args:
+        subnets (list): Many :obj:`dict` containing Subnet attributes.
+        target (str): Type of subnets to look up (ec2 or elb).
+
+    Yields:
+        :obj:`SubnetAttributes`: Subnet attributes matching ``target``.
+
+    """
+    for subnet in subnets:
+        subnet_attributes = SubnetAttributes(
+            account=subnet['account'],
+            availability_zone=subnet['availabilityZone'],
+            subnet_id=subnet['id'],
+            subnet_purpose=subnet['purpose'],
+            subnet_region=subnet['region'])
+
+        LOG.debug('Subnet: %s', subnet_attributes)
+
+        if subnet['target'] == target:
+            yield subnet_attributes
 
 
 # TODO: split up into get_az, and get_subnet_id
