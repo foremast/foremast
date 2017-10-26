@@ -87,6 +87,8 @@ def get_subnets(
             {'account': 'region': ['availabilityzones']}
 
     """
+    result_dict = None
+
     account_az_dict = defaultdict(defaultdict)
     subnet_id_dict = defaultdict(defaultdict)
 
@@ -114,6 +116,9 @@ def get_subnets(
 
         LOG.debug('%s regions: %s', account, list(account_az_dict[account].keys()))
 
+    LOG.debug('AZ dict:\n%s', pformat(dict(account_az_dict)))
+    result_dict = account_az_dict
+
     if all([env, region]):
         region_dict = defaultdict(dict)
 
@@ -130,8 +135,6 @@ def get_subnets(
             raise SpinnakerSubnetError(env=env, region=region)
 
         LOG.debug('Region dict: %s', dict(region_dict))
-        return region_dict
+        result_dict = region_dict
 
-    LOG.debug('AZ dict:\n%s', pformat(dict(account_az_dict)))
-
-    return account_az_dict
+    return result_dict
