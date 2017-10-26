@@ -61,6 +61,46 @@ def targeted_subnets(subnets, target='ec2'):
             yield subnet_attributes
 
 
+@retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)  # noqa
+def get_all_subnets():
+    """Retrieve list of all Subnets configured in Spinnaker.
+
+    Returns:
+        list: Subnet data in :obj:`dict` format::
+
+            [
+                {
+                    'account': 'test',
+                    'availabilityZone': 'us-west-2b',
+                    'availableIpAddressCount': 256,
+                    'cidrBlock': '0.0.0.0/0',
+                    'deprecated': False,
+                    'id': 'subnet-00000000',
+                    'purpose': 'internal',
+                    'region': 'us-west-2',
+                    'state': 'available',
+                    'target': 'elb',
+                    'type': 'aws',
+                    'vpcId': 'vpc-00000000',
+                }
+            ]
+
+    Raises:
+        foremast.exceptions.SpinnakerTimeout: Spinnaker failed to respond in
+            time.
+
+    """
+    subnet_url = '{0}/subnets/aws'.format(API_URL)
+    subnet_response = requests.get(subnet_url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+
+    if not subnet_response.ok:
+        raise SpinnakerTimeout(subnet_response.text)
+
+    subnets = subnet_response.json()
+    LOG.debug('Configured Subnets: %s', subnets)
+    return subnets
+
+
 # TODO: split up into get_az, and get_subnet_id
 @retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)  # noqa
 def get_subnets(
