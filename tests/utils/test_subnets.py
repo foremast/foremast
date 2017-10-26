@@ -60,8 +60,7 @@ def test_utils_subnets_get_subnets_subnet_not_found(mock_requests_get):
 
     # subnet not found
     with pytest.raises(SpinnakerSubnetError):
-        result = get_subnets(env='dev', region='us-west-1')
-        assert result == {'us-west-1': [[]]}
+        get_subnets(env='dev', region='us-west-1')
 
 
 @mock.patch('foremast.utils.subnets.requests.get')
@@ -72,4 +71,4 @@ def test_utils_subnets_get_subnets_api_error(mock_requests_get):
     # error getting details
     with pytest.raises(SpinnakerTimeout):
         mock_requests_get.return_value.ok = False
-        result = get_subnets()
+        get_subnets()
