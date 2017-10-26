@@ -1,13 +1,14 @@
 """Base App."""
 import copy
 import logging
+from pprint import pformat
 
 import requests
 
 from ..common.base import BasePlugin
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
 from ..exceptions import ForemastError
-from ..utils import get_template
+from ..utils import get_template, wait_for_task
 
 
 # pylint: disable=abstract-method
@@ -37,6 +38,22 @@ class BaseApp(BasePlugin):
         }
         self.appname = app
         self.pipeline_config = pipeline_config
+
+    def create(self):
+        """Send a POST to spinnaker to create a new application with class variables.
+
+        Raises:
+            AssertionError: Application creation failed.
+
+        """
+        self.appinfo['accounts'] = self.get_accounts()
+        self.log.debug('App info:\n%s', pformat(self.appinfo))
+
+        jsondata = self.render_application_template()
+        wait_for_task(jsondata)
+
+        self.log.info("Successfully created %s application", self.appname)
+        return
 
     def render_application_template(self):
         """Render application from configs.
