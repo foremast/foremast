@@ -115,13 +115,22 @@ def get_subnets(
         LOG.debug('%s regions: %s', account, list(account_az_dict[account].keys()))
 
     if all([env, region]):
+        region_dict = defaultdict(dict)
+
         try:
-            region_dict = {region: account_az_dict[env][region]}
-            region_dict['subnet_ids'] = {region: subnet_id_dict[env][region]}
-            LOG.debug('Region dict: %s', region_dict)
-            return region_dict
+            region_dict[region] = account_az_dict[env][region]
         except KeyError:
+            LOG.fatal('Missing key while setting Region: %s', account_az_dict)
             raise SpinnakerSubnetError(env=env, region=region)
+
+        try:
+            region_dict['subnet_ids'][region] = subnet_id_dict[env][region]
+        except KeyError:
+            LOG.fatal('Missing key while setting Subnet IDs: %s', subnet_id_dict)
+            raise SpinnakerSubnetError(env=env, region=region)
+
+        LOG.debug('Region dict: %s', dict(region_dict))
+        return region_dict
 
     LOG.debug('AZ dict:\n%s', pformat(dict(account_az_dict)))
 
