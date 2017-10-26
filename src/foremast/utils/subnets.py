@@ -92,28 +92,21 @@ def get_subnets(
 
     subnet_list = subnet_response.json()
 
-    for subnet in subnet_list:
-        LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t' '%(availabilityZone)s', subnet)
+    for account, availability_zone, subnet_id, subnet_purpose, subnet_region in targeted_subnets(
+            subnet_list, target=target):
+        try:
+            account_az_dict[account][subnet_region].add(availability_zone)
+        except KeyError:
+            account_az_dict[account][subnet_region] = set([availability_zone])
 
-        if subnet['target'] == target:
-            availability_zone = subnet['availabilityZone']
-            account = subnet['account']
-            subnet_region = subnet['region']
-            subnet_id = subnet['id']
-
+        # get list of all subnet IDs with correct purpose
+        if subnet_purpose == purpose:
             try:
-                account_az_dict[account][subnet_region].add(availability_zone)
+                subnet_id_dict[account][subnet_region].append(subnet_id)
             except KeyError:
-                account_az_dict[account][subnet_region] = set([availability_zone])
+                subnet_id_dict[account][subnet_region] = [subnet_id]
 
-            # get list of all subnet IDs with correct purpose
-            if subnet['purpose'] == purpose:
-                try:
-                    subnet_id_dict[account][subnet_region].append(subnet_id)
-                except KeyError:
-                    subnet_id_dict[account][subnet_region] = [subnet_id]
-
-            LOG.debug('%s regions: %s', account, list(account_az_dict[account].keys()))
+        LOG.debug('%s regions: %s', account, list(account_az_dict[account].keys()))
 
     if all([env, region]):
         try:
