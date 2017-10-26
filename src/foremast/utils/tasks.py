@@ -63,7 +63,7 @@ def _check_task(taskid):
         taskid (str): Existing Spinnaker Task ID.
 
     Returns:
-        polls for task status.
+        str: Task status.
 
     """
     try:
@@ -103,7 +103,7 @@ def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT, wait=2):
         wait (int, optional): Seconds to pause between polling attempts.
 
     Returns:
-        polls for task status.
+        str: Task status.
 
     Raises:
         AssertionError: API did not respond with a 200 status code.
@@ -129,7 +129,7 @@ def wait_for_task(task_data):
         task_data (str): the task json to execute
 
     Returns:
-        polls for task status
+        str: Task status.
 
     """
     taskid = post_task(task_data)
@@ -148,4 +148,4 @@ def wait_for_task(task_data):
 
     LOG.debug("Task %s will timeout after %s", task_type, timeout)
 
-    check_task(taskid, timeout)
+    return check_task(taskid, timeout)
