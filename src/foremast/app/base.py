@@ -52,7 +52,7 @@ class BaseApp(BasePlugin):
         jsondata = self.render_application_template()
         wait_for_task(jsondata)
 
-        self.log.info("Successfully created %s application", self.appname)
+        self.log.info("Successfully created %s application in %s", self.appname, self.provider)
         return
 
     def render_application_template(self):
@@ -82,11 +82,8 @@ class BaseApp(BasePlugin):
 
         return instance_links
 
-    def get_accounts(self, provider='aws'):
+    def get_accounts(self):
         """Get Accounts added to Spinnaker.
-
-        Args:
-            provider (str): What provider to find accounts for.
 
         Returns:
             list: list of dicts of Spinnaker credentials matching _provider_.
@@ -103,10 +100,10 @@ class BaseApp(BasePlugin):
 
         filtered_accounts = []
         for account in all_accounts:
-            if account['type'] == provider:
+            if account['type'] == self.provider:
                 filtered_accounts.append(account)
 
         if not filtered_accounts:
-            raise ForemastError('No Accounts matching {0}.'.format(provider))
+            raise ForemastError('No Accounts matching {0}.'.format(self.provider))
 
         return filtered_accounts
