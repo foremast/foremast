@@ -25,14 +25,20 @@ LOG = logging.getLogger(__name__)
 
 
 def get_vpc_id(account, region):
-    """Get vpc id.
+    """Get VPC ID configured for ``account`` in ``region``.
 
     Args:
         account (str): AWS account name.
         region (str): Region name, e.g. us-east-1.
 
     Returns:
-        str: ID for the requested _account_ in _region_.
+        str: VPC ID for the requested ``account`` in ``region``.
+
+    Raises:
+        :obj:`foremast.exceptions.SpinnakerVPCIDNotFound`: VPC ID not found for
+            ``account`` in ``region``.
+        :obj:`foremast.exceptions.SpinnakerVPCNotFound`: Spinnaker has no VPCs
+            configured.
 
     """
     url = '{0}/vpcs'.format(API_URL)
