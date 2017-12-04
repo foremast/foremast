@@ -109,11 +109,6 @@ class SpinnakerPipeline:
         provider = 'aws'
         root_volume_size = self.settings['pipeline']['image']['root_volume_size']
 
-        if root_volume_size > 50:
-            raise SpinnakerPipelineCreationFailed(
-                'Setting "root_volume_size" over 50G is not allowed. We found {0}G in your configs.'.format(
-                    root_volume_size))
-
         ami_id = ami_lookup(name=base, region=region)
 
         ami_template_file = generate_packer_filename(provider, region, baking_process)
