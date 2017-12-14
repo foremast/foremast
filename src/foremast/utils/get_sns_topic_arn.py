@@ -20,7 +20,7 @@ def get_sns_topic_arn(topic_name, account, region):
         str: ARN for requested topic name
 
     """
-    if topic_name.count(':') == 5 and topic_name.startswith('arn:aws:sns:')
+    if topic_name.count(':') == 5 and topic_name.startswith('arn:aws:sns:'):
         return topic_name
     session = boto3.Session(profile_name=account, region_name=region)
     sns_client = session.client('sns')
