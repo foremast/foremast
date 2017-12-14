@@ -217,7 +217,7 @@ class SpinnakerPipeline:
                     "pipeline_data": self.settings['pipeline'],
                 }
 
-                if self.settings['pipeline']['type'] == 'ec2':
+                if self.settings['pipeline']['type'] in ('ec2', 'rolling'):
                     if not subnets:
                         subnets = get_subnets()
                     try:
