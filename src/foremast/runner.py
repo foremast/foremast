@@ -105,7 +105,7 @@ class ForemastRunner(object):
             raise NotImplementedError('Pipeline type "{0}" not permitted.'.format(pipeline_type))
 
         if not onetime:
-            if pipeline_type == 'ec2':
+            if pipeline_type in ('ec2', 'rolling'):
                 spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
             elif pipeline_type == 'lambda':
                 spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)

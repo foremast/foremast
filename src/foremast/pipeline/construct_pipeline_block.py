@@ -135,7 +135,7 @@ def construct_pipeline_block(env='',
     pipeline_type = pipeline_data['type']
     gen_app_name = generated.app_name()
 
-    if pipeline_type == 'ec2':
+    if pipeline_type in ('ec2', 'rolling'):
         data = ec2_pipeline_setup(
             appname=gen_app_name,
             settings=settings,
