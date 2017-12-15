@@ -19,7 +19,7 @@ import logging
 import requests
 from tryagain import retries
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, SECURITYGROUP_REPLACEMENTS
 from ..exceptions import SpinnakerSecurityGroupError
 from .vpc import get_vpc_id
 
@@ -61,3 +61,20 @@ def get_security_group_id(name='', env='', region=''):
 
     LOG.info('Found: %s', security_group_id)
     return security_group_id
+
+
+def remove_duplicate_sg(security_groups):
+    """Removes duplicate Security Groups that share a same name alias
+
+    Args:
+        security_groups (list): A list of security group id to compare against SECURITYGROUP_REPLACEMENTS
+
+    Returns:
+        security_groups (list): A list of security groups with duplicate aliases removed
+    """
+    for each_sg, duplicate_sg_name in SECURITYGROUP_REPLACEMENTS.items():
+        if each_sg in security_groups and duplicate_sg_name in security_groups:
+            LOG.info('Duplicate SG found. Removing %s in favor of %s.', duplicate_sg_name, each_sg)
+            security_groups.remove(duplicate_sg_name)
+
+    return security_groups

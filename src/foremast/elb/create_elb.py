@@ -21,7 +21,7 @@ from pprint import pformat
 import boto3
 
 from ..consts import DEFAULT_ELB_SECURITYGROUPS, SECURITYGROUP_REPLACEMENTS
-from ..utils import get_properties, get_subnets, get_template, get_vpc_id, wait_for_task
+from ..utils import get_properties, get_subnets, get_template, get_vpc_id, remove_duplicate_sg, wait_for_task
 from .format_listeners import format_listeners
 from .splay_health import splay_health
 
@@ -81,11 +81,7 @@ class SpinnakerELB:
         security_groups = DEFAULT_ELB_SECURITYGROUPS[env]
         security_groups.append(self.app)
         security_groups.extend(self.properties['security_group']['elb_extras'])
-
-        for each_sg, duplicate_sg_name in SECURITYGROUP_REPLACEMENTS.items():
-            if each_sg in security_groups and duplicate_sg_name in security_groups:
-                LOG.info('Duplicate SG found. Removing %s in favor of %s.', duplicate_sg_name, each_sg)
-                security_groups.remove(duplicate_sg_name)
+        security_groups = remove_duplicate_sg(security_groups)
 
         template_kwargs = {
             'access_log': json.dumps(access_log),
