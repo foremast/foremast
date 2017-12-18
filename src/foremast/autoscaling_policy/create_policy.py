@@ -110,8 +110,10 @@ class AutoScalingPolicy:
             period_sec = int(self.settings['asg']['scaling_policy']['period_minutes']) * 60
         else:
             period_sec = 1800
+        
         self.prepare_policy_template('scale_up', period_sec, server_group)
-        self.prepare_policy_template('scale_down', period_sec, server_group)
+        if self.settings['asg']['scaling_policy'].get('scale_down', True):
+            self.prepare_policy_template('scale_down', period_sec, server_group)
 
     def get_server_group(self):
         """Finds the most recently deployed server group for the application.
