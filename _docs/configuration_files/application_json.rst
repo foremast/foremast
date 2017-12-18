@@ -237,6 +237,11 @@ scaling policy will be attached
 
    | *Type*: number
 
+``scale_down`` : Attach a default scale-down policy
+
+   | *Type*: boolean
+   | *Default*: ``true``
+
 ``period_minutes`` : Time period to look across for determining if threshold was
 met
 
@@ -265,7 +270,8 @@ was met
            "metric": "CPUUtilization",
            "threshold": 90,
            "period_minutes": 10,
-           "statistic": "Average"
+           "statistic": "Average",
+           "scale_down": true
        }
    }
 
