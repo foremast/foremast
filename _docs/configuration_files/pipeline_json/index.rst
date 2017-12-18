@@ -36,6 +36,7 @@ Specifies what type of pipeline to use for the application.
         - ``"lambda"`` - Sets up an AWS Lambda pipeline and infrastructure
         - ``"manual"`` - Create Pipelines from raw JSON, use with :ref:`pipeline_files`.
         - ``"s3"`` - Sets up an AWS S3 pipeline and infrastructure
+        - ``"rolling"`` - Sets up a "rolling" style pipeline. Requires custom templates.
 
 ``owner_email``
 ~~~~~~~~~~~~~~~
