@@ -21,7 +21,7 @@ import logging
 from pprint import pformat
 
 from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
-from ..utils import generate_encoded_user_data, get_template, remove_duplicate_sg
+from ..utils import generate_encoded_user_data, get_template
 
 LOG = logging.getLogger(__name__)
 
@@ -188,7 +188,6 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
     instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
     instance_security_groups.append(appname)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
-    instance_security_groups = remove_duplicate_sg(instance_security_groups)
 
     LOG.info('Instance security groups to attach: %s', instance_security_groups)
 

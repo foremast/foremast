@@ -203,13 +203,6 @@ AMI_JSON_URL = validate_key_values(CONFIG, 'base', 'ami_json_url')
 DEFAULT_SECURITYGROUP_RULES = _generate_security_groups('default_securitygroup_rules')
 DEFAULT_EC2_SECURITYGROUPS = _generate_security_groups('default_ec2_securitygroups')
 DEFAULT_ELB_SECURITYGROUPS = _generate_security_groups('default_elb_securitygroups')
-SECURITYGROUP_REPLACEMENTS = _convert_string_to_native(
-    validate_key_values(
-        CONFIG,
-        'base',
-        'securitygroup_replacements',
-        default='{}',
-    ))
 GITLAB_TOKEN = validate_key_values(CONFIG, 'credentials', 'gitlab_token')
 SLACK_TOKEN = validate_key_values(CONFIG, 'credentials', 'slack_token')
 DEFAULT_TASK_TIMEOUT = validate_key_values(CONFIG, 'task_timeouts', 'default', default=120)
