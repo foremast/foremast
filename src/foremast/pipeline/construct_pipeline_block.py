@@ -190,7 +190,7 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
     instance_security_groups.extend(settings['security_group']['instance_extras'])
 
     for each_sg, duplicate_sg_name in SECURITYGROUP_REPLACEMENTS.items():
-        if each_sg in instance_security_groups and duplicate_sg_name in instance_security_groups:
+        if each_sg in security_groups and duplicate_sg_name in security_groups:
             LOG.info('Duplicate SG found. Removing %s in favor of %s.', duplicate_sg_name, each_sg)
             instance_security_groups.remove(duplicate_sg_name)
 
