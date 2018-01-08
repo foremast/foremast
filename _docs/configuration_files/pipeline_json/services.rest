@@ -5,7 +5,7 @@ Access to different Cloud Services will be added to an inline Policy for an IAM
 Role. Keys must match with a corresponding template in
 :file:`src/foremast/templates/infrastructure/iam/{key}.json.j2`.
 
-``Athena``
+``athena``
 ******************
 
 Add Athena Query access.
