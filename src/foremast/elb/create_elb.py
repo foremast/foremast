@@ -20,7 +20,7 @@ from pprint import pformat
 
 import boto3
 
-from ..consts import DEFAULT_ELB_SECURITYGROUPS, SECURITYGROUP_REPLACEMENTS
+from ..consts import DEFAULT_ELB_SECURITYGROUPS
 from ..utils import get_properties, get_subnets, get_template, get_vpc_id, remove_duplicate_sg, wait_for_task
 from .format_listeners import format_listeners
 from .splay_health import splay_health

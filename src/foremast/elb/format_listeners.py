@@ -83,7 +83,8 @@ def format_listeners(elb_settings=None, env='dev', region='us-east-1'):
 
     if 'ports' in elb_settings:
         for listener in elb_settings['ports']:
-            cert_name = format_cert_name(env=env, region=region, account=account, certificate=listener.get('certificate', None))
+            cert_name = format_cert_name(
+                env=env, region=region, account=account, certificate=listener.get('certificate', None))
 
             lb_proto, lb_port = listener['loadbalancer'].split(':')
             i_proto, i_port = listener['instance'].split(':')
@@ -193,6 +194,8 @@ def generate_custom_cert_name(env='', region='', account='', certificate=None):
         elif certificate in json.loads(rendered_template)['acm'][region][env]:
             cert_name = json.loads(rendered_template)['acm'][region][env][certificate]
         else:
-            LOG.error("Unable to find TLS certificate named %s under parent keys [ACM, IAM] %s in v2 TLS Cert Template.", certificate, env)
+            LOG.error(
+                "Unable to find TLS certificate named %s under parent keys [ACM, IAM] %s in v2 TLS Cert Template.",
+                certificate, env)
 
     return cert_name
