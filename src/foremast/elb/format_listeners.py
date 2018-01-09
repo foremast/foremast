@@ -23,7 +23,7 @@ from ..utils import get_env_credential, get_template
 LOG = logging.getLogger(__name__)
 
 
-def format_listeners(elb_settings=None, env='dev'):
+def format_listeners(elb_settings=None, env='dev', region='us-east-1'):
     """Format ELB Listeners into standard list.
 
     Args:
@@ -83,7 +83,7 @@ def format_listeners(elb_settings=None, env='dev'):
 
     if 'ports' in elb_settings:
         for listener in elb_settings['ports']:
-            cert_name = format_cert_name(env=env, account=account, certificate=listener.get('certificate', None))
+            cert_name = format_cert_name(env=env, region=region, account=account, certificate=listener.get('certificate', None))
 
             lb_proto, lb_port = listener['loadbalancer'].split(':')
             i_proto, i_port = listener['instance'].split(':')
@@ -127,7 +127,7 @@ def format_listeners(elb_settings=None, env='dev'):
     return listeners
 
 
-def format_cert_name(env='', account='', certificate=None):
+def format_cert_name(env='', account='', region='', certificate=None):
     """Format the SSL certificate name into ARN for ELB.
 
     Args:
@@ -146,7 +146,7 @@ def format_cert_name(env='', account='', certificate=None):
             LOG.info("Full ARN provided...skipping lookup.")
             cert_name = certificate
         else:
-            generated_cert_name = generate_custom_cert_name(env, account, certificate)
+            generated_cert_name = generate_custom_cert_name(env, region, account, certificate)
             if generated_cert_name:
                 LOG.info("Found generated certificate %s from template", generated_cert_name)
                 cert_name = generated_cert_name
@@ -159,7 +159,7 @@ def format_cert_name(env='', account='', certificate=None):
     return cert_name
 
 
-def generate_custom_cert_name(env='', account='', certificate=None):
+def generate_custom_cert_name(env='', region='', account='', certificate=None):
     """Generate a custom TLS Cert name based on a template.
 
     Args:
@@ -184,6 +184,15 @@ def generate_custom_cert_name(env='', account='', certificate=None):
     try:
         cert_name = json.loads(rendered_template)[env][certificate]
     except KeyError:
-        LOG.error("Unable to find TLS certificate named %s under %s in TLS Cert Template", certificate, env)
+        LOG.error("Unable to find TLS certificate named %s under %s in v1 TLS Cert Template.", certificate, env)
+
+    if cert_name is None:
+        LOG.info("Attempting v2 TLS Cert Lookup...")
+        if certificate in json.loads(rendered_template)['iam'][env]:
+            cert_name = json.loads(rendered_template)['iam'][env][certificate]
+        elif certificate in json.loads(rendered_template)['acm'][region][env]:
+            cert_name = json.loads(rendered_template)['acm'][region][env][certificate]
+        else:
+            LOG.error("Unable to find TLS certificate named %s under parent keys [ACM, IAM] %s in v2 TLS Cert Template.", certificate, env)
 
     return cert_name
