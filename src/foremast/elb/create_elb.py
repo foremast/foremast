@@ -72,7 +72,7 @@ class SpinnakerELB:
         target = elb_settings.get('target', 'HTTP:80/health')
         health = splay_health(target)
 
-        listeners = format_listeners(elb_settings=elb_settings, env=self.env)
+        listeners = format_listeners(elb_settings=elb_settings, env=self.env, region=region)
 
         idle_timeout = elb_settings.get('idle_timeout', None)
         access_log = elb_settings.get('access_log', {})
