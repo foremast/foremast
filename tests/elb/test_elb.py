@@ -31,7 +31,8 @@ SAMPLE_TLSCERT_V1_JSON = """
   },
   "prod": {
     "wildcard.example.com": "arn:aws:iam::210987654321:server-certificate/wildcard.example.com-2020-07-15",
-    "wildcard.prod.example.com": "arn:aws:acm:us-east-1:210987654321:certificate/11111111-2222-3333-4444-555555555555"
+    "wildcard.prod.example.com": "arn:aws:acm:us-east-1:210987654321:certificate/11111111-2222-3333-4444-555555555555",
+    "wildcard.us-west-2.prod.example.com": "arn:aws:acm:us-west-2:210987654321:certificate/11111111-0000-2222-3333-555555555555"
   }
 }
 """
@@ -176,7 +177,7 @@ def test_elb_cert_name_v1(rendered_template):
     assert acm_cert == format_cert_name(env='prod', account='210987654321', region='us-east-1', certificate='wildcard.prod.example.com')
 
     acm_region_cert = 'arn:aws:acm:us-west-2:210987654321:certificate/11111111-0000-2222-3333-555555555555'
-    assert acm_region_cert == format_cert_name(env='prod', account='210987654321', region='us-west-2', certificate='wildcard.prod.example.com')
+    assert acm_region_cert == format_cert_name(env='prod', account='210987654321', region='us-west-2', certificate='wildcard.us-west-2.prod.example.com')
 
 
 @mock.patch("foremast.elb.format_listeners.get_template")
