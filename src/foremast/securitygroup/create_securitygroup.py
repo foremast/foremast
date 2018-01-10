@@ -282,7 +282,6 @@ class SpinnakerSecurityGroup(object):
         self.log.info('Successfully created %s security group', self.app_name)
         return True
 
-
     def create_ingress_rule(self, app, rule):
         """Create a normalized ingress rule.
 
