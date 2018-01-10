@@ -295,8 +295,8 @@ class SpinnakerSecurityGroup(object):
         """
         if isinstance(rule, dict):
             # Advanced
-            start_port = rule.get('start_port', 80)
-            end_port = rule.get('end_port', 80)
+            start_port = rule.get('start_port')
+            end_port = rule.get('end_port')
             protocol = rule.get('protocol', 'tcp')
 
             requested_cross_account = rule.get('env', None)
