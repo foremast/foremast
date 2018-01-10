@@ -134,6 +134,7 @@ def format_cert_name(env='', account='', region='', certificate=None):
     Args:
         env (str): Account environment name
         account (str): Account number for ARN
+        region (str): AWS Region.
         certificate (str): Name of SSL certificate
 
     Returns:
@@ -165,6 +166,7 @@ def generate_custom_cert_name(env='', region='', account='', certificate=None):
 
     Args:
         env (str): Account environment name
+        region (str): AWS Region.
         account (str): Account number for ARN.
         certificate (str): Name of SSL certificate.
 
