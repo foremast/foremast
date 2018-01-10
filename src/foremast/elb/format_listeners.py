@@ -178,21 +178,27 @@ def generate_custom_cert_name(env='', region='', account='', certificate=None):
     # TODO: Investigate moving this to a remote API, then fallback to local file if unable to connect
     try:
         rendered_template = get_template(template_file='infrastructure/iam/tlscert_naming.json.j2', **template_kwargs)
+        tlscert_dict = json.loads(rendered_template)
     except ForemastTemplateNotFound:
         LOG.info('Unable to find TLS Cert Template...falling back to default logic...')
         return cert_name
 
     try:
-        cert_name = json.loads(rendered_template)[env][certificate]
+        LOG.info("Attempting to find TLS Cert using TLS Cert Template v1 lookup...")
+        cert_name = tlscert_dict[env][certificate]
+        LOG.info("Found TLS certificate named %s under %s using TLS Cert Template v1", certificate, env)
     except KeyError:
-        LOG.error("Unable to find TLS certificate named %s under %s in v1 TLS Cert Template.", certificate, env)
+        LOG.error("Unable to find TLS certificate named %s under %s using v1 TLS Cert Template.", certificate, env)
 
     if cert_name is None:
-        LOG.info("Attempting v2 TLS Cert Lookup...")
-        if certificate in json.loads(rendered_template)['iam'][env]:
-            cert_name = json.loads(rendered_template)['iam'][env][certificate]
-        elif certificate in json.loads(rendered_template)['acm'][region][env]:
-            cert_name = json.loads(rendered_template)['acm'][region][env][certificate]
+        LOG.info("Attempting to find TLS Cert using TLS Cert Template v2 lookup...")
+        if certificate in tlscert_dict['iam'][env]:
+            cert_name = tlscert_dict['iam'][env][certificate]
+            LOG.info("Found IAM TLS certificate named %s under %s using TLS Cert Template v2", certificate, env)
+        elif certificate in tlscert_dict['acm'][region][env]:
+            cert_name = tlscert_dict['acm'][region][env][certificate]
+            LOG.info("Found ACM TLS certificate named %s under %s in %s using TLS Cert Template v2", certificate, env,
+                     region)
         else:
             LOG.error(
                 "Unable to find TLS certificate named %s under parent keys [ACM, IAM] %s in v2 TLS Cert Template.",
