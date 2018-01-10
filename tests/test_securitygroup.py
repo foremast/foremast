@@ -22,7 +22,6 @@ import pytest
 from foremast.exceptions import ForemastConfigurationFileError
 from foremast.securitygroup import SpinnakerSecurityGroup
 
-
 SAMPLE_JSON = """{"security_group": {
                     "description": "something useful",
                     "egress": "0.0.0.0/0",
@@ -55,6 +54,19 @@ def test_create_crossaccount_securitygroup(get_details, pipeline_config, wait_fo
 
     x = SpinnakerSecurityGroup(app='edgeforrest', env='dev', region='us-east-1')
     assert x.create_security_group() is True
+
+    no_cross_account_data = {'end_port': 8080, 'env': 'dev', 'protocol': 'tcp', 'start_port': 8080}
+    no_cross_account_result = {'app': 'edgeforrest', 'end_port': 8080, 'cross_account_env': None, 'protocol': 'tcp', 'start_port': 8080, 'cross_account_vpc_id': None}
+    no_cross_account = x.create_ingress_rule(app='edgeforrest', rule=no_cross_account_data)
+    assert no_cross_account == no_cross_account_result
+
+    cross_account_data = {'end_port': 8080, 'env': 'stage', 'protocol': 'tcp', 'start_port': 8080}
+    cross_account_result = {'app': 'edgeforrest', 'end_port': 8080, 'cross_account_env': 'stage', 'protocol': 'tcp', 'start_port': 8080, 'cross_account_vpc_id': 'VPCID'}
+    cross_account = x.create_ingress_rule(app='edgeforrest', rule=cross_account_data)
+    assert cross_account == cross_account_result
+
+    no_cross_account_simple = x.create_ingress_rule(app='edgeforrest', rule=8080)
+    assert no_cross_account_simple == no_cross_account_result
 
 
 @mock.patch('foremast.securitygroup.create_securitygroup.get_security_group_id')

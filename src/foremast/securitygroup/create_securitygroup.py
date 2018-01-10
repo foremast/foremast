@@ -266,38 +266,8 @@ class SpinnakerSecurityGroup(object):
             # - simple: is just a list of ports
             # - advanced: selects ports ranges and protocols
             for rule in rules:
-                try:
-                    # Advanced
-                    start_port = rule.get('start_port')
-                    end_port = rule.get('end_port')
-                    protocol = rule.get('protocol', 'tcp')
-                    cross_account_vpc_id = None
-
-                    requested_cross_account = rule.get('env', None)
-                    if self.env == requested_cross_account:
-                        # We are trying to use cross-account security group settings within the same account
-                        # We should not allow this.
-                        cross_account_env = None
-                    else:
-                        cross_account_env = requested_cross_account
-                except AttributeError:
-                    start_port = rule
-                    end_port = rule
-                    protocol = 'tcp'
-                    cross_account_env = None
-                    cross_account_vpc_id = None
-
-                if cross_account_env:
-                    cross_account_vpc_id = get_vpc_id(cross_account_env, self.region)
-
-                ingress_rules.append({
-                    'app': app,
-                    'start_port': start_port,
-                    'end_port': end_port,
-                    'protocol': protocol,
-                    'cross_account_env': cross_account_env,
-                    'cross_account_vpc_id': cross_account_vpc_id
-                })
+                ingress_rule = self.create_ingress_rule(app, rule)
+                ingress_rules.append(ingress_rule)
 
         ingress_rules_no_cidr, ingress_rules_cidr = self._process_rules(ingress_rules)
 
@@ -311,3 +281,49 @@ class SpinnakerSecurityGroup(object):
 
         self.log.info('Successfully created %s security group', self.app_name)
         return True
+
+
+    def create_ingress_rule(self, app, rule):
+        """Create a normalized ingress rule.
+
+        Args:
+            app (str): Application name
+            rule (dict or int): Allowed Security Group ports and protocols.
+
+        Returns:
+            dict: Contains app, start_port, end_port, protocol, cross_account_env and cross_account_vpc_id
+
+        """
+        if isinstance(rule, dict):
+            # Advanced
+            start_port = rule.get('start_port', 80)
+            end_port = rule.get('end_port', 80)
+            protocol = rule.get('protocol', 'tcp')
+
+            requested_cross_account = rule.get('env', None)
+            if self.env == requested_cross_account:
+                # We are trying to use cross-account security group settings within the same account
+                # We should not allow this.
+                cross_account_env = None
+                cross_account_vpc_id = None
+            else:
+                cross_account_env = requested_cross_account
+                cross_account_vpc_id = get_vpc_id(cross_account_env, self.region)
+
+        else:
+            start_port = rule
+            end_port = rule
+            protocol = 'tcp'
+            cross_account_env = None
+            cross_account_vpc_id = None
+
+        created_rule = {
+            'app': app,
+            'start_port': start_port,
+            'end_port': end_port,
+            'protocol': protocol,
+            'cross_account_env': cross_account_env,
+            'cross_account_vpc_id': cross_account_vpc_id
+        }
+        self.log.debug('Normalized ingress rule: %s', created_rule)
+        return created_rule
