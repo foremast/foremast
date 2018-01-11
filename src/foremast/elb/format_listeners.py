@@ -185,6 +185,7 @@ def generate_custom_cert_name(env='', region='', account='', certificate=None):
         LOG.info('Unable to find TLS Cert Template...falling back to default logic...')
         return cert_name
 
+    # TODO: Move to v1 method for check
     try:
         LOG.info("Attempting to find TLS Cert using TLS Cert Template v1 lookup...")
         cert_name = tlscert_dict[env][certificate]
@@ -192,7 +193,10 @@ def generate_custom_cert_name(env='', region='', account='', certificate=None):
     except KeyError:
         LOG.error("Unable to find TLS certificate named %s under %s using v1 TLS Cert Template.", certificate, env)
 
-    if cert_name is None:
+    # TODO: Move variable to consts
+    # TODO: move to v2 method for check
+    tls_services = ['iam', 'acm']
+    if cert_name is None and all(service in tlscert_dict for service in tls_services):
         LOG.info("Attempting to find TLS Cert using TLS Cert Template v2 lookup...")
         if certificate in tlscert_dict['iam'][env]:
             cert_name = tlscert_dict['iam'][env][certificate]
