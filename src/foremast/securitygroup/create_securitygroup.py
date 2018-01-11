@@ -299,7 +299,7 @@ class SpinnakerSecurityGroup(object):
             end_port = rule.get('end_port')
             protocol = rule.get('protocol', 'tcp')
 
-            requested_cross_account = rule.get('env', None)
+            requested_cross_account = rule.get('env', self.env)
             if self.env == requested_cross_account:
                 # We are trying to use cross-account security group settings within the same account
                 # We should not allow this.
