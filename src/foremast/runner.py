@@ -105,9 +105,7 @@ class ForemastRunner(object):
             raise NotImplementedError('Pipeline type "{0}" not permitted.'.format(pipeline_type))
 
         if not onetime:
-            if pipeline_type in ('ec2', 'rolling'):
-                spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
-            elif pipeline_type == 'lambda':
+            if pipeline_type == 'lambda':
                 spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
             elif pipeline_type == 's3':
                 spinnakerpipeline = pipeline.SpinnakerPipelineS3(**kwargs)
@@ -116,7 +114,8 @@ class ForemastRunner(object):
             elif pipeline_type == 'manual':
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             else:
-                raise NotImplementedError("Pipeline type is not implemented.")
+                # Handles all other pipelines
+                spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
         else:
             spinnakerpipeline = pipeline.SpinnakerPipelineOnetime(onetime=onetime, **kwargs)
 
