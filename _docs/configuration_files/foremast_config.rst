@@ -55,7 +55,7 @@ Foremast
     | *Required*: Yes
 
 ``types``
-~~~~~~~~~
+*********
 
 List of foremast managed Pipeline types to allow.
 
