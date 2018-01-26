@@ -49,8 +49,7 @@ from boto3.exceptions import botocore
 from ..consts import DEFAULT_SECURITYGROUP_RULES
 from ..exceptions import (ForemastConfigurationFileError, SpinnakerSecurityGroupCreationFailed,
                           SpinnakerSecurityGroupError)
-from ..utils import (get_details, get_properties, get_security_group_id, get_template, get_vpc_id, wait_for_task,
-                     warn_user)
+from ..utils import (get_details, get_properties, get_security_group_id, get_template, get_vpc_id, wait_for_task)
 
 
 class SpinnakerSecurityGroup(object):
@@ -255,12 +254,6 @@ class SpinnakerSecurityGroup(object):
 
         for app in ingress:
             rules = ingress[app]
-
-            if app in ('app_a', 'app_b'):
-                msg = ('Using "{0}" in your security group will be ignored. '
-                       'Please remove them to suppress this warning.').format(app)
-                warn_user(msg)
-                continue
 
             # Essentially we have two formats: simple, advanced
             # - simple: is just a list of ports
