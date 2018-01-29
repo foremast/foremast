@@ -169,5 +169,5 @@ class AutoScalingPolicy:
             if servergroup['scalingPolicies'] and servergroup['asg']['autoScalingGroupName'] == server_group:
                 self.log.info("Found policies on %s", server_group)
                 scalingpolicies.append(servergroup['scalingPolicies'])
-        self.log.debug("scaling policys: %s", scalingpolicies)
+        self.log.debug("Scaling policies: %s", scalingpolicies)
         return scalingpolicies
