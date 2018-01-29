@@ -16,6 +16,7 @@
 """Render Jinja2 template."""
 import logging
 import os
+import pathlib
 
 import jinja2
 
@@ -25,7 +26,7 @@ from ..exceptions import ForemastTemplateNotFound
 LOG = logging.getLogger(__name__)
 
 HERE = os.path.dirname(os.path.realpath(__file__))
-LOCAL_TEMPLATES = '{0}/../templates/'.format(HERE)
+LOCAL_TEMPLATES = str(pathlib.Path('{0}/../templates/'.format(HERE)).resolve())
 
 
 def get_template_object(template_file=''):
@@ -46,7 +47,7 @@ def get_template_object(template_file=''):
     jinja_lst = []
 
     if TEMPLATES_PATH:
-        external_templates = os.path.expanduser(TEMPLATES_PATH)
+        external_templates = str(pathlib.Path(TEMPLATES_PATH).expanduser().resolve())
         assert os.path.isdir(external_templates), 'External template path "{0}" not found'.format(external_templates)
         jinja_lst.append(external_templates)
 
