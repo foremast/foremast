@@ -147,7 +147,7 @@ class AutoScalingPolicy:
                 "region": self.region,
                 "provider": "aws",
                 "type": "deleteScalingPolicy",
-                "user": "pipes-autoscaling-policy"
+                "user": "foremast-autoscaling-policy"
             }]
         }
         wait_for_task(json.dumps(delete_dict))
