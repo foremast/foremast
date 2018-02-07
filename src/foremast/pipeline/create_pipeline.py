@@ -127,6 +127,7 @@ class SpinnakerPipeline:
                 'slack': slack,
                 'root_volume_size': root_volume_size,
                 'ami_template_file': ami_template_file,
+                'pipeline': self.settings['pipeline']
             },
             'id': pipeline_id
         }
