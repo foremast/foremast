@@ -18,7 +18,7 @@ import collections
 import logging
 
 from ..consts import ENVS
-from ..utils import FileLookup
+from ..utils import DeepChainMap, FileLookup
 
 LOG = logging.getLogger(__name__)
 
@@ -42,7 +42,8 @@ def process_git_configs(git_short=''):
     for env in ENVS:
         app_json = 'runway/application-master-{env}.json'.format(env=env)
         try:
-            app_configs[env] = file_lookup.json(filename=app_json)
+            env_config = file_lookup.json(filename=app_json)
+            app_configs[env] = apply_region_configs(env_config)
         except FileNotFoundError:
             LOG.critical('Application configuration not available for %s.', env)
             # TODO: Use default configs anyways?
@@ -85,7 +86,8 @@ def process_runway_configs(runway_dir=''):
     for env in ENVS:
         file_json = 'application-master-{env}.json'.format(env=env)
         try:
-            app_configs[env] = file_lookup.json(filename=file_json)
+            env_config = file_lookup.json(filename=file_json)
+            app_configs[env] = apply_region_configs(env_config)
         except FileNotFoundError:
             LOG.critical('Application configuration not available for %s.', env)
             continue
@@ -100,3 +102,23 @@ def process_runway_configs(runway_dir=''):
 
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
+
+def apply_region_configs(env_config):
+    """Override default env configs with region specific configs and nest
+    all values under a region
+    
+    Args:
+        env_config (dict): The environ
+    
+    Return:
+        dict: Newly updated dictionary with region overrides applied.
+    """
+    new_config = env_config.copy() 
+    for region in env_config['regions']:
+        if isinstance(env_config.get('regions'), dict):
+            region_specific_config = env_config['regions'][region]
+            new_config[region] = dict(DeepChainMap(region_specific_config, env_config))
+            print(new_config)
+        else:
+            new_config[region] = env_config.copy()
+    return new_config
