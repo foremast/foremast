@@ -93,14 +93,14 @@ def process_configs(file_lookup, app_config_format, pipeline_config):
 def apply_region_configs(env_config):
     """Override default env configs with region specific configs and nest
     all values under a region
-    
+
     Args:
         env_config (dict): The environ
-    
+
     Return:
         dict: Newly updated dictionary with region overrides applied.
     """
-    new_config = env_config.copy() 
+    new_config = env_config.copy()
     for region in env_config.get('regions', REGIONS):
         if isinstance(env_config.get('regions'), dict):
             region_specific_config = env_config['regions'][region]
