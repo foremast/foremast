@@ -66,6 +66,7 @@ class SpinnakerPipelineS3(SpinnakerPipeline):
                 'triggerjob': self.trigger_job,
                 'email': email,
                 'slack': slack,
+                'pipeline': self.settings['pipeline']
             },
             'id': pipeline_id
         }
