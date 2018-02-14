@@ -61,6 +61,7 @@ class LambdaFunction(object):
         self.memory = app['lambda_memory']
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
         self.timeout = app['lambda_timeout']
+        self.concurrency_limit = app.get('lambda_concurrency_limit')
 
         self.role_arn = get_role_arn(self.role, self.env, self.region)
 
@@ -180,6 +181,15 @@ class LambdaFunction(object):
                 Timeout=int(self.timeout),
                 MemorySize=int(self.memory),
                 VpcConfig=vpc_config)
+
+            if self.concurrency_limit:
+                self.lambda_client.put_function_concurrency(
+                    FunctionName=self.app_name,
+                    ReservedConcurrentExecutions=self.concurrency_limit
+                )
+            else:
+                self.lambda_client.delete_function_concurrency(FunctionName=self.app_name)
+
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
