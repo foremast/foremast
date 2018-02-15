@@ -56,7 +56,7 @@ class LambdaFunction(object):
         self.handler = self.pipeline['handler']
         self.vpc_enabled = self.pipeline['vpc_enabled']
 
-        app = self.properties[self.env]['app']
+        app = self.properties[self.env][self.region]['app']
         self.lambda_environment = app['lambda_environment']
         self.memory = app['lambda_memory']
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
@@ -120,7 +120,7 @@ class LambdaFunction(object):
             list: security group IDs for all lambda_extras
         """
         try:
-            lambda_extras = self.properties[self.env]['security_groups']['lambda_extras']
+            lambda_extras = self.properties[self.env][self.region]['security_groups']['lambda_extras']
         except KeyError:
             lambda_extras = []
 
