@@ -40,7 +40,7 @@ class LambdaEvent(object):
         self.env = env
         self.region = region
         self.prop_path = prop_path
-        self.properties = get_properties(properties_file=prop_path, env=env)
+        self.properties = get_properties(properties_file=prop_path, env=env)[self.region]
 
     def create_lambda_events(self):
         """Create all defined lambda events for an lambda application."""
