@@ -95,7 +95,7 @@ def apply_region_configs(env_config):
     all values under a region
 
     Args:
-        env_config (dict): The environ
+        env_config (dict): The environment specific config.
 
     Return:
         dict: Newly updated dictionary with region overrides applied.
