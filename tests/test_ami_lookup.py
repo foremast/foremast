@@ -33,3 +33,20 @@ def test_ami_lookup(ami_file, token):
     ami_file.return_value = sample_json
     assert ami_lookup(name='base_fedora') == 'ami-xxxx'
     assert ami_lookup(region='us-west-2') == 'ami-yyyy'
+
+
+@mock.patch('foremast.utils.lookups.AMI_JSON_URL', return_value=True)
+@mock.patch('foremast.utils.lookups._get_ami_json')
+def test_json_lookup(ami_file, json_url):
+    """AMI lookup should contact GitLab for JSON table and resolve."""
+    sample_dict = {
+        'us-east-1': {
+            'base_fedora': 'ami-xxxx',
+        },
+        'us-west-2': {
+            'tomcat8': 'ami-yyyy',
+        }
+    }
+    ami_file.return_value = sample_dict
+    assert ami_lookup(region='us-east-1', name='base_fedora') == 'ami-xxxx'
+    assert ami_lookup(region='us-west-2', name='tomcat8') == 'ami-yyyy'
