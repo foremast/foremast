@@ -37,7 +37,8 @@ def process_git_configs(git_short=''):
     LOG.info('Processing application.json files from GitLab "%s".', git_short)
     file_lookup = FileLookup(git_short=git_short)
     app_configs = process_configs(file_lookup, 'runway/application-master-{env}.json', 'runway/pipeline.json')
-    config_commit = file_lookup.server.getbranch(file_lookup.project_id, 'master')['commit']['id']
+    commit_obj = file_lookup.project.commits.get('master')
+    config_commit = commit_obj.attributes.get('id')
     LOG.info('Commit ID used: %s', config_commit)
     app_configs['pipeline']['config_commit'] = config_commit
     return app_configs

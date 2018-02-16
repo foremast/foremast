@@ -53,11 +53,11 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
     elif GITLAB_TOKEN:
         # TODO: Remove GitLab repository in favour of JSON URL option.
         LOG.info("Getting AMI from Gitlab")
-        server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
-        project_id = server.getproject('devops/ansible')['id']
+        server = gitlab.Gitlab(GIT_URL, private_token=GITLAB_TOKEN, api_version=4)
+        project = server.projects.get('devops/ansible')
+        ami_blob = project.files.get(file_path='scripts/{0}.json'.format(region), ref='master')
 
-        ami_blob = server.getfile(project_id, 'scripts/{0}.json'.format(region), 'master')
-        ami_contents = b64decode(ami_blob['content']).decode()
+        ami_contents = b64decode(ami_blob.content).decode()
         ami_dict = json.loads(ami_contents)
         LOG.debug('Lookup AMI table: %s', ami_dict)
         ami_id = ami_dict[name]
@@ -103,15 +103,14 @@ class FileLookup():
                 code.
 
         """
-        self.server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
-
-        project = self.server.getproject(self.git_short)
+        self.server = gitlab.Gitlab(GIT_URL, private_token=GITLAB_TOKEN, api_version=4)
+        project = self.server.projects.get(self.git_short)
 
         if not project:
             raise GitLabApiError('Could not get Project "{0}" from GitLab API.'.format(self.git_short))
 
-        self.project_id = project['id']
-        return self.project_id
+        self.project = project
+        return self.project
 
     def local_file(self, filename):
         """Read the local file in _self.runway_dir_.
@@ -162,7 +161,7 @@ class FileLookup():
 
         file_contents = ''
 
-        file_blob = self.server.getfile(self.project_id, filename, branch)
+        file_blob = self.project.files.get(file_path=filename, ref=branch)
         LOG.debug('GitLab file response:\n%s', file_blob)
 
         if not file_blob:
@@ -170,7 +169,7 @@ class FileLookup():
             LOG.warning(msg)
             raise FileNotFoundError(msg)
         else:
-            file_contents = b64decode(file_blob['content']).decode()
+            file_contents = b64decode(file_blob.content).decode()
 
         LOG.debug('Remote file contents:\n%s', file_contents)
         return file_contents
