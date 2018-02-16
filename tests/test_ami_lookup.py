@@ -38,7 +38,7 @@ def test_ami_lookup(ami_file, token):
 @mock.patch('foremast.utils.lookups.AMI_JSON_URL', return_value=True)
 @mock.patch('foremast.utils.lookups._get_ami_json')
 def test_json_lookup(ami_file, json_url):
-    """AMI lookup should contact GitLab for JSON table and resolve."""
+    """AMI lookup using json url."""
     sample_dict = {
         'us-east-1': {
             'base_fedora': 'ami-xxxx',
@@ -50,3 +50,8 @@ def test_json_lookup(ami_file, json_url):
     ami_file.return_value = sample_dict
     assert ami_lookup(region='us-east-1', name='base_fedora') == 'ami-xxxx'
     assert ami_lookup(region='us-west-2', name='tomcat8') == 'ami-yyyy'
+
+
+def test_no_external_lookup():
+    """AMI lookup should contact GitLab for JSON table and resolve."""
+    assert ami_lookup(region='us-east-1', name='no_external') == 'no_external'
