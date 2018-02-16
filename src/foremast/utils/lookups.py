@@ -43,11 +43,7 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
 
     """
     if AMI_JSON_URL:
-        LOG.info("Getting AMI from %s", AMI_JSON_URL)
-        response = requests.get(AMI_JSON_URL)
-        assert response.ok, "Error getting ami info from {}".format(AMI_JSON_URL)
-
-        ami_dict = response.json()
+        ami_dict = _get_ami_json(AMI_JSON_URL)
         LOG.debug('Lookup AMI table: %s', ami_dict)
         ami_id = ami_dict[region][name]
     elif GITLAB_TOKEN:
@@ -73,6 +69,15 @@ def _get_ami_file(region='us-east-1'):
 
     ami_contents = b64decode(ami_blob.decode()).decode()
     return ami_contents
+
+
+def _get_ami_json(json_url):
+    """Helper function to get ami from a web url."""
+    LOG.info("Getting AMI from %s", json_url)
+    response = requests.get(json_url)
+    assert response.ok, "Error getting ami info from {}".format(json_url)
+    ami_dict = response.json()
+    return ami_dict
 
 
 class FileLookup():
