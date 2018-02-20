@@ -38,7 +38,7 @@ def test_init(gitlab):
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_project_id_exception(mock_gitlab):
+def test_project_exception(mock_gitlab):
     """Check resolving GitLab Project ID fails with exception."""
     mock_gitlab.Gitlab.return_value.projects.get.return_value = False
 
@@ -47,12 +47,11 @@ def test_project_id_exception(mock_gitlab):
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_project_id_success(mock_gitlab):
+def test_project_success(mock_gitlab):
     """Check resolving GitLab Project ID is successful."""
-    project_id = object
     mock_gitlab.Gitlab.return_value.projects.get.return_value = object
     seeker = FileLookup()
-    assert seeker.project == project_id
+    assert seeker.project is object
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
@@ -93,7 +92,6 @@ def test_filelookup_attr():
 
     assert my_git.git_short == ''
     assert my_git.server is None
-    assert my_git.project_id == ''
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
