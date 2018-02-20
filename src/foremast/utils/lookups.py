@@ -44,13 +44,11 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
     """
     if AMI_JSON_URL:
         ami_dict = _get_ami_json(AMI_JSON_URL)
-        LOG.debug('Lookup AMI table: %s', ami_dict)
         ami_id = ami_dict[region][name]
     elif GITLAB_TOKEN:
         # TODO: Remove GitLab repository in favour of JSON URL option.
         ami_contents = _get_ami_file(region=region)
         ami_dict = json.loads(ami_contents)
-        LOG.debug('Lookup AMI table: %s', ami_dict)
         ami_id = ami_dict[name]
     else:
         ami_id = name
@@ -68,6 +66,7 @@ def _get_ami_file(region='us-east-1'):
     ami_blob = project.files.get(file_path='scripts/{0}.json'.format(region), ref='master')
 
     ami_contents = b64decode(ami_blob.decode()).decode()
+    LOG.debug('AMI File contents: %s', ami_contents)
     return ami_contents
 
 
@@ -77,6 +76,7 @@ def _get_ami_json(json_url):
     response = requests.get(json_url)
     assert response.ok, "Error getting ami info from {}".format(json_url)
     ami_dict = response.json()
+    LOG.debug('AMI json contents: %s', ami_dict)
     return ami_dict
 
 
