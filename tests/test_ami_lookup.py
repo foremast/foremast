@@ -21,9 +21,9 @@ from unittest import mock
 from foremast.utils import ami_lookup
 
 
-@mock.patch('foremast.utils.lookups.GITLAB_TOKEN', return_value=True)
+@mock.patch('foremast.utils.lookups.GITLAB_TOKEN', new=True)
 @mock.patch('foremast.utils.lookups._get_ami_file')
-def test_ami_lookup(ami_file, token):
+def test_ami_lookup(ami_file):
     """AMI lookup should contact GitLab for JSON table and resolve."""
     sample_dict = {
         'base_fedora': 'ami-xxxx',
@@ -35,9 +35,9 @@ def test_ami_lookup(ami_file, token):
     assert ami_lookup(region='us-west-2') == 'ami-yyyy'
 
 
-@mock.patch('foremast.utils.lookups.AMI_JSON_URL', return_value=True)
+@mock.patch('foremast.utils.lookups.AMI_JSON_URL', new=True)
 @mock.patch('foremast.utils.lookups._get_ami_json')
-def test_json_lookup(ami_file, json_url):
+def test_json_lookup(ami_file):
     """AMI lookup using json url."""
     sample_dict = {
         'us-east-1': {
