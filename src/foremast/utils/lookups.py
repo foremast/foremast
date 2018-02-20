@@ -98,12 +98,11 @@ class FileLookup():
         self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir))
 
         self.server = None
-        self.project_id = ''
 
         if not self.runway_dir:
-            self.get_gitlab_project_id()
+            self.get_gitlab_project()
 
-    def get_gitlab_project_id(self):
+    def get_gitlab_project(self):
         """Get numerical GitLab Project ID.
 
         Returns:
