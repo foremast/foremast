@@ -52,5 +52,5 @@ def test_json_lookup(ami_file_json):
 
 
 def test_no_external_lookup():
-    """AMI lookup should contact GitLab for JSON table and resolve."""
+    """AMI lookup not using json or gitlab."""
     assert ami_lookup(region='us-east-1', name='no_external') == 'no_external'
