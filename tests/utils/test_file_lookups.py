@@ -54,36 +54,36 @@ def test_project_success(mock_gitlab):
     assert seeker.project is object
 
 
+@mock.patch.object(FileLookup, 'remote_file', return_value=TEST_JSON)
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_get(gitlab):
+def test_get(gitlab, mock_lookup):
     """Check _get_ method."""
     my_git = FileLookup()
 
-    with mock.patch.object(FileLookup, 'remote_file', return_value=TEST_JSON) as mock_method:
-        result = my_git.get()
-        assert isinstance(result, str)
-        assert TEST_JSON == my_git.get()
+    result = my_git.get()
+    assert isinstance(result, str)
+    assert TEST_JSON == my_git.get()
 
 
+@mock.patch.object(FileLookup, 'get', return_value=TEST_JSON)
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_json(gitlab):
+def test_json(gitlab, mock_lookup):
     """Check _json_ method."""
     my_git = FileLookup()
 
-    with mock.patch.object(FileLookup, 'get', return_value=TEST_JSON) as mock_method:
-        result = my_git.json()
-        assert isinstance(result, dict)
-        assert result['ship'] == 'pirate'
+    result = my_git.json()
+    assert isinstance(result, dict)
+    assert result['ship'] == 'pirate'
 
 
+@mock.patch.object(FileLookup, 'get', return_value=TEST_JSON + '}')
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_invalid_json(gitlab):
+def test_invalid_json(gitlab, mock_lookup):
     """Check invalid JSON."""
     my_git = FileLookup()
 
-    with mock.patch.object(FileLookup, 'get', return_value=TEST_JSON + '}') as mock_method:
-        with pytest.raises(SystemExit):
-            my_git.json()
+    with pytest.raises(SystemExit):
+        my_git.json()
 
 
 def test_filelookup_attr():
