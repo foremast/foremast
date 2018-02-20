@@ -14,7 +14,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Ensure AMI names can be translated."""
-import base64
 import json
 from unittest import mock
 
