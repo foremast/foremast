@@ -65,7 +65,7 @@ def _get_ami_file(region='us-east-1'):
     project = server.projects.get('devops/ansible')
     ami_blob = project.files.get(file_path='scripts/{0}.json'.format(region), ref='master')
 
-    ami_contents = b64decode(ami_blob.decode()).decode()
+    ami_contents = ami_blob.decode().decode()
     LOG.debug('AMI File contents: %s', ami_contents)
     return ami_contents
 
