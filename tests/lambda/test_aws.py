@@ -14,10 +14,12 @@ TEST_PROPERTIES = {
         },
     },
     'test_env': {
-        'app': {
-            'lambda_memory': 0,
-            'lambda_timeout': 0,
-            'lambda_environment': None,
+        'us-east-1': {
+            'app': {
+                'lambda_memory': 0,
+                'lambda_timeout': 0,
+                'lambda_environment': None,
+            }
         }
     },
 }
@@ -50,7 +52,7 @@ def test_role_arn_none(mock_get_role_arn, mock_get_properties, mock_get_details,
     """Generated Role should be used for Lambda."""
     generated = copy.deepcopy(GENERATED_IAM)
     properties = copy.deepcopy(TEST_PROPERTIES)
-    properties['test_env']['app']['lambda_role'] = None
+    properties['test_env']['us-east-1']['app']['lambda_role'] = None
 
     mock_get_details.return_value.iam.return_value = generated
     mock_get_properties.return_value = properties
@@ -68,7 +70,7 @@ def test_role_arn_custom(mock_get_role_arn, mock_get_properties, mock_get_detail
     custom_role = 'custom_role'
     generated = copy.deepcopy(GENERATED_IAM)
     properties = copy.deepcopy(TEST_PROPERTIES)
-    properties['test_env']['app']['lambda_role'] = custom_role
+    properties['test_env']['us-east-1']['app']['lambda_role'] = custom_role
 
     mock_get_details.return_value.iam.return_value = generated
     mock_get_properties.return_value = properties
