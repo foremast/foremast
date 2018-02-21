@@ -59,7 +59,7 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
 
 
 def _get_ami_file(region='us-east-1'):
-    """Helper function to get file from Gitlab."""
+    """Get file from Gitlab."""
     LOG.info("Getting AMI from Gitlab")
     server = gitlab.Gitlab(GIT_URL, private_token=GITLAB_TOKEN, api_version=4)
     project = server.projects.get('devops/ansible')
@@ -71,7 +71,7 @@ def _get_ami_file(region='us-east-1'):
 
 
 def _get_ami_json(json_url):
-    """Helper function to get ami from a web url."""
+    """Get ami from a web url."""
     LOG.info("Getting AMI from %s", json_url)
     response = requests.get(json_url)
     assert response.ok, "Error getting ami info from {}".format(json_url)
@@ -94,6 +94,7 @@ class FileLookup():
     """
 
     def __init__(self, git_short='', runway_dir=''):
+        """Init."""
         self.git_short = git_short
         self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir))
 
