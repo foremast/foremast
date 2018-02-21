@@ -61,12 +61,10 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
 def _get_ami_file(region='us-east-1'):
     """Get file from Gitlab."""
     LOG.info("Getting AMI from Gitlab")
-    server = gitlab.Gitlab(GIT_URL, private_token=GITLAB_TOKEN, api_version=4)
-    project = server.projects.get('devops/ansible')
-    ami_blob = project.files.get(file_path='scripts/{0}.json'.format(region), ref='master')
-
-    ami_contents = ami_blob.decode().decode()
-    LOG.debug('AMI File contents: %s', ami_contents)
+    lookup = FileLookup(git_short='devops/ansible')
+    filename = 'scripts/{0}.json'.format(region)
+    ami_contents = lookup.remote_file(filename=filename, branch='master')
+    LOG.debug('AMI file contents in %s: %s', filename, ami_contents)
     return ami_contents
 
 
