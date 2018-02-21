@@ -51,14 +51,12 @@ TRIGGERS_BUCKET_B = [
 
 def get_properties_with_triggers(triggers):
     return {
-        'us-east-1': {
-            'app': {
-                'lambda_memory': 0,
-                'lambda_timeout': 0,
-                'lambda_environment': None,
-            },
-            "lambda_triggers": triggers
-        }
+        'app': {
+            'lambda_memory': 0,
+            'lambda_timeout': 0,
+            'lambda_environment': None,
+        },
+        "lambda_triggers": triggers
     }
 
 @mock.patch('foremast.awslambda.s3_event.s3_event.add_lambda_permissions')
