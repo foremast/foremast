@@ -51,7 +51,7 @@ class AutoScalingPolicy:
         self.region = region
         self.app = app
 
-        self.settings = get_properties(properties_file=prop_path, env=self.env)[self.region]
+        self.settings = get_properties(properties_file=prop_path, env=self.env, region=self.region)
 
     def prepare_policy_template(self, scaling_type, period_sec, server_group):
         """Renders scaling policy templates based on configs and variables.
