@@ -20,12 +20,13 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-def get_properties(properties_file='raw.properties.json', env=None):
+def get_properties(properties_file='raw.properties.json', env=None, region=None):
     """Get contents of _properties_file_ for the _env_.
 
     Args:
         properties_file (str): File name of `create-configs` JSON output.
-        env (str): Environment to read optionally
+        env (str): Environment to read optionally.
+        region (str): Region to get specific configs for.
 
     Returns:
         dict: JSON loaded Application properties for _env_.
@@ -36,5 +37,6 @@ def get_properties(properties_file='raw.properties.json', env=None):
         properties = json.load(file_handle)
 
     env_properties = properties.get(env, properties)
-    LOG.debug('Found properties for %s:\n%s', env, env_properties)
-    return env_properties
+    contents = env_properties.get(region, env_properties)
+    LOG.debug('Found properties for %s:\n%s', env, contents)
+    return contents
