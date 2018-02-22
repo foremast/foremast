@@ -97,6 +97,7 @@ class FileLookup():
         self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir))
 
         self.server = None
+        self.project = None
 
         if not self.runway_dir:
             self.get_gitlab_project()
