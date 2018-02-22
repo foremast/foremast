@@ -48,7 +48,7 @@ class SpinnakerDns:
         self.generated = get_details(app, env=self.env, region=self.region)
         self.app_name = self.generated.app_name()
 
-        self.properties = get_properties(properties_file=prop_path, env=self.env)
+        self.properties = get_properties(properties_file=prop_path, env=self.env, region=self.region)
         self.dns_ttl = self.properties['dns']['ttl']
         self.header = {'content-type': 'application/json'}
 
