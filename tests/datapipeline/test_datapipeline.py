@@ -12,12 +12,10 @@ GOOD_DEF = {"objects": [], "parameters": [], "values": {}}
 BAD_DEF = {"no_object": [], "parameters": [], "values": {}}
 
 TEST_PROPERTIES = {
-    'test_env': {
-        'datapipeline': {
-            'name': 'Test Pipeline',
-            'description': "this is a test",
-            'json_definition': GOOD_DEF
-        }
+    'datapipeline': {
+        'name': 'Test Pipeline',
+        'description': "this is a test",
+        'json_definition': GOOD_DEF
     }
 }
 
@@ -60,7 +58,7 @@ def test_bad_set_pipeline_definition(mock_get_properties, mock_get_details, mock
     """Tests that bad pipeline definition is caught"""
     generated = {"project": "test"}
     properties = copy.deepcopy(TEST_PROPERTIES)
-    properties['test_env']['datapipeline']['json_definition'] = BAD_DEF
+    properties['datapipeline']['json_definition'] = BAD_DEF
     mock_get_details.return_value.data = generated
     mock_get_properties.return_value = properties
 
