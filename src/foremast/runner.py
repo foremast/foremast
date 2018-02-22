@@ -191,18 +191,21 @@ class ForemastRunner(object):
         elb_subnet = self.configs[self.env]['elb']['subnet_purpose']
         regions = self.configs[self.env]['regions']
         failover = self.configs[self.env]['dns']['failover_dns']
+        primary_region = self.configs['pipeline']['primary_region']
         regionspecific_dns = self.configs[self.env]['dns']['region_specific']
 
         dnsobj = dns.SpinnakerDns(
             app=self.app, env=self.env, region=self.region, prop_path=self.json_path, elb_subnet=elb_subnet)
+
         if len(regions) > 1 and failover:
             dnsobj.create_elb_dns(regionspecific=True)
-            primary_region = self.configs['pipeline']['primary_region']
             dnsobj.create_failover_dns(primary_region=primary_region)
         else:
-            dnsobj.create_elb_dns(regionspecific=False)
-            if regionspecific_dns:  # If true, Also create a region specific DNS record
+            if regionspecific_dns:
                 dnsobj.create_elb_dns(regionspecific=True)
+
+            if self.region == primary_region:
+                dnsobj.create_elb_dns(regionspecific=False)
 
     def create_autoscaling_policy(self):
         """Create Scaling Policy for app in environment"""
