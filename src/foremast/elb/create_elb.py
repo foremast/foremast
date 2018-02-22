@@ -42,7 +42,7 @@ class SpinnakerELB:
         self.app = app
         self.env = env
         self.region = region
-        self.properties = get_properties(properties_file=prop_path, env=self.env)
+        self.properties = get_properties(properties_file=prop_path, env=self.env, region=self.region)
 
     def make_elb_json(self):
         """Render the JSON template with arguments.
