@@ -69,7 +69,7 @@ class SpinnakerSecurityGroup(object):
         self.env = env
         self.region = region
 
-        self.properties = get_properties(properties_file=prop_path, env=env)
+        self.properties = get_properties(properties_file=prop_path, env=self.env, region=self.region)
         generated = get_details(app=self.app_name)
         self.group = generated.data['project']
 

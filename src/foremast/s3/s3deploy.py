@@ -42,8 +42,8 @@ class S3Deployment(object):
         self.region = region
         self.artifact_path = artifact_path
         self.version = artifact_version
-        self.properties = get_properties(prop_path)
-        self.s3props = self.properties[self.env]['s3']
+        self.properties = get_properties(prop_path, env=self.env, region=self.region)
+        self.s3props = self.properties['s3']
         generated = get_details(app=app, env=env)
 
         if self.s3props.get('shared_bucket_master'):
@@ -88,7 +88,7 @@ class S3Deployment(object):
 
     def upload_artifacts(self):
         """Upload artifacts to S3 and copy to LATEST depending on strategy."""
-        deploy_strategy = self.properties[self.env]["deploy_strategy"]
+        deploy_strategy = self.properties["deploy_strategy"]
         self._upload_artifacts_to_version()
         if deploy_strategy == "highlander":
             self._sync_to_uri(self.s3_latest_uri)

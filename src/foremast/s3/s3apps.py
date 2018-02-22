@@ -45,8 +45,8 @@ class S3Apps(object):
         boto_sess = boto3.session.Session(profile_name=env)
         self.s3client = boto_sess.client('s3')
         self.generated = get_details(app=app, env=env)
-        self.properties = get_properties(prop_path)
-        self.s3props = self.properties[self.env]['s3']
+        self.properties = get_properties(prop_path, env=self.env, region=self.region)
+        self.s3props = self.properties['s3']
         self.group = self.generated.project
 
         if self.s3props.get('shared_bucket_master'):
