@@ -24,6 +24,7 @@ import requests
 
 from ..consts import AMI_JSON_URL, GIT_URL, GITLAB_TOKEN
 from ..exceptions import GitLabApiError
+from .warn_user import warn_user
 
 LOG = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
         ami_dict = _get_ami_json(AMI_JSON_URL)
         ami_id = ami_dict[region][name]
     elif GITLAB_TOKEN:
-        # TODO: Remove GitLab repository in favour of JSON URL option.
+        warn_user('Use AMI_JSON_URL feature instead.')
         ami_contents = _get_ami_file(region=region)
         ami_dict = json.loads(ami_contents)
         ami_id = ami_dict[name]
