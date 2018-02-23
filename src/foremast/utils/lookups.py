@@ -44,7 +44,7 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
 
     """
     if AMI_JSON_URL:
-        ami_dict = _get_ami_json(AMI_JSON_URL)
+        ami_dict = _get_ami_dict(AMI_JSON_URL)
         ami_id = ami_dict[region][name]
     elif GITLAB_TOKEN:
         warn_user('Use AMI_JSON_URL feature instead.')
@@ -60,7 +60,15 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
 
 
 def _get_ami_file(region='us-east-1'):
-    """Get file from Gitlab."""
+    """Get file from Gitlab.
+
+    Args:
+        region (str): AWS Region to find AMI ID.
+
+    Returns:
+        str: Contents in json format.
+
+    """
     LOG.info("Getting AMI from Gitlab")
     lookup = FileLookup(git_short='devops/ansible')
     filename = 'scripts/{0}.json'.format(region)
@@ -69,8 +77,16 @@ def _get_ami_file(region='us-east-1'):
     return ami_contents
 
 
-def _get_ami_json(json_url):
-    """Get ami from a web url."""
+def _get_ami_dict(json_url):
+    """Get ami from a web url.
+
+    Args:
+        region (str): AWS Region to find AMI ID.
+
+    Returns:
+        dict: Contents in dictionary format.
+
+    """
     LOG.info("Getting AMI from %s", json_url)
     response = requests.get(json_url)
     assert response.ok, "Error getting ami info from {}".format(json_url)
