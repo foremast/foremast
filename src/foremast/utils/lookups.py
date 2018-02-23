@@ -187,7 +187,11 @@ class FileLookup():
 
         file_contents = ''
 
-        file_blob = self.project.files.get(file_path=filename, ref=branch)
+        try:
+            file_blob = self.project.files.get(file_path=filename, ref=branch)
+        except gitlab.exceptions.GitlabGetError:
+            file_blob = None
+
         LOG.debug('GitLab file response:\n%s', file_blob)
 
         if not file_blob:
