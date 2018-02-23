@@ -195,7 +195,7 @@ class FileLookup():
         LOG.debug('GitLab file response:\n%s', file_blob)
 
         if not file_blob:
-            msg = '"{0}" Branch "{1}" missing file "{2}".'.format(self.git_short, branch, filename)
+            msg = 'Project "{0}" is missing file "{1}" in "{2}" branch.'.format(self.git_short, filename, branch)
             LOG.warning(msg)
             raise FileNotFoundError(msg)
         else:
