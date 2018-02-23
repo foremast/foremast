@@ -17,6 +17,7 @@
 import json
 from unittest import mock
 
+import pytest
 from foremast.utils import ami_lookup
 
 
@@ -30,8 +31,9 @@ def test_ami_lookup(ami_file):
     }
     sample_json = json.dumps(sample_dict)
     ami_file.return_value = sample_json
-    assert ami_lookup(name='base_fedora') == 'ami-xxxx'
-    assert ami_lookup(region='us-west-2') == 'ami-yyyy'
+    with pytest.warns(UserWarning):
+        assert ami_lookup(name='base_fedora') == 'ami-xxxx'
+        assert ami_lookup(region='us-west-2') == 'ami-yyyy'
 
 
 @mock.patch('foremast.utils.lookups.AMI_JSON_URL', new=True)
