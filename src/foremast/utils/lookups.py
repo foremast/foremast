@@ -109,7 +109,6 @@ class FileLookup():
     """
 
     def __init__(self, git_short='', runway_dir=''):
-        """Init."""
         self.git_short = git_short
         self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir))
 
