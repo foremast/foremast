@@ -38,7 +38,7 @@ def process_git_configs(git_short=''):
     file_lookup = FileLookup(git_short=git_short)
     app_configs = process_configs(file_lookup, 'runway/application-master-{env}.json', 'runway/pipeline.json')
     commit_obj = file_lookup.project.commits.get('master')
-    config_commit = commit_obj.attributes.get('id')
+    config_commit = commit_obj.attributes['id']
     LOG.info('Commit ID used: %s', config_commit)
     app_configs['pipeline']['config_commit'] = config_commit
     return app_configs
