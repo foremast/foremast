@@ -106,7 +106,7 @@ class SpinnakerPipelineDataPipeline(SpinnakerPipeline):
                     generated=self.generated,
                     previous_env=previous_env,
                     region=region,
-                    settings=self.settings[env],
+                    settings=self.settings[env][region],
                     pipeline_data=self.settings['pipeline'])
                 pipelines[region]['stages'].extend(json.loads(block))
 
