@@ -491,10 +491,10 @@ The check the ELB will use to validate application is online.
 ``regions`` Key
 ~~~~~~~~~~~~~~~
 
-List of AWS regions that application will be deployed to.
+Dict of AWS regions that application will be deployed to.
 
     | *Type*: array
-    | *Default*: ``[ "us-east-1" ]``
+    | *Default*: ``{ "us-east-1": {} }``
 
 ``deploy_strategy`` Key
 ~~~~~~~~~~~~~~~~~~~~~~~
