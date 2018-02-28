@@ -111,7 +111,7 @@ class S3Apps(object):
         dns_kwargs = {
             'dns_name': self.bucket,
             'dns_name_aws': s3_endpoint,
-            'dns_ttl': self.properties[self.env]['dns']['ttl']
+            'dns_ttl': self.properties['dns']['ttl']
         }
 
         for zone_id in zone_ids:
