@@ -26,7 +26,7 @@ from ..exceptions import ForemastTemplateNotFound
 LOG = logging.getLogger(__name__)
 
 HERE = os.path.dirname(os.path.realpath(__file__))
-LOCAL_TEMPLATES = str(pathlib.Path('{0}/../templates/'.format(HERE)).resolve())
+LOCAL_TEMPLATES = pathlib.Path('{0}/../templates/'.format(HERE)).resolve()
 
 
 def get_template_object(template_file=''):
@@ -47,13 +47,14 @@ def get_template_object(template_file=''):
     jinja_lst = []
 
     if TEMPLATES_PATH:
-        external_templates = str(pathlib.Path(TEMPLATES_PATH).expanduser().resolve())
+        external_templates = pathlib.Path(TEMPLATES_PATH).expanduser().resolve()
         assert os.path.isdir(external_templates), 'External template path "{0}" not found'.format(external_templates)
         jinja_lst.append(external_templates)
 
     jinja_lst.append(LOCAL_TEMPLATES)
+    jinja_templates = [str(path) for path in jinja_lst]
 
-    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_lst))
+    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_templates))
 
     try:
         template = jinjaenv.get_template(template_file)

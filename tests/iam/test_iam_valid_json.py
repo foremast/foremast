@@ -10,7 +10,7 @@ from foremast.utils.templates import LOCAL_TEMPLATES
 
 def iam_templates():
     """Generate list of IAM templates."""
-    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader([LOCAL_TEMPLATES]))
+    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader([str(LOCAL_TEMPLATES)]))
 
     iam_template_names = jinjaenv.list_templates(filter_func=lambda x: all([
         x.startswith('infrastructure/iam/'),
