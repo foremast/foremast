@@ -25,8 +25,8 @@ from ..exceptions import ForemastTemplateNotFound
 
 LOG = logging.getLogger(__name__)
 
-HERE = os.path.dirname(os.path.realpath(__file__))
-LOCAL_TEMPLATES = pathlib.Path('{0}/../templates/'.format(HERE)).resolve()
+HERE = pathlib.Path(__file__).parent.absolute()
+LOCAL_TEMPLATES = HERE.joinpath('../templates/').resolve()
 
 
 def get_template_object(template_file=''):
