@@ -44,17 +44,17 @@ def get_template_object(template_file=''):
             is not available.
 
     """
-    jinja_lst = []
+    jinja_template_paths_obj = []
 
     if TEMPLATES_PATH:
         external_templates = pathlib.Path(TEMPLATES_PATH).expanduser().resolve()
         assert os.path.isdir(external_templates), 'External template path "{0}" not found'.format(external_templates)
-        jinja_lst.append(external_templates)
+        jinja_template_paths_obj.append(external_templates)
 
-    jinja_lst.append(LOCAL_TEMPLATES)
-    jinja_templates = [str(path) for path in jinja_lst]
+    jinja_template_paths_obj.append(LOCAL_TEMPLATES)
+    jinja_template_paths = [str(path) for path in jinja_template_paths_obj]
 
-    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_templates))
+    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_template_paths))
 
     try:
         template = jinjaenv.get_template(template_file)
