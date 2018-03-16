@@ -50,7 +50,7 @@ from deepmerge import conservative_merger
 from ..consts import DEFAULT_SECURITYGROUP_RULES
 from ..exceptions import (ForemastConfigurationFileError, SpinnakerSecurityGroupCreationFailed,
                           SpinnakerSecurityGroupError)
-from ..utils import (get_details, get_properties, get_security_group_id, get_template, get_vpc_id, wait_for_task)
+from ..utils import get_details, get_properties, get_security_group_id, get_template, get_vpc_id, wait_for_task
 
 
 class SpinnakerSecurityGroup(object):
