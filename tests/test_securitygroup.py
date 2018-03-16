@@ -37,6 +37,21 @@ SAMPLE_JSON = """{"security_group": {
                     }
                   }}"""
 
+DEFAULT_SG_RULES = {
+    'myapp': [
+        {
+            'start_port': 22,
+            'end_port': 22,
+        },
+    ],
+    'test_app': [
+        {
+            'start_port': 31,
+            'end_port': 31,
+        },
+    ],
+}
+
 
 @mock.patch('foremast.securitygroup.create_securitygroup.boto3')
 @mock.patch('foremast.securitygroup.create_securitygroup.get_security_group_id')
@@ -162,3 +177,31 @@ def test_securitygroup_references(mock_properties, mock_details):
     assert 'myapp' in ingress
     assert '22' == ingress['myapp'][0]['start_port']
     assert '22' == ingress['myapp'][0]['end_port']
+
+
+@mock.patch.dict('foremast.securitygroup.create_securitygroup.DEFAULT_SECURITYGROUP_RULES', DEFAULT_SG_RULES)
+@mock.patch('foremast.securitygroup.create_securitygroup.get_details')
+@mock.patch('foremast.securitygroup.create_securitygroup.get_properties')
+def test_merge_security_groups(mock_properties, mock_details):
+    """Make sure default Security Groups are added to the ingress rules."""
+    app_ingress = {
+        'test_app': [
+            {
+                'start_port': 30,
+                'end_port': 30,
+            },
+        ],
+    }
+
+    mock_properties.return_value = {
+        'security_group': {
+            'ingress': app_ingress,
+            'description': '',
+        },
+    }
+
+    sg = SpinnakerSecurityGroup()
+    ingress = sg.update_default_rules()
+    assert ingress['myapp'][0]['start_port'] == 22
+    assert ingress['test_app'][0]['start_port'] == 31
+    assert ingress['test_app'][1]['start_port'] == 30
