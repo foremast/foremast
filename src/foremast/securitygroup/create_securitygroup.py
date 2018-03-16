@@ -45,6 +45,7 @@ from contextlib import suppress
 
 import boto3
 from boto3.exceptions import botocore
+from deepmerge import conservative_merger
 
 from ..consts import DEFAULT_SECURITYGROUP_RULES
 from ..exceptions import (ForemastConfigurationFileError, SpinnakerSecurityGroupCreationFailed,
@@ -200,9 +201,10 @@ class SpinnakerSecurityGroup(object):
 
     def update_default_rules(self):
         """Concatinate application and global security group rules."""
-        ingress = self.properties['security_group']['ingress']
-        ingress.update(DEFAULT_SECURITYGROUP_RULES)
+        app_ingress = self.properties['security_group']['ingress']
+        ingress = conservative_merger.merge(DEFAULT_SECURITYGROUP_RULES, app_ingress)
         resolved_ingress = self.resolve_self_references(ingress)
+        self.log.info('Updated default rules:\n%s', ingress)
         return resolved_ingress
 
     def _create_security_group(self, ingress):
