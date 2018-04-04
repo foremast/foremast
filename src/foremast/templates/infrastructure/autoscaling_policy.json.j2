@@ -30,7 +30,7 @@
             "insufficientDataActionArns":[]
          },
          "step":{
-            "estimatedInstanceWarmup":600,
+            "estimatedInstanceWarmup": {{ scaling_policy.instance_warmup | default(600) }},
             "metricAggregationType":"{{ scaling_policy.statistic | default("Average") }}",
             "stepAdjustments":[
                {

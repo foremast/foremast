@@ -235,7 +235,7 @@ scaling policy will be attached
 
 ``threshold`` : Metrics value limit for scaling up
 
-   | *Type*: number
+   | *Type*: int
 
 ``scale_down`` : Attach a default scale-down policy
 
@@ -245,7 +245,7 @@ scaling policy will be attached
 ``period_minutes`` : Time period to look across for determining if threshold was
 met
 
-   | *Type*: number
+   | *Type*: int
    | *Units*: Minutes
 
 ``statistic``: Statistic to calculate at the period to determine if threshold
@@ -259,6 +259,12 @@ was met
       - ``"Maximum"``
       - ``"Minimum"``
       - ``"Sum"``
+
+``instance_warmup`` : Time period to wait before adding metrics to Auto Scaling group
+
+   | *Type*: int
+   | *Default*: 600
+   | *Units*: seconds
 
 ``scaling_policy`` *Example*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
