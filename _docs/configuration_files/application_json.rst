@@ -277,6 +277,7 @@ was met
            "metric": "CPUUtilization",
            "threshold": 90,
            "period_minutes": 10,
+           "instance_warmup": 180,
            "statistic": "Average",
            "scale_down": true
        }
