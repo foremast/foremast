@@ -243,9 +243,10 @@ scaling policy will be attached
    | *Default*: ``true``
 
 ``period_minutes`` : Time period to look across for determining if threshold was
-met
+met. If you wish to have seconds, using a floating point such as .5 for 30 seconds.
 
-   | *Type*: int
+   | *Type*: float
+   | *Default*: 30
    | *Units*: Minutes
 
 ``statistic``: Statistic to calculate at the period to determine if threshold
