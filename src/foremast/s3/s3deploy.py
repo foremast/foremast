@@ -131,15 +131,15 @@ class S3Deployment(object):
         """
         if flat:
             cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                    self.s3_flat_uri, self.env)
+                                                                                      self.s3_flat_uri, self.env)
         else:
             cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                    self.s3_version_uri, self.env)
+                                                                                      self.s3_version_uri, self.env)
         return cmd
 
     def _upload_artifacts_to_path(self, flat=False):
         """Recursively upload directory contents to S3.
-        
+
         Args:
             flat (bool): If true, uses a flat directory structure instead of nesting under a version.
         """
