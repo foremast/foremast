@@ -120,6 +120,23 @@ class S3Deployment(object):
         else:
             self._sync_to_uri(self.s3_latest_uri)
 
+    def _get_upload_cmd(self, flat=False):
+        """Generate the S3 CLI upload command
+
+        Args:
+            flat (bool): If true, uses a flat directory structure instead of nesting under a version.
+
+        Returns:
+            str: The full CLI command to run.
+        """
+        if flat:
+            cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
+                                                                                    self.s3_flat_uri, self.env)
+        else:
+            cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
+                                                                                    self.s3_version_uri, self.env)
+        return cmd
+
     def _upload_artifacts_to_path(self, flat=False):
         """Recursively upload directory contents to S3.
         
@@ -132,32 +149,28 @@ class S3Deployment(object):
         uploaded = False
         if self.s3props.get("content_metadata"):
             LOG.info("Uploading in multiple parts to set metadata")
-            uploaded = self.content_metadata_uploads()
+            uploaded = self.content_metadata_uploads(flat=flat)
 
         if not uploaded:
-            if flat:
-                cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                        self.s3_flat_uri, self.env)
-            else:
-                cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                        self.s3_version_uri, self.env)
+            cmd = self._get_upload_cmd(flat=flat)
             result = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
             LOG.debug("Upload Command Ouput: %s", result.stdout)
 
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
-    def content_metadata_uploads(self):
+    def content_metadata_uploads(self, flat=False):
         """Finds all specified encoded directories and uploads in multiple parts,
         setting metadata for objects.
+
+        Args:
+            flat (bool): If true, uses a flat directory structure instead of nesting under a version.
 
         Returns:
             bool: True if uploaded
         """
         excludes_str = ''
         includes_cmds = []
-        cmd_base = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                       self.s3_version_uri,
-                                                                                       self.env)
+        cmd_base = self._get_upload_cmd(flat=flat)
 
         for content in self.s3props.get('content_metadata'):
             full_path = os.path.join(self.artifact_path, content['path'])
