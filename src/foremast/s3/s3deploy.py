@@ -68,6 +68,7 @@ class S3Deployment(object):
         self.s3_latest_uri = self._path_formatter("LATEST")
         self.s3_canary_uri = self._path_formatter("CANARY")
         self.s3_alpha_uri = self._path_formatter("ALPHA")
+        self.s3_flat_uri = self._path_formatter("FLAT")
 
     def _path_formatter(self, suffix):
         """Format the s3 path properly.
@@ -79,25 +80,32 @@ class S3Deployment(object):
             str: formatted path
 
         """
-        path_format = "{}/{}/{}"
+        if suffix.lower() == "flat":
+            path_format = "{}/{}"
+            path = path_format.format(self.bucket, self.s3path)
+        else:
+            path_format = "{}/{}/{}"
+            path = path_format.format(self.bucket, self.s3path, suffix)
         s3_format = "s3://{}"
-        path = path_format.format(self.bucket, self.s3path, suffix)
         formatted_path = path.replace('//', '/')  # removes configuration errors
         full_path = s3_format.format(formatted_path)
         return full_path
 
     def upload_artifacts(self):
-        """Upload artifacts to S3 and copy to LATEST depending on strategy."""
+        """Upload artifacts to S3 and copy to correct path depending on strategy."""
         deploy_strategy = self.properties["deploy_strategy"]
-        self._upload_artifacts_to_version()
-        if deploy_strategy == "highlander":
-            self._sync_to_uri(self.s3_latest_uri)
-        elif deploy_strategy == "canary":
-            self._sync_to_uri(self.s3_canary_uri)
-        elif deploy_strategy == "alpha":
-            self._sync_to_uri(self.s3_alpha_uri)
+        if deploy_strategy == "flat":
+            self._upload_artifacts_to_path(flat=True)
         else:
-            raise NotImplementedError
+            self._upload_artifacts_to_path(flat=False)
+            if deploy_strategy == "highlander":
+                self._sync_to_uri(self.s3_latest_uri)
+            elif deploy_strategy == "canary":
+                self._sync_to_uri(self.s3_canary_uri)
+            elif deploy_strategy == "alpha":
+                self._sync_to_uri(self.s3_alpha_uri)
+            else:
+                raise NotImplementedError
 
     def promote_artifacts(self, promote_stage='latest'):
         """Promote artifact version to dest.
@@ -112,8 +120,12 @@ class S3Deployment(object):
         else:
             self._sync_to_uri(self.s3_latest_uri)
 
-    def _upload_artifacts_to_version(self):
-        """Recursively upload directory contents to S3."""
+    def _upload_artifacts_to_path(self, flat=False):
+        """Recursively upload directory contents to S3.
+        
+        Args:
+            flat (bool): If true, uses a flat directory structure instead of nesting under a version.
+        """
         if not os.listdir(self.artifact_path) or not self.artifact_path:
             raise S3ArtifactNotFound
 
@@ -123,8 +135,12 @@ class S3Deployment(object):
             uploaded = self.content_metadata_uploads()
 
         if not uploaded:
-            cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                      self.s3_version_uri, self.env)
+            if flat:
+                cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
+                                                                                        self.s3_flat_uri, self.env)
+            else:
+                cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
+                                                                                        self.s3_version_uri, self.env)
             result = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
             LOG.debug("Upload Command Ouput: %s", result.stdout)
 
