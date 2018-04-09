@@ -68,7 +68,7 @@ class S3Deployment(object):
         self.s3_latest_uri = self._path_formatter("LATEST")
         self.s3_canary_uri = self._path_formatter("CANARY")
         self.s3_alpha_uri = self._path_formatter("ALPHA")
-        self.s3_flat_uri = self._path_formatter("FLAT")
+        self.s3_mirror_uri = self._path_formatter("MIRROR")
 
     def _path_formatter(self, suffix):
         """Format the s3 path properly.
@@ -80,12 +80,12 @@ class S3Deployment(object):
             str: formatted path
 
         """
-        if suffix.lower() == "flat":
-            path_format = "{}/{}"
-            path = path_format.format(self.bucket, self.s3path)
+        if suffix.lower() == "mirror":
+            path_items = [self.bucket, self.s3path]
         else:
-            path_format = "{}/{}/{}"
-            path = path_format.format(self.bucket, self.s3path, suffix)
+            path_items = [self.bucket, self.s3path, suffix]
+
+        path = '/'.join(path_items)
         s3_format = "s3://{}"
         formatted_path = path.replace('//', '/')  # removes configuration errors
         full_path = s3_format.format(formatted_path)
@@ -94,10 +94,10 @@ class S3Deployment(object):
     def upload_artifacts(self):
         """Upload artifacts to S3 and copy to correct path depending on strategy."""
         deploy_strategy = self.properties["deploy_strategy"]
-        if deploy_strategy == "flat":
-            self._upload_artifacts_to_path(flat=True)
+        if deploy_strategy == "mirror":
+            self._upload_artifacts_to_path(mirror=True)
         else:
-            self._upload_artifacts_to_path(flat=False)
+            self._upload_artifacts_to_path(mirror=False)
             if deploy_strategy == "highlander":
                 self._sync_to_uri(self.s3_latest_uri)
             elif deploy_strategy == "canary":
@@ -120,28 +120,28 @@ class S3Deployment(object):
         else:
             self._sync_to_uri(self.s3_latest_uri)
 
-    def _get_upload_cmd(self, flat=False):
+    def _get_upload_cmd(self, mirror=False):
         """Generate the S3 CLI upload command
 
         Args:
-            flat (bool): If true, uses a flat directory structure instead of nesting under a version.
+            mirror (bool): If true, uses a flat directory structure instead of nesting under a version.
 
         Returns:
             str: The full CLI command to run.
         """
-        if flat:
+        if mirror:
             cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                      self.s3_flat_uri, self.env)
+                                                                                      self.s3_mirror_uri, self.env)
         else:
             cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
                                                                                       self.s3_version_uri, self.env)
         return cmd
 
-    def _upload_artifacts_to_path(self, flat=False):
+    def _upload_artifacts_to_path(self, mirror=False):
         """Recursively upload directory contents to S3.
 
         Args:
-            flat (bool): If true, uses a flat directory structure instead of nesting under a version.
+            mirror (bool): If true, uses a flat directory structure instead of nesting under a version.
         """
         if not os.listdir(self.artifact_path) or not self.artifact_path:
             raise S3ArtifactNotFound
@@ -149,28 +149,28 @@ class S3Deployment(object):
         uploaded = False
         if self.s3props.get("content_metadata"):
             LOG.info("Uploading in multiple parts to set metadata")
-            uploaded = self.content_metadata_uploads(flat=flat)
+            uploaded = self.content_metadata_uploads(mirror=mirror)
 
         if not uploaded:
-            cmd = self._get_upload_cmd(flat=flat)
+            cmd = self._get_upload_cmd(mirror=mirror)
             result = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
             LOG.debug("Upload Command Ouput: %s", result.stdout)
 
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
-    def content_metadata_uploads(self, flat=False):
+    def content_metadata_uploads(self, mirror=False):
         """Finds all specified encoded directories and uploads in multiple parts,
         setting metadata for objects.
 
         Args:
-            flat (bool): If true, uses a flat directory structure instead of nesting under a version.
+            mirror (bool): If true, uses a flat directory structure instead of nesting under a version.
 
         Returns:
             bool: True if uploaded
         """
         excludes_str = ''
         includes_cmds = []
-        cmd_base = self._get_upload_cmd(flat=flat)
+        cmd_base = self._get_upload_cmd(mirror=mirror)
 
         for content in self.s3props.get('content_metadata'):
             full_path = os.path.join(self.artifact_path, content['path'])
