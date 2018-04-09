@@ -94,10 +94,10 @@ class S3Deployment(object):
     def upload_artifacts(self):
         """Upload artifacts to S3 and copy to correct path depending on strategy."""
         deploy_strategy = self.properties["deploy_strategy"]
+
+        mirror = False
         if deploy_strategy == "mirror":
             mirror = True
-        else:
-            mirror = False
 
         self._upload_artifacts_to_path(mirror=mirror)
         if deploy_strategy == "highlander":
@@ -138,7 +138,8 @@ class S3Deployment(object):
         else:
             dest_uri = self.s3_version_uri
 
-        cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path, dest_uri, self.env)
+        cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
+                                                                                  dest_uri, self.env)
         return cmd
 
     def _upload_artifacts_to_path(self, mirror=False):
