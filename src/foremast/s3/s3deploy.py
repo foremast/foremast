@@ -95,17 +95,21 @@ class S3Deployment(object):
         """Upload artifacts to S3 and copy to correct path depending on strategy."""
         deploy_strategy = self.properties["deploy_strategy"]
         if deploy_strategy == "mirror":
-            self._upload_artifacts_to_path(mirror=True)
+            mirror = True
         else:
-            self._upload_artifacts_to_path(mirror=False)
-            if deploy_strategy == "highlander":
-                self._sync_to_uri(self.s3_latest_uri)
-            elif deploy_strategy == "canary":
-                self._sync_to_uri(self.s3_canary_uri)
-            elif deploy_strategy == "alpha":
-                self._sync_to_uri(self.s3_alpha_uri)
-            else:
-                raise NotImplementedError
+            mirror = False
+
+        self._upload_artifacts_to_path(mirror=mirror)
+        if deploy_strategy == "highlander":
+            self._sync_to_uri(self.s3_latest_uri)
+        elif deploy_strategy == "canary":
+            self._sync_to_uri(self.s3_canary_uri)
+        elif deploy_strategy == "alpha":
+            self._sync_to_uri(self.s3_alpha_uri)
+        elif deploy_strategy == "mirror":
+            pass  # Nothing extra needed for mirror deployments
+        else:
+            raise NotImplementedError
 
     def promote_artifacts(self, promote_stage='latest'):
         """Promote artifact version to dest.
@@ -130,11 +134,11 @@ class S3Deployment(object):
             str: The full CLI command to run.
         """
         if mirror:
-            cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                      self.s3_mirror_uri, self.env)
+            dest_uri = self.s3_mirror_uri
         else:
-            cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                      self.s3_version_uri, self.env)
+            dest_uri = self.s3_version_uri
+
+        cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path, dest_uri, self.env)
         return cmd
 
     def _upload_artifacts_to_path(self, mirror=False):
