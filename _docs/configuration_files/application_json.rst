@@ -511,6 +511,8 @@ Spinnaker strategy to use for deployments.
          deploy to CANARY path
        - ``"alpha"`` - Only used in S3 deployments. Causes pipeline to first
          deploy to an ALPHA path
+       - ``"mirror"`` - Only used in S3 deployments. Contents are deployed as-is.
+       No version or LATEST directory. 
 
 ``security_group`` Block
 ~~~~~~~~~~~~~~~~~~~~~~~~
