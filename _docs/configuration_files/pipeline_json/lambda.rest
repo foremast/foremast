@@ -17,6 +17,7 @@ Lambda function description
 ***********
 
 The runtime environment for the Lambda function
+Since value is passed directly to the lambda API new runtimes are automatically supported as they are released
 
     | *Type*: string
     | *Default*: ``"java8"``
@@ -26,6 +27,7 @@ The runtime environment for the Lambda function
         - ``"nodejs"``
         - ``"nodejs4.3"``
         - ``"nodejs6.10"``
+        - ``"nodejs8.10"``
         - ``"python2.7"``
         - ``"python3.6"``
         - ``"dotnetcore1.0"``
