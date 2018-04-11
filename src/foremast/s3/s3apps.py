@@ -75,6 +75,10 @@ class S3Apps(object):
             if self.s3props['website']['enabled']:
                 self._set_website_settings()
                 self._set_bucket_dns()
+        if self.s3props['logging']['enabled']:
+            self._put_bucket_logging()
+        if self.s3props['versioning']['enabled']:
+            self._put_bucket_versioning()
         self._put_bucket_tagging()
 
     def _attach_bucket_policy(self):
@@ -119,6 +123,10 @@ class S3Apps(object):
             update_dns_zone_record(self.env, zone_id, **dns_kwargs)
         LOG.info("Created DNS %s for Bucket", self.bucket)
 
+    def _put_bucket_logging(self):
+        """Adds bucket logging policy to bucket for s3 access requests"""
+        LOG.info("Adding logging for Bucket: %s", logging_policy)
+
     def _put_bucket_tagging(self):
         """Add new Tags without overwriting old Tags.
 
@@ -143,6 +151,14 @@ class S3Apps(object):
 
         self.s3client.put_bucket_tagging(Bucket=self.bucket, Tagging={'TagSet': tag_set})
         LOG.info("Adding tagging %s for Bucket", tag_set)
+
+    def _put_bucket_versioning(self):
+        """Adds bucket versioning policy to bucket"""
+        versioning_config = self.s3props['versioning_config']
+
+        self.s3client.put_bucket_versioning(Bucket=self.bucket, VersioningConfiguration=versioning_config)
+        LOG.info("Added versioning for Bucket.")
+        LOG.debug("Versioning configuration: %s", versioning_config)
 
     def _bucket_exists(self):
         """Check if the bucket exists."""
