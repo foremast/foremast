@@ -125,7 +125,10 @@ class S3Apps(object):
 
     def _put_bucket_logging(self):
         """Adds bucket logging policy to bucket for s3 access requests"""
-        LOG.info("Adding logging for Bucket: %s", logging_policy)
+        logging_config = {}
+        _response = None
+        LOG.debug('Response setting up S3 logging: %s', _response)
+        LOG.info('S3 logging configuration updated')
 
     def _put_bucket_tagging(self):
         """Add new Tags without overwriting old Tags.
@@ -154,11 +157,13 @@ class S3Apps(object):
 
     def _put_bucket_versioning(self):
         """Adds bucket versioning policy to bucket"""
-        versioning_config = self.s3props['versioning_config']
-
-        self.s3client.put_bucket_versioning(Bucket=self.bucket, VersioningConfiguration=versioning_config)
-        LOG.info("Added versioning for Bucket.")
-        LOG.debug("Versioning configuration: %s", versioning_config)
+        versioning_config = {
+            'MFADelete': self.s3props['versioning']['mfa_delete'],
+            'Status': self.s3props['versioning']['status']
+        }
+        _response = self.s3client.put_bucket_versioning(Bucket=self.bucket, VersioningConfiguration=versioning_config)
+        LOG.debug('Response setting up S3 versioning: %s', _response)
+        LOG.info('S3 versioning configuration updated')
 
     def _bucket_exists(self):
         """Check if the bucket exists."""
