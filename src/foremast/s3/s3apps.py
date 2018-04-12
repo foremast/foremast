@@ -77,8 +77,7 @@ class S3Apps(object):
                 self._set_bucket_dns()
         if self.s3props['logging']['enabled']:
             self._put_bucket_logging()
-        if self.s3props['versioning']['enabled']:
-            self._put_bucket_versioning()
+        self._put_bucket_versioning()
         self._put_bucket_tagging()
 
     def _attach_bucket_policy(self):
@@ -136,7 +135,7 @@ class S3Apps(object):
         }
         _response = self.s3client.put_bucket_cors(Bucket=self.bucket, CORSConfiguration=cors_config)
         LOG.debug('Response setting up S3 CORS: %s', _response)
-        LOG.info('S3 CORS configuration updated')
+        LOG.info('S3 CORS configuration updatpiped')
 
     def _put_bucket_logging(self):
         """Adds bucket logging policy to bucket for s3 access requests"""
@@ -178,9 +177,12 @@ class S3Apps(object):
 
     def _put_bucket_versioning(self):
         """Adds bucket versioning policy to bucket"""
+        status = 'Suspended'
+        if self.s3props['versioning']['enabled']:
+            status = 'Enabled'
         versioning_config = {
             'MFADelete': self.s3props['versioning']['mfa_delete'],
-            'Status': self.s3props['versioning']['status']
+            'Status': status
         }
         _response = self.s3client.put_bucket_versioning(Bucket=self.bucket, VersioningConfiguration=versioning_config)
         LOG.debug('Response setting up S3 versioning: %s', _response)

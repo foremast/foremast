@@ -73,13 +73,13 @@
         "bucket_acl": "private",
         "bucket_policy": {},
         "website": {
-            "enabled": true,
+            "enabled": false,
             "index_suffix": "index.html",
             "error_document": " "
         },
         "content_metadata": [],
         "cors": {
-            "enabled": true,
+            "enabled": false,
             "cors_headers": [],
             "cors_methods": [],
             "cors_origins": [],
@@ -87,15 +87,14 @@
             "cors_max_age": []
         },
         "logging": {
-            "enabled": true,
+            "enabled": false,
             "logging_grants": [],
             "logging_bucket": "",
             "logging_bucket_prefix": "{{ app }}/"
         },
         "versioning": {
-            "enabled": true,
-            "mfa_delete": "Disabled",
-            "status": "Enabled"
+            "enabled": false,
+            "mfa_delete": "Disabled"
         }
     },
     "datapipeline": {
