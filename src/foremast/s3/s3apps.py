@@ -123,6 +123,21 @@ class S3Apps(object):
             update_dns_zone_record(self.env, zone_id, **dns_kwargs)
         LOG.info("Created DNS %s for Bucket", self.bucket)
 
+    def _put_bucket_cors(self):
+        """Adds bucket cors configuration."""
+        cors_config = { 
+            'CORSRules': {
+                'AllowedHeaders': self.s3props['cors']['cors_headers'],
+                'AllowedMethods': self.s3props['cors']['cors_methods'],
+                'AllowedOrigins': self.s3props['cors']['cors_origins'],
+                'ExposeHeaders': self.s3props['cors']['cors_expose_headers'],
+                'MaxAgeSeconds': self.s3props['cors']['cors_max_age']
+            }
+        }
+        _response = self.s3client.put_bucket_cors(Bucket=self.bucket, CORSConfiguration=cors_config)
+        LOG.debug('Response setting up S3 CORS: %s', _response)
+        LOG.info('S3 CORS configuration updated')
+
     def _put_bucket_logging(self):
         """Adds bucket logging policy to bucket for s3 access requests"""
         logging_config = { 
