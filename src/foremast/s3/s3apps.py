@@ -133,8 +133,14 @@ class S3Apps(object):
 
     def _put_bucket_logging(self):
         """Adds bucket logging policy to bucket for s3 access requests"""
-        logging_config = {}
-        _response = None
+        logging_config = { 
+            'LoggingEnabled': {
+                'TargetBucket': self.s3props['logging']['logging_bucket'],
+                'TargetGrants': self.s3props['logging']['logging_grants'],
+                'TargetPrefix': self.s3props['logging']['logging_bucket_prefix']
+            }
+        }
+        _response = self.s3client.put_bucket_logging(Bucket=self.bucket, BucketLoggingStatus=logging_config)
         LOG.debug('Response setting up S3 logging: %s', _response)
         LOG.info('S3 logging configuration updated')
 
