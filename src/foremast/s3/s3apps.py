@@ -78,18 +78,21 @@ class S3Apps(object):
                                                         CreateBucketConfiguration={'LocationConstraint': self.region})
             LOG.debug('Response creating bucket: %s', _response)
             LOG.info('%s - S3 Bucket Upserted', self.bucket)
-            if self.s3props['bucket_policy']:
-                self._attach_bucket_policy()
+
+            self._put_bucket_policy()
             self._put_bucket_website()
             self._put_bucket_logging()
             self._put_bucket_versioning()
             self._put_bucket_encryption()
             self._put_bucket_tagging()
 
-    def _attach_bucket_policy(self):
+    def _put_bucket_policy(self):
         """Attach a bucket policy to app bucket."""
-        policy_str = json.dumps(self.s3props['bucket_policy'])
-        _response = self.s3client.put_bucket_policy(Bucket=self.bucket, Policy=policy_str)
+        if self.s3props['bucket_policy']:
+            policy_str = json.dumps(self.s3props['bucket_policy'])
+            _response = self.s3client.put_bucket_policy(Bucket=self.bucket, Policy=policy_str)
+        else:
+            _response = self.s3client.delete_bucket_policy(Bucket=self.bucket)
         LOG.debug('Response adding bucket policy: %s', _response)
         LOG.info('S3 Bucket Policy Attached')
 
@@ -170,8 +173,8 @@ class S3Apps(object):
                                                             ServerSideEncryptionConfiguration=encryption_config)
         else:
             _response = self.s3client.delete_bucket_encryption(Bucket=self.bucket)
-        LOG.debug('Response setting up S3 CORS: %s', _response)
-        LOG.info('S3 CORS configuration updated')
+        LOG.debug('Response setting up S3 encryption: %s', _response)
+        LOG.info('S3 encryption configuration updated')
 
 
     def _put_bucket_logging(self):
