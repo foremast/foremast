@@ -141,7 +141,7 @@ class S3Apps(object):
                     'ExposeHeaders': each_rule['cors_expose_headers'],
                     'MaxAgeSeconds': each_rule['cors_max_age']
                 })
-            cors_config = { 
+            cors_config = {
                 'CORSRules': cors_rules
             }
             LOG.debug(cors_config)
@@ -156,7 +156,7 @@ class S3Apps(object):
 
         if self.s3props['encryption']['enabled']:
             encryption_config = {'Rules': [{}]}
-            encryption_config = { 
+            encryption_config = {
                 'Rules': self.s3props['encryption']['encryption_rules']
             }
             LOG.debug(encryption_config)
@@ -167,12 +167,11 @@ class S3Apps(object):
         LOG.debug('Response setting up S3 encryption: %s', _response)
         LOG.info('S3 encryption configuration updated')
 
-
     def _put_bucket_logging(self):
         """Adds bucket logging policy to bucket for s3 access requests"""
         logging_config = {}
         if self.s3props['logging']['enabled']:
-            logging_config = { 
+            logging_config = {
                 'LoggingEnabled': {
                     'TargetBucket': self.s3props['logging']['logging_bucket'],
                     'TargetGrants': self.s3props['logging']['logging_grants'],
@@ -199,7 +198,7 @@ class S3Apps(object):
         status = 'Suspended'
         if self.s3props['versioning']['enabled']:
             status = 'Enabled'
-            
+
         versioning_config = {
             'MFADelete': self.s3props['versioning']['mfa_delete'],
             'Status': status
