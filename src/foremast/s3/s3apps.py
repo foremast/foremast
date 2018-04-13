@@ -78,7 +78,6 @@ class S3Apps(object):
                                                         CreateBucketConfiguration={'LocationConstraint': self.region})
             LOG.debug('Response creating bucket: %s', _response)
             LOG.info('%s - S3 Bucket Upserted', self.bucket)
-
             self._put_bucket_policy()
             self._put_bucket_website()
             self._put_bucket_logging()
