@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
 class S3Deployment(object):
     """Handle uploading artifacts to S3 and S3 deployment strategies."""
 
-    def __init__(self, app, env, region, prop_path, artifact_path, artifact_version):
+    def __init__(self, app, env, region, prop_path, artifact_path, artifact_version, primary_region='us-east-1'):
         """S3 deployment object.
 
         Args:
@@ -36,6 +36,7 @@ class S3Deployment(object):
             region (str): AWS Region
             prop_path (str): Path of environment property file
             artifact_path (str): Path to tar.gz artifact
+            primary_region (str): The primary region for the application.
         """
         self.app_name = app
         self.env = env
@@ -44,18 +45,21 @@ class S3Deployment(object):
         self.version = artifact_version
         self.properties = get_properties(prop_path, env=self.env, region=self.region)
         self.s3props = self.properties['s3']
-        generated = get_details(app=app, env=env)
+        generated = get_details(app=app, env=env, region=region)
 
+        include_region = True
+        if self.region == primary_region:
+            include_region = False
         if self.s3props.get('shared_bucket_master'):
-            self.bucket = generated.shared_s3_app_bucket()
+            self.bucket = generated.shared_s3_app_bucket(include_region=include_region)
             self.s3path = app
         elif self.s3props.get('shared_bucket_target'):
             shared_app = self.s3props['shared_bucket_target']
-            newgenerated = get_details(app=shared_app, env=env)
-            self.bucket = newgenerated.shared_s3_app_bucket()
+            newgenerated = get_details(app=shared_app, env=env, region=region)
+            self.bucket = newgenerated.shared_s3_app_bucket(include_region=include_region)
             self.s3path = app
         else:
-            self.bucket = generated.s3_app_bucket()
+            self.bucket = generated.s3_app_bucket(include_region=include_region)
             self.s3path = self.s3props['path'].lstrip('/')
 
         self.s3_version_uri = ''
