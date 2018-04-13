@@ -72,11 +72,10 @@ class S3Apps(object):
             LOG.info('%s - S3 Bucket Upserted', self.bucket)
             if self.s3props['bucket_policy']:
                 self._attach_bucket_policy()
-            if self.s3props['website']['enabled']:
-                self._set_website_settings()
-                self._set_bucket_dns()
+            self._put_bucket_website()
             self._put_bucket_logging()
             self._put_bucket_versioning()
+            self._put_bucket_encryption()
             self._put_bucket_tagging()
 
     def _attach_bucket_policy(self):
@@ -86,17 +85,23 @@ class S3Apps(object):
         LOG.debug('Response adding bucket policy: %s', _response)
         LOG.info('S3 Bucket Policy Attached')
 
-    def _set_website_settings(self):
+    def _put_bucket_website(self):
         """Configure static website on S3 bucket."""
-        website_config = {
-            'ErrorDocument': {
-                'Key': self.s3props['website']['error_document']
-            },
-            'IndexDocument': {
-                'Suffix': self.s3props['website']['index_suffix']
+        if self.s3props['website']['enabled']:
+            website_config = {
+                'ErrorDocument': {
+                    'Key': self.s3props['website']['error_document']
+                },
+                'IndexDocument': {
+                    'Suffix': self.s3props['website']['index_suffix']
+                }
             }
-        }
-        _response = self.s3client.put_bucket_website(Bucket=self.bucket, WebsiteConfiguration=website_config)
+            _response = self.s3client.put_bucket_website(Bucket=self.bucket, WebsiteConfiguration=website_config)
+            self._put_bucket_cors()
+            self._set_bucket_dns()
+        else:
+            _response = self.s3client.delete_bucket_website(Bucket=self.bucket)
+            self._put_bucket_cors()
         LOG.debug('Response setting up S3 website: %s', _response)
         LOG.info('S3 website settings updated')
 
@@ -123,18 +128,43 @@ class S3Apps(object):
 
     def _put_bucket_cors(self):
         """Adds bucket cors configuration."""
-        cors_config = { 
-            'CORSRules': {
-                'AllowedHeaders': self.s3props['cors']['cors_headers'],
-                'AllowedMethods': self.s3props['cors']['cors_methods'],
-                'AllowedOrigins': self.s3props['cors']['cors_origins'],
-                'ExposeHeaders': self.s3props['cors']['cors_expose_headers'],
-                'MaxAgeSeconds': self.s3props['cors']['cors_max_age']
+        if self.s3props['cors']['enabled'] and self.s3props['website']['enabled']:
+            cors_config = {}
+            cors_rules = []
+            for each_rule in self.s3props['cors']['cors_rules']:
+                cors_rules.append({
+                    'AllowedHeaders': each_rule['cors_headers'],
+                    'AllowedMethods': each_rule['cors_methods'],
+                    'AllowedOrigins': each_rule['cors_origins'],
+                    'ExposeHeaders': each_rule['cors_expose_headers'],
+                    'MaxAgeSeconds': each_rule['cors_max_age']
+                })
+            cors_config = { 
+                'CORSRules': cors_rules
             }
-        }
-        _response = self.s3client.put_bucket_cors(Bucket=self.bucket, CORSConfiguration=cors_config)
+            LOG.debug(cors_config)
+            _response = self.s3client.put_bucket_cors(Bucket=self.bucket, CORSConfiguration=cors_config)
+        else:
+            _response = self.s3client.delete_bucket_cors(Bucket=self.bucket)
         LOG.debug('Response setting up S3 CORS: %s', _response)
-        LOG.info('S3 CORS configuration updatpiped')
+        LOG.info('S3 CORS configuration updated')
+
+    def _put_bucket_encryption(self):
+        """Adds bucket encryption configuration."""
+
+        if self.s3props['encryption']['enabled']:
+            encryption_config = {'Rules': [{}]}
+            encryption_config = { 
+                'Rules': self.s3props['encryption']['encryption_rules']
+            }
+            LOG.debug(encryption_config)
+            _response = self.s3client.put_bucket_encryption(Bucket=self.bucket,
+                                                            ServerSideEncryptionConfiguration=encryption_config)
+        else:
+            _response = self.s3client.delete_bucket_encryption(Bucket=self.bucket)
+        LOG.debug('Response setting up S3 CORS: %s', _response)
+        LOG.info('S3 CORS configuration updated')
+
 
     def _put_bucket_logging(self):
         """Adds bucket logging policy to bucket for s3 access requests"""
@@ -152,28 +182,14 @@ class S3Apps(object):
         LOG.info('S3 logging configuration updated')
 
     def _put_bucket_tagging(self):
-        """Add new Tags without overwriting old Tags.
-
-        Regular put_bucket_tagging sets TagSet which overwrites old tags. Below
-        logic keeps the old tags in place as well.
-        """
-        #try:
-            # Get current tags list, if no tags exist will get an exception.
-        #    result = self.s3client.get_bucket_tagging(Bucket=self.bucket)['TagSet']
-        #except ClientError as error:
-        #    LOG.warning(error)
-        #    result = []
-
-        # Make simplified dictionary of tags from result
+        """Add bucket tags to bucket."""
         all_tags = self.s3props['tagging']['tags']
-        #for tag in result:
-        #    all_tags.update({tag.get('Key'): tag.get('Value')})
-
         all_tags.update({'app_group': self.group, 'app_name': self.app_name})
-
         tag_set = generate_s3_tags.generated_tag_data(all_tags)
 
-        self.s3client.put_bucket_tagging(Bucket=self.bucket, Tagging={'TagSet': tag_set})
+        tagging_config = {'TagSet': tag_set}
+
+        self.s3client.put_bucket_tagging(Bucket=self.bucket, Tagging=tagging_config)
         LOG.info("Adding tagging %s for Bucket", tag_set)
 
     def _put_bucket_versioning(self):
@@ -181,10 +197,12 @@ class S3Apps(object):
         status = 'Suspended'
         if self.s3props['versioning']['enabled']:
             status = 'Enabled'
+            
         versioning_config = {
             'MFADelete': self.s3props['versioning']['mfa_delete'],
             'Status': status
         }
+
         _response = self.s3client.put_bucket_versioning(Bucket=self.bucket, VersioningConfiguration=versioning_config)
         LOG.debug('Response setting up S3 versioning: %s', _response)
         LOG.info('S3 versioning configuration updated')
