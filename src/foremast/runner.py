@@ -134,7 +134,8 @@ class ForemastRunner(object):
     def create_s3app(self):
         """Create S3 infra for s3 applications"""
         utils.banner("Creating S3 App Infrastructure")
-        s3obj = s3.S3Apps(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
+        primary_region = self.configs['pipeline']['primary_region']
+        s3obj = s3.S3Apps(app=self.app, env=self.env, region=self.region, prop_path=self.json_path, primary_region=primary_region)
         s3obj.create_bucket()
 
     def deploy_s3app(self):

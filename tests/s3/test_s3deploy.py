@@ -21,7 +21,6 @@ def s3deployment(mock_get_details, mock_get_props):
                                 artifact_version="1")
     return deployobj
 
-
 def test_get_cmd(s3deployment):
     """Tests s3.S3Deployment._get_upload_cmd returns correct cmd"""
     expected_nomirror_cmd = "aws s3 sync /artifact s3://testapp/1 --delete --exact-timestamps --profile dev"
