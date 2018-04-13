@@ -30,7 +30,7 @@ LOG = logging.getLogger(__name__)
 class S3Apps(object):
     """Configure infrastructure and policies for S3 web applications."""
 
-    def __init__(self, app, env, region, prop_path):
+    def __init__(self, app, env, region, prop_path, primary_region='us-east-1'):
         """S3 application object. Setups Bucket and policies for S3 applications.
 
         Args:
@@ -38,25 +38,29 @@ class S3Apps(object):
             env (str): Environment/Account
             region (str): AWS Region
             prop_path (str): Path of environment property file
+            primary_region (str): The primary region for the application. 
         """
         self.app_name = app
         self.env = env
         self.region = region
         boto_sess = boto3.session.Session(profile_name=env)
         self.s3client = boto_sess.client('s3')
-        self.generated = get_details(app=app, env=env)
+        self.generated = get_details(app=app, env=env, region=self.region)
         self.properties = get_properties(prop_path, env=self.env, region=self.region)
         self.s3props = self.properties['s3']
         self.group = self.generated.project
 
+        include_region = True
+        if self.region == primary_region:
+            include_region = False
         if self.s3props.get('shared_bucket_master'):
-            self.bucket = self.generated.shared_s3_app_bucket()
+            self.bucket = self.generated.shared_s3_app_bucket(include_region=include_region)
         elif self.s3props.get('shared_bucket_target'):
             shared_app = self.s3props['shared_bucket_target']
-            newgenerated = get_details(app=shared_app, env=env)
-            self.bucket = newgenerated.shared_s3_app_bucket()
+            newgenerated = get_details(app=shared_app, env=env, region=self.region)
+            self.bucket = newgenerated.shared_s3_app_bucket(include_region=include_region)
         else:
-            self.bucket = self.generated.s3_app_bucket()
+            self.bucket = self.generated.s3_app_bucket(include_region=include_region)
 
     def create_bucket(self):
         """Create or update bucket based on app name."""
@@ -67,7 +71,11 @@ class S3Apps(object):
                 LOG.error("Shared bucket %s does not exist", self.bucket)
                 raise S3SharedBucketNotFound
         else:
-            _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket)
+            if self.region == 'us-east-1':
+                _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket)
+            else:
+                _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket,
+                                                    CreateBucketConfiguration={'LocationConstraint': self.region})
             LOG.debug('Response creating bucket: %s', _response)
             LOG.info('%s - S3 Bucket Upserted', self.bucket)
             if self.s3props['bucket_policy']:
