@@ -145,25 +145,29 @@ class ForemastRunner(object):
     def deploy_s3app(self):
         """Deploys artifacts contents to S3 bucket"""
         utils.banner("Deploying S3 App")
+        primary_region = self.configs['pipeline']['primary_region']
         s3obj = s3.S3Deployment(
             app=self.app,
             env=self.env,
             region=self.region,
             prop_path=self.json_path,
             artifact_path=self.artifact_path,
-            artifact_version=self.artifact_version)
+            artifact_version=self.artifact_version,
+            primary_region=primary_region)
         s3obj.upload_artifacts()
 
     def promote_s3app(self):
         """promotes S3 deployment to LATEST"""
         utils.banner("Promoting S3 App")
+        primary_region = self.configs['pipeline']['primary_region']
         s3obj = s3.S3Deployment(
             app=self.app,
             env=self.env,
             region=self.region,
             prop_path=self.json_path,
             artifact_path=self.artifact_path,
-            artifact_version=self.artifact_version)
+            artifact_version=self.artifact_version,
+            primary_region=primary_region)
         s3obj.promote_artifacts(promote_stage=self.promote_stage)
 
     def create_secgroups(self):
