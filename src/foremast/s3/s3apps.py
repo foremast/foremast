@@ -38,7 +38,7 @@ class S3Apps(object):
             env (str): Environment/Account
             region (str): AWS Region
             prop_path (str): Path of environment property file
-            primary_region (str): The primary region for the application. 
+            primary_region (str): The primary region for the application.
         """
         self.app_name = app
         self.env = env
@@ -75,7 +75,7 @@ class S3Apps(object):
                 _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket)
             else:
                 _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket,
-                                                    CreateBucketConfiguration={'LocationConstraint': self.region})
+                                                        CreateBucketConfiguration={'LocationConstraint': self.region})
             LOG.debug('Response creating bucket: %s', _response)
             LOG.info('%s - S3 Bucket Upserted', self.bucket)
             if self.s3props['bucket_policy']:
