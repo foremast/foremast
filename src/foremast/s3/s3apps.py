@@ -70,7 +70,6 @@ class S3Apps(object):
             _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket)
             LOG.debug('Response creating bucket: %s', _response)
             LOG.info('%s - S3 Bucket Upserted', self.bucket)
-
             self._put_bucket_policy()
             self._put_bucket_website()
             self._put_bucket_logging()
