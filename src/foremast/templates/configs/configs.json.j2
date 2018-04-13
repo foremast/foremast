@@ -73,7 +73,7 @@
         "bucket_acl": "private",
         "bucket_policy": {},
         "website": {
-            "enabled": false,
+            "enabled": true,
             "index_suffix": "index.html",
             "error_document": " "
         },
@@ -86,14 +86,22 @@
             "cors_expose_headers": [],
             "cors_max_age": []
         },
-        "tagging": {
-            "tags": {}
+        "encryption": {
+            "enabled": false,
+            "encryption_rules": [{
+                "ApplyServerSideEncryptionByDefault": {
+                    "SSEAlgorithm": "AES256"
+                }
+            }]
         },
         "logging": {
             "enabled": false,
             "logging_grants": [],
             "logging_bucket": "",
             "logging_bucket_prefix": "{{ app }}/"
+        },
+        "tagging": {
+            "tags": {}
         },
         "versioning": {
             "enabled": false,
