@@ -56,29 +56,6 @@ S3 object metadata based on path. The "path" field should have NO leading or tra
               }
           ]
 
-``website``
-***********
-
-S3 Website configuration block
-
-``website`` *Keys*
-^^^^^^^^^^^^^^^^^^
-
-``enabled`` : Enables/Disables an S3 bucket from being website enabled
-
-    | *Type*: boolean
-    | *Default*: ``false``
-
-``index_suffix`` : Default index page
-
-    | *Type*: string
-    | *Default*: ``"index.html"``
-
-``error_document`` : Default error page
-
-    | *Type*: string
-    | *Default*: ``"404.html"``
-
 ``shared_bucket_master``
 ************************
 
@@ -98,3 +75,186 @@ Shared bucket to deploy to. Refer to `shared_bucket_master` for use case and exa
 
     | *Type*: string
     | *Default*: ``None``
+
+``cors``
+********
+
+S3 CORS configuration block
+
+``cors`` *Keys*
+^^^^^^^^^^^^^^^
+
+``enabled`` : Enables/Disables CORS configuration
+
+    | *Type*: boolean
+    | *Default*: ``false``
+
+``cors_rules`` :
+
+A list of CORS rules including lists of headers, methods, origins, exposed headers, and max age.
+For more details refer to: http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.Client.put_bucket_cors
+
+    | *Type*: object
+    | *Default*: ``None``
+    | *Example config*:
+
+      .. code-block:: json
+
+          [
+              {
+                  "cors_headers": [],
+                  "cors_methods": [],
+                  "cors_origins": [],
+                  "cors_expose_headers": [],
+                  "cors_max_age": 600
+              },
+              { 
+                  "cors_headers": [],
+                  "cors_methods": [],
+                  "cors_origins": [],
+                  "cors_expose_headers": [],
+                  "cors_max_age": 600
+              }
+          ]
+
+``encryption``
+**************
+
+S3 Encryption configuration block
+
+``encryption`` *Keys*
+^^^^^^^^^^^^^^^^^^^^^
+
+``enabled`` : Enables/Disables S3 Encryption configuration
+
+    | *Type*: boolean
+    | *Default*: ``false``
+
+``encryption_rules`` :
+
+A list of S3 encryption rules. As of today only one rule is supported: `ApplyServerSideEncryptionByDefault`. Built in 
+support for additional rules if this changes. Support for both AES256 or custom KMS (`aws:kms`) `SSEAlgorithm`. For `aws:kms`,
+specify a custom `KMSMasterKeyID`; this is not needed for `AES256` and should not be specified.
+For more details refer to: http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.Client.put_bucket_encryption
+
+    | *Type*: object
+    | *Default*: ``None``
+    | *Example config*:
+
+      .. code-block:: json
+
+          [
+              {
+                  "ApplyServerSideEncryptionByDefault": {
+                    'SSEAlgorithm': 'AES256'|'aws:kms',
+                    'KMSMasterKeyID': 'string'
+                  }
+              }
+          ]
+
+``logging``
+***********
+
+S3 access logging configuration block
+
+``logging`` *Keys*
+^^^^^^^^^^^^^^^^^^
+
+``enabled`` : Enables/Disables S3 logging configuration
+
+    | *Type*: boolean
+    | *Default*: ``false``
+
+``logging_grants`` :
+
+Specify permissions for who can view and modify the logging parameters. To set the logging status of a bucket, you must be the bucket owner.
+For more details refer to: http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.Client.put_bucket_logging
+
+    | *Type*: object
+    | *Default*: ``None``
+    | *Example config*:
+
+      .. code-block:: json
+          [
+              {
+                  'Grantee': {
+                      'DisplayName': 'string',
+                      'EmailAddress': 'string',
+                      'ID': 'string',
+                      'Type': 'CanonicalUser'|'AmazonCustomerByEmail'|'Group',
+                      'URI': 'string'
+                  },
+                  'Permission': 'FULL_CONTROL'|'READ'|'WRITE'
+              }
+          ]
+
+``logging_bucket`` : Specifies the bucket where you want Amazon S3 to store server access logs.
+
+    | *Type*: string
+    | *Default*: ``""``
+
+``logging_bucket_prefix`` : This element lets you specify a prefix for the keys that the log files will be stored under.
+
+    | *Type*: string
+    | *Default*: ``{{ app }}/``
+
+``tagging``
+***********
+
+S3 tagging configuration block
+
+``tagging`` *Keys*
+^^^^^^^^^^^^^^^^^^
+
+``tags`` : This element lets you specify a prefix for the keys that the log files will be stored under.
+
+    | *Type*: object
+    | *Default*: ``{}``
+    | *Example config*:
+    
+      .. code-block:: json
+          {
+              "key": "value",
+              "key1": "value1"
+          }
+
+``versioning``
+**************
+
+S3 versioning configuration block
+
+``versioning`` *Keys*
+^^^^^^^^^^^^^^^^^^^^^
+
+``enabled`` : Enables/Disables S3 versioning configuration
+
+    | *Type*: boolean
+    | *Default*: ``false``
+
+``mfa_delete`` : Specifies whether MFA delete is enabled in the bucket versioning configuration. 
+
+    | *Type*: string
+    | *Default*: ``Disabled``
+
+``website``
+***********
+
+S3 Website configuration block
+
+``website`` *Keys*
+^^^^^^^^^^^^^^^^^^
+
+``enabled`` : Enables/Disables an S3 bucket from being website enabled
+
+    | *Type*: boolean
+    | *Default*: ``true``
+
+``index_suffix`` : Default index page
+
+    | *Type*: string
+    | *Default*: ``"index.html"``
+
+``error_document`` : Default error page
+
+    | *Type*: string
+    | *Default*: ``"404.html"``

@@ -85,6 +85,15 @@ class S3Apps(object):
             self._put_bucket_encryption()
             self._put_bucket_tagging()
 
+    def _bucket_exists(self):
+        """Check if the bucket exists."""
+        try:
+            self.s3client.get_bucket_location(Bucket=self.bucket)
+            return True
+        except ClientError as error:
+            LOG.error(error)
+            return False
+
     def _put_bucket_policy(self):
         """Attach a bucket policy to app bucket."""
         if self.s3props['bucket_policy']:
@@ -215,12 +224,3 @@ class S3Apps(object):
         _response = self.s3client.put_bucket_versioning(Bucket=self.bucket, VersioningConfiguration=versioning_config)
         LOG.debug('Response setting up S3 versioning: %s', _response)
         LOG.info('S3 versioning configuration updated')
-
-    def _bucket_exists(self):
-        """Check if the bucket exists."""
-        try:
-            self.s3client.get_bucket_location(Bucket=self.bucket)
-            return True
-        except ClientError as error:
-            LOG.error(error)
-            return False
