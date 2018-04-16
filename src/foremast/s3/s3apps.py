@@ -64,8 +64,9 @@ class S3Apps(object):
 
     def create_bucket(self):
         """Create or update bucket based on app name."""
+        bucket_exists = self._bucket_exists()
         if self.s3props.get('shared_bucket_target'):
-            if self._bucket_exists():
+            if bucket_exists:
                 LOG.info('App uses shared bucket - %s ', self.bucket)
             else:
                 LOG.error("Shared bucket %s does not exist", self.bucket)
@@ -74,8 +75,11 @@ class S3Apps(object):
             if self.region == 'us-east-1':
                 _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket)
             else:
-                _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket,
-                                                        CreateBucketConfiguration={'LocationConstraint': self.region})
+                if not bucket_exists:
+                    _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket,
+                                                            CreateBucketConfiguration={'LocationConstraint': self.region})
+                else:
+                    _response = "bucket already exists, skipping create for non-standard region buckets."
             LOG.debug('Response creating bucket: %s', _response)
             LOG.info('%s - S3 Bucket Upserted', self.bucket)
             self._put_bucket_policy()
