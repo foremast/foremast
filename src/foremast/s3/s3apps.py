@@ -77,7 +77,8 @@ class S3Apps(object):
             else:
                 if not bucket_exists:
                     _response = self.s3client.create_bucket(ACL=self.s3props['bucket_acl'], Bucket=self.bucket,
-                                                            CreateBucketConfiguration={'LocationConstraint': self.region})
+                                                            CreateBucketConfiguration={
+                                                                'LocationConstraint': self.region})
                 else:
                     _response = "bucket already exists, skipping create for non-standard region buckets."
             LOG.debug('Response creating bucket: %s', _response)
