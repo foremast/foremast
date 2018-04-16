@@ -72,19 +72,16 @@
         "path": "/",
         "bucket_acl": "private",
         "bucket_policy": {},
-        "website": {
-            "enabled": true,
-            "index_suffix": "index.html",
-            "error_document": " "
-        },
         "content_metadata": [],
         "cors": {
             "enabled": false,
-            "cors_headers": [],
-            "cors_methods": [],
-            "cors_origins": [],
-            "cors_expose_headers": [],
-            "cors_max_age": []
+            "cors_rules": [{
+                "cors_headers": [],
+                "cors_methods": [],
+                "cors_origins": [],
+                "cors_expose_headers": [],
+                "cors_max_age": 600
+            }]
         },
         "encryption": {
             "enabled": false,
@@ -106,6 +103,11 @@
         "versioning": {
             "enabled": false,
             "mfa_delete": "Disabled"
+        },
+        "website": {
+            "enabled": true,
+            "index_suffix": "index.html",
+            "error_document": "404.html"
         }
     },
     "datapipeline": {
