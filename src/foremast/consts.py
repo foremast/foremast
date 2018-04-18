@@ -201,6 +201,19 @@ AMI_JSON_URL = validate_key_values(CONFIG, 'base', 'ami_json_url')
 DEFAULT_SECURITYGROUP_RULES = _generate_security_groups('default_securitygroup_rules')
 DEFAULT_EC2_SECURITYGROUPS = _generate_security_groups('default_ec2_securitygroups')
 DEFAULT_ELB_SECURITYGROUPS = _generate_security_groups('default_elb_securitygroups')
+
+EC2_PIPELINE_TYPES = tuple(validate_key_values(CONFIG, 'base', 'ec2_pipeline_types', default='ec2,rolling').split(','))
+"""Comma separated list of Pipeline Types to treat as EC2 deployments.
+
+This is useful when defining custom Pipeline Types. When Pipeline Type matches,
+EC2 specific data is used in deployment, such as Auto Scaling Groups and
+Availability Zones.
+
+    | *Default*: ``ec2,rolling``
+    | *Required*: No
+    | *Example*: ``ec2,infrastructure,propeller``
+"""
+
 SECURITYGROUP_REPLACEMENTS = _convert_string_to_native(
     validate_key_values(
         CONFIG,

@@ -20,7 +20,7 @@ import json
 import logging
 from pprint import pformat
 
-from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
+from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS, EC2_PIPELINE_TYPES
 from ..utils import generate_encoded_user_data, get_template, remove_duplicate_sg
 
 LOG = logging.getLogger(__name__)
@@ -135,7 +135,7 @@ def construct_pipeline_block(env='',
     pipeline_type = pipeline_data['type']
     gen_app_name = generated.app_name()
 
-    if pipeline_type in ('ec2', 'rolling'):
+    if pipeline_type in EC2_PIPELINE_TYPES:
         data = ec2_pipeline_setup(
             appname=gen_app_name,
             settings=settings,

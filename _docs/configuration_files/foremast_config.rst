@@ -141,6 +141,12 @@ security group name, it will self-reference to its own application name.
     | *Required*: No
     | *Example*: ``{ "bastion" : [ { "start_port": "22", "end_port": "22", "protocol": "tcp" } ] }``
 
+``ec2_pipeline_types``
+**********************
+
+.. autodata:: foremast.consts.EC2_PIPELINE_TYPES
+   :noindex:
+
 ``gate_client_cert``
 ********************
 
