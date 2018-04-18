@@ -22,7 +22,7 @@ from pprint import pformat
 
 import requests
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..consts import API_URL, EC2_PIPELINE_TYPES, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import ami_lookup, generate_packer_filename, get_details, get_properties, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
@@ -220,7 +220,7 @@ class SpinnakerPipeline:
                     "pipeline_data": self.settings['pipeline'],
                 }
 
-                if self.settings['pipeline']['type'] in ('ec2', 'rolling'):
+                if self.settings['pipeline']['type'] in EC2_PIPELINE_TYPES:
                     if not subnets:
                         subnets = get_subnets()
                     try:
