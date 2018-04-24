@@ -153,12 +153,12 @@ For more details refer to: http://boto3.readthedocs.io/en/latest/reference/servi
           ]
 
 ``lifecycle``
-**************
+*************
 
 S3 Lifecycle configuration block
 
 ``lifecycle`` *Keys*
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 ``enabled`` : Enables/Disables S3 Lifecycle configuration
 

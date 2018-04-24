@@ -3,6 +3,15 @@
 
 Holds settings for the baked image
 
+``bake_instance_type``
+**********************
+
+Defines the instance type for Rosco (bake step) to use. This could help with issues
+of large and complex bakes. 
+
+    | *Type*: string
+    | *Default*: `"t2.small"`
+
 ``root_volume_size``
 ********************
 
