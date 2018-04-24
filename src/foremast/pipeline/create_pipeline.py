@@ -108,6 +108,7 @@ class SpinnakerPipeline:
         baking_process = self.settings['pipeline']['image']['builder']
         provider = 'aws'
         root_volume_size = self.settings['pipeline']['image']['root_volume_size']
+        bake_instance_type = self.settings['pipeline']['image']['bake_instance_type']
 
         ami_id = ami_lookup(name=base, region=region)
 
@@ -126,6 +127,7 @@ class SpinnakerPipeline:
                 'email': email,
                 'slack': slack,
                 'root_volume_size': root_volume_size,
+                'bake_instance_type': bake_instance_type,
                 'ami_template_file': ami_template_file,
                 'pipeline': self.settings['pipeline']
             },
