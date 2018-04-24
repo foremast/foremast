@@ -86,6 +86,7 @@ class S3Apps(object):
             self._put_bucket_policy()
             self._put_bucket_website()
             self._put_bucket_logging()
+            self._put_bucket_lifecycle()
             self._put_bucket_versioning()
             self._put_bucket_encryption()
             self._put_bucket_tagging()
@@ -188,6 +189,20 @@ class S3Apps(object):
             _response = self.s3client.delete_bucket_encryption(Bucket=self.bucket)
         LOG.debug('Response setting up S3 encryption: %s', _response)
         LOG.info('S3 encryption configuration updated')
+
+    def _put_bucket_lifecycle(self):
+        if self.s3props['lifecycle']['enabled']:
+            lifecycle_config = {'Rules': [{}]}
+            lifecycle_config = {
+                'Rules': self.s3props['lifecycle']['lifecycle_rules']
+            }
+            LOG.debug(lifecycle_config)
+            _response = self.s3client.put_bucket_lifecycle_configuration(Bucket=self.bucket,
+                                                                         LifecycleConfiguration=lifecycle_config)
+        else:
+            _response = self.s3client.delete_bucket_lifecycle(Bucket=self.bucket)
+        LOG.debug('Response setting up S3 lifecycle: %s', _response)
+        LOG.info('S3 lifecycle configuration updated')
 
     def _put_bucket_logging(self):
         """Adds bucket logging policy to bucket for s3 access requests"""
