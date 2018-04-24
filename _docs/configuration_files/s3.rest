@@ -152,6 +152,78 @@ For more details refer to: http://boto3.readthedocs.io/en/latest/reference/servi
               }
           ]
 
+``lifecycle``
+**************
+
+S3 Lifecycle configuration block
+
+``lifecycle`` *Keys*
+^^^^^^^^^^^^^^^^^^^^^
+
+``enabled`` : Enables/Disables S3 Lifecycle configuration
+
+    | *Type*: boolean
+    | *Default*: ``false``
+
+``lifecycle_rules`` :
+
+A list of S3 lifecycle rules, if a lifecycle exists it replaces it.
+For more details refer to: http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.Client.put_bucket_lifecycle_configuration
+
+    | *Type*: object
+    | *Default*: ``None``
+    | *Example config*:
+
+      .. code-block:: json
+
+          [
+            {
+                'Expiration': {
+                    'Date': datetime(2015, 1, 1),
+                    'Days': 123,
+                    'ExpiredObjectDeleteMarker': True|False
+                },
+                'ID': 'string',
+                'Prefix': 'string',
+                'Filter': {
+                    'Prefix': 'string',
+                    'Tag': {
+                        'Key': 'string',
+                        'Value': 'string'
+                    },
+                    'And': {
+                        'Prefix': 'string',
+                        'Tags': [
+                            {
+                                'Key': 'string',
+                                'Value': 'string'
+                            },
+                        ]
+                    }
+                },
+                'Status': 'Enabled'|'Disabled',
+                'Transitions': [
+                    {
+                        'Date': datetime(2015, 1, 1),
+                        'Days': 123,
+                        'StorageClass': 'GLACIER'|'STANDARD_IA'|'ONEZONE_IA'
+                    },
+                ],
+                'NoncurrentVersionTransitions': [
+                    {
+                        'NoncurrentDays': 123,
+                        'StorageClass': 'GLACIER'|'STANDARD_IA'|'ONEZONE_IA'
+                    },
+                ],
+                'NoncurrentVersionExpiration': {
+                    'NoncurrentDays': 123
+                },
+                'AbortIncompleteMultipartUpload': {
+                    'DaysAfterInitiation': 123
+                }
+            }
+          ]
+
 ``logging``
 ***********
 
