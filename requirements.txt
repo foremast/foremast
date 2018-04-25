@@ -1,4 +1,5 @@
 awscli
+botocore==1.10.8
 boto3
 deepmerge
 gogo-utils
