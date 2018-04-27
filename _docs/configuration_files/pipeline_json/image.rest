@@ -7,7 +7,8 @@ Holds settings for the baked image
 **********************
 
 Defines the instance type for Rosco (bake step) to use. This could help with issues
-of large and complex bakes. 
+of large and complex bakes.
+Refer to: https://aws.amazon.com/ec2/instance-types/ 
 
     | *Type*: string
     | *Default*: `"t2.small"`

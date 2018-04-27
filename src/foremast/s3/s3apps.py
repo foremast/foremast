@@ -176,7 +176,6 @@ class S3Apps(object):
 
     def _put_bucket_encryption(self):
         """Adds bucket encryption configuration."""
-
         if self.s3props['encryption']['enabled']:
             encryption_config = {'Rules': [{}]}
             encryption_config = {
@@ -191,18 +190,20 @@ class S3Apps(object):
         LOG.info('S3 encryption configuration updated')
 
     def _put_bucket_lifecycle(self):
+        """Adds bucket lifecycle configuration."""
+        status = 'deleted'
         if self.s3props['lifecycle']['enabled']:
-            lifecycle_config = {'Rules': [{}]}
             lifecycle_config = {
                 'Rules': self.s3props['lifecycle']['lifecycle_rules']
             }
-            LOG.debug(lifecycle_config)
+            LOG.debug('Lifecycle Config: %s', lifecycle_config)
             _response = self.s3client.put_bucket_lifecycle_configuration(Bucket=self.bucket,
                                                                          LifecycleConfiguration=lifecycle_config)
+            status = 'applied'
         else:
             _response = self.s3client.delete_bucket_lifecycle(Bucket=self.bucket)
         LOG.debug('Response setting up S3 lifecycle: %s', _response)
-        LOG.info('S3 lifecycle configuration updated')
+        LOG.info('S3 lifecycle configuration %s', status)
 
     def _put_bucket_logging(self):
         """Adds bucket logging policy to bucket for s3 access requests"""
