@@ -170,8 +170,8 @@ S3 Lifecycle configuration block
 A list of S3 lifecycle rules, if a lifecycle exists it replaces it.
 For more details refer to: http://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.Client.put_bucket_lifecycle_configuration
 
-    | *Type*: object
-    | *Default*: ``None``
+    | *Type*: array
+    | *Default*: ``[{}]``
     | *Example config*:
 
       .. code-block:: json
