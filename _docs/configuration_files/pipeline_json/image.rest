@@ -11,7 +11,7 @@ of large and complex bakes.
 Refer to: https://aws.amazon.com/ec2/instance-types/ 
 
     | *Type*: string
-    | *Default*: `"t2.small"`
+    | *Default*: ``"t2.small"``
 
 ``root_volume_size``
 ********************
