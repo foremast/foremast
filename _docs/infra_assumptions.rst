@@ -17,20 +17,15 @@ Spinnaker
 Spinnaker Component Versions
 ****************************
 
-Below are the Spinnaker component versions that we use internally at Gogo and
-that Foremast has been tested against:
+Previously, we used to publish internally tested versions. We have since moved
+to leveraging the release cadence set forth by the Spinnaker community. For more
+info around the Spinnaker release cadence, refer to the official can be found 
+`Spinnaker Release Cadence`_ page.
 
-    - Gate: ``2.70.0``
-    - Clouddriver: ``1.286.0``
-    - Deck: ``2.711.0``
-    - Igor: ``1.50.0``
-    - Echo: ``1.108.0``
-    - Front50: ``1.38.0``
-    - Spinnaker: ``0.50.0``
-    - Rosco: ``0.42.0``
-    - Orca: ``1.168.0``
+For the latest releases of Spinnaker, check out the official `Spinnaker Release 
+Versions`_ page.
 
-If you have any issues with Foremast at other Spinnaker versions please file an
+If you have any issues with Foremast on the latest Spinnaker version, please file an
 issue (or pull request).
 
 AWS
@@ -158,5 +153,7 @@ and :ref:`application_json` files. You will need to get the Gitlab Token of a
 user that has permissions to the desired repository and set them in your
 :ref:`foremast_config`.
 
-.. _`Spinnaker documentation`: http://www.spinnaker.io/docs
-.. _`Spinnaker AWS Setup guide`: http://www.spinnaker.io/v1.0/docs/target-deployment-setup#section-amazon-web-services-setup
+.. _`Spinnaker documentation`: https://www.spinnaker.io/concepts/
+.. _`Spinnaker AWS Setup guide`: https://www.spinnaker.io/setup/install/providers/aws/
+.. _`Spinnaker Release Versions`: https://www.spinnaker.io/community/releases/versions/
+.. _`Spinnaker Release Cadence`: https://www.spinnaker.io/community/releases/release-cadence/
