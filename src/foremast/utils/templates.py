@@ -16,6 +16,7 @@
 """Render Jinja2 template."""
 import logging
 import os
+import pathlib
 
 import jinja2
 
@@ -24,37 +25,44 @@ from ..exceptions import ForemastTemplateNotFound
 
 LOG = logging.getLogger(__name__)
 
-HERE = os.path.dirname(os.path.realpath(__file__))
-LOCAL_TEMPLATES = '{0}/../templates/'.format(HERE)
+HERE = pathlib.Path(__file__).parent.absolute()
+LOCAL_TEMPLATES = HERE.joinpath('../templates/').resolve()
 
 
 def get_template_object(template_file=''):
-    """Get the Jinja2 template and returns Template object.
+    """Retrieve template.
 
     Args:
-        template_file (str): name of the template file
+        template_file (str): Name of template file.
 
     Returns:
-        jinja2.Template: Template jinja2 object
+        jinja2.Template: Template ready to render.
+
+    Raises:
+        AssertionError: Configured path for templates does not exist.
+        :obj:`foremast.exceptions.ForemastTemplateNotFound`: Requested template
+            is not available.
 
     """
-    jinja_lst = []
+    jinja_template_paths_obj = []
 
     if TEMPLATES_PATH:
-        external_templates = os.path.expanduser(TEMPLATES_PATH)
-        assert os.path.isdir(external_templates), 'Template path {0} not found'.format(external_templates)
-        jinja_lst.append(external_templates)
+        external_templates = pathlib.Path(TEMPLATES_PATH).expanduser().resolve()
+        assert os.path.isdir(external_templates), 'External template path "{0}" not found'.format(external_templates)
+        jinja_template_paths_obj.append(external_templates)
 
-    jinja_lst.append(LOCAL_TEMPLATES)
+    jinja_template_paths_obj.append(LOCAL_TEMPLATES)
+    jinja_template_paths = [str(path) for path in jinja_template_paths_obj]
 
-    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_lst))
+    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_template_paths))
 
     try:
         template = jinjaenv.get_template(template_file)
     except jinja2.TemplateNotFound:
-        LOG.debug("Unable to find template %s in specified template path %s", template_file, TEMPLATES_PATH)
-        raise ForemastTemplateNotFound("Unable to find template %s in specified template path %s", template_file,
-                                       TEMPLATES_PATH)
+        message = 'Unable to find template "{template_file}" in paths {paths}'.format(
+            template_file=template_file, paths=jinjaenv.loader.searchpath)
+        LOG.error(message)
+        raise ForemastTemplateNotFound(message)
 
     return template
 

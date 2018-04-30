@@ -41,8 +41,8 @@ class AWSDataPipeline(object):
         self.app_name = app
         self.env = env
         self.region = region
-        self.properties = get_properties(prop_path)
-        self.datapipeline_data = self.properties[self.env]['datapipeline']
+        self.properties = get_properties(prop_path, env=self.env, region=self.region)
+        self.datapipeline_data = self.properties['datapipeline']
         generated = get_details(app=self.app_name)
         self.group = generated.data['project']
 

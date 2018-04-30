@@ -66,6 +66,7 @@ class SpinnakerPipelineLambda(SpinnakerPipeline):
                 'triggerjob': self.trigger_job,
                 'email': email,
                 'slack': slack,
+                'pipeline': self.settings['pipeline']
             },
             'id': pipeline_id
         }
@@ -117,7 +118,7 @@ class SpinnakerPipelineLambda(SpinnakerPipeline):
                     previous_env=previous_env,
                     region=region,
                     region_subnets=region_subnets,
-                    settings=self.settings[env],
+                    settings=self.settings[env][region],
                     pipeline_data=self.settings['pipeline'])
                 pipelines[region]['stages'].extend(json.loads(block))
 

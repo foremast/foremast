@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
 class S3Deployment(object):
     """Handle uploading artifacts to S3 and S3 deployment strategies."""
 
-    def __init__(self, app, env, region, prop_path, artifact_path, artifact_version):
+    def __init__(self, app, env, region, prop_path, artifact_path, artifact_version, primary_region='us-east-1'):
         """S3 deployment object.
 
         Args:
@@ -36,26 +36,30 @@ class S3Deployment(object):
             region (str): AWS Region
             prop_path (str): Path of environment property file
             artifact_path (str): Path to tar.gz artifact
+            primary_region (str): The primary region for the application.
         """
         self.app_name = app
         self.env = env
         self.region = region
         self.artifact_path = artifact_path
         self.version = artifact_version
-        self.properties = get_properties(prop_path)
-        self.s3props = self.properties[self.env]['s3']
-        generated = get_details(app=app, env=env)
+        self.properties = get_properties(prop_path, env=self.env, region=self.region)
+        self.s3props = self.properties['s3']
+        generated = get_details(app=app, env=env, region=region)
 
+        include_region = True
+        if self.region == primary_region:
+            include_region = False
         if self.s3props.get('shared_bucket_master'):
-            self.bucket = generated.shared_s3_app_bucket()
+            self.bucket = generated.shared_s3_app_bucket(include_region=include_region)
             self.s3path = app
         elif self.s3props.get('shared_bucket_target'):
             shared_app = self.s3props['shared_bucket_target']
-            newgenerated = get_details(app=shared_app, env=env)
-            self.bucket = newgenerated.shared_s3_app_bucket()
+            newgenerated = get_details(app=shared_app, env=env, region=region)
+            self.bucket = newgenerated.shared_s3_app_bucket(include_region=include_region)
             self.s3path = app
         else:
-            self.bucket = generated.s3_app_bucket()
+            self.bucket = generated.s3_app_bucket(include_region=include_region)
             self.s3path = self.s3props['path'].lstrip('/')
 
         self.s3_version_uri = ''
@@ -67,6 +71,8 @@ class S3Deployment(object):
         self.s3_version_uri = self._path_formatter(self.version)
         self.s3_latest_uri = self._path_formatter("LATEST")
         self.s3_canary_uri = self._path_formatter("CANARY")
+        self.s3_alpha_uri = self._path_formatter("ALPHA")
+        self.s3_mirror_uri = self._path_formatter("MIRROR")
 
     def _path_formatter(self, suffix):
         """Format the s3 path properly.
@@ -78,61 +84,102 @@ class S3Deployment(object):
             str: formatted path
 
         """
-        path_format = "{}/{}/{}"
+        if suffix.lower() == "mirror":
+            path_items = [self.bucket, self.s3path]
+        else:
+            path_items = [self.bucket, self.s3path, suffix]
+
+        path = '/'.join(path_items)
         s3_format = "s3://{}"
-        path = path_format.format(self.bucket, self.s3path, suffix)
         formatted_path = path.replace('//', '/')  # removes configuration errors
         full_path = s3_format.format(formatted_path)
         return full_path
 
     def upload_artifacts(self):
-        """Upload artifacts to S3 and copy to LATEST depending on strategy."""
-        deploy_strategy = self.properties[self.env]["deploy_strategy"]
+        """Upload artifacts to S3 and copy to correct path depending on strategy."""
+        deploy_strategy = self.properties["deploy_strategy"]
+
+        mirror = False
+        if deploy_strategy == "mirror":
+            mirror = True
+
+        self._upload_artifacts_to_path(mirror=mirror)
         if deploy_strategy == "highlander":
-            self._upload_artifacts_to_version()
-            self._sync_to_latest()
-        elif deploy_strategy == "redblack":
-            self._upload_artifacts_to_version()
+            self._sync_to_uri(self.s3_latest_uri)
         elif deploy_strategy == "canary":
-            self._upload_artifacts_to_version()
-            self._sync_to_canary()
+            self._sync_to_uri(self.s3_canary_uri)
+        elif deploy_strategy == "alpha":
+            self._sync_to_uri(self.s3_alpha_uri)
+        elif deploy_strategy == "mirror":
+            pass  # Nothing extra needed for mirror deployments
         else:
             raise NotImplementedError
 
-    def promote_artifacts(self):
-        """Promote artifact version to LATEST."""
-        self._sync_to_latest()
+    def promote_artifacts(self, promote_stage='latest'):
+        """Promote artifact version to dest.
 
-    def _upload_artifacts_to_version(self):
-        """Recursively upload directory contents to S3."""
+        Args:
+            promote_stage (string): Stage that is being promoted
+        """
+        if promote_stage.lower() == 'alpha':
+            self._sync_to_uri(self.s3_canary_uri)
+        elif promote_stage.lower() == 'canary':
+            self._sync_to_uri(self.s3_latest_uri)
+        else:
+            self._sync_to_uri(self.s3_latest_uri)
+
+    def _get_upload_cmd(self, mirror=False):
+        """Generate the S3 CLI upload command
+
+        Args:
+            mirror (bool): If true, uses a flat directory structure instead of nesting under a version.
+
+        Returns:
+            str: The full CLI command to run.
+        """
+        if mirror:
+            dest_uri = self.s3_mirror_uri
+        else:
+            dest_uri = self.s3_version_uri
+
+        cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
+                                                                                  dest_uri, self.env)
+        return cmd
+
+    def _upload_artifacts_to_path(self, mirror=False):
+        """Recursively upload directory contents to S3.
+
+        Args:
+            mirror (bool): If true, uses a flat directory structure instead of nesting under a version.
+        """
         if not os.listdir(self.artifact_path) or not self.artifact_path:
             raise S3ArtifactNotFound
 
         uploaded = False
         if self.s3props.get("content_metadata"):
             LOG.info("Uploading in multiple parts to set metadata")
-            uploaded = self.content_metadata_uploads()
+            uploaded = self.content_metadata_uploads(mirror=mirror)
 
         if not uploaded:
-            cmd = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                      self.s3_version_uri, self.env)
+            cmd = self._get_upload_cmd(mirror=mirror)
             result = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
             LOG.debug("Upload Command Ouput: %s", result.stdout)
 
         LOG.info("Uploaded artifacts to %s bucket", self.bucket)
 
-    def content_metadata_uploads(self):
+    def content_metadata_uploads(self, mirror=False):
         """Finds all specified encoded directories and uploads in multiple parts,
         setting metadata for objects.
+
+        Args:
+            mirror (bool): If true, uses a flat directory structure instead of nesting under a version.
 
         Returns:
             bool: True if uploaded
         """
         excludes_str = ''
         includes_cmds = []
-        cmd_base = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(self.artifact_path,
-                                                                                       self.s3_version_uri,
-                                                                                       self.env)
+        cmd_base = self._get_upload_cmd(mirror=mirror)
 
         for content in self.s3props.get('content_metadata'):
             full_path = os.path.join(self.artifact_path, content['path'])
@@ -156,32 +203,21 @@ class S3Deployment(object):
 
         return True
 
-    def _sync_to_latest(self):
-        """Copy and sync versioned directory to LATEST in S3."""
-        cmd_cp = 'aws s3 cp {} {} --recursive --profile {}'.format(self.s3_version_uri, self.s3_latest_uri, self.env)
+    def _sync_to_uri(self, uri):
+        """Copy and sync versioned directory to uri in S3.
+
+        Args:
+            uri (str): S3 URI to sync version to.
+        """
+        cmd_cp = 'aws s3 cp {} {} --recursive --profile {}'.format(self.s3_version_uri, uri, self.env)
         # AWS CLI sync does not work as expected bucket to bucket with exact timestamp sync.
         cmd_sync = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(
-            self.s3_version_uri, self.s3_latest_uri, self.env)
+            self.s3_version_uri, uri, self.env)
 
         cp_result = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Copy to latest before sync output: %s", cp_result.stdout)
-        LOG.info("Copied version %s to %s", self.version, self.s3_latest_uri)
+        LOG.debug("Copy to %s before sync output: %s", uri, cp_result.stdout)
+        LOG.info("Copied version %s to %s", self.version, uri)
 
         sync_result = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Sync to latest command output: %s", sync_result.stdout)
-        LOG.info("Synced version %s to %s", self.version, self.s3_latest_uri)
-
-    def _sync_to_canary(self):
-        """Copy and sync versioned directory to CANARY in S3."""
-        cmd_cp = 'aws s3 cp {} {} --recursive --profile {}'.format(self.s3_version_uri, self.s3_canary_uri, self.env)
-        # AWS CLI sync does not work as expected bucket to bucket with exact timestamp sync.
-        cmd_sync = 'aws s3 sync {} {} --delete --exact-timestamps --profile {}'.format(
-            self.s3_version_uri, self.s3_canary_uri, self.env)
-
-        cp_result = subprocess.run(cmd_cp, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Copy to canary before sync output: %s", cp_result.stdout)
-        LOG.info("Copied version %s to %s", self.version, self.s3_canary_uri)
-
-        sync_result = subprocess.run(cmd_sync, check=True, shell=True, stdout=subprocess.PIPE)
-        LOG.debug("Sync to canary command output: %s", sync_result.stdout)
-        LOG.info("Synced version %s to %s", self.version, self.s3_canary_uri)
+        LOG.debug("Sync to %s command output: %s", uri, sync_result.stdout)
+        LOG.info("Synced version %s to %s", self.version, uri)

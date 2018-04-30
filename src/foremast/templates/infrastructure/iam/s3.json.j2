@@ -8,9 +8,11 @@
             ],
             "Resource": [
                 {% for bucket in items -%}
-                  "arn:aws:s3:::{{ bucket }}",
+                  "arn:aws:s3:::{{ bucket }}"
+                  {%- if not loop.last -%}
+                  ,
+                  {%- endif -%}
                 {% endfor -%}
-                "arn:aws:s3:::default_bucket_name"
             ]
         },
         {
@@ -24,8 +26,10 @@
             ],
             "Resource": [
                 {% for bucket in items -%}
-                  "arn:aws:s3:::{{ bucket }}/*",
+                  "arn:aws:s3:::{{ bucket }}/*"
+                  {%- if not loop.last -%}
+                  ,
+                  {%- endif -%}
                 {% endfor -%}
-                "arn:aws:s3:::default_bucket_name/*"
             ]
         }

@@ -103,6 +103,14 @@ class SpinnakerPipeline:
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
         pipeline_type = self.settings['pipeline']['type']
+        baking_process = self.settings['pipeline']['image']['builder']
+        provider = 'aws'
+        root_volume_size = self.settings['pipeline']['image']['root_volume_size']
+        bake_instance_type = self.settings['pipeline']['image']['bake_instance_type']
+
+        ami_id = ami_lookup(name=base, region=region)
+
+        ami_template_file = generate_packer_filename(provider, region, baking_process)
 
         pipeline_id = self.compare_with_existing(region=region)
 
@@ -115,6 +123,10 @@ class SpinnakerPipeline:
                 'triggerjob': self.trigger_job,
                 'email': email,
                 'slack': slack,
+                'root_volume_size': root_volume_size,
+                'bake_instance_type': bake_instance_type,
+                'ami_template_file': ami_template_file,
+                'pipeline': self.settings['pipeline']
             },
             'id': pipeline_id
         }
@@ -205,11 +217,11 @@ class SpinnakerPipeline:
                     "generated": self.generated,
                     "previous_env": previous_env,
                     "region": region,
-                    "settings": self.settings[env],
+                    "settings": self.settings[env][region],
                     "pipeline_data": self.settings['pipeline'],
                 }
 
-                if self.settings['pipeline']['type'] == 'ec2':
+                if self.settings['pipeline']['type'] in ('ec2', 'rolling'):
                     if not subnets:
                         subnets = get_subnets()
                     try:

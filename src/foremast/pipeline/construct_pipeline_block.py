@@ -22,7 +22,7 @@ from pprint import pformat
 
 from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import ami_lookup, generate_encoded_user_data, generate_packer_filename, get_template
+from ..utils import ami_lookup, generate_encoded_user_data, generate_packer_filename, get_template, remove_duplicate_sg
 
 LOG = logging.getLogger(__name__)
 
@@ -136,7 +136,7 @@ def construct_pipeline_block(env='',
     pipeline_type = pipeline_data['type']
     gen_app_name = generated.app_name()
 
-    if pipeline_type == 'ec2':
+    if pipeline_type in ('ec2', 'rolling'):
         data = ec2_pipeline_setup(
             appname=gen_app_name,
             settings=settings,
@@ -189,6 +189,7 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
     instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
     instance_security_groups.append(appname)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
+    instance_security_groups = remove_duplicate_sg(instance_security_groups)
 
     LOG.info('Instance security groups to attach: %s', instance_security_groups)
 

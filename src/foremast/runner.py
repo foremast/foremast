@@ -55,6 +55,7 @@ class ForemastRunner(object):
         self.runway_dir = os.getenv("RUNWAY_DIR")
         self.artifact_path = os.getenv("ARTIFACT_PATH")
         self.artifact_version = os.getenv("ARTIFACT_VERSION")
+        self.promote_stage = os.getenv("PROMOTE_STAGE", "latest")
 
         self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
@@ -104,9 +105,7 @@ class ForemastRunner(object):
             raise NotImplementedError('Pipeline type "{0}" not permitted.'.format(pipeline_type))
 
         if not onetime:
-            if pipeline_type == 'ec2':
-                spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
-            elif pipeline_type == 'lambda':
+            if pipeline_type == 'lambda':
                 spinnakerpipeline = pipeline.SpinnakerPipelineLambda(**kwargs)
             elif pipeline_type == 's3':
                 spinnakerpipeline = pipeline.SpinnakerPipelineS3(**kwargs)
@@ -115,7 +114,8 @@ class ForemastRunner(object):
             elif pipeline_type == 'manual':
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             else:
-                raise NotImplementedError("Pipeline type is not implemented.")
+                # Handles all other pipelines
+                spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
         else:
             spinnakerpipeline = pipeline.SpinnakerPipelineOnetime(onetime=onetime, **kwargs)
 
@@ -134,32 +134,41 @@ class ForemastRunner(object):
     def create_s3app(self):
         """Create S3 infra for s3 applications"""
         utils.banner("Creating S3 App Infrastructure")
-        s3obj = s3.S3Apps(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
+        primary_region = self.configs['pipeline']['primary_region']
+        s3obj = s3.S3Apps(app=self.app,
+                          env=self.env,
+                          region=self.region,
+                          prop_path=self.json_path,
+                          primary_region=primary_region)
         s3obj.create_bucket()
 
     def deploy_s3app(self):
         """Deploys artifacts contents to S3 bucket"""
         utils.banner("Deploying S3 App")
+        primary_region = self.configs['pipeline']['primary_region']
         s3obj = s3.S3Deployment(
             app=self.app,
             env=self.env,
             region=self.region,
             prop_path=self.json_path,
             artifact_path=self.artifact_path,
-            artifact_version=self.artifact_version)
+            artifact_version=self.artifact_version,
+            primary_region=primary_region)
         s3obj.upload_artifacts()
 
     def promote_s3app(self):
         """promotes S3 deployment to LATEST"""
         utils.banner("Promoting S3 App")
+        primary_region = self.configs['pipeline']['primary_region']
         s3obj = s3.S3Deployment(
             app=self.app,
             env=self.env,
             region=self.region,
             prop_path=self.json_path,
             artifact_path=self.artifact_path,
-            artifact_version=self.artifact_version)
-        s3obj.promote_artifacts()
+            artifact_version=self.artifact_version,
+            primary_region=primary_region)
+        s3obj.promote_artifacts(promote_stage=self.promote_stage)
 
     def create_secgroups(self):
         """Create security groups as defined in the configs."""
@@ -191,18 +200,21 @@ class ForemastRunner(object):
         elb_subnet = self.configs[self.env]['elb']['subnet_purpose']
         regions = self.configs[self.env]['regions']
         failover = self.configs[self.env]['dns']['failover_dns']
+        primary_region = self.configs['pipeline']['primary_region']
         regionspecific_dns = self.configs[self.env]['dns']['region_specific']
 
         dnsobj = dns.SpinnakerDns(
             app=self.app, env=self.env, region=self.region, prop_path=self.json_path, elb_subnet=elb_subnet)
+
         if len(regions) > 1 and failover:
             dnsobj.create_elb_dns(regionspecific=True)
-            primary_region = self.configs['pipeline']['primary_region']
             dnsobj.create_failover_dns(primary_region=primary_region)
         else:
-            dnsobj.create_elb_dns(regionspecific=False)
-            if regionspecific_dns:  # If true, Also create a region specific DNS record
+            if regionspecific_dns:
                 dnsobj.create_elb_dns(regionspecific=True)
+
+            if self.region == primary_region:
+                dnsobj.create_elb_dns(regionspecific=False)
 
     def create_autoscaling_policy(self):
         """Create Scaling Policy for app in environment"""

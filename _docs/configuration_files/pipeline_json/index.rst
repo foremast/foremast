@@ -31,10 +31,12 @@ Specifies what type of pipeline to use for the application.
     | *Default*: ``"ec2"``
     | *Options*:
 
-        - ``"lambda"`` - Sets up the AWS Lambda pipeline and infrastructure
-        - ``"ec2"`` - Sets up the AWS EC2 pipeline and infrastructure
-        - ``"datapipeline"`` - Sets up the AWS Data Pipeline infrastructure
+        - ``"ec2"`` - Sets up an AWS EC2 pipeline and infrastructure
+        - ``"datapipeline"`` - Sets up an AWS Data Pipeline infrastructure
+        - ``"lambda"`` - Sets up an AWS Lambda pipeline and infrastructure
         - ``"manual"`` - Create Pipelines from raw JSON, use with :ref:`pipeline_files`.
+        - ``"s3"`` - Sets up an AWS S3 pipeline and infrastructure
+        - ``"rolling"`` - Sets up a "rolling" style pipeline. Requires custom templates.
 
 ``owner_email``
 ~~~~~~~~~~~~~~~

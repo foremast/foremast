@@ -88,6 +88,11 @@ def write_variables(app_configs=None, out_file='', git_short=''):
             rendered_configs = json.loads(
                 get_template('configs/configs.json.j2', env=env, app=generated.app_name(), profile=instance_profile))
             json_configs[env] = dict(DeepChainMap(configs, rendered_configs))
+            region_list = configs.get('regions', rendered_configs['regions'])
+            json_configs[env]['regions'] = region_list  # removes regions defined in templates but not configs.
+            for region in region_list:
+                region_config = json_configs[env][region]
+                json_configs[env][region] = dict(DeepChainMap(region_config, rendered_configs))
         else:
             default_pipeline_json = json.loads(get_template('configs/pipeline.json.j2'))
             json_configs['pipeline'] = dict(DeepChainMap(configs, default_pipeline_json))

@@ -33,6 +33,7 @@ class SpinnakerDns:
 
     Returns:
         str: FQDN of application
+
     """
 
     def __init__(self, app=None, env=None, region=None, elb_subnet=None, prop_path=None):
@@ -47,7 +48,7 @@ class SpinnakerDns:
         self.generated = get_details(app, env=self.env, region=self.region)
         self.app_name = self.generated.app_name()
 
-        self.properties = get_properties(properties_file=prop_path, env=self.env)
+        self.properties = get_properties(properties_file=prop_path, env=self.env, region=self.region)
         self.dns_ttl = self.properties['dns']['ttl']
         self.header = {'content-type': 'application/json'}
 
@@ -55,9 +56,10 @@ class SpinnakerDns:
         """Create dns entries in route53.
 
         Args:
-            hasregion (bool): The DNS entry should have region on it
+            regionspecific (bool): The DNS entry should have region on it
         Returns:
-            Auto-generated DNS name for the Elastic Load Balancer.
+            str: Auto-generated DNS name for the Elastic Load Balancer.
+
         """
         if regionspecific:
             dns_elb = self.generated.dns()['elb_region']
@@ -83,7 +85,7 @@ class SpinnakerDns:
         return dns_elb
 
     def create_failover_dns(self, primary_region='us-east-1'):
-        """Create dns entries in route53 for multiregion failover setups
+        """Create dns entries in route53 for multiregion failover setups.
 
         Args:
             primary_region (str): primary AWS region for failover

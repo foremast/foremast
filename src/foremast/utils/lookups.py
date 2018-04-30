@@ -24,6 +24,7 @@ import requests
 
 from ..consts import AMI_JSON_URL, GIT_URL, GITLAB_TOKEN
 from ..exceptions import GitLabApiError
+from .warn_user import warn_user
 
 LOG = logging.getLogger(__name__)
 
@@ -43,23 +44,12 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
 
     """
     if AMI_JSON_URL:
-        LOG.info("Getting AMI from %s", AMI_JSON_URL)
-        response = requests.get(AMI_JSON_URL)
-        assert response.ok, "Error getting ami info from {}".format(AMI_JSON_URL)
-
-        ami_dict = response.json()
-        LOG.debug('Lookup AMI table: %s', ami_dict)
+        ami_dict = _get_ami_dict(AMI_JSON_URL)
         ami_id = ami_dict[region][name]
     elif GITLAB_TOKEN:
-        # TODO: Remove GitLab repository in favour of JSON URL option.
-        LOG.info("Getting AMI from Gitlab")
-        server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
-        project_id = server.getproject('devops/ansible')['id']
-
-        ami_blob = server.getfile(project_id, 'scripts/{0}.json'.format(region), 'master')
-        ami_contents = b64decode(ami_blob['content']).decode()
+        warn_user('Use AMI_JSON_URL feature instead.')
+        ami_contents = _get_ami_file(region=region)
         ami_dict = json.loads(ami_contents)
-        LOG.debug('Lookup AMI table: %s', ami_dict)
         ami_id = ami_dict[name]
     else:
         ami_id = name
@@ -67,6 +57,42 @@ def ami_lookup(region='us-east-1', name='tomcat8'):
     LOG.info('Using AMI: %s', ami_id)
 
     return ami_id
+
+
+def _get_ami_file(region='us-east-1'):
+    """Get file from Gitlab.
+
+    Args:
+        region (str): AWS Region to find AMI ID.
+
+    Returns:
+        str: Contents in json format.
+
+    """
+    LOG.info("Getting AMI from Gitlab")
+    lookup = FileLookup(git_short='devops/ansible')
+    filename = 'scripts/{0}.json'.format(region)
+    ami_contents = lookup.remote_file(filename=filename, branch='master')
+    LOG.debug('AMI file contents in %s: %s', filename, ami_contents)
+    return ami_contents
+
+
+def _get_ami_dict(json_url):
+    """Get ami from a web url.
+
+    Args:
+        region (str): AWS Region to find AMI ID.
+
+    Returns:
+        dict: Contents in dictionary format.
+
+    """
+    LOG.info("Getting AMI from %s", json_url)
+    response = requests.get(json_url)
+    assert response.ok, "Error getting ami info from {}".format(json_url)
+    ami_dict = response.json()
+    LOG.debug('AMI json contents: %s', ami_dict)
+    return ami_dict
 
 
 class FileLookup():
@@ -87,12 +113,12 @@ class FileLookup():
         self.runway_dir = os.path.expandvars(os.path.expanduser(runway_dir))
 
         self.server = None
-        self.project_id = ''
+        self.project = None
 
         if not self.runway_dir:
-            self.get_gitlab_project_id()
+            self.get_gitlab_project()
 
-    def get_gitlab_project_id(self):
+    def get_gitlab_project(self):
         """Get numerical GitLab Project ID.
 
         Returns:
@@ -103,15 +129,14 @@ class FileLookup():
                 code.
 
         """
-        self.server = gitlab.Gitlab(GIT_URL, token=GITLAB_TOKEN)
-
-        project = self.server.getproject(self.git_short)
+        self.server = gitlab.Gitlab(GIT_URL, private_token=GITLAB_TOKEN, api_version=4)
+        project = self.server.projects.get(self.git_short)
 
         if not project:
             raise GitLabApiError('Could not get Project "{0}" from GitLab API.'.format(self.git_short))
 
-        self.project_id = project['id']
-        return self.project_id
+        self.project = project
+        return self.project
 
     def local_file(self, filename):
         """Read the local file in _self.runway_dir_.
@@ -162,15 +187,19 @@ class FileLookup():
 
         file_contents = ''
 
-        file_blob = self.server.getfile(self.project_id, filename, branch)
+        try:
+            file_blob = self.project.files.get(file_path=filename, ref=branch)
+        except gitlab.exceptions.GitlabGetError:
+            file_blob = None
+
         LOG.debug('GitLab file response:\n%s', file_blob)
 
         if not file_blob:
-            msg = '"{0}" Branch "{1}" missing file "{2}".'.format(self.git_short, branch, filename)
+            msg = 'Project "{0}" is missing file "{1}" in "{2}" branch.'.format(self.git_short, filename, branch)
             LOG.warning(msg)
             raise FileNotFoundError(msg)
         else:
-            file_contents = b64decode(file_blob['content']).decode()
+            file_contents = b64decode(file_blob.content).decode()
 
         LOG.debug('Remote file contents:\n%s', file_contents)
         return file_contents

@@ -9,7 +9,8 @@
         "lambda_memory": "128",
         "lambda_role": null,
         "lambda_timeout": "30",
-        "canary": false
+        "canary": false,
+        "lambda_concurrency_limit": null
     },
     "asg": {
         "hc_type": "ELB",
@@ -48,9 +49,9 @@
     },
     "qe": {
     },
-    "regions": [
-        "us-east-1"
-    ],
+    "regions": {
+        "us-east-1": {}
+    },
     "deploy_strategy": "highlander",
     "security_group": {
         "description": "Auto-Gen SG for {{ app }}",
@@ -71,12 +72,47 @@
         "path": "/",
         "bucket_acl": "private",
         "bucket_policy": {},
+        "content_metadata": [],
+        "cors": {
+            "enabled": false,
+            "cors_rules": [{
+                "cors_headers": [],
+                "cors_methods": [],
+                "cors_origins": [],
+                "cors_expose_headers": [],
+                "cors_max_age": 600
+            }]
+        },
+        "encryption": {
+            "enabled": false,
+            "encryption_rules": [{
+                "ApplyServerSideEncryptionByDefault": {
+                    "SSEAlgorithm": "AES256"
+                }
+            }]
+        },
+        "lifecycle": {
+            "enabled": false,
+            "lifecycle_rules": [{}]
+        },
+        "logging": {
+            "enabled": false,
+            "logging_grants": [],
+            "logging_bucket": "",
+            "logging_bucket_prefix": "{{ app }}/"
+        },
+        "tagging": {
+            "tags": {}
+        },
+        "versioning": {
+            "enabled": false,
+            "mfa_delete": "Disabled"
+        },
         "website": {
             "enabled": true,
             "index_suffix": "index.html",
-            "error_document": " "
-        },
-        "content_metadata": []
+            "error_document": "404.html"
+        }
     },
     "datapipeline": {
         "description": "",

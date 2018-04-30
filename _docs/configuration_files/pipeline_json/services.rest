@@ -5,6 +5,14 @@ Access to different Cloud Services will be added to an inline Policy for an IAM
 Role. Keys must match with a corresponding template in
 :file:`src/foremast/templates/infrastructure/iam/{key}.json.j2`.
 
+``athena``
+******************
+
+Add Athena Query access.
+
+   | *Type*: boolean
+   | *Default*: ``false``
+
 ``cloudformation``
 ******************
 
@@ -52,6 +60,14 @@ Add Firehose access to streams listed.
 
    | *Type*: array
    | *Default*: ``[]``
+
+``glue``
+******************
+
+Add Glue GetTable and GetDatabase access.
+
+   | *Type*: boolean
+   | *Default*: ``false``
 
 ``kinesis``
 ***********

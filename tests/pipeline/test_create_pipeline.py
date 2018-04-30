@@ -23,11 +23,14 @@ from foremast.pipeline import SpinnakerPipeline
 
 TEST_SETTINGS = {
     'dev': {
-        'app': {
-            'app_description': 'Test App Demo application'
-        },
-        'deploy_strategy': 'highlander',
         'regions': ['us-east-1'],
+        'us-east-1': {
+            'app': {
+                'app_description': 'Test App Demo application'
+            },
+            'deploy_strategy': 'highlander',
+            'regions': ['us-east-1'],
+        }
     },
     'pipeline': {
         'base': 'tomcat8',
@@ -76,7 +79,7 @@ def test_create_pipeline_ec2(mock_post, mock_renumerate, mock_construct, mock_su
         "generated": "test",
         "previous_env": None,
         "region": "us-east-1",
-        "settings": spinnaker_pipeline.settings["dev"],
+        "settings": spinnaker_pipeline.settings["dev"]["us-east-1"],
         "pipeline_data": spinnaker_pipeline.settings['pipeline'],
         "region_subnets": {
             'us-east-1': ['us-east-1d', 'us-east-1a', 'us-east-1e']

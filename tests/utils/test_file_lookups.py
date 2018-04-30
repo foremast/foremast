@@ -32,76 +32,66 @@ TEST_JSON_BYTES = TEST_JSON.encode()
 def test_init(gitlab):
     """Check init."""
     my_git = FileLookup()
-
     assert my_git.git_short == ''
     assert my_git.server == gitlab.Gitlab.return_value
-    my_git.server.getproject.assert_called_with(my_git.git_short)
+    my_git.server.projects.get.assert_called_with(my_git.git_short)
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_project_id_exception(mock_gitlab):
+def test_project_exception(mock_gitlab):
     """Check resolving GitLab Project ID fails with exception."""
-    mock_gitlab.Gitlab.return_value.getproject.return_value = False
+    mock_gitlab.Gitlab.return_value.projects.get.return_value = False
 
     with pytest.raises(GitLabApiError):
         FileLookup()
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_project_id_success(mock_gitlab):
+def test_project_success(mock_gitlab):
     """Check resolving GitLab Project ID is successful."""
-    project_id = 30
-
-    mock_gitlab.Gitlab.return_value.getproject.return_value = {'id': project_id}
-
+    mock_gitlab.Gitlab.return_value.projects.get.return_value = object
     seeker = FileLookup()
+    assert seeker.project is object
 
-    assert seeker.project_id == project_id
 
-
+@mock.patch.object(FileLookup, 'remote_file', return_value=TEST_JSON)
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_get(gitlab):
+def test_get(gitlab, mock_lookup):
     """Check _get_ method."""
     my_git = FileLookup()
-
-    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES)}
 
     result = my_git.get()
     assert isinstance(result, str)
     assert TEST_JSON == my_git.get()
 
 
+@mock.patch.object(FileLookup, 'get', return_value=TEST_JSON)
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_json(gitlab):
+def test_json(gitlab, mock_lookup):
     """Check _json_ method."""
     my_git = FileLookup()
-
-    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES)}
 
     result = my_git.json()
     assert isinstance(result, dict)
     assert result['ship'] == 'pirate'
 
 
+@mock.patch.object(FileLookup, 'get', return_value=TEST_JSON + '}')
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_invalid_json(gitlab):
+def test_invalid_json(gitlab, mock_lookup):
     """Check invalid JSON."""
     my_git = FileLookup()
-
-    my_git.server.getfile.return_value = {'content': base64.b64encode(TEST_JSON_BYTES + b'}')}
 
     with pytest.raises(SystemExit):
         my_git.json()
 
 
-@mock.patch('foremast.utils.lookups.gitlab')
-def test_runway_get(gitlab):
+def test_filelookup_attr():
     """Make sure Git related attributes are missing when runway is specified."""
     my_git = FileLookup(runway_dir='/poop_deck')
 
-    assert getattr(my_git, 'git_short') is None
-    assert getattr(my_git, 'server') is None
-    assert getattr(my_git, 'project_id') is None
+    assert my_git.git_short == ''
+    assert my_git.server is None
 
 
 @mock.patch('foremast.utils.lookups.gitlab')

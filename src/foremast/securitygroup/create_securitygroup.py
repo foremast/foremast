@@ -45,12 +45,12 @@ from contextlib import suppress
 
 import boto3
 from boto3.exceptions import botocore
+from deepmerge import conservative_merger
 
 from ..consts import DEFAULT_SECURITYGROUP_RULES
 from ..exceptions import (ForemastConfigurationFileError, SpinnakerSecurityGroupCreationFailed,
                           SpinnakerSecurityGroupError)
-from ..utils import (get_details, get_properties, get_security_group_id, get_template, get_vpc_id, wait_for_task,
-                     warn_user)
+from ..utils import get_details, get_properties, get_security_group_id, get_template, get_vpc_id, wait_for_task
 
 
 class SpinnakerSecurityGroup(object):
@@ -70,12 +70,11 @@ class SpinnakerSecurityGroup(object):
         self.env = env
         self.region = region
 
-        self.properties = get_properties(properties_file=prop_path, env=env)
+        self.properties = get_properties(properties_file=prop_path, env=self.env, region=self.region)
         generated = get_details(app=self.app_name)
         self.group = generated.data['project']
 
-    @staticmethod
-    def _validate_cidr(rule):
+    def _validate_cidr(self, rule):
         """Validate the cidr block in a rule.
 
         Returns:
@@ -90,9 +89,7 @@ class SpinnakerSecurityGroup(object):
         except (ipaddress.NetmaskValueError, ValueError) as error:
             raise SpinnakerSecurityGroupCreationFailed(error)
 
-        if network.prefixlen < 13:
-            msg = 'The network range ({0}) specified is too open.'.format(rule['app'])
-            raise SpinnakerSecurityGroupCreationFailed(msg)
+        self.log.debug('Validating CIDR: %s', network.exploded)
 
         return True
 
@@ -204,9 +201,10 @@ class SpinnakerSecurityGroup(object):
 
     def update_default_rules(self):
         """Concatinate application and global security group rules."""
-        ingress = self.properties['security_group']['ingress']
-        ingress.update(DEFAULT_SECURITYGROUP_RULES)
+        app_ingress = self.properties['security_group']['ingress']
+        ingress = conservative_merger.merge(DEFAULT_SECURITYGROUP_RULES, app_ingress)
         resolved_ingress = self.resolve_self_references(ingress)
+        self.log.info('Updated default rules:\n%s', ingress)
         return resolved_ingress
 
     def _create_security_group(self, ingress):
@@ -259,41 +257,12 @@ class SpinnakerSecurityGroup(object):
         for app in ingress:
             rules = ingress[app]
 
-            if app in ('app_a', 'app_b'):
-                msg = ('Using "{0}" in your security group will be ignored. '
-                       'Please remove them to suppress this warning.').format(app)
-                warn_user(msg)
-                continue
-
             # Essentially we have two formats: simple, advanced
             # - simple: is just a list of ports
             # - advanced: selects ports ranges and protocols
             for rule in rules:
-                try:
-                    # Advanced
-                    start_port = rule.get('start_port')
-                    end_port = rule.get('end_port')
-                    protocol = rule.get('protocol', 'tcp')
-                    cross_account_env = rule.get('env', None)
-                    cross_account_vpc_id = None
-                except AttributeError:
-                    start_port = rule
-                    end_port = rule
-                    protocol = 'tcp'
-                    cross_account_env = None
-                    cross_account_vpc_id = None
-
-                if cross_account_env:
-                    cross_account_vpc_id = get_vpc_id(cross_account_env, self.region)
-
-                ingress_rules.append({
-                    'app': app,
-                    'start_port': start_port,
-                    'end_port': end_port,
-                    'protocol': protocol,
-                    'cross_account_env': cross_account_env,
-                    'cross_account_vpc_id': cross_account_vpc_id
-                })
+                ingress_rule = self.create_ingress_rule(app, rule)
+                ingress_rules.append(ingress_rule)
 
         ingress_rules_no_cidr, ingress_rules_cidr = self._process_rules(ingress_rules)
 
@@ -307,3 +276,48 @@ class SpinnakerSecurityGroup(object):
 
         self.log.info('Successfully created %s security group', self.app_name)
         return True
+
+    def create_ingress_rule(self, app, rule):
+        """Create a normalized ingress rule.
+
+        Args:
+            app (str): Application name
+            rule (dict or int): Allowed Security Group ports and protocols.
+
+        Returns:
+            dict: Contains app, start_port, end_port, protocol, cross_account_env and cross_account_vpc_id
+
+        """
+        if isinstance(rule, dict):
+            # Advanced
+            start_port = rule.get('start_port')
+            end_port = rule.get('end_port')
+            protocol = rule.get('protocol', 'tcp')
+
+            requested_cross_account = rule.get('env', self.env)
+            if self.env == requested_cross_account:
+                # We are trying to use cross-account security group settings within the same account
+                # We should not allow this.
+                cross_account_env = None
+                cross_account_vpc_id = None
+            else:
+                cross_account_env = requested_cross_account
+                cross_account_vpc_id = get_vpc_id(cross_account_env, self.region)
+
+        else:
+            start_port = rule
+            end_port = rule
+            protocol = 'tcp'
+            cross_account_env = None
+            cross_account_vpc_id = None
+
+        created_rule = {
+            'app': app,
+            'start_port': start_port,
+            'end_port': end_port,
+            'protocol': protocol,
+            'cross_account_env': cross_account_env,
+            'cross_account_vpc_id': cross_account_vpc_id
+        }
+        self.log.debug('Normalized ingress rule: %s', created_rule)
+        return created_rule

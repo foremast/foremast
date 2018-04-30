@@ -51,7 +51,7 @@ class AutoScalingPolicy:
         self.region = region
         self.app = app
 
-        self.settings = get_properties(properties_file=prop_path, env=self.env)
+        self.settings = get_properties(properties_file=prop_path, env=self.env, region=self.region)
 
     def prepare_policy_template(self, scaling_type, period_sec, server_group):
         """Renders scaling policy templates based on configs and variables.
@@ -82,11 +82,10 @@ class AutoScalingPolicy:
             template_kwargs['comparisonOperator'] = 'LessThanThreshold'
             template_kwargs['scalingAdjustment'] = -1
 
-        self.log.info('Rendering Scaling Policy Template: %s', template_kwargs)
         rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
-        self.log.debug(rendered_template)
+        self.log.info('Creating a %s policy in %s for %s', scaling_type, self.env, self.app)
         wait_for_task(rendered_template)
-        self.log.info('Successfully created scaling policy in %s', self.env)
+        self.log.info('Successfully created a %s policy in %s for %s', scaling_type, self.env, self.app)
 
     def create_policy(self):
         """Wrapper function. Gets the server group, sets sane defaults,
@@ -110,8 +109,10 @@ class AutoScalingPolicy:
             period_sec = int(self.settings['asg']['scaling_policy']['period_minutes']) * 60
         else:
             period_sec = 1800
+
         self.prepare_policy_template('scale_up', period_sec, server_group)
-        self.prepare_policy_template('scale_down', period_sec, server_group)
+        if self.settings['asg']['scaling_policy'].get('scale_down', True):
+            self.prepare_policy_template('scale_down', period_sec, server_group)
 
     def get_server_group(self):
         """Finds the most recently deployed server group for the application.
@@ -146,7 +147,7 @@ class AutoScalingPolicy:
                 "region": self.region,
                 "provider": "aws",
                 "type": "deleteScalingPolicy",
-                "user": "pipes-autoscaling-policy"
+                "user": "foremast-autoscaling-policy"
             }]
         }
         wait_for_task(json.dumps(delete_dict))
@@ -167,5 +168,5 @@ class AutoScalingPolicy:
             if servergroup['scalingPolicies'] and servergroup['asg']['autoScalingGroupName'] == server_group:
                 self.log.info("Found policies on %s", server_group)
                 scalingpolicies.append(servergroup['scalingPolicies'])
-        self.log.debug("scaling policys: %s", scalingpolicies)
+        self.log.debug("Scaling policies: %s", scalingpolicies)
         return scalingpolicies

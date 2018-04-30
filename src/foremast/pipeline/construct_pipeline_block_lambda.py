@@ -20,7 +20,7 @@ import logging
 from pprint import pformat
 
 from ..consts import DEFAULT_EC2_SECURITYGROUPS
-from ..utils import generate_encoded_user_data, get_template
+from ..utils import generate_encoded_user_data, get_template, remove_duplicate_sg
 
 LOG = logging.getLogger(__name__)
 
@@ -67,6 +67,7 @@ def construct_pipeline_block_lambda(env='',
     instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
     instance_security_groups.append(gen_app_name)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
+    instance_security_groups = remove_duplicate_sg(instance_security_groups)
 
     LOG.info('Instance security groups to attach: %s', instance_security_groups)
 

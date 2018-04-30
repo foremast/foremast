@@ -17,6 +17,8 @@ def get_cloudwatch_event_rule(app_name, account, region):
     rule_names = cloudwatch_client.list_rule_names_by_target(TargetArn=lambda_alias_arn)
 
     if rule_names['RuleNames']:
-        return rule_names['RuleNames']
+        all_rules = rule_names['RuleNames']
     else:
         LOG.debug("No event rules found")
+        all_rules = []
+    return all_rules

@@ -22,7 +22,6 @@ import pytest
 from foremast.exceptions import ForemastConfigurationFileError
 from foremast.securitygroup import SpinnakerSecurityGroup
 
-
 SAMPLE_JSON = """{"security_group": {
                     "description": "something useful",
                     "egress": "0.0.0.0/0",
@@ -37,6 +36,21 @@ SAMPLE_JSON = """{"security_group": {
                       }]
                     }
                   }}"""
+
+DEFAULT_SG_RULES = {
+    'myapp': [
+        {
+            'start_port': 22,
+            'end_port': 22,
+        },
+    ],
+    'test_app': [
+        {
+            'start_port': 31,
+            'end_port': 31,
+        },
+    ],
+}
 
 
 @mock.patch('foremast.securitygroup.create_securitygroup.boto3')
@@ -55,6 +69,19 @@ def test_create_crossaccount_securitygroup(get_details, pipeline_config, wait_fo
 
     x = SpinnakerSecurityGroup(app='edgeforrest', env='dev', region='us-east-1')
     assert x.create_security_group() is True
+
+    no_cross_account_data = {'end_port': 8080, 'env': 'dev', 'protocol': 'tcp', 'start_port': 8080}
+    no_cross_account_result = {'app': 'edgeforrest', 'end_port': 8080, 'cross_account_env': None, 'protocol': 'tcp', 'start_port': 8080, 'cross_account_vpc_id': None}
+    no_cross_account = x.create_ingress_rule(app='edgeforrest', rule=no_cross_account_data)
+    assert no_cross_account == no_cross_account_result
+
+    cross_account_data = {'end_port': 8080, 'env': 'stage', 'protocol': 'tcp', 'start_port': 8080}
+    cross_account_result = {'app': 'edgeforrest', 'end_port': 8080, 'cross_account_env': 'stage', 'protocol': 'tcp', 'start_port': 8080, 'cross_account_vpc_id': 'VPCID'}
+    cross_account = x.create_ingress_rule(app='edgeforrest', rule=cross_account_data)
+    assert cross_account == cross_account_result
+
+    no_cross_account_simple = x.create_ingress_rule(app='edgeforrest', rule=8080)
+    assert no_cross_account_simple == no_cross_account_result
 
 
 @mock.patch('foremast.securitygroup.create_securitygroup.get_security_group_id')
@@ -150,3 +177,31 @@ def test_securitygroup_references(mock_properties, mock_details):
     assert 'myapp' in ingress
     assert '22' == ingress['myapp'][0]['start_port']
     assert '22' == ingress['myapp'][0]['end_port']
+
+
+@mock.patch.dict('foremast.securitygroup.create_securitygroup.DEFAULT_SECURITYGROUP_RULES', DEFAULT_SG_RULES)
+@mock.patch('foremast.securitygroup.create_securitygroup.get_details')
+@mock.patch('foremast.securitygroup.create_securitygroup.get_properties')
+def test_merge_security_groups(mock_properties, mock_details):
+    """Make sure default Security Groups are added to the ingress rules."""
+    app_ingress = {
+        'test_app': [
+            {
+                'start_port': 30,
+                'end_port': 30,
+            },
+        ],
+    }
+
+    mock_properties.return_value = {
+        'security_group': {
+            'ingress': app_ingress,
+            'description': '',
+        },
+    }
+
+    sg = SpinnakerSecurityGroup()
+    ingress = sg.update_default_rules()
+    assert ingress['myapp'][0]['start_port'] == 22
+    assert ingress['test_app'][0]['start_port'] == 31
+    assert ingress['test_app'][1]['start_port'] == 30

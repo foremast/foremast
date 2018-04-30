@@ -46,7 +46,7 @@ class APIGateway:
         self.env = env
         self.account_id = get_env_credential(env=self.env)['accountId']
         self.region = region
-        self.properties = get_properties(properties_file=prop_path, env=self.env)
+        self.properties = get_properties(properties_file=prop_path, env=self.env, region=self.region)
 
         session = boto3.Session(profile_name=env, region_name=region)
         self.client = session.client('apigateway')

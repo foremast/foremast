@@ -235,12 +235,18 @@ scaling policy will be attached
 
 ``threshold`` : Metrics value limit for scaling up
 
-   | *Type*: number
+   | *Type*: int
+
+``scale_down`` : Attach a default scale-down policy
+
+   | *Type*: boolean
+   | *Default*: ``true``
 
 ``period_minutes`` : Time period to look across for determining if threshold was
-met
+met. If you wish to have seconds, using a floating point such as .5 for 30 seconds.
 
-   | *Type*: number
+   | *Type*: float
+   | *Default*: 30
    | *Units*: Minutes
 
 ``statistic``: Statistic to calculate at the period to determine if threshold
@@ -255,6 +261,12 @@ was met
       - ``"Minimum"``
       - ``"Sum"``
 
+``instance_warmup`` : Time period to wait before adding metrics to Auto Scaling group
+
+   | *Type*: int
+   | *Default*: 600
+   | *Units*: seconds
+
 ``scaling_policy`` *Example*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -265,7 +277,9 @@ was met
            "metric": "CPUUtilization",
            "threshold": 90,
            "period_minutes": 10,
-           "statistic": "Average"
+           "instance_warmup": 180,
+           "statistic": "Average",
+           "scale_down": true
        }
    }
 
@@ -485,10 +499,10 @@ The check the ELB will use to validate application is online.
 ``regions`` Key
 ~~~~~~~~~~~~~~~
 
-List of AWS regions that application will be deployed to.
+Dictionary of AWS regions that application will be deployed to.
 
     | *Type*: array
-    | *Default*: ``[ "us-east-1" ]``
+    | *Default*: ``{ "us-east-1": {} }``
 
 ``deploy_strategy`` Key
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -503,6 +517,10 @@ Spinnaker strategy to use for deployments.
        - ``"redblack"`` - disables old server group but do not destroy
        - ``"canary"`` - Only used in S3 deployments. Causes pipeline to first
          deploy to CANARY path
+       - ``"alpha"`` - Only used in S3 deployments. Causes pipeline to first
+         deploy to an ALPHA path
+       - ``"mirror"`` - Only used in S3 deployments. Contents are deployed as-is.
+       No version or LATEST directory. 
 
 ``security_group`` Block
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -641,3 +659,6 @@ clicking "Export" in the AWS Console when creating the Data Pipeline.
 
     | *Type*: object
     | *Default*: ``{}``
+
+.. include:: s3.rest
+

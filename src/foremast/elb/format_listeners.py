@@ -23,7 +23,7 @@ from ..utils import get_env_credential, get_template
 LOG = logging.getLogger(__name__)
 
 
-def format_listeners(elb_settings=None, env='dev'):
+def format_listeners(elb_settings=None, env='dev', region='us-east-1'):
     """Format ELB Listeners into standard list.
 
     Args:
@@ -83,7 +83,8 @@ def format_listeners(elb_settings=None, env='dev'):
 
     if 'ports' in elb_settings:
         for listener in elb_settings['ports']:
-            cert_name = format_cert_name(env=env, account=account, certificate=listener.get('certificate', None))
+            cert_name = format_cert_name(
+                env=env, region=region, account=account, certificate=listener.get('certificate', None))
 
             lb_proto, lb_port = listener['loadbalancer'].split(':')
             i_proto, i_port = listener['instance'].split(':')
@@ -127,12 +128,13 @@ def format_listeners(elb_settings=None, env='dev'):
     return listeners
 
 
-def format_cert_name(env='', account='', certificate=None):
+def format_cert_name(env='', account='', region='', certificate=None):
     """Format the SSL certificate name into ARN for ELB.
 
     Args:
         env (str): Account environment name
         account (str): Account number for ARN
+        region (str): AWS Region.
         certificate (str): Name of SSL certificate
 
     Returns:
@@ -146,7 +148,7 @@ def format_cert_name(env='', account='', certificate=None):
             LOG.info("Full ARN provided...skipping lookup.")
             cert_name = certificate
         else:
-            generated_cert_name = generate_custom_cert_name(env, account, certificate)
+            generated_cert_name = generate_custom_cert_name(env, region, account, certificate)
             if generated_cert_name:
                 LOG.info("Found generated certificate %s from template", generated_cert_name)
                 cert_name = generated_cert_name
@@ -159,11 +161,12 @@ def format_cert_name(env='', account='', certificate=None):
     return cert_name
 
 
-def generate_custom_cert_name(env='', account='', certificate=None):
+def generate_custom_cert_name(env='', region='', account='', certificate=None):
     """Generate a custom TLS Cert name based on a template.
 
     Args:
         env (str): Account environment name
+        region (str): AWS Region.
         account (str): Account number for ARN.
         certificate (str): Name of SSL certificate.
 
@@ -177,13 +180,34 @@ def generate_custom_cert_name(env='', account='', certificate=None):
     # TODO: Investigate moving this to a remote API, then fallback to local file if unable to connect
     try:
         rendered_template = get_template(template_file='infrastructure/iam/tlscert_naming.json.j2', **template_kwargs)
+        tlscert_dict = json.loads(rendered_template)
     except ForemastTemplateNotFound:
         LOG.info('Unable to find TLS Cert Template...falling back to default logic...')
         return cert_name
 
+    # TODO: Move to v1 method for check
     try:
-        cert_name = json.loads(rendered_template)[env][certificate]
+        LOG.info("Attempting to find TLS Cert using TLS Cert Template v1 lookup...")
+        cert_name = tlscert_dict[env][certificate]
+        LOG.info("Found TLS certificate named %s under %s using TLS Cert Template v1", certificate, env)
     except KeyError:
-        LOG.error("Unable to find TLS certificate named %s under %s in TLS Cert Template", certificate, env)
+        LOG.error("Unable to find TLS certificate named %s under %s using v1 TLS Cert Template.", certificate, env)
+
+    # TODO: Move variable to consts
+    # TODO: move to v2 method for check
+    tls_services = ['iam', 'acm']
+    if cert_name is None and all(service in tlscert_dict for service in tls_services):
+        LOG.info("Attempting to find TLS Cert using TLS Cert Template v2 lookup...")
+        if certificate in tlscert_dict['iam'][env]:
+            cert_name = tlscert_dict['iam'][env][certificate]
+            LOG.info("Found IAM TLS certificate named %s under %s using TLS Cert Template v2", certificate, env)
+        elif certificate in tlscert_dict['acm'][region][env]:
+            cert_name = tlscert_dict['acm'][region][env][certificate]
+            LOG.info("Found ACM TLS certificate named %s under %s in %s using TLS Cert Template v2", certificate, env,
+                     region)
+        else:
+            LOG.error(
+                "Unable to find TLS certificate named %s under parent keys [ACM, IAM] %s in v2 TLS Cert Template.",
+                certificate, env)
 
     return cert_name

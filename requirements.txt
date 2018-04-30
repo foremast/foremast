@@ -1,10 +1,10 @@
 awscli
 boto3
+deepmerge
 gogo-utils
 jinja2
 murl
-pyapi-gitlab
+python-gitlab
 requests
 tryagain
 slacker
-
