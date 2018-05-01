@@ -254,12 +254,15 @@ def prepare_infrastructure():
     runner.write_configs()
     runner.create_app()
 
+    archaius = runner.configs[runner.env]['app']['archaius_enabled']
     eureka = runner.configs[runner.env]['app']['eureka_enabled']
     deploy_type = runner.configs['pipeline']['type']
 
     if deploy_type not in ['s3', 'datapipeline']:
         runner.create_iam()
-        runner.create_archaius()
+        # TODO: Refactor Archaius to be fully featured
+        if archaius:
+            runner.create_archaius()
         runner.create_secgroups()
 
     if eureka:
