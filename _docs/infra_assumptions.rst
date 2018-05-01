@@ -17,20 +17,15 @@ Spinnaker
 Spinnaker Component Versions
 ****************************
 
-Below are the Spinnaker component versions that we use internally at Gogo and
-that Foremast has been tested against:
+Previously, we used to publish internally tested versions. We have since moved
+to leveraging the release cadence set forth by the Spinnaker community. For more
+info around the Spinnaker release cadence, refer to the official can be found 
+`Spinnaker Release Cadence`_ page.
 
-    - Gate: ``2.70.0``
-    - Clouddriver: ``1.286.0``
-    - Deck: ``2.711.0``
-    - Igor: ``1.50.0``
-    - Echo: ``1.108.0``
-    - Front50: ``1.38.0``
-    - Spinnaker: ``0.50.0``
-    - Rosco: ``0.42.0``
-    - Orca: ``1.168.0``
+For the latest releases of Spinnaker, check out the official `Spinnaker Release 
+Versions`_ page.
 
-If you have any issues with Foremast at other Spinnaker versions please file an
+If you have any issues with Foremast on the latest Spinnaker version, please file an
 issue (or pull request).
 
 AWS
@@ -38,34 +33,37 @@ AWS
 
 Foremast only works with AWS (for now). Below are the AWS requirements:
 
-- Foremast IAM Access:
+AWS VPC Subnet Tags/Names
+*************************
 
-  - Will need credentials set up in a Boto3 configuration file. See
-    :ref:`aws_creds` for details.
-
-  - IAM user or role will need the following permissions:
-
-    - ``S3``: View, create and delete buckets.
-
-    - ``IAM``: View, create and  delete roles, users, and policies.
-
-    - ``Route53``: View, create, and delete DNS records.
-
-  - Everything else, such as ELBs and security groups, are handled through
-    Spinnaker.
-
-- VPC Subnets
+  .. note::  This is a general Spinnaker requirement when working with VPCs
 
   - If new subnets are being setup, follow the `Spinnaker AWS Setup guide`_.
-
   - If using existing subnets add an ``immutable_metadata`` tag.
 
     - Example ``immutable_metadata`` tag: ``{"purpose": "external", "target": "elb"}``
+    - The ``"purpose"`` key will dictate how this appears in Spinnaker.
 
-    - The  ``"purpose"`` key will dictate how this appears in Spinnaker.
+      - Needs to be ``"internal"`` or ``"external"`` in order to properly work with Foremast
 
-      - Needs to be ``"internal"`` or ``"external"`` in order to properly work
-        with Foremast
+Foremast IAM Infrastructure
+***************************
+
+  - A general IAM user/role will be needed for Foremast to work. In addition,
+    Foremast will need credentials set up in a Boto3 configuration file. See
+    :ref:`aws_creds` for details.
+
+  - Spinnaker handles the updates for things such as ELBs and security groups.
+
+Foremast IAM Policy
+*******************
+
+  .. warning:: The IAM Policy found below is a very generic policy for generic usage. 
+               You can and **should** consider locking down further using specific 
+               resource policies!
+
+  .. literalinclude:: iam-foremast.json
+    :language: JSON
 
 Jenkins
 -------
@@ -158,5 +156,7 @@ and :ref:`application_json` files. You will need to get the Gitlab Token of a
 user that has permissions to the desired repository and set them in your
 :ref:`foremast_config`.
 
-.. _`Spinnaker documentation`: http://www.spinnaker.io/docs
-.. _`Spinnaker AWS Setup guide`: http://www.spinnaker.io/v1.0/docs/target-deployment-setup#section-amazon-web-services-setup
+.. _`Spinnaker documentation`: https://www.spinnaker.io/concepts/
+.. _`Spinnaker AWS Setup guide`: https://www.spinnaker.io/setup/install/providers/aws/
+.. _`Spinnaker Release Versions`: https://www.spinnaker.io/community/releases/versions/
+.. _`Spinnaker Release Cadence`: https://www.spinnaker.io/community/releases/release-cadence/
