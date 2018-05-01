@@ -36,6 +36,17 @@ Describes the application.
     | *Type*: string
     | *Default*: ``null``
 
+.. _archaius_enabled:
+
+``archaius_enabled``
+******************
+
+Setting this value to ``true`` will autocreate archiaus pathing in
+a specified archaius S3 bucket.
+
+    | *Type*: boolean
+    | *Default*: ``false``
+
 .. _eureka_enabled:
 
 ``eureka_enabled``
