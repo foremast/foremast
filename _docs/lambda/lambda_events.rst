@@ -65,11 +65,12 @@ Specifies what type of Lambda event/trigger to use. This needs to be set for all
 
     | *Options*:
 
-        - ``"s3"`` - S3 Lambda trigger
-        - ``"sns"`` - SNS Lambda trigger
+        - ``"api-gateway"`` - API Gateway Lambda trigger
         - ``"cloudwatch-event"`` - Cloudwatch event Lambda trigger
         - ``"cloudwatch-logs"`` - Cloudwatch logs event Lambda trigger
-        - ``"api-gateway"`` - API Gateway Lambda trigger
+        - ``"dynamodb"`` - DynamoDB event Lambda trigger
+        - ``"s3"`` - S3 Lambda trigger
+        - ``"sns"`` - SNS Lambda trigger
 
     | *Required*: True
 
