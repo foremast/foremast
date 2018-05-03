@@ -21,6 +21,7 @@ from .cloudwatch_event import create_cloudwatch_event
 from .cloudwatch_log_event import create_cloudwatch_log_event
 from .s3_event import create_s3_event
 from .sns_event import create_sns_event
+from .dynamodb_event import create_dynamodb_event
 
 
 # pylint: disable=too-few-public-methods
@@ -54,6 +55,9 @@ class LambdaEvent:
 
             if trigger['type'] == 'sns':
                 create_sns_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
+
+            if trigger['type'] == 'dynamodb':
+                create_dynamodb_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
             if trigger['type'] == 'cloudwatch-event':
                 create_cloudwatch_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
