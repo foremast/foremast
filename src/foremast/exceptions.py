@@ -149,6 +149,10 @@ class DynamoDBTableNotFound(ForemastError):
     """DynamoDB Table was not found."""
 
 
+class DynamoDBStreamsNotFound(ForemastError):
+    """DynamoDB Table Streams was not found."""
+
+
 class SNSTopicNotFound(ForemastError):
     """SNS Topic was not found."""
 

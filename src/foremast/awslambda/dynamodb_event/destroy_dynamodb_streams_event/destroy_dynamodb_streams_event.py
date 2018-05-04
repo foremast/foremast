@@ -19,13 +19,13 @@ import logging
 
 import boto3
 
-from ....utils.get_dynamodb_subscriptions import get_dynamodb_subscriptions
+from ....utils.get_dynamodb_table_streams_subscriptions import get_dynamodb_table_streams_subscriptions
 
 LOG = logging.getLogger(__name__)
 
 
-def destroy_dynamodb_event(app_name, env, region):
-    """ Destroy all Lambda DynamoDB subscriptions.
+def destroy_dynamodb_streams_event(app_name, env, region):
+    """ Destroy all Lambda DynamoDB Streams subscriptions.
 
     Args:
         app_name (str): name of the lambda function
@@ -38,10 +38,10 @@ def destroy_dynamodb_event(app_name, env, region):
     session = boto3.Session(profile_name=env, region_name=region)
     dynamodb_client = session.client('dynamodb')
 
-    lambda_subscriptions = get_dynamodb_subscriptions(app_name=app_name, env=env, region=region)
+    lambda_subscriptions = get_dynamodb_table_streams_subscriptions(app_name=app_name, env=env, region=region)
 
     for subscription_arn in lambda_subscriptions:
         dynamodb_client.unsubscribe(SubscriptionArn=subscription_arn)
 
-    LOG.debug("Lambda DynamoDB event deleted")
+    LOG.debug("Lambda DynamoDB Streams event deleted")
     return True

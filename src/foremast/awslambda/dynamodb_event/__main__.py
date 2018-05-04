@@ -13,17 +13,17 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""Create Lambda DynamoDB event subscription"""
+"""Create Lambda DynamoDB Streams event subscription"""
 import argparse
 import logging
 
 from ...args import add_app, add_debug, add_env, add_region
 from ...consts import LOGGING_FORMAT
-from .dynamodb_event import create_dynamodb_event
+from .dynamodb_streams_event import create_dynamodb_streams_event
 
 
 def main():
-    """Create Lambda DynamoDB event subscription."""
+    """Create Lambda DynamoDB Streams event subscription."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)
@@ -35,7 +35,7 @@ def main():
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
-    assert create_dynamodb_event(**vars(args))
+    assert create_dynamodb_streams_event(**vars(args))
 
 
 if __name__ == '__main__':

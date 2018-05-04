@@ -13,19 +13,19 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""Create DynamoDB event for lambda"""
+"""Create DynamoDB Streams event for lambda"""
 
 import logging
 
 import boto3
 
-from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_dynamodb_table_arn
+from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_dynamodb_table_streams_arn
 
 LOG = logging.getLogger(__name__)
 
 
-def create_dynamodb_event(app_name, env, region, rules):
-    """Create DynamoDB lambda event from rules.
+def create_dynamodb_streams_event(app_name, env, region, rules):
+    """Create DynamoDB Streams lambda event from rules.
 
     Args:
         app_name (str): name of the lambda function
@@ -36,23 +36,28 @@ def create_dynamodb_event(app_name, env, region, rules):
     session = boto3.Session(profile_name=env, region_name=region)
     dynamodb_client = session.client('dynamodb')
 
-    table_name = rules.get('table')
+    resource_type = 'stream'
+    stream_name = rules.get('stream')
+    if not stream_name:
+        resource_type = 'table'
+        stream_name = rules.get('table')
+
     lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
-    table_arn = get_dynamodb_table_arn(table_name=table_name, account=env, region=region)
+    stream_arn = get_dynamodb_table_streams_arn(stream_name=stream_name, account=env, region=region)
     protocol = 'lambda'
 
-    statement_id = '{}_dynamodb_{}'.format(app_name, table_name)
+    statement_id = '{}_dynamodb_{}'.format(app_name, stream_name)
     principal = 'dynamodb.amazonaws.com'
     add_lambda_permissions(
         function=lambda_alias_arn,
         statement_id=statement_id,
         action='lambda:InvokeFunction',
         principal=principal,
-        source_arn=table_arn,
+        source_arn=stream_arn,
         env=env,
         region=region)
 
-    dynamodb_client.subscribe(TableArn=table_arn, Protocol=protocol, Endpoint=lambda_alias_arn)
-    LOG.debug("DynamoDB Lambda event created")
+    dynamodb_client.subscribe(TableArn=stream_arn, Protocol=protocol, Endpoint=lambda_alias_arn)
+    LOG.debug("DynamoDB Streams Lambda event created")
 
-    LOG.info("Created DynamoDB event subscription on table %s", table_name)
+    LOG.info("Created DynamoDB Streams event subscription on %s %s", resource_type, stream_name)
