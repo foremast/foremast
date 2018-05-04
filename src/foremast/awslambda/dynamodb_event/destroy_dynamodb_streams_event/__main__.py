@@ -13,17 +13,17 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""CLI entry point destroying Lambda DynamoDB event subscription."""
+"""CLI entry point destroying Lambda DynamoDB Streams event subscription."""
 import argparse
 import logging
 
 from ....args import add_app, add_debug, add_env
 from ....consts import LOGGING_FORMAT
-from .destroy_dynamodb_event import destroy_dynamodb_event
+from .destroy_dynamodb_streams_event import destroy_dynamodb_streams_event
 
 
 def main():
-    """Destroy Lambda DynamoDB event subscription."""
+    """Destroy Lambda DynamoDB Streams event subscription."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)
@@ -34,7 +34,7 @@ def main():
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
-    assert destroy_dynamodb_event(**vars(args))
+    assert destroy_dynamodb_streams_event(**vars(args))
 
 
 if __name__ == '__main__':
