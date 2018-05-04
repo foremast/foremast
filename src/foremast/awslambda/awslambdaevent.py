@@ -21,7 +21,7 @@ from .cloudwatch_event import create_cloudwatch_event
 from .cloudwatch_log_event import create_cloudwatch_log_event
 from .s3_event import create_s3_event
 from .sns_event import create_sns_event
-from .dynamodb_event import create_dynamodb_event
+from .dynamodb_streams_event import create_dynamodb_streams_event
 
 
 # pylint: disable=too-few-public-methods
