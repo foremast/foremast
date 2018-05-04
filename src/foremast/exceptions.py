@@ -131,6 +131,10 @@ class InvalidEventConfiguration(ForemastError):
     """Invalid AWS Lambda event configuration."""
 
 
+class DynamoDBTableNotFound(ForemastError):
+    """DynamoDB Table was not found."""
+
+
 class SNSTopicNotFound(ForemastError):
     """SNS Topic was not found."""
 

@@ -19,7 +19,7 @@ import logging
 
 import boto3
 
-from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_dynamodb_topic_arn
+from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_dynamodb_table_arn
 
 LOG = logging.getLogger(__name__)
 
@@ -36,23 +36,23 @@ def create_dynamodb_event(app_name, env, region, rules):
     session = boto3.Session(profile_name=env, region_name=region)
     dynamodb_client = session.client('dynamodb')
 
-    topic_name = rules.get('topic')
+    table_name = rules.get('table')
     lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
-    topic_arn = get_dynamodb_topic_arn(topic_name=topic_name, account=env, region=region)
+    table_arn = get_dynamodb_table_arn(table_name=table_name, account=env, region=region)
     protocol = 'lambda'
 
-    statement_id = '{}_dynamodb_{}'.format(app_name, topic_name)
+    statement_id = '{}_dynamodb_{}'.format(app_name, table_name)
     principal = 'dynamodb.amazonaws.com'
     add_lambda_permissions(
         function=lambda_alias_arn,
         statement_id=statement_id,
         action='lambda:InvokeFunction',
         principal=principal,
-        source_arn=topic_arn,
+        source_arn=table_arn,
         env=env,
         region=region)
 
-    dynamodb_client.subscribe(TopicArn=topic_arn, Protocol=protocol, Endpoint=lambda_alias_arn)
+    dynamodb_client.subscribe(TableArn=table_arn, Protocol=protocol, Endpoint=lambda_alias_arn)
     LOG.debug("DynamoDB Lambda event created")
 
-    LOG.info("Created DynamoDB event subscription on topic %s", topic_name)
+    LOG.info("Created DynamoDB event subscription on table %s", table_name)
