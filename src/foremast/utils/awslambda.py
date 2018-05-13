@@ -105,7 +105,7 @@ def add_lambda_permissions(function='',
         statement_id (str): IAM policy statement (principal) id
         action (str): Lambda action to allow
         principal (str): AWS principal to add permissions
-        source_arn (str): ARN of the source of the event. Only needed for S3
+        source_arn (str): ARN of the source of the event.
         env (str): Environment/account of function
         region (str): AWS region of function
     """
