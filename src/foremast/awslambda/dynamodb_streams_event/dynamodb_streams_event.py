@@ -36,17 +36,15 @@ def create_dynamodb_streams_event(app_name, env, region, rules):
     session = boto3.Session(profile_name=env, region_name=region)
     dynamodb_client = session.client('dynamodb')
 
-    resource_type = 'stream'
-    stream_name = rules.get('stream')
-    if not stream_name:
-        resource_type = 'table'
-        stream_name = rules.get('table')
+    trigger_arn = rules.get('stream')
+    if not trigger_arn:
+        trigger_arn = rules.get('table')
 
     lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
-    stream_arn = get_dynamodb_streams_arn(stream_name=stream_name, account=env, region=region)
+    stream_arn = get_dynamodb_streams_arn(arn_string=trigger_arn, account=env, region=region)
     protocol = 'lambda'
 
-    statement_id = '{}_dynamodb_{}'.format(app_name, stream_name)
+    statement_id = '{}_dynamodb_{}'.format(app_name, trigger_arn)
     principal = 'dynamodb.amazonaws.com'
     add_lambda_permissions(
         function=lambda_alias_arn,
@@ -60,4 +58,4 @@ def create_dynamodb_streams_event(app_name, env, region, rules):
     dynamodb_client.subscribe(TableArn=stream_arn, Protocol=protocol, Endpoint=lambda_alias_arn)
     LOG.debug("DynamoDB Streams Lambda event created")
 
-    LOG.info("Created DynamoDB Streams event subscription on %s %s", resource_type, stream_name)
+    LOG.info("Created DynamoDB Streams event trigger on %s for %s", lambda_alias_arn, stream_arn)
