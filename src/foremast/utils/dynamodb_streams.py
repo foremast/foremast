@@ -7,6 +7,7 @@ from ..exceptions import DynamoDBTableNotFound, DynamoDBStreamsNotFound
 
 LOG = logging.getLogger(__name__)
 
+
 def check_arn_type(arn_string):
     """Check ARN
 
@@ -25,6 +26,7 @@ def check_arn_type(arn_string):
         if ':table/' in arn_string:
             arn_type = "dynamodb-table"
     return arn_type
+
 
 def lookup_latest_dynamodb_stream(account, region, arn_string=None, table_name=None):
     """Lookup dynamodb streams ARN by DynamoDB table arn or raw table name
@@ -63,6 +65,7 @@ def lookup_latest_dynamodb_stream(account, region, arn_string=None, table_name=N
         LOG.critical("No DynamoDB streams found for table %s.", table_name)
         raise DynamoDBStreamsNotFound('No DynamoDB streams found for table named {0}'.format(table_name))
     return latest_stream_arn
+
 
 def get_dynamodb_streams_arn(arn_string, account, region):
     """Get DynamoDB streams ARN from a DynamoDB table.
