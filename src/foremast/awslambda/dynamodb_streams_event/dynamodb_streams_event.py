@@ -19,7 +19,7 @@ import logging
 
 import boto3
 
-from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_dynamodb_table_streams_arn
+from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_dynamodb_streams_arn
 
 LOG = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def create_dynamodb_streams_event(app_name, env, region, rules):
         stream_name = rules.get('table')
 
     lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
-    stream_arn = get_dynamodb_table_streams_arn(stream_name=stream_name, account=env, region=region)
+    stream_arn = get_dynamodb_streams_arn(stream_name=stream_name, account=env, region=region)
     protocol = 'lambda'
 
     statement_id = '{}_dynamodb_{}'.format(app_name, stream_name)

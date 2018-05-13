@@ -57,7 +57,7 @@ class LambdaEvent(object):
                 create_sns_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
             if trigger['type'] == 'dynamodb':
-                create_dynamodb_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
+                create_dynamodb_streams_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
             if trigger['type'] == 'cloudwatch-event':
                 create_cloudwatch_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
