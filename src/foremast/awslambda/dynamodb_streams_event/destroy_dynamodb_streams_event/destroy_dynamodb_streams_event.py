@@ -19,7 +19,7 @@ import logging
 
 import boto3
 
-from ....utils.get_dynamodb_table_streams_subscriptions import get_dynamodb_table_streams_subscriptions
+from ....utils.get_dynamodb_streams_triggers import get_dynamodb_streams_triggers
 
 LOG = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ def destroy_dynamodb_streams_event(app_name, env, region):
     session = boto3.Session(profile_name=env, region_name=region)
     dynamodb_client = session.client('dynamodb')
 
-    lambda_subscriptions = get_dynamodb_table_streams_subscriptions(app_name=app_name, env=env, region=region)
+    lambda_subscriptions = get_dynamodb_streams_triggers(app_name=app_name, env=env, region=region)
 
     for subscription_arn in lambda_subscriptions:
         dynamodb_client.unsubscribe(SubscriptionArn=subscription_arn)
