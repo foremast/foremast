@@ -52,11 +52,10 @@ class LambdaEvent:
         triggers = self.properties['lambda_triggers']
 
         for trigger in triggers:
-
             if trigger['type'] == 'sns':
                 create_sns_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
-            if trigger['type'] == 'dynamodb':
+            if trigger['type'] == 'dynamodb-streams':
                 create_dynamodb_streams_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
             if trigger['type'] == 'cloudwatch-event':
