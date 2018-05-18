@@ -45,6 +45,14 @@ Add DynamoDB access to tables listed.
    | *Type*: array
    | *Default*: ``[]``
 
+``elasticache``
+*****************
+
+Add Elasticache access to clusters listed.
+
+   | *Type*: array
+   | *Default*: ``[]``
+
 ``elasticsearch``
 *****************
 
@@ -52,6 +60,14 @@ Add ElasticSearch access to domains listed.
 
    | *Type*: array
    | *Default*: ``[]``
+
+``emr``
+*******
+
+Add EMR Full access.
+
+   | *Type*: boolean
+   | *Default*: ``false``
 
 ``firehose``
 ************
@@ -148,6 +164,14 @@ Add SNS access.
 *******
 
 Add SQS access.
+
+   | *Type*: boolean
+   | *Default*: ``false``
+
+``xray``
+********
+
+Add AWS XRay access.
 
    | *Type*: boolean
    | *Default*: ``false``
