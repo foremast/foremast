@@ -105,6 +105,7 @@ def load_dynamic_config(configurations, config_dir=getcwd()):
             configurations.update({key: value})
     except ImportError:
         # Provide a default if config not found
+        LOG.error('ImportError: Unable to load dynamic config. Check config.py file imports!')
         configurations = {}
 
 
