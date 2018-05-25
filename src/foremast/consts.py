@@ -40,6 +40,8 @@ SHORT_LOGGING_FORMAT = '[%(levelname)s] %(message)s'
 logging.basicConfig(format=LOGGING_FORMAT)
 logging.getLogger(__package__.split('.')[0]).setLevel(logging.INFO)
 
+GOOD_STATUSES = frozenset(('SUCCEEDED', ))
+
 
 def validate_key_values(config_handle, section, key, default=None):
     """Warn when *key* is missing from configuration *section*.
