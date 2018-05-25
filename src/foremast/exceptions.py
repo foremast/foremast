@@ -17,7 +17,7 @@
 import logging
 import pprint
 
-from .consts import GOOD_STATUSES
+from .consts import GOOD_STATUSES, SKIP_STATUSES
 
 LOG = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ class SpinnakerTaskError(SpinnakerError):
         for stage in task_state['execution']['stages']:
             LOG.debug('Stage:\n%s', pprint.pformat(stage))
 
-            if stage['status'] in GOOD_STATUSES:
+            if stage['status'] in GOOD_STATUSES.union(SKIP_STATUSES):
                 continue
 
             context = stage['context']

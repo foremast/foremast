@@ -41,6 +41,7 @@ logging.basicConfig(format=LOGGING_FORMAT)
 logging.getLogger(__package__.split('.')[0]).setLevel(logging.INFO)
 
 GOOD_STATUSES = frozenset(('SUCCEEDED', ))
+SKIP_STATUSES = frozenset(('NOT_STARTED', ))
 
 
 def validate_key_values(config_handle, section, key, default=None):
