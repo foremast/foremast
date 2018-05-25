@@ -14,6 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Foremast and Spinnaker related custom exceptions."""
+from .consts import GOOD_STATUSES
 
 
 class ForemastError(Exception):
@@ -70,6 +71,9 @@ class SpinnakerTaskError(SpinnakerError):
     def __init__(self, task_state):
         errors = []
         for stage in task_state['execution']['stages']:
+            if stage['status'] in GOOD_STATUSES:
+                continue
+
             context = stage['context']
 
             try:
