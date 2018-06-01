@@ -81,7 +81,7 @@ class SpinnakerTaskError(SpinnakerError):
         for stage in task_state['execution']['stages']:
             LOG.debug('Stage:\n%s', pprint.pformat(stage))
 
-            if stage['status'] in skip_statuses:
+            if stage.get('status') in skip_statuses:
                 continue
 
             context = stage['context']
