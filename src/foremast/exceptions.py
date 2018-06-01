@@ -75,10 +75,13 @@ class SpinnakerTaskError(SpinnakerError):
 
     def __init__(self, task_state):
         errors = []
+
+        skip_statuses = GOOD_STATUSES.union(SKIP_STATUSES)
+
         for stage in task_state['execution']['stages']:
             LOG.debug('Stage:\n%s', pprint.pformat(stage))
 
-            if stage['status'] in GOOD_STATUSES.union(SKIP_STATUSES):
+            if stage['status'] in skip_statuses:
                 continue
 
             context = stage['context']
