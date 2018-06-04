@@ -17,7 +17,8 @@
 from configparser import ConfigParser
 from unittest.mock import patch
 
-from foremast.consts import ALLOWED_TYPES, DEFAULT_SECURITYGROUP_RULES, _generate_security_groups, extract_formats
+from foremast.consts import (ALLOWED_TYPES, DEFAULT_SECURITYGROUP_RULES, EC2_PIPELINE_TYPES, _generate_security_groups,
+                             extract_formats)
 
 
 def test_consts_extract_formats():
@@ -61,3 +62,9 @@ def test_parse_security_group(values):
 def test_parse_security_group_dict(mock_keys):
     """Validate security groups are handled properly if dictionary is in dyanmic config"""
     assert {'': ['g3']} == _generate_security_groups('default_elb_securitygroups')
+
+
+def test_parse_ec2_pipeline_types():
+    """Validate EC2 Pipeline Types."""
+    assert EC2_PIPELINE_TYPES == ('ec2', 'rolling')
+    assert isinstance(EC2_PIPELINE_TYPES, tuple)
