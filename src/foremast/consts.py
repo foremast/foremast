@@ -29,7 +29,7 @@ import ast
 import json
 import logging
 import sys
-from configparser import ConfigParser, DuplicateSectionError
+from configparser import ConfigParser
 from os import getcwd, path
 from os.path import exists, expanduser, expandvars
 
@@ -56,18 +56,13 @@ def validate_key_values(config_handle, section, key, default=None):
     Returns:
         object: ``str`` when *key* exists, otherwise *default* object.
     """
-    try:
-        config_handle.add_section(section)
+    if section not in config_handle:
         LOG.info('Section missing from configurations: [%s]', section)
-    except DuplicateSectionError:
-        pass
-
-    section_handle = config_handle[section]
 
     try:
-        value = section_handle[key]
+        value = config_handle[section][key]
     except KeyError:
-        LOG.warning('[%s] missing key "%s", using %r.', section_handle.name, key, default)
+        LOG.warning('[%s] missing key "%s", using %r.', section, key, default)
         value = default
 
     return value
