@@ -114,7 +114,8 @@ def find_config():
         SystemExit: No configuration file found.
 
     Returns:
-        ConfigParser: found configuration file
+        dict: found configuration file
+
     """
     config_locations = [
         '/etc/foremast/foremast.cfg',
@@ -136,7 +137,7 @@ def find_config():
         LOG.warning('No configuration found in the following locations:\n%s', '\n'.join(config_locations))
         LOG.warning('Using defaults...')
 
-    return configurations
+    return dict(configurations)
 
 
 def _remove_empty_entries(entries):
