@@ -87,8 +87,10 @@ def extract_formats(config_handle):
     return formats
 
 
-def load_dynamic_config(configurations, config_dir=getcwd()):
+def load_dynamic_config(config_dir=getcwd()):
     """Load and parse dynamic config"""
+    dynamic_configurations = {}
+
     # Create full path of config
     config_file = '{path}/config.py'.format(path=config_dir)
 
@@ -97,14 +99,12 @@ def load_dynamic_config(configurations, config_dir=getcwd()):
     try:
         config_module = __import__('config')
 
-        for key, value in config_module.CONFIG.items():
-            LOG.debug('Importing %s with key %s', key, value)
-            # Update configparser object
-            configurations.update({key: value})
+        dynamic_configurations = config_module.CONFIG
     except ImportError:
         # Provide a default if config not found
         LOG.error('ImportError: Unable to load dynamic config. Check config.py file imports!')
-        configurations = {}
+
+    return dynamic_configurations
 
 
 def find_config():
@@ -130,7 +130,7 @@ def find_config():
         LOG.info('Loading static configuration file.')
     elif exists(dynamic_config_file):
         LOG.info('Loading dynamic configuration file.')
-        load_dynamic_config(configurations)
+        configurations = load_dynamic_config()
     else:
         config_locations.append(dynamic_config_file)
         LOG.warning('No configuration found in the following locations:\n%s', '\n'.join(config_locations))
