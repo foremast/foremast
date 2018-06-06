@@ -71,13 +71,14 @@ def validate_key_values(config_handle, section, key, default=None):
 def extract_formats(config_handle):
     """Get application formats.
 
+    See :class:`gogoutils.Formats` for available options.
+
     Args:
         config_handle (configparser.ConfigParser): Instance of configurations.
 
     Returns:
-        object: ``str`` when *key* exists, otherwise *default* object.
-        dict: of formats in {$format_type: $format_pattern}.
-        See (gogoutils.Formats) for available options.
+        dict: Formats in ``{$format_type: $format_pattern}``.
+
     """
     configurations = dict(config_handle)
     formats = dict(configurations.get('formats', {}))
