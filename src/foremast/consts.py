@@ -79,11 +79,8 @@ def extract_formats(config_handle):
         dict: of formats in {$format_type: $format_pattern}.
         See (gogoutils.Formats) for available options.
     """
-    formats = {}
-
-    if config_handle.has_section('formats'):
-        formats = dict(config_handle['formats'])
-
+    configurations = dict(config_handle)
+    formats = dict(configurations.get('formats', {}))
     return formats
 
 
