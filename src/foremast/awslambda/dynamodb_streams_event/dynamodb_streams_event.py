@@ -34,7 +34,7 @@ def create_dynamodb_streams_event(app_name, env, region, rules):
         rules (str): Trigger rules from the settings
     """
     session = boto3.Session(profile_name=env, region_name=region)
-    dynamodb_client = session.client('dynamodb')
+    lambda_client = session.client('lambda')
 
     trigger_arn = rules.get('stream')
     if not trigger_arn:
@@ -55,7 +55,19 @@ def create_dynamodb_streams_event(app_name, env, region, rules):
         env=env,
         region=region)
 
-    dynamodb_client.subscribe(TableArn=stream_arn, Protocol=protocol, Endpoint=lambda_alias_arn)
-    LOG.debug("DynamoDB Streams Lambda event created")
+    # TODO: Fix IAM permission, attached DynamoDB all to lambda function role
+    source_exists = False
+    event_sources = lambda_client.list_event_source_mappings(FunctionName=lambda_alias_arn)
+    for each_source in event_sources['EventSourceMappings']:
+        if each_source['EventSourceArn'] == stream_arn:
+            source_exists = True
+    if not source_exists:
+        lambda_client.create_event_source_mapping(
+            EventSourceArn=stream_arn,
+            FunctionName=lambda_alias_arn,
+            StartingPosition='TRIM_HORIZON')
+        LOG.debug("DynamoDB Streams Lambda event created")
+    else:
+        LOG.debug("DynamoDB Streams Lambda event already existed, skipping readding")
 
     LOG.info("Created DynamoDB Streams event trigger on %s for %s", lambda_alias_arn, stream_arn)

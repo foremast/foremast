@@ -20,10 +20,10 @@ def check_arn_type(arn_string):
     """
     arn_type = None
 
-    if arn_string.count(':') == 5 and arn_string.startswith('arn:aws:dynamodb:'):
+    if arn_string.count(':') >= 5 and arn_string.startswith('arn:aws:dynamodb:'):
         if '/stream/' in arn_string:
             arn_type = "dynamodb-streams"
-        if ':table/' in arn_string:
+        elif ':table/' in arn_string:
             arn_type = "dynamodb-table"
     return arn_type
 
