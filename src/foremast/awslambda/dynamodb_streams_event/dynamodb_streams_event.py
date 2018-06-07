@@ -44,17 +44,6 @@ def create_dynamodb_streams_event(app_name, env, region, rules):
     stream_arn = get_dynamodb_streams_arn(arn_string=trigger_arn, account=env, region=region)
     protocol = 'lambda'
 
-    statement_id = '{}_dynamodb_{}'.format(app_name, trigger_arn)
-    principal = 'dynamodb.amazonaws.com'
-    add_lambda_permissions(
-        function=lambda_alias_arn,
-        statement_id=statement_id,
-        action='lambda:InvokeFunction',
-        principal=principal,
-        source_arn=stream_arn,
-        env=env,
-        region=region)
-
     # TODO: Fix IAM permission, attached DynamoDB all to lambda function role
     source_exists = False
     event_sources = lambda_client.list_event_source_mappings(FunctionName=lambda_alias_arn)

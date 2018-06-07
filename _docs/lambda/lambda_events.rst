@@ -68,7 +68,7 @@ Specifies what type of Lambda event/trigger to use. This needs to be set for all
         - ``"api-gateway"`` - API Gateway Lambda trigger
         - ``"cloudwatch-event"`` - Cloudwatch event Lambda trigger
         - ``"cloudwatch-logs"`` - Cloudwatch logs event Lambda trigger
-        - ``"dynamodb"`` - DynamoDB event Lambda trigger
+        - ``"dynamodb-streams"`` - DynamoDB event Lambda trigger
         - ``"s3"`` - S3 Lambda trigger
         - ``"sns"`` - SNS Lambda trigger
 
@@ -211,3 +211,26 @@ The API Method to trigger the Lambda function.
 
     | *Required*: True
     | *Example*: ``"GET"``
+
+DynamoDB Streams
+~~~~~~~~~~~~~~~~
+
+A lambda event that triggers off a DynamoDB Stream. Make sure to grant access
+to the DynamoDB table for the lambda iam role via the services block by 
+providing the table name.
+
+``stream``
+*********
+
+DynamoDB Stream ARN to use for triggering lambda. Only table or stream needed, not both.
+
+    | *Required*: False
+    | *Example*: ``"arn:aws:dynamodb:us-east-1:111111111111:table/foremast-test/stream/2018-06-07T03:12:22.234"``
+
+``table``
+***************
+
+DynamoDB Table ARN to use for triggering lambda. Only table or stream needed, not both.
+
+    | *Required*: False
+    | *Example*: ``"arn:aws:dynamodb:us-east-1:111111111111:table/foremast-test"``
