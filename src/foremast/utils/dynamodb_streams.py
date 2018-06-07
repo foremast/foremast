@@ -46,8 +46,8 @@ def lookup_latest_dynamodb_stream(account, region, arn_string=None, table_name=N
     dynamodb_streams_client = session.client('dynamodbstreams')
 
     if arn_string:
-        table_name = arn_string.split(':')[-1]
-
+        table_name = arn_string.split(':')[-1].split('table/')[-1]
+    LOG.info(table_name)
     table_response = dynamodb_client.describe_table(TableName=table_name)
     table_info = table_response['Table']
 
@@ -60,7 +60,7 @@ def lookup_latest_dynamodb_stream(account, region, arn_string=None, table_name=N
 
     # Return latest stream if exact stream not provided
     try:
-        latest_stream_arn = streams[0]
+        latest_stream_arn = streams[0]['StreamArn']
     except IndexError:
         LOG.critical("No DynamoDB streams found for table %s.", table_name)
         raise DynamoDBStreamsNotFound('No DynamoDB streams found for table named {0}'.format(table_name))
