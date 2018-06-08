@@ -47,6 +47,7 @@ def create_dynamodb_stream_event(app_name, env, region, rules):
     for each_source in event_sources['EventSourceMappings']:
         if each_source['EventSourceArn'] == stream_arn:
             LOG.debug("DynamoDB stream event trigger already existed, skipping...")
+            break
     else:
         lambda_client.create_event_source_mapping(
             EventSourceArn=stream_arn,
