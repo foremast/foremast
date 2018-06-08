@@ -8,8 +8,8 @@ from ..utils.awslambda import get_lambda_alias_arn
 LOG = logging.getLogger(__name__)
 
 
-def get_dynamodb_streams_triggers(app_name, env, region):
-    """List DynamoDB Streams lambda triggers.
+def get_dynamodb_stream_triggers(app_name, env, region):
+    """List DynamoDB stream lambda triggers.
 
     Returns:
         list: List of Lambda triggers DynamoDB Streams ARNs.
