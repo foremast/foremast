@@ -21,7 +21,8 @@ def check_arn_type(arn_string):
 
     if arn_string.startswith('arn:aws:dynamodb:'):
         _prefix, table, *stream = arn_string.split('/')
-
+        
+        LOG.debug("ARN Split: %s %s %s", _prefix, table, *stream)
         if stream:
             arn_type = "dynamodb-stream"
         else:
