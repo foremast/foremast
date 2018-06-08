@@ -149,7 +149,7 @@ class DynamoDBTableNotFound(ForemastError):
     """DynamoDB Table was not found."""
 
 
-class DynamoDBStreamsNotFound(ForemastError):
+class DynamoDBStreamNotFound(ForemastError):
     """DynamoDB Table Streams was not found."""
 
 

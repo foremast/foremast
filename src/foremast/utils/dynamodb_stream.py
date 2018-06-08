@@ -1,9 +1,9 @@
-"""dynamodb table streams functions."""
+"""dynamodb table stream functions."""
 import logging
 
 import boto3
 
-from ..exceptions import DynamoDBTableNotFound, DynamoDBStreamsNotFound
+from ..exceptions import DynamoDBTableNotFound, DynamoDBStreamNotFound
 
 LOG = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ def check_arn_type(arn_string):
         _prefix, table, *stream = arn_string.split('/')
 
         if stream:
-            arn_type = "dynamodb-streams"
+            arn_type = "dynamodb-stream"
         else:
             arn_type = "dynamodb-table"
 
@@ -31,13 +31,13 @@ def check_arn_type(arn_string):
 
 
 def lookup_latest_dynamodb_stream(account, region, arn_string=None, table_name=None):
-    """Lookup dynamodb streams ARN by DynamoDB table arn or raw table name
+    """Lookup dynamodb stream ARN by DynamoDB table arn or raw table name
 
     Args:
         account (str): Environment, e.g. dev
         region (str): Region name, e.g. us-east-1
-        arn_string (str): DynamoDB ARN String to look for streams
-        table_name (str): DynamoDB table name to look for streams
+        arn_string (str): DynamoDB ARN String to look for stream
+        table_name (str): DynamoDB table name to look for stream
 
     Returns:
         str: ARN for latest DynamoDB stream ARN
@@ -64,13 +64,13 @@ def lookup_latest_dynamodb_stream(account, region, arn_string=None, table_name=N
     try:
         latest_stream_arn = streams[0]['StreamArn']
     except IndexError:
-        LOG.critical("No DynamoDB streams found for table %s.", table_name)
-        raise DynamoDBStreamsNotFound('No DynamoDB streams found for table named {0}'.format(table_name))
+        LOG.critical("No DynamoDB stream found for table %s.", table_name)
+        raise DynamoDBStreamNotFound('No DynamoDB stream found for table named {0}'.format(table_name))
     return latest_stream_arn
 
 
-def get_dynamodb_streams_arn(arn_string, account, region):
-    """Get DynamoDB streams ARN from a DynamoDB table.
+def get_dynamodb_stream_arn(arn_string, account, region):
+    """Get DynamoDB stream ARN from a DynamoDB table.
 
     Args:
         arn_string (str): Name of the table stream to lookup a stream
@@ -83,7 +83,7 @@ def get_dynamodb_streams_arn(arn_string, account, region):
     """
     arn_type = check_arn_type(arn_string)
 
-    if arn_type == 'dynamodb-streams':
+    if arn_type == 'dynamodb-stream':
         return arn_string
     elif arn_type == 'dynamodb-table':
         return lookup_latest_dynamodb_stream(account, region, arn_string=arn_string)
