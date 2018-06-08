@@ -13,7 +13,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""Create Lambda DynamoDB Streams event subscription"""
+"""Create Lambda DynamoDB stream event trigger"""
 import argparse
 import logging
 
@@ -23,7 +23,7 @@ from .dynamodb_streams_event import create_dynamodb_streams_event
 
 
 def main():
-    """Create Lambda DynamoDB Streams event subscription."""
+    """Create Lambda DynamoDB stream event trigger."""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)
