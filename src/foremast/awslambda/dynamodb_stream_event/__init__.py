@@ -14,4 +14,4 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from .dynamodb_streams_event import *
+from .dynamodb_stream_event import *

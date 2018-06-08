@@ -13,19 +13,19 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""Create DynamoDB Streams event for lambda"""
+"""Create DynamoDB stream event for lambda"""
 
 import logging
 
 import boto3
 
-from ...utils import get_lambda_alias_arn, get_dynamodb_streams_arn
+from ...utils import get_lambda_alias_arn, get_dynamodb_stream_arn
 
 LOG = logging.getLogger(__name__)
 
 
-def create_dynamodb_streams_event(app_name, env, region, rules):
-    """Create DynamoDB Streams lambda event from rules.
+def create_dynamodb_stream_event(app_name, env, region, rules):
+    """Create DynamoDB stream lambda event from rules.
 
     Args:
         app_name (str): name of the lambda function
@@ -41,7 +41,7 @@ def create_dynamodb_streams_event(app_name, env, region, rules):
         trigger_arn = rules.get('table')
 
     lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
-    stream_arn = get_dynamodb_streams_arn(arn_string=trigger_arn, account=env, region=region)
+    stream_arn = get_dynamodb_stream_arn(arn_string=trigger_arn, account=env, region=region)
 
     event_sources = lambda_client.list_event_source_mappings(FunctionName=lambda_alias_arn)
     for each_source in event_sources['EventSourceMappings']:
