@@ -19,7 +19,7 @@ import logging
 
 import boto3
 
-from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_dynamodb_streams_arn
+from ...utils import get_lambda_alias_arn, get_dynamodb_streams_arn
 
 LOG = logging.getLogger(__name__)
 
@@ -42,21 +42,16 @@ def create_dynamodb_streams_event(app_name, env, region, rules):
 
     lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
     stream_arn = get_dynamodb_streams_arn(arn_string=trigger_arn, account=env, region=region)
-    protocol = 'lambda'
 
-    # TODO: Fix IAM permission, attached DynamoDB all to lambda function role
-    source_exists = False
     event_sources = lambda_client.list_event_source_mappings(FunctionName=lambda_alias_arn)
     for each_source in event_sources['EventSourceMappings']:
         if each_source['EventSourceArn'] == stream_arn:
-            source_exists = True
-    if not source_exists:
+            LOG.debug("DynamoDB stream event trigger already existed, skipping...")
+    else:
         lambda_client.create_event_source_mapping(
             EventSourceArn=stream_arn,
             FunctionName=lambda_alias_arn,
             StartingPosition='TRIM_HORIZON')
-        LOG.debug("DynamoDB Streams Lambda event created")
-    else:
-        LOG.debug("DynamoDB Streams Lambda event already existed, skipping readding")
+        LOG.debug("DynamoDB stream event trigger created")
 
-    LOG.info("Created DynamoDB Streams event trigger on %s for %s", lambda_alias_arn, stream_arn)
+    LOG.info("Created DynamoDB stream event trigger on %s for %s", lambda_alias_arn, stream_arn)
