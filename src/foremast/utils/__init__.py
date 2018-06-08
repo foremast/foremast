@@ -37,6 +37,5 @@ from .get_cloudwatch_event_rule import get_cloudwatch_event_rule
 from .awslambda import *
 from .get_sns_subscriptions import get_sns_subscriptions
 from .get_sns_topic_arn import get_sns_topic_arn
-from .get_dynamodb_stream_triggers import get_dynamodb_stream_triggers
 from .dynamodb_stream import get_dynamodb_stream_arn
 from .roles import *
