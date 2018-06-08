@@ -106,13 +106,13 @@ def load_dynamic_config(config_dir=getcwd()):
 
 
 def find_config():
-    """Look for **foremast.cfg** in config_locations.
+    """Look for **foremast.cfg** in config_locations or ``./config.py``.
 
     Raises:
         SystemExit: No configuration file found.
 
     Returns:
-        dict: found configuration file
+        dict: Found dynamic or static configuration.
 
     """
     config_locations = [
