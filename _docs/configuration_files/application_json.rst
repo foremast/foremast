@@ -85,7 +85,7 @@ Environment variables which are passed to the lambda function.
 .. code-block:: json
 
    {
-       "environment": {
+       "lambda_environment": {
            "Variables": {
                "VAR1": "val1",
                "VAR2": "val2",
