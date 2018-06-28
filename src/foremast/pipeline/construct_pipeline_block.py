@@ -159,6 +159,12 @@ def construct_pipeline_block(env='',
         'pipeline': pipeline_data,
     })
 
+    data['do_checkpoint'] = False
+
+    if data['app']['previous_env']:
+        if 'checkpoints' in data['app']['pipeline']:
+            data['do_checkpoint'] = env in data['app']['pipeline']['checkpoints']
+
     LOG.debug('Block data:\n%s', pformat(data))
 
     template_name = get_template_name(env, pipeline_type)
