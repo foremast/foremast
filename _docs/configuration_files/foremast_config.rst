@@ -107,6 +107,15 @@ relative to where you where you are running the Foremast commands. See
 
     | *Required*: No
 
+``default_run_as_user``
+***********************
+
+Default user to run pipelines as. This is needed for leveraging service accounts in Fiat.
+
+    | *Type*: str
+    | *Default*: ``''``
+    | *Required*: No
+
 ``default_ec2_securitygroups``
 ******************************
 

@@ -19,6 +19,7 @@ import json
 from pprint import pformat
 
 from ..utils import get_subnets, get_template
+from ..consts import DEFAULT_RUN_AS_USER
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_lambda import construct_pipeline_block_lambda
 from .create_pipeline import SpinnakerPipeline
@@ -64,6 +65,7 @@ class SpinnakerPipelineLambda(SpinnakerPipeline):
                 'environment': 'packaging',
                 'region': region,
                 'triggerjob': self.trigger_job,
+                'run_as_user': DEFAULT_RUN_AS_USER,
                 'email': email,
                 'slack': slack,
                 'pipeline': self.settings['pipeline']

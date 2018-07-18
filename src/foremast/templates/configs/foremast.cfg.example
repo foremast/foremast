@@ -7,6 +7,7 @@ ami_json_url = http://s3.bucketname.com/ami_lookup.json
 git_url = https://git.example.com
 gate_api_url = http://gate-api.example.com:8084
 templates_path = ../../foremast-templates
+default_run_as_user = trigger_runner
 default_securitygroup_rules = { "bastion" : [ { "start_port": "22", "end_port": "22", "protocol": "tcp" } ],
                                 "serviceapp" : [ { "start_port": "8080", "end_port": "8080", "protocol": "tcp" } ] }
 

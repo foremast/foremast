@@ -22,7 +22,7 @@ from pprint import pformat
 
 import requests
 
-from ..consts import API_URL, EC2_PIPELINE_TYPES, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..consts import API_URL, EC2_PIPELINE_TYPES, GATE_CA_BUNDLE, GATE_CLIENT_CERT, DEFAULT_RUN_AS_USER
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import ami_lookup, generate_packer_filename, get_details, get_properties, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
@@ -124,6 +124,7 @@ class SpinnakerPipeline:
                 'environment': 'packaging',
                 'region': region,
                 'triggerjob': self.trigger_job,
+                'run_as_user': DEFAULT_RUN_AS_USER,
                 'email': email,
                 'slack': slack,
                 'root_volume_size': root_volume_size,
