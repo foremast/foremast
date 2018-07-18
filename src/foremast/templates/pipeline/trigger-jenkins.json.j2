@@ -4,5 +4,6 @@
       "type": "jenkins",
       "master": "JenkinsCI",
       "job": "{{ data.app.triggerjob }}",
+      "runAsUser": "{{ data.app.run_as_user }}",
       "propertyFile": "jenkins_vars"
     }
