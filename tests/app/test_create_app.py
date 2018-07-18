@@ -40,11 +40,18 @@ def test_retrieval_of_templates(mock_instance_links):
             "health": ":8080/health",
             "tail_on": ":8133"
         },
+        "permissions": {
+            "read_roles": [],
+            "write_roles": []
+        },
         "chaos_monkey": {
             "mean_time": 5,
             "minimum_time": 3,
             "enabled": False,
             "exceptions": []
+        },
+        "traffic_guards": {
+            "accounts": []
         }
     }
 
