@@ -71,8 +71,8 @@ class SpinnakerSecurityGroup(object):
         self.region = region
 
         self.properties = get_properties(properties_file=prop_path, env=self.env, region=self.region)
-        generated = get_details(app=self.app_name)
-        self.group = generated.data['project']
+        self.generated = get_details(app=self.app_name)
+        self.group = self.generated.data['project']
 
     def _validate_cidr(self, rule):
         """Validate the cidr block in a rule.
@@ -223,7 +223,8 @@ class SpinnakerSecurityGroup(object):
             'ingress': ingress,
         }
 
-        secgroup_json = get_template(template_file='infrastructure/securitygroup_data.json.j2', **template_kwargs)
+        secgroup_json = get_template(
+            template_file='infrastructure/securitygroup_data.json.j2', generated=self.generated, **template_kwargs)
 
         wait_for_task(secgroup_json)
         return True

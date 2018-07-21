@@ -90,5 +90,5 @@ def construct_pipeline_block_lambda(env='',
 
     LOG.debug('Block data:\n%s', pformat(data))
 
-    pipeline_json = get_template(template_file=template_name, data=data)
+    pipeline_json = get_template(template_file=template_name, data=data, generated=generated)
     return pipeline_json
