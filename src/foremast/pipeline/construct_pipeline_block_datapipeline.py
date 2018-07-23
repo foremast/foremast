@@ -71,5 +71,5 @@ def construct_datapipeline(env='',
 
     LOG.debug('Block data:\n%s', pformat(data))
 
-    pipeline_json = get_template(template_file=template_name, data=data, generated=generated)
+    pipeline_json = get_template(template_file=template_name, data=data, formats=generated)
     return pipeline_json

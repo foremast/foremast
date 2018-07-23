@@ -224,7 +224,7 @@ class SpinnakerSecurityGroup(object):
         }
 
         secgroup_json = get_template(
-            template_file='infrastructure/securitygroup_data.json.j2', generated=self.generated, **template_kwargs)
+            template_file='infrastructure/securitygroup_data.json.j2', formats=self.generated, **template_kwargs)
 
         wait_for_task(secgroup_json)
         return True
