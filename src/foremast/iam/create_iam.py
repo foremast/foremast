@@ -49,7 +49,8 @@ def create_iam_resources(env='dev', app='', **_):
     LOG.debug('Application details: %s', details)
 
     deployment_type = app_properties['type']
-    role_trust_template = get_template('infrastructure/iam/trust/{0}_role.json.j2'.format(deployment_type))
+    role_trust_template = get_template(
+        'infrastructure/iam/trust/{0}_role.json.j2'.format(deployment_type), generated=generated)
 
     resource_action(
         client,
