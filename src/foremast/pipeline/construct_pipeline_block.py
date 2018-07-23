@@ -161,7 +161,7 @@ def construct_pipeline_block(env='',
     LOG.debug('Block data:\n%s', pformat(data))
 
     template_name = get_template_name(env, pipeline_type)
-    pipeline_json = get_template(template_file=template_name, data=data)
+    pipeline_json = get_template(template_file=template_name, data=data, generated=generated)
     return pipeline_json
 
 
