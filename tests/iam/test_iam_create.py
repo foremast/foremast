@@ -61,7 +61,7 @@ def test_iam_role_policy(resource_action, get_template, get_properties, get_deta
 
     assert create_iam_resources()
 
-    get_template.assert_called_with(EC2_TEMPLATE_NAME, generated=get_details())
+    get_template.assert_called_with(EC2_TEMPLATE_NAME, formats=get_details())
     calls = [
         mock.call(
             mock.ANY,
