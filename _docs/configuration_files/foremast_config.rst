@@ -113,7 +113,7 @@ relative to where you where you are running the Foremast commands. See
 Default user to run pipelines as. This is needed for leveraging service accounts in Fiat.
 
     | *Type*: str
-    | *Default*: ``''``
+    | *Default*: ``null``
     | *Required*: No
 
 ``default_ec2_securitygroups``

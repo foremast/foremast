@@ -198,7 +198,7 @@ ALLOWED_TYPES = set(
     validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling').split(','))
 TEMPLATES_PATH = validate_key_values(CONFIG, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(CONFIG, 'base', 'ami_json_url')
-DEFAULT_RUN_AS_USER = validate_key_values(CONFIG, 'base', 'default_run_as_user', default='')
+DEFAULT_RUN_AS_USER = validate_key_values(CONFIG, 'base', 'default_run_as_user', default=None)
 DEFAULT_SECURITYGROUP_RULES = _generate_security_groups('default_securitygroup_rules')
 DEFAULT_EC2_SECURITYGROUPS = _generate_security_groups('default_ec2_securitygroups')
 DEFAULT_ELB_SECURITYGROUPS = _generate_security_groups('default_elb_securitygroups')
