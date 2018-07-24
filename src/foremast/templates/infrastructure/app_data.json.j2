@@ -13,14 +13,8 @@
             "repoSlug": "{{ appinfo.repo }}",
             "platformHealthOnlyShowOverride": true,
             "permissions": {
-                "READ": [{% for role_name in pipeline_config.permissions.read_roles %}
-                    {{ role_name | tojson }}{% if not loop.last %},{% endif %}
-                    {% endfor %}
-                ],
-                "WRITE": [{% for role_name in pipeline_config.permissions.write_roles %}
-                    {{ role_name | tojson }}{% if not loop.last %},{% endif %}
-                    {% endfor %}
-                ]
+                "READ": {{ pipeline_config.permissions.read_roles | tojson }},
+                "WRITE": {{ pipeline_config.permissions.write_roles | tojson }}
             },
             "chaosMonkey": {
                 "enabled": {{ pipeline_config.chaos_monkey.enabled | tojson }},
