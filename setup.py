@@ -34,8 +34,8 @@ setup(
     install_requires=REQUIREMENTS,
     include_package_data=True,
     keywords="aws gogo infrastructure netflixoss python spinnaker",
-    url='https://github.com/gogoair/foremast',
-    download_url='https://github.com/gogoair/foremast',
+    url='https://github.com/foremast/foremast',
+    download_url='https://github.com/foremast/foremast',
     platforms=['OS Independent'],
     license='Apache License (2.0)',
     classifiers=[

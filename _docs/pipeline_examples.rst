@@ -112,4 +112,4 @@ internal templates on the `foremast-templates repo`_.
    #. Manual judgment before continuing to the next environment
 
 
-.. _`foremast-templates repo`: https://github.com/gogoair/foremast-template-examples
+.. _`foremast-templates repo`: https://github.com/foremast/foremast-template-examples
