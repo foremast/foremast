@@ -133,11 +133,10 @@ def construct_pipeline_block(env='',
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
     pipeline_type = pipeline_data['type']
-    gen_app_name = generated.app_name()
 
     if pipeline_type in EC2_PIPELINE_TYPES:
         data = ec2_pipeline_setup(
-            appname=gen_app_name,
+            generated=generated,
             settings=settings,
             env=env,
             region=region,
@@ -147,7 +146,7 @@ def construct_pipeline_block(env='',
         data = copy.deepcopy(settings)
 
     data['app'].update({
-        'appname': gen_app_name,
+        'appname': generated.app_name(),
         'repo_name': generated.repo,
         'group_name': generated.project,
         'environment': env,
@@ -165,11 +164,11 @@ def construct_pipeline_block(env='',
     return pipeline_json
 
 
-def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='', region_subnets=None):
+def ec2_pipeline_setup(generated=None, project='', settings=None, env='', region='', region_subnets=None):
     """Handles ec2 pipeline data setup
 
     Args:
-        appname (str): Name of the application
+        generated (gogoutils.Generator): Generated naming formats.
         project (str): Group name of application
         settings (dict): Environment settings from configurations.
         env (str): Deploy environment name, e.g. dev, stage, prod.
@@ -179,14 +178,14 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
 
     Returns:
         dict: Updated settings to pass to templates for EC2 info
-    """
 
+    """
     data = copy.deepcopy(settings)
-    user_data = generate_encoded_user_data(env=env, region=region, app_name=appname, group_name=project)
+    user_data = generate_encoded_user_data(env=env, region=region, app_name=generated.app_name(), group_name=project)
 
     # Use different variable to keep template simple
     instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
-    instance_security_groups.append(appname)
+    instance_security_groups.append(generated.app_name())
     instance_security_groups.extend(settings['security_group']['instance_extras'])
     instance_security_groups = remove_duplicate_sg(instance_security_groups)
 
@@ -203,7 +202,7 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
     if settings['app']['eureka_enabled']:
         elb = []
     else:
-        elb = ['{0}'.format(appname)]
+        elb = ['{0}'.format(generated.app_name())]
     LOG.info('Attaching the following ELB: %s', elb)
 
     health_checks = check_provider_healthcheck(settings)
@@ -228,7 +227,7 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
 
     if settings['app']['canary']:
         canary_user_data = generate_encoded_user_data(
-            env=env, region=region, app_name=appname, group_name=project, canary=True)
+            env=env, region=region, app_name=generated.app_name(), group_name=project, canary=True)
         data['app'].update({
             'canary_encoded_user_data': canary_user_data,
         })
