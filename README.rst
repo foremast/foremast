@@ -1,8 +1,8 @@
 Spinnaker Foremast
 ==================
 
-.. image:: https://travis-ci.org/gogoair/foremast.svg?branch=master
-    :target: https://travis-ci.org/gogoair/foremast
+.. image:: https://travis-ci.org/foremast/foremast.svg?branch=master
+    :target: https://travis-ci.org/foremast/foremast
 
 .. image:: https://badges.gitter.im/gogoair/foremast.svg
    :alt: Join the chat at https://gitter.im/gogoair/foremast
@@ -205,7 +205,7 @@ defaults. Please take a look at the `application.json`_ docs for all options.
         }
     }
 
-.. _`Foremast templates`: https://github.com/gogoair/foremast-template-examples/
+.. _`Foremast templates`: https://github.com/foremast/foremast-template-examples/
 .. _`quick start guide`: http://foremast.readthedocs.io/en/latest/getting_started.html#quick-start-guide
 .. _`automate spinnaker pipeline creation`: https://tech.gogoair.com/foremast-automate-spinnaker-pipeline-creation-2b2aa7b2c5e4#.qplfw19cg
 .. _`Read the Docs`: http://foremast.readthedocs.io/en/latest/
