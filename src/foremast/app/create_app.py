@@ -22,7 +22,7 @@ from pprint import pformat
 
 import requests
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
+from ..consts import API_URL, DEFAULT_RUN_AS_USER, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
 from ..exceptions import ForemastError
 from ..utils import get_template, wait_for_task
 
@@ -103,8 +103,11 @@ class SpinnakerApp:
         links = self.retrieve_instance_links()
         self.log.debug('Links is \n%s', pformat(links))
         self.pipeline_config['instance_links'].update(links)
-        jsondata = get_template(template_file='infrastructure/app_data.json.j2',
-                                appinfo=self.appinfo, pipeline_config=self.pipeline_config)
+        jsondata = get_template(
+            template_file='infrastructure/app_data.json.j2',
+            appinfo=self.appinfo,
+            pipeline_config=self.pipeline_config,
+            run_as_user=DEFAULT_RUN_AS_USER)
         self.log.debug('jsondata is %s', pformat(jsondata))
         return jsondata
 
