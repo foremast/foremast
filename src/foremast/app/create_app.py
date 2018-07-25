@@ -22,6 +22,8 @@ from pprint import pformat
 
 import requests
 
+from gogoutils import Generator
+
 from ..consts import API_URL, DEFAULT_RUN_AS_USER, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
 from ..exceptions import ForemastError
 from ..utils import get_template, wait_for_task
@@ -49,6 +51,7 @@ class SpinnakerApp:
         self.appinfo = {'app': app, 'email': email, 'project': project, 'repo': repo}
         self.appname = app
         self.pipeline_config = pipeline_config
+        self.generated = Generator(project=project, repo=repo)
 
     def get_accounts(self, provider='aws'):
         """Get Accounts added to Spinnaker.
@@ -107,6 +110,7 @@ class SpinnakerApp:
             template_file='infrastructure/app_data.json.j2',
             appinfo=self.appinfo,
             pipeline_config=self.pipeline_config,
+            formats=self.generated,
             run_as_user=DEFAULT_RUN_AS_USER)
         self.log.debug('jsondata is %s', pformat(jsondata))
         return jsondata
