@@ -19,12 +19,22 @@ def test_instance_links():
             "test4": "https://test4.com",
         }
     }
-    spinnaker_app = SpinnakerApp(pipeline_config=pipeline_config)
+
+    params = {
+        'app': 'myapp',
+        'email': 'test@domain.local',
+        'project': 'project1',
+        'repo': 'repo1',
+        'pipeline_config': pipeline_config,
+    }
+
+    spinnaker_app = SpinnakerApp(**params)
     instance_links = spinnaker_app.retrieve_instance_links()
     assert instance_links == {"test1": "https://test1.com"}, "Instance Links are not being retrieved properly"
 
     pipeline_config = { "instance_links": {} }
-    spinnaker_app = SpinnakerApp(pipeline_config=pipeline_config)
+    params['pipeline_config'] = pipeline_config
+    spinnaker_app = SpinnakerApp(**params)
     instance_links = spinnaker_app.retrieve_instance_links()
     assert instance_links == {"test1": "https://test1.com", "test2": "https://test2.com"}
 
@@ -65,7 +75,7 @@ def test_retrieval_of_templates(mock_instance_links):
         "name": "dev",
     }]
     mock_api_url = 'https://test.com/credentials'
-    spinnaker_app = SpinnakerApp(pipeline_config=pipeline_config, app=app, email=email, 
+    spinnaker_app = SpinnakerApp(pipeline_config=pipeline_config, app=app, email=email,
                                  project=project, repo=repo)
     accounts = [
         {
@@ -74,7 +84,7 @@ def test_retrieval_of_templates(mock_instance_links):
         }
     ]
     with requests_mock.Mocker() as mock_requests:
-        mock_requests.get(mock_api_url, json=accounts)    
+        mock_requests.get(mock_api_url, json=accounts)
         accounts = spinnaker_app.get_accounts()
         spinnaker_app.appinfo['accounts'] = accounts
         app_data = json.loads(spinnaker_app.retrieve_template())
