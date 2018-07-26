@@ -16,8 +16,6 @@
 """Generate base64 encoded User Data."""
 import base64
 
-from gogoutils import Generator
-
 from .templates import get_template
 
 
