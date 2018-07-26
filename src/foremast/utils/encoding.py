@@ -16,16 +16,18 @@
 """Generate base64 encoded User Data."""
 import base64
 
+from gogoutils import Generator
+
 from .templates import get_template
 
 
-def generate_encoded_user_data(env='dev', region='us-east-1', app_name='', group_name='', canary=False):
+def generate_encoded_user_data(env='dev', region='us-east-1', generated=None, group_name='', canary=False):
     r"""Generate base64 encoded User Data.
 
     Args:
         env (str): Deployment environment, e.g. dev, stage.
         region (str): AWS Region, e.g. us-east-1.
-        app_name (str): Application name, e.g. coreforrest.
+        generated (gogoutils.Generator): Generated naming formats.
         group_name (str): Application group nane, e.g. core.
 
     Returns:
@@ -49,6 +51,7 @@ def generate_encoded_user_data(env='dev', region='us-east-1', app_name='', group
         env_c, env_p, env_s = "prod", "prodp", "prods"
     else:
         env_c, env_p, env_s = env, env, env
+
     user_data = get_template(
         template_file='infrastructure/user_data.sh.j2',
         env=env,
@@ -56,7 +59,9 @@ def generate_encoded_user_data(env='dev', region='us-east-1', app_name='', group
         env_p=env_p,
         env_s=env_s,
         region=region,
-        app_name=app_name,
+        app_name=generated.app_name(),
         group_name=group_name,
-        canary=canary, )
+        canary=canary,
+        formats=generated,
+    )
     return base64.b64encode(user_data.encode()).decode()

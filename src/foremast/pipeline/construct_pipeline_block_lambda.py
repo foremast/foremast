@@ -61,7 +61,13 @@ def construct_pipeline_block_lambda(env='',
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
     gen_app_name = generated.app_name()
-    user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project)
+    user_data = generate_encoded_user_data(
+        env=env,
+        region=region,
+        generated=generated,
+        app_name=gen_app_name,
+        group_name=generated.project,
+    )
 
     # Use different variable to keep template simple
     instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
