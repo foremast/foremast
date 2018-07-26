@@ -65,7 +65,6 @@ def construct_pipeline_block_lambda(env='',
         env=env,
         region=region,
         generated=generated,
-        app_name=gen_app_name,
         group_name=generated.project,
     )
 
