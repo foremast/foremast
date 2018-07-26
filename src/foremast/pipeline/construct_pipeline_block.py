@@ -191,7 +191,7 @@ def ec2_pipeline_setup(generated=None, project='', settings=None, env='', region
 
     # Use different variable to keep template simple
     instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
-    instance_security_groups.append(generated.app_name())
+    instance_security_groups.append(generated.security_group_app)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
     instance_security_groups = remove_duplicate_sg(instance_security_groups)
 
@@ -208,7 +208,7 @@ def ec2_pipeline_setup(generated=None, project='', settings=None, env='', region
     if settings['app']['eureka_enabled']:
         elb = []
     else:
-        elb = ['{0}'.format(generated.app_name())]
+        elb = [generated.elb_app]
     LOG.info('Attaching the following ELB: %s', elb)
 
     health_checks = check_provider_healthcheck(settings)
