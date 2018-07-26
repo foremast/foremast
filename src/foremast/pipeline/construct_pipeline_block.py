@@ -141,7 +141,8 @@ def construct_pipeline_block(env='',
             env=env,
             region=region,
             project=generated.project,
-            region_subnets=region_subnets)
+            region_subnets=region_subnets,
+        )
     else:
         data = copy.deepcopy(settings)
 
@@ -181,7 +182,12 @@ def ec2_pipeline_setup(generated=None, project='', settings=None, env='', region
 
     """
     data = copy.deepcopy(settings)
-    user_data = generate_encoded_user_data(env=env, region=region, app_name=generated.app_name(), group_name=project)
+    user_data = generate_encoded_user_data(
+        env=env,
+        region=region,
+        generated=generated,
+        group_name=project,
+    )
 
     # Use different variable to keep template simple
     instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
@@ -227,7 +233,12 @@ def ec2_pipeline_setup(generated=None, project='', settings=None, env='', region
 
     if settings['app']['canary']:
         canary_user_data = generate_encoded_user_data(
-            env=env, region=region, app_name=generated.app_name(), group_name=project, canary=True)
+            env=env,
+            region=region,
+            generated=generated,
+            group_name=project,
+            canary=True,
+        )
         data['app'].update({
             'canary_encoded_user_data': canary_user_data,
         })
