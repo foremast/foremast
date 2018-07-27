@@ -36,7 +36,13 @@
                 ]
             }],
             "trafficGuards": [{% for account_name in pipeline_config.traffic_guards.accounts %}
-                {"account": {{ account_name | tojson }}, "region": "*", "stack": "*", "detail": "*" }
+                {
+                    "account": {{ account_name | tojson }},
+                    "detail": "*",
+                    "location": "*",
+                    "region": "*",
+                    "stack": "*"
+                }
                 {% if not loop.last %},{% endif %}
                 {% endfor %}
             ]
