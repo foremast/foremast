@@ -21,10 +21,9 @@ import logging
 from pprint import pformat
 
 import requests
-
 from gogoutils import Generator
 
-from ..consts import API_URL, DEFAULT_RUN_AS_USER, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
+from ..consts import API_URL, APP_FORMATS, DEFAULT_RUN_AS_USER, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
 from ..exceptions import ForemastError
 from ..utils import get_template, wait_for_task
 
@@ -51,7 +50,7 @@ class SpinnakerApp:
         self.appinfo = {'app': app, 'email': email, 'project': project, 'repo': repo}
         self.appname = app
         self.pipeline_config = pipeline_config
-        self.generated = Generator(project=project, repo=repo)
+        self.generated = Generator(project=project, repo=repo, formats=APP_FORMATS)
 
     def get_accounts(self, provider='aws'):
         """Get Accounts added to Spinnaker.
