@@ -30,7 +30,7 @@ import json
 import logging
 import sys
 from configparser import ConfigParser
-from os import getcwd, path
+from os import getcwd, getenv, path
 from os.path import exists, expanduser, expandvars
 
 LOG = logging.getLogger(__name__)
@@ -42,6 +42,12 @@ logging.getLogger(__package__.split('.')[0]).setLevel(logging.INFO)
 
 GOOD_STATUSES = frozenset(('SUCCEEDED', ))
 SKIP_STATUSES = frozenset(('NOT_STARTED', ))
+
+DEFAULT_DYNAMIC_CONFIG_FILE = '{path}/config.py'.format(path=getcwd())
+"""Default `config.py` file path is in the current directory.
+
+To override, use the `FOREMAST_CONFIG_FILE` environment variable.
+"""
 
 
 def validate_key_values(config_handle, section, key, default=None):
@@ -85,12 +91,9 @@ def extract_formats(config_handle):
     return formats
 
 
-def load_dynamic_config(config_dir=getcwd()):
+def load_dynamic_config(config_file=DEFAULT_DYNAMIC_CONFIG_FILE):
     """Load and parse dynamic config"""
     dynamic_configurations = {}
-
-    # Create full path of config
-    config_file = '{path}/config.py'.format(path=config_dir)
 
     # Insert config path so we can import it
     sys.path.insert(0, path.dirname(path.abspath(config_file)))
@@ -123,13 +126,13 @@ def find_config():
     configurations = ConfigParser()
 
     cfg_file = configurations.read(config_locations)
-    dynamic_config_file = '{path}/config.py'.format(path=getcwd())
+    dynamic_config_file = getenv('FOREMAST_CONFIG_FILE', DEFAULT_DYNAMIC_CONFIG_FILE)
 
     if cfg_file:
         LOG.info('Loading static configuration file.')
     elif exists(dynamic_config_file):
         LOG.info('Loading dynamic configuration file.')
-        configurations = load_dynamic_config()
+        configurations = load_dynamic_config(config_file=dynamic_config_file)
     else:
         config_locations.append(dynamic_config_file)
         LOG.warning('No configuration found in the following locations:\n%s', '\n'.join(config_locations))
