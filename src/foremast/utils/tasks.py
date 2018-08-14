@@ -26,7 +26,7 @@ from ..exceptions import SpinnakerTaskError, SpinnakerTaskInconclusiveError
 LOG = logging.getLogger(__name__)
 
 
-def post_task(task_data):
+def post_task(task_data, task_uri='/tasks'):
     """Create Spinnaker Task.
 
     Args:
@@ -39,7 +39,7 @@ def post_task(task_data):
         AssertionError: Error response from Spinnaker.
 
     """
-    url = '{}/tasks'.format(API_URL)
+    url = '{}/{}'.format(API_URL, task_uri)
 
     if isinstance(task_data, str):
         task_json = task_data
@@ -122,7 +122,7 @@ def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT, wait=2):
         raise SpinnakerTaskInconclusiveError('Task failed to complete in {0} seconds: {1}'.format(timeout, taskid))
 
 
-def wait_for_task(task_data):
+def wait_for_task(task_data, task_uri='/tasks'):
     """Run task and check the result.
 
     Args:
@@ -132,7 +132,7 @@ def wait_for_task(task_data):
         str: Task status.
 
     """
-    taskid = post_task(task_data)
+    taskid = post_task(task_data, task_uri)
 
     if isinstance(task_data, str):
         json_data = json.loads(task_data)
