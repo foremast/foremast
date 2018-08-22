@@ -49,10 +49,10 @@ TEST_SETTINGS = {
 }
 
 
+@pytest.fixture
 @mock.patch('foremast.pipeline.create_pipeline.get_properties')
 @mock.patch('foremast.pipeline.create_pipeline.get_details')
 @mock.patch('foremast.pipeline.create_pipeline.os')
-@pytest.fixture
 def spinnaker_pipeline(mock_os, mock_get_details, mock_get_prop):
     """Sets up pipeline fixture object"""
     mock_get_prop.return_value = TEST_SETTINGS
