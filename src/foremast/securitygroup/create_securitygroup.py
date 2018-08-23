@@ -53,7 +53,7 @@ from ..exceptions import (ForemastConfigurationFileError, SpinnakerSecurityGroup
 from ..utils import get_details, get_properties, get_security_group_id, get_template, get_vpc_id, wait_for_task
 
 
-class SpinnakerSecurityGroup(object):
+class SpinnakerSecurityGroup:
     """Manipulate Spinnaker Security Groups.
 
     Args:

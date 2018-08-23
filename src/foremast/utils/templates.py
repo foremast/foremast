@@ -78,10 +78,7 @@ def get_template(template_file='', **kwargs):
         String of rendered JSON template.
 
     """
-    try:
-        template = get_template_object(template_file)
-    except ForemastTemplateNotFound:
-        raise
+    template = get_template_object(template_file)
 
     LOG.info('Rendering template %s', template.filename)
     for key, value in kwargs.items():

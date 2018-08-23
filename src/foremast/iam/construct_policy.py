@@ -54,7 +54,7 @@ def auto_service(pipeline_settings={}, services={}):
     return services
 
 
-def render_policy_template(  # pylint: disable=R0913
+def render_policy_template(  # pylint: disable=too-many-arguments
         account_number='',
         app='coreforrest',
         env='dev',

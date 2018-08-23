@@ -94,7 +94,7 @@ class SpinnakerApp:
         wait_for_task(jsondata)
 
         self.log.info("Successfully created %s application", self.appname)
-        return
+        return jsondata
 
     def retrieve_template(self):
         """Sets the instance links with pipeline_configs and then renders template files

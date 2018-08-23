@@ -97,7 +97,7 @@ def main(manual_args=None):
     add_autoscaling(subparsers)
     add_validate(subparsers)
 
-    CliArgs = collections.namedtuple('CliArgs', ['parsed', 'extra'])  # pylint: disable=invalid-name
+    CliArgs = collections.namedtuple('CliArgs', ['parsed', 'extra'])
 
     parsed, extra = parser.parse_known_args(args=manual_args)
     args = CliArgs(parsed, extra)

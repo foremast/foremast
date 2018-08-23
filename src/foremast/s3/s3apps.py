@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
 
 
 # pylint: disable=too-few-public-methods
-class S3Apps(object):
+class S3Apps:
     """Configure infrastructure and policies for S3 web applications."""
 
     def __init__(self, app, env, region, prop_path, primary_region='us-east-1'):

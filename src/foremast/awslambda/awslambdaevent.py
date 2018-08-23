@@ -24,7 +24,7 @@ from .sns_event import create_sns_event
 
 
 # pylint: disable=too-few-public-methods
-class LambdaEvent(object):
+class LambdaEvent:
     """Manipulate Lambda events."""
 
     def __init__(self, app=None, env=None, region=None, prop_path=None):

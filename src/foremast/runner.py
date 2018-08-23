@@ -40,7 +40,7 @@ from .args import add_debug
 LOG = logging.getLogger(__name__)
 
 
-class ForemastRunner(object):
+class ForemastRunner:
     """Wrap each pipes module in a way that is easy to invoke."""
 
     def __init__(self):

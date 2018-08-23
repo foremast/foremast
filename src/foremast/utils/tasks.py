@@ -86,7 +86,7 @@ def _check_task(taskid):
     status = task_state['status']
     LOG.info('Current task status: %s', status)
 
-    if status == 'SUCCEEDED':
+    if status == 'SUCCEEDED':  # pylint: disable=no-else-return
         return status
     elif status == 'TERMINAL':
         raise SpinnakerTaskError(task_state)

@@ -27,7 +27,7 @@ from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, g
 LOG = logging.getLogger(__name__)
 
 
-class LambdaFunction(object):
+class LambdaFunction:
     """Manipulate Lambda function."""
 
     def __init__(self, app, env, region, prop_path):

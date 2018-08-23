@@ -108,7 +108,7 @@ from ..consts import API_URL, HEADERS
 LOG = logging.getLogger(__name__)
 
 
-class Gate(object):
+class Gate:
     """Dynamic Gate API interface.
 
     Args:
