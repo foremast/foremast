@@ -102,7 +102,8 @@ def construct_pipeline_block(env='',
                              region='us-east-1',
                              settings=None,
                              pipeline_data=None,
-                             region_subnets=None):
+                             region_subnets=None,
+                             **kwargs):
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -115,6 +116,7 @@ def construct_pipeline_block(env='',
     Args:
         env (str): Deploy environment name, e.g. dev, stage, prod.
         generated (gogoutils.Generator): Gogo Application name generator.
+        kwargs (dict): Extra variables to pass to Pipeline Templates.
         previous_env (str): The previous deploy environment to use as
             Trigger.
         region (str): AWS Region to deploy to.
@@ -127,7 +129,6 @@ def construct_pipeline_block(env='',
         dict: Pipeline JSON template rendered with configurations.
 
     """
-
     LOG.info('%s block for [%s].', env, region)
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
@@ -160,7 +161,7 @@ def construct_pipeline_block(env='',
     LOG.debug('Block data:\n%s', pformat(data))
 
     template_name = get_template_name(env, pipeline_type)
-    pipeline_json = get_template(template_file=template_name, data=data, formats=generated)
+    pipeline_json = get_template(template_file=template_name, data=data, formats=generated, **kwargs)
     return pipeline_json
 
 
