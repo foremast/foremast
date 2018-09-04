@@ -140,6 +140,7 @@ def construct_pipeline_block(env='',
             settings=settings,
             env=env,
             region=region,
+            pipeline_type=pipeline_type,
             project=generated.project,
             region_subnets=region_subnets,
         )
@@ -165,7 +166,15 @@ def construct_pipeline_block(env='',
     return pipeline_json
 
 
-def ec2_pipeline_setup(generated=None, project='', settings=None, env='', region='', region_subnets=None):
+def ec2_pipeline_setup(
+        generated=None,
+        project='',
+        settings=None,
+        env='',
+        pipeline_type='',
+        region='',
+        region_subnets=None,
+):
     """Handles ec2 pipeline data setup
 
     Args:
@@ -173,6 +182,7 @@ def ec2_pipeline_setup(generated=None, project='', settings=None, env='', region
         project (str): Group name of application
         settings (dict): Environment settings from configurations.
         env (str): Deploy environment name, e.g. dev, stage, prod.
+        pipeline_type (str): Type of Foremast Pipeline to configure.
         region (str): AWS Region to deploy to.
         region_subnets (dict): Subnets for a Region, e.g.
             {'us-west-2': ['us-west-2a', 'us-west-2b', 'us-west-2c']}.
@@ -187,6 +197,7 @@ def ec2_pipeline_setup(generated=None, project='', settings=None, env='', region
         region=region,
         generated=generated,
         group_name=project,
+        pipeline_type=pipeline_type,
     )
 
     # Use different variable to keep template simple

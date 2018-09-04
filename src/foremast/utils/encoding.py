@@ -19,7 +19,14 @@ import base64
 from .templates import get_template
 
 
-def generate_encoded_user_data(env='dev', region='us-east-1', generated=None, group_name='', canary=False):
+def generate_encoded_user_data(
+        env='dev',
+        region='us-east-1',
+        generated=None,
+        group_name='',
+        pipeline_type='',
+        canary=False,
+):
     r"""Generate base64 encoded User Data.
 
     Args:
@@ -27,6 +34,7 @@ def generate_encoded_user_data(env='dev', region='us-east-1', generated=None, gr
         region (str): AWS Region, e.g. us-east-1.
         generated (gogoutils.Generator): Generated naming formats.
         group_name (str): Application group nane, e.g. core.
+        pipeline_type (str): Type of Foremast Pipeline to configure.
 
     Returns:
         str: base64 encoded User Data script.
@@ -59,6 +67,7 @@ def generate_encoded_user_data(env='dev', region='us-east-1', generated=None, gr
         region=region,
         app_name=generated.app_name(),
         group_name=group_name,
+        pipeline_type=pipeline_type,
         canary=canary,
         formats=generated,
     )
