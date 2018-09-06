@@ -209,12 +209,20 @@ class SpinnakerPipeline:
         subnets = None
         pipelines = {}
         for region, envs in regions_envs.items():
+            self.generated.data.update({
+                'region': region,
+            })
+
             # TODO: Overrides for an environment no longer makes sense. Need to
             # provide override for entire Region possibly.
             pipelines[region] = self.render_wrapper(region=region)
 
             previous_env = None
             for env in envs:
+                self.generated.data.update({
+                    'env': env,
+                })
+
                 pipeline_block_data = {
                     "env": env,
                     "generated": self.generated,
