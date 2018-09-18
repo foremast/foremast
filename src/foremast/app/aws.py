@@ -24,7 +24,7 @@ class SpinnakerApp(base.BaseApp):
         wait_for_task(jsondata)
 
         self.log.info("Successfully created %s application", self.appname)
-        return
+        return jsondata
 
     def delete(self):
         """Delete AWS Spinnaker Application."""
