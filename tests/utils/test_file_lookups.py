@@ -14,11 +14,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Test Git file lookups."""
-import base64
 from unittest import mock
 
 import pytest
-
 from foremast.exceptions import GitLabApiError
 from foremast.utils import FileLookup
 
@@ -30,7 +28,6 @@ TEST_YAML = '''
 ---
 ship: pirate
 '''
-TEST_JSON_BYTES = TEST_JSON.encode()
 
 
 @mock.patch('foremast.utils.lookups.gitlab')
