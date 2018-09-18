@@ -25,6 +25,11 @@ from foremast.utils import FileLookup
 TEST_JSON = '''{
     "ship": "pirate"
 }'''
+
+TEST_YAML = '''
+---
+ship: pirate
+'''
 TEST_JSON_BYTES = TEST_JSON.encode()
 
 
@@ -54,21 +59,25 @@ def test_project_success(mock_gitlab):
     assert seeker.project is object
 
 
-@mock.patch.object(FileLookup, 'remote_file', return_value=TEST_JSON)
+@pytest.mark.parametrize('datacontent', [TEST_JSON, TEST_YAML])
+@mock.patch.object(FileLookup, 'remote_file')
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_get(gitlab, mock_lookup):
+def test_get(gitlab, mock_lookup, datacontent):
     """Check _get_ method."""
+    mock_lookup.return_value = datacontent
     my_git = FileLookup()
 
     result = my_git.get()
     assert isinstance(result, str)
-    assert TEST_JSON == my_git.get()
+    assert datacontent == my_git.get()
 
 
-@mock.patch.object(FileLookup, 'get', return_value=TEST_JSON)
+@pytest.mark.parametrize('datacontent', [TEST_JSON, TEST_YAML])
+@mock.patch.object(FileLookup, 'get')
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_json(gitlab, mock_lookup):
+def test_json(gitlab, mock_lookup, datacontent):
     """Check _json_ method."""
+    mock_lookup.return_value = datacontent
     my_git = FileLookup()
 
     result = my_git.json()
@@ -76,10 +85,12 @@ def test_json(gitlab, mock_lookup):
     assert result['ship'] == 'pirate'
 
 
-@mock.patch.object(FileLookup, 'get', return_value=TEST_JSON + '}')
+@pytest.mark.parametrize('datacontent', [TEST_JSON, TEST_YAML])
+@mock.patch.object(FileLookup, 'get')
 @mock.patch('foremast.utils.lookups.gitlab')
-def test_invalid_json(gitlab, mock_lookup):
+def test_invalid_json(gitlab, mock_lookup, datacontent):
     """Check invalid JSON."""
+    mock_lookup.return_value = datacontent + '}'
     my_git = FileLookup()
 
     with pytest.raises(SystemExit):
