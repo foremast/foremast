@@ -20,6 +20,7 @@ import os
 from base64 import b64decode
 
 import gitlab
+import yaml
 import requests
 
 from ..consts import AMI_JSON_URL, GIT_URL, GITLAB_TOKEN
@@ -242,9 +243,9 @@ class FileLookup():
         file_contents = self.get(branch=branch, filename=filename)
 
         try:
-            json_dict = json.loads(file_contents)
+            json_dict = yaml.load(file_contents)
         # TODO: Use json.JSONDecodeError when Python 3.4 has been deprecated
-        except ValueError as error:
+        except (ValueError, yaml.parser.ParserError) as error:
             msg = ('"{filename}" appears to be invalid json. '
                    'Please validate it with http://jsonlint.com. '
                    'JSON decoder error:\n'

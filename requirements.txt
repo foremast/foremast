@@ -5,6 +5,7 @@ gogo-utils
 jinja2
 murl
 python-gitlab
+pyyaml
 requests
-tryagain
 slacker
+tryagain
