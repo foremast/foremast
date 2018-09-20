@@ -164,6 +164,8 @@ def construct_pipeline_block(env='',
     if data['app']['previous_env']:
         if 'checkpoints' in data['app']['pipeline']:
             data['do_checkpoint'] = env in data['app']['pipeline']['checkpoints']
+        else:
+            data['do_checkpoint'] = True
 
     LOG.debug('Block data:\n%s', pformat(data))
 
