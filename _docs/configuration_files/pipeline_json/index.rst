@@ -85,6 +85,14 @@ List of accounts that the application will be deployed to. Order matters as it d
     | *Type*: array
     | *Default*: ``["stage", "prod"]``
 
+``checkpoints``
+~~~~~~~~
+
+List of accounts that will have a manual checkpoint stage before them. Order does not matter but these must correspond to the list passed to `env` above. If this option is not present, Foremast places manual checkpoints between all stages by default. A manual checkpoint will never be placed before the first stage. This parameter **does not** affect stages that are built using the ``*_prod_*.json.j2`` templates, which will always contain a manual checkpoint.`
+
+    | *Type*: array
+    | *Default*: ``null``
+
 .. include:: manual.rest
 .. include:: image.rest
 .. include:: lambda.rest
