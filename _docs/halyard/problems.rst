@@ -321,6 +321,42 @@ Exception ( Determine Source Server Group ) 403
    * In the UI, the ``Cluster`` name should be the same as the Spinnaker
      Application
 
+----------------
+Pipeline Trigger
+----------------
+
+Pipelines not triggering when Fiat enabled
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: none
+
+   # Igor
+   2018-10-25 23:25:06.607  INFO 1 --- [RxIoScheduler-4] c.n.s.igor.jenkins.JenkinsBuildMonitor   : [master=Jenkins:job=example-job] has no other builds between [Thu Oct 25 23:21:42 GMT 2018 - Thu Oct 25 23:24:00 GMT 2018], advancing cursor to 1540509840709
+
+   # Echo
+   2018-10-25 23:25:06.607  INFO 1 --- [IoScheduler-987] c.n.s.e.p.monitor.TriggerMonitor         : Found matching pipeline example-application:example-pipeline
+   2018-10-25 23:25:06.607  INFO 1 --- [IoScheduler-987] c.n.s.e.p.orca.PipelineInitiator         : Triggering Pipeline(example-application, example-pipeline, 00000000-0000-0000-0000-000000000000) due to Trigger(00000000-0000-0000-0000-000000000000, jenkins, Jenkins, example-job, null, gitlab, null, null, null, null, null, null, {}, null, {}, null, null, [], null, null, null, null, Pipeline(example-application, example-pipeline, 00000000-0000-0000-0000-000000000000))
+   2018-10-25 23:25:06.608  INFO 1 --- [it-/orchestrate] c.n.s.e.p.orca.OrcaService               : ---> HTTP POST http://spin-orca.spinnaker:8083/orchestrate
+   2018-10-25 23:25:06.651  INFO 1 --- [it-/orchestrate] c.n.s.e.p.orca.OrcaService               : <--- HTTP 403 http://spin-orca.spinnaker:8083/orchestrate (45ms)
+   2018-10-25 23:25:06.693 ERROR 1 --- [  Retrofit-Idle] c.n.s.e.p.orca.PipelineInitiator         : Retrying pipeline trigger, attempt 1/5
+   2018-10-25 23:25:27.023 ERROR 1 --- [  Retrofit-Idle] c.n.s.e.p.orca.PipelineInitiator         : Error triggering pipeline: Pipeline(example-application, example-pipeline, 00000000-0000-0000-0000-000000000000)
+
+   # Orca
+   2018-10-25 23:25:06.686  INFO 1 --- [0.0-8083-exec-8] c.n.s.o.c.OperationsController           : [] received pipeline 00000000-0000-0000-0000-000000000000:{…}
+   2018-10-25 23:25:06.687  INFO 1 --- [0.0-8083-exec-8] c.n.s.o.c.OperationsController           : [] requested pipeline: {…}
+   2018-10-25 23:25:06.687  INFO 1 --- [0.0-8083-exec-8] c.n.s.orca.front50.Front50Service        : [] ---> HTTP GET http://spin-front50.spinnaker:8080/pipelines/example-application?refresh=false
+   2018-10-25 23:25:06.692  INFO 1 --- [0.0-8083-exec-8] c.n.s.orca.front50.Front50Service        : [] <--- HTTP 403 http://spin-front50.spinnaker:8080/pipelines/example-application?refresh=false (5ms)
+
+* Solution:
+   * Missing ``Run As User`` with Application ``READ`` and ``WRITE`` Permissions
+   * When not populated, the ``Run As User`` defaults to ``Anonymous``
+   * When there are any Roles configured in the Application Permissions,
+     ``Anonymous`` authorization no longer works
+   * Create a Service Account:
+     https://www.spinnaker.io/setup/security/authorization/service-accounts/
+   * Configure Spinnaker Application Permissions to allow ``READ`` and ``WRITE``
+     for any Role the Service Account belongs to
+
 ------------
 Memory Usage
 ------------
