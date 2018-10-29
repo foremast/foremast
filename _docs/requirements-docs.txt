@@ -3,4 +3,3 @@ gitchangelog
 sphinx
 sphinx_rtd_theme
 sphinx-autodoc-annotation
-sphinxcontrib-napoleon

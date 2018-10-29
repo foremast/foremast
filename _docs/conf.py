@@ -36,13 +36,13 @@ import pkg_resources
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
     'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
     'sphinx.ext.ifconfig',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.napoleon',
     'sphinx_autodoc_annotation',
 ]
 
