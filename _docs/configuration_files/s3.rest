@@ -247,6 +247,7 @@ For more details refer to: http://boto3.readthedocs.io/en/latest/reference/servi
     | *Example config*:
 
       .. code-block:: json
+
           [
               {
                   'Grantee': {
@@ -285,6 +286,7 @@ S3 tagging configuration block
     | *Example config*:
     
       .. code-block:: json
+
           {
               "key": "value",
               "key1": "value1"
