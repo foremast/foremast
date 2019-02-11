@@ -155,7 +155,7 @@ def _convert_string_to_native(value):
     result = None
 
     try:
-        result = ast.literal_eval(value)
+        result = ast.literal_eval(str(value))
     except (SyntaxError, ValueError):
         # Likely a string
         result = value.split(',')
