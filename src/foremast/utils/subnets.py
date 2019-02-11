@@ -57,11 +57,10 @@ def get_subnets(
         raise SpinnakerTimeout(subnet_response.text)
 
     subnet_list = subnet_response.json()
-
     for subnet in subnet_list:
         LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t' '%(availabilityZone)s', subnet)
 
-        if subnet['target'] == target:
+        if 'target' in subnet and subnet['target'] == target:
             availability_zone = subnet['availabilityZone']
             account = subnet['account']
             subnet_region = subnet['region']

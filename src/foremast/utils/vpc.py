@@ -51,7 +51,7 @@ def get_vpc_id(account, region):
 
     for vpc in vpcs:
         LOG.debug('VPC: %(name)s, %(account)s, %(region)s => %(id)s', vpc)
-        if all([vpc['name'] == 'vpc', vpc['account'] == account, vpc['region'] == region]):
+        if 'name' in vpc and all([vpc['name'] == 'vpc', vpc['account'] == account, vpc['region'] == region]):
             LOG.info('Found VPC ID for %s in %s: %s', account, region, vpc['id'])
             vpc_id = vpc['id']
             break
