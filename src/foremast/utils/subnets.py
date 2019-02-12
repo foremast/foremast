@@ -60,7 +60,7 @@ def get_subnets(
     for subnet in subnet_list:
         LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t' '%(availabilityZone)s', subnet)
 
-        if 'target' in subnet and subnet['target'] == target:
+        if subnet.get('target', '') == target:
             availability_zone = subnet['availabilityZone']
             account = subnet['account']
             subnet_region = subnet['region']

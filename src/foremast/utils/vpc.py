@@ -41,7 +41,7 @@ def get_vpc_id(account, region):
             configured.
 
     """
-    url = '{0}/vpcs'.format(API_URL)
+    url = '{0}/networks/aws'.format(API_URL)
     response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     if not response.ok:
