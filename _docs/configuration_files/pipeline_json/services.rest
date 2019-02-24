@@ -144,6 +144,14 @@ Add SimpleDB access to SimpleDB Domains listed.
    | *Type*: array
    | *Default*: ``[]``
 
+``secretsmanager``
+***********
+
+Add Secrets Manager access to the secrets listed.
+
+   | *Type*: array
+   | *Default*: ``[]``
+
 ``ses``
 *******
 
