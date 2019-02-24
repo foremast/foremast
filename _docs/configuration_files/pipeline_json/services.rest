@@ -93,6 +93,14 @@ Add Kinesis Streams access to streams listed.
    | *Type*: array
    | *Default*: ``[]``
 
+``kms``
+***********
+
+Add KMS Decrypt access to KMS keys listed.
+
+   | *Type*: array
+   | *Default*: ``[]``
+
 ``lambda``
 **********
 
