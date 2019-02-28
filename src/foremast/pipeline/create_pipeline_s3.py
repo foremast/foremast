@@ -60,6 +60,8 @@ class SpinnakerPipelineS3(SpinnakerPipeline):
         data = {
             'app': {
                 'appname': self.app_name,
+                'group_name': self.group_name,
+                'repo_name': self.repo_name,
                 'base': base,
                 'deploy_type': deploy_type,
                 'environment': 'packaging',
