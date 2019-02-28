@@ -54,6 +54,7 @@ class SpinnakerPipeline:
         self.generated = get_details(app=app)
         self.app_name = self.generated.app_name()
         self.group_name = self.generated.project
+        self.repo_name = self.generated.repo
 
         self.settings = get_properties(prop_path)
         self.environments = self.settings['pipeline']['env']
@@ -121,6 +122,8 @@ class SpinnakerPipeline:
             'app': {
                 'ami_id': ami_id,
                 'appname': self.app_name,
+                'group_name': self.group_name,
+                'repo_name': self.repo_name,
                 'base': base,
                 'environment': 'packaging',
                 'region': region,
