@@ -19,7 +19,7 @@ import logging
 import murl
 import requests
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, RUNWAY_BASE_PATH
 from ..exceptions import SpinnakerPipelineCreationFailed, SpinnakerPipelineDeletionFailed
 from ..utils import check_managed_pipeline, get_all_pipelines, normalize_pipeline_name
 
@@ -77,7 +77,8 @@ def clean_pipelines(app='', settings=None):
         try:
             regions.update(settings[env]['regions'])
         except KeyError:
-            raise SpinnakerPipelineCreationFailed('Missing "runway/application-master-{0}.json".'.format(env))
+            error_msg = 'Missing "{}/application-master-{}.json".'.format(RUNWAY_BASE_PATH, env)
+            raise SpinnakerPipelineCreationFailed(error_msg)
     LOG.debug('Regions defined: %s', regions)
 
     for pipeline in pipelines:
