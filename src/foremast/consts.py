@@ -199,6 +199,7 @@ ENVS = set(validate_key_values(CONFIG, 'base', 'envs', default='').split(','))
 REGIONS = set(validate_key_values(CONFIG, 'base', 'regions', default='').split(','))
 ALLOWED_TYPES = set(
     validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling').split(','))
+RUNWAY_BASE_PATH = validate_key_values(CONFIG, 'base', 'runway_base_path', default='runway')
 TEMPLATES_PATH = validate_key_values(CONFIG, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(CONFIG, 'base', 'ami_json_url')
 DEFAULT_RUN_AS_USER = validate_key_values(CONFIG, 'base', 'default_run_as_user', default=None)

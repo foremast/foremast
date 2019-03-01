@@ -107,6 +107,18 @@ relative to where you where you are running the Foremast commands. See
 
     | *Required*: No
 
+``runway_base_path``
+******************
+
+Base path to use when looking for custom runway directories. If provided,
+Foremast will first look for Foremast runway files in this directory. 
+This is useful if you have a different folder or location to store pipeline
+configuration values.
+
+    | *Type*: str
+    | *Default*: ``runway``
+    | *Required*: No
+
 ``default_run_as_user``
 ***********************
 
