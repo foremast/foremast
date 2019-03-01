@@ -143,7 +143,6 @@ def construct_pipeline_block(env='',
             pipeline_type=pipeline_type,
             project=generated.project,
             region_subnets=region_subnets,
-            repo=generated.repo,
         )
     else:
         data = copy.deepcopy(settings)
@@ -175,7 +174,6 @@ def ec2_pipeline_setup(
         pipeline_type='',
         region='',
         region_subnets=None,
-        repo='',
 ):
     """Handles ec2 pipeline data setup
 
@@ -200,7 +198,6 @@ def ec2_pipeline_setup(
         generated=generated,
         group_name=project,
         pipeline_type=pipeline_type,
-        repo_name=repo,
     )
 
     # Use different variable to keep template simple
@@ -252,7 +249,6 @@ def ec2_pipeline_setup(
             generated=generated,
             group_name=project,
             canary=True,
-            repo_name=repo,
         )
         data['app'].update({
             'canary_encoded_user_data': canary_user_data,
