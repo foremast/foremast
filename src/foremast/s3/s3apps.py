@@ -89,6 +89,7 @@ class S3Apps:
             self._put_bucket_lifecycle()
             self._put_bucket_versioning()
             self._put_bucket_encryption()
+            self._put_bucket_notification()
             self._put_bucket_tagging()
 
     def _bucket_exists(self):
@@ -219,6 +220,23 @@ class S3Apps:
         _response = self.s3client.put_bucket_logging(Bucket=self.bucket, BucketLoggingStatus=logging_config)
         LOG.debug('Response setting up S3 logging: %s', _response)
         LOG.info('S3 logging configuration updated')
+
+    def _put_bucket_notification(self):
+        """Adds bucket notification configuration."""
+        notification_config = {}
+        if self.s3props['notification']['enabled']:
+            if 'topic_configurations' in self.s3props['notification']:
+                notification_config['TopicConfigurations'] = self.s3props['notification']['topic_configurations']
+            if 'queue_configurations' in self.s3props['notification']:
+                notification_config['QueueConfigurations'] = self.s3props['notification']['queue_configurations']
+            if 'lambda_configurations' in self.s3props['notification']:
+                notification_config['LambdaFunctionConfigurations'] = \
+                    self.s3props['notification']['lambda_configurations']
+        LOG.debug('Notification Config: %s', notification_config)
+        _response = self.s3client.put_bucket_notification_configuration(Bucket=self.bucket,
+                                                                        NotificationConfiguration=notification_config)
+        LOG.debug('Response setting up S3 notification: %s', _response)
+        LOG.info('S3 notification configuration updated')
 
     def _put_bucket_tagging(self):
         """Add bucket tags to bucket."""
