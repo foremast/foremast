@@ -39,7 +39,7 @@ def post_task(task_data, task_uri='/tasks'):
         AssertionError: Error response from Spinnaker.
 
     """
-    url = '{}/{}'.format(API_URL, task_uri)
+    url = '{}/{}'.format(API_URL, task_uri.lstrip('/'))
 
     if isinstance(task_data, str):
         task_json = task_data
