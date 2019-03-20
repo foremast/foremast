@@ -3,7 +3,6 @@ boto3
 deepmerge
 gogo-utils
 jinja2
-murl
 python-gitlab
 requests
 tryagain

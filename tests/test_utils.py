@@ -77,8 +77,7 @@ def test_utils_pipeline_check_managed():
 
 
 @mock.patch('requests.get')
-@mock.patch('foremast.utils.pipelines.murl')
-def test_utils_pipeline_get_all_pipelines(mock_murl, mock_requests_get):
+def test_utils_pipeline_get_all_pipelines(mock_requests_get):
     mock_requests_get.return_value.json.return_value = {}
     result = get_all_pipelines(app='app')
     assert result == {}
@@ -129,9 +128,8 @@ def test_utils_post_slack_message(mock_slack):
 
 
 @mock.patch('requests.get')
-@mock.patch('foremast.utils.pipelines.murl')
 @mock.patch('foremast.utils.apps.API_URL', 'http://test.com')
-def test_utils_apps_get_details(mock_murl, mock_requests_get):
+def test_utils_apps_get_details(mock_requests_get):
     data = {'attributes': {'repoProjectKey': 'group', 'repoSlug': 'repo1'}}
     mock_requests_get.return_value.json.return_value = data
 
@@ -145,9 +143,8 @@ def test_utils_apps_get_details(mock_murl, mock_requests_get):
 
 
 @mock.patch('requests.get')
-@mock.patch('foremast.utils.pipelines.murl')
 @mock.patch('foremast.utils.apps.API_URL', 'http://test.com')
-def test_utils_apps_get_all_apps(mock_murl, mock_requests_get):
+def test_utils_apps_get_all_apps(mock_requests_get):
     data = []
     mock_requests_get.return_value.json.return_value = data
 
