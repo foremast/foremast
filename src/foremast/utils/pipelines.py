@@ -16,7 +16,6 @@
 """Check Pipeline name to match format."""
 import logging
 
-import murl
 import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
@@ -72,9 +71,8 @@ def get_all_pipelines(app=''):
         requests.models.Response: Response from Gate containing Pipelines.
 
     """
-    url = murl.Url(API_URL)
-    url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
-    response = requests.get(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    url = '{host}/applications/{app}/pipelineConfigs'.format(host=API_URL, app=app)
+    response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     assert response.ok, 'Could not retrieve Pipelines for {0}.'.format(app)
 

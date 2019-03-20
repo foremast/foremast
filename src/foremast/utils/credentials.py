@@ -16,7 +16,6 @@
 """Retrieve Account Credential from Gate API."""
 import logging
 
-import murl
 import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
@@ -72,9 +71,8 @@ def get_env_credential(env='dev'):
             }
 
     """
-    url = murl.Url(API_URL)
-    url.path = '/'.join(['credentials', env])
-    credential_response = requests.get(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    url = '/'.join([API_URL, 'credentials', env])
+    credential_response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     assert credential_response.ok, 'Could not get credentials from Spinnaker.'
 
