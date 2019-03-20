@@ -19,7 +19,6 @@ from .banners import *
 from .pipelines import *
 from .deep_chain_map import DeepChainMap
 from .elb import *
-from .gate import *
 from .encoding import *
 from .generate_filename import *
 from .dns import *
