@@ -253,6 +253,14 @@ scaling policy will be attached
    | *Type*: boolean
    | *Default*: ``true``
 
+``increase_scaling_adjustment`` : Amount to increment by on scale up policies
+   | *Type*: int
+   | *Default*: 1
+
+``decrease_scaling_adjustment`` : Amount to decrement by on scale down policies
+   | *Type*: int
+   | *Default*: -1
+
 ``period_minutes`` : Time period to look across for determining if threshold was
 met. If you wish to have seconds, using a floating point such as .5 for 30 seconds.
 
