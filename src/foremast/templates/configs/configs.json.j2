@@ -25,7 +25,10 @@
         "provider_healthcheck": {
             "amazon": false
         },
-        "scaling_policy": {}
+        "scaling_policy": {
+            "increase_scaling_adjustment": 1,
+            "decrease_scaling_adjustment": -1
+        }
     },
     "elb": {
         "certificate": null,

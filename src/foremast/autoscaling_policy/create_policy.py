@@ -71,16 +71,18 @@ class AutoScalingPolicy:
             'scaling_policy': self.settings['asg']['scaling_policy'],
         }
         if scaling_type == 'scale_up':
+            scale_up_adjustment = int(self.settings['asg']['scaling_policy']['increase_scaling_adjustment'])
             template_kwargs['operation'] = 'increase'
             template_kwargs['comparisonOperator'] = 'GreaterThanThreshold'
-            template_kwargs['scalingAdjustment'] = 1
+            template_kwargs['scalingAdjustment'] = scale_up_adjustment
 
         elif scaling_type == 'scale_down':
+            scale_down_adjustment = int(self.settings['asg']['scaling_policy']['decrease_scaling_adjustment'])
             cur_threshold = int(self.settings['asg']['scaling_policy']['threshold'])
             self.settings['asg']['scaling_policy']['threshold'] = floor(cur_threshold * 0.5)
             template_kwargs['operation'] = 'decrease'
             template_kwargs['comparisonOperator'] = 'LessThanThreshold'
-            template_kwargs['scalingAdjustment'] = -1
+            template_kwargs['scalingAdjustment'] = scale_down_adjustment
 
         rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
         self.log.info('Creating a %s policy in %s for %s', scaling_type, self.env, self.app)
