@@ -71,13 +71,13 @@ class AutoScalingPolicy:
             'scaling_policy': self.settings['asg']['scaling_policy'],
         }
         if scaling_type == 'scale_up':
-            scale_up_adjustment = int(self.settings['asg']['scaling_policy']['increase_scaling_adjustment'])
+            scale_up_adjustment = int(self.settings['asg']['scaling_policy'].get('increase_scaling_adjustment', 1))
             template_kwargs['operation'] = 'increase'
             template_kwargs['comparisonOperator'] = 'GreaterThanThreshold'
             template_kwargs['scalingAdjustment'] = scale_up_adjustment
 
         elif scaling_type == 'scale_down':
-            scale_down_adjustment = int(self.settings['asg']['scaling_policy']['decrease_scaling_adjustment'])
+            scale_down_adjustment = int(self.settings['asg']['scaling_policy'].get('decrease_scaling_adjustment', -1))
             cur_threshold = int(self.settings['asg']['scaling_policy']['threshold'])
             self.settings['asg']['scaling_policy']['threshold'] = floor(cur_threshold * 0.5)
             template_kwargs['operation'] = 'decrease'
