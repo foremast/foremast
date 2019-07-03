@@ -1,4 +1,0 @@
-strictness: veryhigh 
-pep8:
-    options:
-        max-line-length 120
