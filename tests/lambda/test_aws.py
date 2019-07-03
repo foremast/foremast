@@ -17,6 +17,7 @@ TEST_PROPERTIES = {
         'lambda_memory': 0,
         'lambda_timeout': 0,
         'lambda_environment': None,
+        'lambda_layers': None,
     }
 }
 GENERATED_IAM = {
