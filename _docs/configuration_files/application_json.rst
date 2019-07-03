@@ -105,6 +105,14 @@ Environment variables which are passed to the lambda function.
        }
    }
 
+``lambda_layers``
+*****************
+
+List of AWS Lambda Layer ARNs to add to Lambda Function
+
+    | *Type*: list
+    | *Default*: ``[]``
+
 ``lambda_memory``
 *****************
 
