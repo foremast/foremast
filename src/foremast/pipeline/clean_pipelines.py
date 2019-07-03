@@ -39,8 +39,7 @@ def delete_pipeline(app='', pipeline_name=''):
         if response.status_code == requests.status_codes.codes['method_not_allowed']:
             raise SpinnakerPipelineDeletionFailed('Failed to delete "{0}" from "{1}", '
                                                   'possibly invalid Pipeline name.'.format(safe_pipeline_name, app))
-        else:
-            LOG.debug('Pipeline missing, no delete required.')
+        LOG.debug('Pipeline missing, no delete required.')
 
     LOG.debug('Deleted "%s" Pipeline response:\n%s', safe_pipeline_name, response.text)
 

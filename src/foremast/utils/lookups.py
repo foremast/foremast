@@ -198,8 +198,8 @@ class FileLookup():
             msg = 'Project "{0}" is missing file "{1}" in "{2}" branch.'.format(self.git_short, filename, branch)
             LOG.warning(msg)
             raise FileNotFoundError(msg)
-        else:
-            file_contents = b64decode(file_blob.content).decode()
+
+        file_contents = b64decode(file_blob.content).decode()
 
         LOG.debug('Remote file contents:\n%s', file_contents)
         return file_contents

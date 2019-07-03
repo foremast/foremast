@@ -50,7 +50,7 @@ def check_managed_pipeline(name='', app_name=''):
         LOG.debug('"%s" does not end with "[region]".', name)
         raise ValueError(not_managed_message)
 
-    if len(pipeline_name_prefix) is not 1:
+    if len(pipeline_name_prefix) != 1:
         LOG.debug('"%s" does not only have one word before [region].', name)
         raise ValueError(not_managed_message)
 
