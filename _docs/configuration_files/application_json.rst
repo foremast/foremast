@@ -125,10 +125,11 @@ Override the default generated IAM Role name.
 ``lambda_timeout``
 ******************
 
-The timeout setting for Lambda function
+The timeout setting for Lambda function. See official limits
+https://docs.aws.amazon.com/lambda/latest/dg/limits.html
 
     | *Type*: string
-    | *Default*: ``"3600"``
+    | *Default*: ``"900"``
     | *Units*: Seconds
 
 ``asg`` Block
