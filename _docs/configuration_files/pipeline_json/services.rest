@@ -37,6 +37,14 @@ Add CloudWatch Limited access.
    | *Type*: boolean
    | *Default*: ``false``
 
+``datapipeline``
+*******
+
+Allows a data pipeline to be trigger e.g. via lambda.
+
+   | *Type*: boolean
+   | *Default*: ``false``
+
 ``dynamodb``
 ************
 
