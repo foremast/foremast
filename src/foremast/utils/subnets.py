@@ -58,7 +58,7 @@ def get_subnets(
 
     subnet_list = subnet_response.json()
     for subnet in subnet_list:
-        LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t' '%(availabilityZone)s', subnet)
+        LOG.debug('Subnet Response: %s', subnet)
 
         if subnet.get('target', '') == target:
             availability_zone = subnet['availabilityZone']
