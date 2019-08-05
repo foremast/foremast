@@ -28,8 +28,18 @@
     }
   ],
   "stages": [
-    {% if data.app.deploy_type not in ["lambda", "s3", "datapipeline"] %}
+    {% if data.app.deploy_type not in ["lambda", "s3", "datapipeline", "kubernetes"] %}
       {% include "pipeline/stage-bake.json.j2" %}
     {% endif %}
-   ]
+   ],
+  {% if data.app.deploy_type == "kubernetes" %}
+  "cloudProviders": "kubernetes"
+  {% endif %},
+  "dataSources": {
+    "enabled": [
+      {% if data.app.deploy_type == "kubernetes" %}
+      "canaryConfigs",
+      {% endif %}
+    ]
+  }
 }
