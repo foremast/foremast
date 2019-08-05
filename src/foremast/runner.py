@@ -113,6 +113,8 @@ class ForemastRunner:
                 spinnakerpipeline = pipeline.SpinnakerPipelineDataPipeline(**kwargs)
             elif pipeline_type == 'manual':
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
+            elif pipeline_type == 'kubernetes':
+                spinnakerpipeline = pipeline.SpinnakerPipelineKubernetesPipeline(**kwargs)
             else:
                 # Handles all other pipelines
                 spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
