@@ -21,7 +21,7 @@ from pprint import pformat
 from ..utils import get_template
 from ..consts import DEFAULT_RUN_AS_USER
 from .clean_pipelines import clean_pipelines
-from .construct_pipeline_block_datapipeline import construct_datapipeline
+from .construct_pipeline_block_kubernetes import construct_kubernetespipeline
 from .create_pipeline import SpinnakerPipeline
 from .renumerate_stages import renumerate_stages
 
@@ -105,7 +105,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
             previous_env = None
             for env in envs:
 
-                block = construct_datapipeline(
+                block = construct_kubernetespipeline(
                     env=env,
                     generated=self.generated,
                     previous_env=previous_env,
