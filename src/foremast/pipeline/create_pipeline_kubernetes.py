@@ -20,10 +20,10 @@ from pprint import pformat
 
 from ..utils import get_template
 from ..consts import DEFAULT_RUN_AS_USER
-from .clean_pipelines import clean_pipelines
+#from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_kubernetes import construct_kubernetespipeline
 from .create_pipeline import SpinnakerPipeline
-from .renumerate_stages import renumerate_stages
+#from .renumerate_stages import renumerate_stages
 
 
 class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
@@ -36,7 +36,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         prop_path (str): Path to the raw.properties.json.
     """
 
-    def render_wrapper(self, region='us-east-1'):
+    def render_wrapper(self, region=''):
         """Generate the base Pipeline wrapper.
 
         This renders the non-repeatable stages in a pipeline, like jenkins, baking, tagging and notifications.
@@ -47,6 +47,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         Returns:
             dict: Rendered Pipeline wrapper.
         """
+        # Set region to app name which is namespace in k8s
         base = self.base or self.settings['pipeline']['base']
 
         email = self.settings['pipeline']['notifications']['email']
@@ -85,42 +86,39 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         3. Renders all of the pipeline blocks as defined in configs
         4. Runs post_pipeline to create pipeline
         """
-        clean_pipelines(app=self.app_name, settings=self.settings)
+        #ToDo: Taken out until we sort out the region/env/account mappings from foremast->spin->k8s
+        #clean_pipelines(app=self.app_name, settings=self.settings)
 
         pipeline_envs = self.environments
         self.log.debug('Envs from pipeline.json: %s', pipeline_envs)
 
-        regions_envs = collections.defaultdict(list)
-        for env in pipeline_envs:
-            for region in self.settings[env]['regions']:
-                regions_envs[region].append(env)
-        self.log.info('Environments and Regions for Pipelines:\n%s', json.dumps(regions_envs, indent=4))
+        # regions_envs = collections.defaultdict(list)
+        # for env in pipeline_envs:
+        #     region = self.app_name # set region to app name (this is namespace in kubernetes)
+        #     regions_envs[region].append(env)
 
+        #self.log.info('Environments and Regions for Pipelines:\n%s', json.dumps(regions_envs, indent=4))
+
+        region = self.app_name # Spinnaker region = K8S namespace, set to app name
         pipelines = {}
-        for region, envs in regions_envs.items():
-            # TODO: Overrides for an environment no longer makes sense. Need to
-            # provide override for entire Region possibly.
-            pipelines[region] = self.render_wrapper(region=region)
-
-            previous_env = None
-            for env in envs:
-
-                block = construct_kubernetespipeline(
+        for env in pipeline_envs:
+            pipelines[env] = self.render_wrapper(region=region)
+            pipeline_template_raw = construct_kubernetespipeline(
                     env=env,
                     generated=self.generated,
-                    previous_env=previous_env,
-                    region=region,
-                    settings=self.settings[env][region],
+                    previous_env=None,
+                    #settings=self.settings[env][region],
                     pipeline_data=self.settings['pipeline'])
-                pipelines[region]['stages'].extend(json.loads(block))
-
-                previous_env = env
+            pipeline_template = json.loads(pipeline_template_raw)
+            # Merge template and wrapper into 1 pipeline
+            pipelines[env].update(pipeline_template)
 
         self.log.debug('Assembled Pipelines:\n%s', pformat(pipelines))
 
-        for region, pipeline in pipelines.items():
-            renumerate_stages(pipeline)
-
+        for env, pipeline in pipelines.items():
+            #ToDo: Determine if renumerate_stages is needed in k8s
+            #Needed if we can break each pipeline into seperate stages
+            #renumerate_stages(pipeline)
             self.post_pipeline(pipeline)
 
         return True

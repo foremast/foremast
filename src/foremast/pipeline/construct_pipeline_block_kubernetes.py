@@ -26,8 +26,7 @@ LOG = logging.getLogger(__name__)
 def construct_kubernetespipeline(env='',
                            generated=None,
                            previous_env=None,
-                           region='us-east-1',
-                           settings=None,
+                         #  settings=None,
                            pipeline_data=None):
     """Create the Pipeline JSON from template.
 
@@ -39,35 +38,34 @@ def construct_kubernetespipeline(env='',
         generated (gogoutils.Generator): Gogo Application name generator.
         previous_env (str): The previous deploy environment to use as
             Trigger.
-        region (str): AWS Region to deploy to.
         settings (dict): Environment settings from configurations.
 
     Returns:
         dict: Pipeline JSON template rendered with configurations.
     """
-    LOG.info('%s block for [%s].', env, region)
 
-    if env.startswith('prod'):
-        template_name = 'pipeline/pipeline_{}_datapipeline.json.j2'.format(env)
-    else:
-        template_name = 'pipeline/pipeline_stages_datapipeline.json.j2'
-
-    LOG.debug('%s info:\n%s', env, pformat(settings))
+    # Choose the appropriate kubernetes template based on their decision in pipeline.json file
+    k8s_pipeline_type = pipeline_data['kubernetes']['pipeline_type']
+    template_name = 'pipeline/pipeline_kubernetes_{}.json.j2'.format(k8s_pipeline_type)
+    LOG.debug('using kubernetes.pipeline_type of "%s", template file "%s"', k8s_pipeline_type, template_name)
 
     gen_app_name = generated.app_name()
 
-    data = copy.deepcopy(settings)
-
+    # commenting out until region in kubernetes is figured out
+    # ToDo: Figure out region in k8s
+    #data = copy.deepcopy(settings)
+    data = dict()
+    data['app'] = dict()
     data['app'].update({
         'appname': gen_app_name,
         'repo_name': generated.repo,
         'group_name': generated.project,
         'environment': env,
-        'region': region,
+        'region': k8s_pipeline_type, # No AWS/Azure/etc. regions for k8s deployments.  Set to k8s deployment type so it makes it into the pipeline name
         'previous_env': previous_env,
         'promote_restrict': pipeline_data['promote_restrict'],
         'owner_email': pipeline_data['owner_email'],
-        'kubernetes_account_name': pipeline_data['kubernetes']['kubernetes_account_name'],
+        'kubernetes_account_name': k8s_pipeline_type,
         'manifest_account_name': pipeline_data['kubernetes']['manifest_account_name']
     })
 
