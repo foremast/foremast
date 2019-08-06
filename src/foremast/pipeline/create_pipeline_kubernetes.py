@@ -16,9 +16,10 @@
 """Create Pipelines for Spinnaker."""
 import json
 from pprint import pformat
-
+import requests
 from ..utils import get_template
-from ..consts import DEFAULT_RUN_AS_USER
+from ..exceptions import SpinnakerPipelineCreationFailed
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, DEFAULT_RUN_AS_USER
 # from .clean_pipelines import clean_pipelines
 from .create_pipeline import SpinnakerPipeline
 
@@ -120,4 +121,44 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
             'id': pipeline_id
         }
 
+        # If they specified a canary name, add it to the jinja template data
+        if 'canaryConfigName' in self.settings['pipeline']['kubernetes'].keys():
+            data['canary'] = self.create_canary_config()
+  
         return data
+
+    def create_canary_config(self):
+        """Creats a canary config that can be passed to the a J2 template for kayenta canaries
+        """
+        kube_config = self.settings['pipeline']['kubernetes']
+        interval_minutes = kube_config['canaryAnalysisIntervalMins']
+        canary_name = kube_config['canaryConfigName']
+
+        canary = {
+            'canaryAnalysisIntervalMins': interval_minutes,
+            'canaryConfigId': self.get_canary_id(canary_name)
+        }
+
+        return canary
+
+    def get_canary_id(self, name):
+        """Finds a canary config ID matching the name passed
+        """
+        url = "{}/v2/canaryConfig".format(API_URL)
+        canary_response = requests.get(url, headers=self.header, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+
+        if not canary_response.ok:
+            raise SpinnakerPipelineCreationFailed('Pipeline for {0}: {1}'.format(self.app_name,
+                                                                                 canary_response.json()))
+
+        canary_configs = canary_response.json()
+        names = []
+        for config in canary_configs:
+            names.append(config['name'])
+            if config['name'] == name:
+                return config['id']
+
+        raise SpinnakerPipelineCreationFailed(
+            'Pipeline for {0}: Could not find canary config named {1}.  Options are: {2}'
+            .format(self.app_name, name, names))
+        

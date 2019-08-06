@@ -37,13 +37,11 @@
     {% endif %}
    ],
   {% if data.app.deploy_type == "kubernetes" %}
-  "cloudProviders": "kubernetes"
-  {% endif %},
+  "cloudProviders": "kubernetes",
   "dataSources": {
     "enabled": [
-      {% if data.app.deploy_type == "kubernetes" %}
       "canaryConfigs"
-      {% endif %}
     ]
   }
+  {% endif %}
 }
