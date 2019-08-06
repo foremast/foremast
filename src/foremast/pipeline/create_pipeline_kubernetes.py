@@ -14,16 +14,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Create Pipelines for Spinnaker."""
-import collections
 import json
 from pprint import pformat
 
 from ..utils import get_template
 from ..consts import DEFAULT_RUN_AS_USER
-#from .clean_pipelines import clean_pipelines
+# from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_kubernetes import construct_kubernetespipeline
 from .create_pipeline import SpinnakerPipeline
-#from .renumerate_stages import renumerate_stages
 
 
 class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
@@ -60,8 +58,8 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         3. Renders all of the pipeline blocks as defined in configs
         4. Runs post_pipeline to create pipeline
         """
-        #ToDo: Taken out until we sort out the region/env/account mappings from foremast->spin->k8s
-        #clean_pipelines(app=self.app_name, settings=self.settings)
+        # ToDo: Taken out until we sort out the region/env/account mappings from foremast->spin->k8s
+        # clean_pipelines(app=self.app_name, settings=self.settings)
 
         pipeline_envs = self.environments
         self.log.debug('Envs from pipeline.json: %s', pipeline_envs)
@@ -74,7 +72,6 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
                 env=env,
                 generated=self.generated,
                 previous_env=None,
-                #settings=self.settings[env][region],
                 pipeline_data=self.settings['pipeline'])
             pipeline_template = json.loads(pipeline_template_raw)
             # Merge template and wrapper into 1 pipeline
@@ -83,16 +80,16 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         self.log.debug('Assembled Pipelines:\n%s', pformat(pipelines))
 
         for env, pipeline in pipelines.items():
-            #ToDo: Determine if renumerate_stages is needed in k8s
-            #Needed if we can break each pipeline into seperate stages
-            #renumerate_stages(pipeline)
+            # ToDo: Determine if renumerate_stages is needed in k8s
+            # Needed if we can break each pipeline into seperate stages
+            # renumerate_stages(pipeline)
             self.post_pipeline(pipeline)
 
         return True
 
     def generate_template_data(self, environment):
         """Generates the data used to populate the Jinja 2 template for each pipeline."""
-        
+
         region = self.app_name
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']

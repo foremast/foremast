@@ -14,7 +14,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Construct a block section of Stages in a Spinnaker Pipeline."""
-import copy
 import logging
 from pprint import pformat
 
@@ -24,10 +23,9 @@ LOG = logging.getLogger(__name__)
 
 
 def construct_kubernetespipeline(env='',
-                           generated=None,
-                           previous_env=None,
-                         #  settings=None,
-                           pipeline_data=None):
+                                 generated=None,
+                                 previous_env=None,
+                                 pipeline_data=None):
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -53,7 +51,7 @@ def construct_kubernetespipeline(env='',
 
     # commenting out until region in kubernetes is figured out
     # ToDo: Figure out region in k8s
-    #data = copy.deepcopy(settings)
+    # data = copy.deepcopy(settings)
     data = dict()
     data['app'] = dict()
     data['app'].update({
