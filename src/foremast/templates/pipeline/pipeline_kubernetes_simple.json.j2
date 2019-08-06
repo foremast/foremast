@@ -1,4 +1,75 @@
 {
+  "expectedArtifacts": [
+    {
+        "defaultArtifact": {
+        "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_ISTIO_PROD'] }",
+        "reference": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_ISTIO_PROD'] }",
+        "type": "gcs/object"
+        },
+        "displayName": "istio-prod-yaml",
+        "matchArtifact": {
+        "name": "",
+        "type": "gcs/object"
+        },
+        "useDefaultArtifact": true,
+        "usePriorArtifact": false
+    },
+    {
+        "defaultArtifact": {
+        "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_CANARY'] }",
+        "reference": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_CANARY'] }",
+        "type": "gcs/object"
+        },
+        "displayName": "kubernetes-canary-yaml",
+        "matchArtifact": {
+        "name": "",
+        "type": "gcs/object"
+        },
+        "useDefaultArtifact": true,
+        "usePriorArtifact": false
+    },
+    {
+        "defaultArtifact": {
+        "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_PROD'] }",
+        "reference": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_PROD'] }",
+        "type": "gcs/object"
+        },
+        "displayName": "kubernetes-prod-yaml",
+        "matchArtifact": {
+        "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_PROD'] }",
+        "type": "gcs/object"
+        },
+        "useDefaultArtifact": true,
+        "usePriorArtifact": false
+    },
+    {
+        "defaultArtifact": {
+        "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_ISTIO_CANARY'] }",
+        "reference": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_ISTIO_CANARY'] }",
+        "type": "gcs/object"
+        },
+        "displayName": "istio-canary-yaml",
+        "matchArtifact": {
+        "name": "",
+        "type": "gcs/object"
+        },
+        "useDefaultArtifact": true,
+        "usePriorArtifact": false
+    },
+    {
+        "defaultArtifact": {
+        "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_BASELINE'] }",
+        "reference": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_BASELINE'] }",
+        "type": "gcs/object"
+        },
+        "displayName": "kubernetes-baseline-yaml-future",
+        "matchArtifact": {
+        "type": "gcs/object"
+        },
+        "useDefaultArtifact": true,
+        "usePriorArtifact": false
+    }
+  ],
   "stages": [
     {
       "account": "{{ data.app.environment }}",

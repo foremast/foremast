@@ -1,5 +1,9 @@
 {
+  {% if data.app.deploy_type == "kubernetes" %}
+  "name": "{{ data.app.appname }} [{{ data.app.environment }}]",
+  {% else %}
   "name": "{{ data.app.appname }} [{{ data.app.region }}]",
+  {% endif %}
   {% if data.id %}
   "id": "{{ data.id }}",
   {% endif %}

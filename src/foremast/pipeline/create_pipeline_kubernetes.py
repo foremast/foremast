@@ -81,11 +81,6 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         # Contains generic wrapper (non-stage) pipeline configs
         wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data, formats=self.generated)
         wrapper = json.loads(wrapper)
-        # Contains kubernetes specific (non-stage) pipelie configs, like artifacts and overwriting the pipeline naming convention
-        wrapper_kubernetes = get_template(template_file='pipeline/pipeline_wrapper_kubernetes.json.j2', data=data, formats=self.generated)
-        wrapper_kubernetes = json.loads(wrapper_kubernetes)
-        # Merge the two together, with k8s overriding defaults
-        wrapper.update(wrapper_kubernetes)
         return wrapper
 
     def create_pipeline(self):
