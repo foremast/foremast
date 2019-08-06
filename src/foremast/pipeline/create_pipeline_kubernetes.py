@@ -36,7 +36,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         prop_path (str): Path to the raw.properties.json.
     """
 
-    def render_wrapper_kubernetes(self, region, environment):
+    def render_wrapper_kubernetes(self, data):
         """Generate the base Pipeline wrapper.
 
         This renders the non-repeatable stages in a pipeline, like jenkins, baking, tagging and notifications.
@@ -47,36 +47,6 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         Returns:
             dict: Rendered Pipeline wrapper.
         """
-        # Set region to app name which is namespace in k8s
-        region = self.app_name
-        base = self.base or self.settings['pipeline']['base']
-
-        email = self.settings['pipeline']['notifications']['email']
-        slack = self.settings['pipeline']['notifications']['slack']
-        deploy_type = self.settings['pipeline']['type']
-        # Pass env in as region when getting an existing pipeline ID
-        # This is because in AWS our pipelines are "name [region]" but in k8s they are "name [env/account]"
-        pipeline_id = self.compare_with_existing(region=environment)
-
-        data = {
-            'app': {
-                'appname': self.app_name,
-                'group_name': self.group_name,
-                'repo_name': self.repo_name,
-                'base': base,
-                'deploy_type': deploy_type,
-                'region': region,
-                'environment': environment,
-                'triggerjob': self.trigger_job,
-                'run_as_user': DEFAULT_RUN_AS_USER,
-                'email': email,
-                'slack': slack,
-                'pipeline': self.settings['pipeline']
-            },
-            'id': pipeline_id
-        }
-
-        self.log.debug('Wrapper app data:\n%s', pformat(data))
 
         # Contains generic wrapper (non-stage) pipeline configs
         wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data, formats=self.generated)
@@ -96,17 +66,10 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         pipeline_envs = self.environments
         self.log.debug('Envs from pipeline.json: %s', pipeline_envs)
 
-        # regions_envs = collections.defaultdict(list)
-        # for env in pipeline_envs:
-        #     region = self.app_name # set region to app name (this is namespace in kubernetes)
-        #     regions_envs[region].append(env)
-
-        #self.log.info('Environments and Regions for Pipelines:\n%s', json.dumps(regions_envs, indent=4))
-
-        region = self # Spinnaker region = K8S namespace, set to app name
         pipelines = {}
         for env in pipeline_envs:
-            pipelines[env] = self.render_wrapper_kubernetes(region=region, environment=env)
+            template_data = self.generate_template_data(env)
+            pipelines[env] = self.render_wrapper_kubernetes(template_data)
             pipeline_template_raw = construct_kubernetespipeline(
                 env=env,
                 generated=self.generated,
@@ -126,3 +89,33 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
             self.post_pipeline(pipeline)
 
         return True
+
+    def generate_template_data(self, environment):
+        """Generates the data used to populate the Jinja 2 template for each pipeline."""
+        
+        region = self.app_name
+        email = self.settings['pipeline']['notifications']['email']
+        slack = self.settings['pipeline']['notifications']['slack']
+        deploy_type = self.settings['pipeline']['type']
+        # Pass env in as region when getting an existing pipeline ID
+        # This is because in AWS our pipelines are "name [region]" but in k8s they are "name [env/account]"
+        pipeline_id = self.compare_with_existing(region=environment)
+
+        data = {
+            'app': {
+                'appname': self.app_name,
+                'group_name': self.group_name,
+                'repo_name': self.repo_name,
+                'deploy_type': deploy_type,
+                'region': region,
+                'environment': environment,
+                'triggerjob': self.trigger_job,
+                'run_as_user': DEFAULT_RUN_AS_USER,
+                'email': email,
+                'slack': slack,
+                'pipeline': self.settings['pipeline']
+            },
+            'id': pipeline_id
+        }
+
+        return data
