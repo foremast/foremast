@@ -1,75 +1,77 @@
 {
   "expectedArtifacts": [
     {
-        "defaultArtifact": {
+      "defaultArtifact": {
+        "id": "da60c92f-e404-40c6-8ace-8f0e60bb8f0f",
         "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_ISTIO_PROD'] }",
         "reference": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_ISTIO_PROD'] }",
         "type": "gcs/object"
-        },
-        "displayName": "istio-prod-yaml",
-        "matchArtifact": {
+      },
+      "displayName": "istio-prod-yaml",
+      "id": "66e647e1-a604-4698-a772-ff730fcdd1f7",
+      "matchArtifact": {
+        "id": "7a0fced3-5e38-4e70-a98f-001a4b5a400f",
         "name": "",
         "type": "gcs/object"
-        },
-        "useDefaultArtifact": true,
-        "usePriorArtifact": false
+      },
+      "useDefaultArtifact": true,
+      "usePriorArtifact": false
     },
     {
-        "defaultArtifact": {
+      "defaultArtifact": {
+        "id": "0c9f4a47-80a0-4ac5-91ca-f9fb839b5b62",
         "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_CANARY'] }",
         "reference": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_CANARY'] }",
         "type": "gcs/object"
-        },
-        "displayName": "kubernetes-canary-yaml",
-        "matchArtifact": {
+      },
+      "displayName": "kubernetes-canary-yaml",
+      "id": "298a85c5-c4df-4ec7-88af-b059a20727f8",
+      "matchArtifact": {
+        "id": "f91c54ce-7bef-4567-a47f-c6ca1960e3b8",
         "name": "",
         "type": "gcs/object"
-        },
-        "useDefaultArtifact": true,
-        "usePriorArtifact": false
+      },
+      "useDefaultArtifact": true,
+      "usePriorArtifact": false
     },
     {
-        "defaultArtifact": {
+      "defaultArtifact": {
+        "id": "568ed51a-5c8b-4534-a5d3-1d0e28880e10",
         "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_PROD'] }",
         "reference": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_PROD'] }",
         "type": "gcs/object"
-        },
-        "displayName": "kubernetes-prod-yaml",
-        "matchArtifact": {
+      },
+      "displayName": "kubernetes-prod-yaml",
+      "id": "43dea7a2-d0ed-448f-a703-eea3ccdf394a",
+      "matchArtifact": {
+        "id": "62d2476d-e55d-400d-a4ef-acb4aa942c59",
         "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_PROD'] }",
         "type": "gcs/object"
-        },
-        "useDefaultArtifact": true,
-        "usePriorArtifact": false
+      },
+      "useDefaultArtifact": true,
+      "usePriorArtifact": false
     },
     {
-        "defaultArtifact": {
+      "defaultArtifact": {
+        "id": "5915d2fb-a2d7-468a-86ec-5fdde73d3691",
         "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_ISTIO_CANARY'] }",
         "reference": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_ISTIO_CANARY'] }",
         "type": "gcs/object"
-        },
-        "displayName": "istio-canary-yaml",
-        "matchArtifact": {
+      },
+      "displayName": "istio-canary-yaml",
+      "id": "db205826-974d-40cb-b0c0-ea30ce1462bc",
+      "matchArtifact": {
+        "id": "6583d636-92cf-47a0-89eb-7d83a38574be",
         "name": "",
         "type": "gcs/object"
-        },
-        "useDefaultArtifact": true,
-        "usePriorArtifact": false
-    },
-    {
-        "defaultArtifact": {
-        "name": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_BASELINE'] }",
-        "reference": "${trigger['properties']['YAML_GCS_PATH']}${ trigger['properties']['YAML_NAME_KUBERNETES_BASELINE'] }",
-        "type": "gcs/object"
-        },
-        "displayName": "kubernetes-baseline-yaml-future",
-        "matchArtifact": {
-        "type": "gcs/object"
-        },
-        "useDefaultArtifact": true,
-        "usePriorArtifact": false
+      },
+      "useDefaultArtifact": true,
+      "usePriorArtifact": false
     }
   ],
+
+
+
   "stages": [
     {
       "account": "{{ data.app.environment }}",
@@ -78,6 +80,7 @@
       "continuePipeline": false,
       "failPipeline": true,
       "manifestArtifactAccount": "{{ data.app.manifest_account_name }}",
+      "manifestArtifactId": "db205826-974d-40cb-b0c0-ea30ce1462bc",
       "moniker": {
         "app": "{{ data.app.appname }}"
       },
@@ -107,6 +110,7 @@
       "continuePipeline": false,
       "failPipeline": true,
       "manifestArtifactAccount": "{{ data.app.manifest_account_name }}",
+      "manifestArtifactId": "298a85c5-c4df-4ec7-88af-b059a20727f8",
       "moniker": {
         "app": "{{ data.app.appname }}"
       },
@@ -185,6 +189,7 @@
       "account": "{{ data.app.environment }}",
       "cloudProvider": "kubernetes",
       "manifestArtifactAccount": "{{ data.app.manifest_account_name }}",
+      "manifestArtifactId": "66e647e1-a604-4698-a772-ff730fcdd1f7",
       "moniker": {
         "app": "{{ data.app.appname }}"
       },
@@ -211,6 +216,7 @@
       "continuePipeline": false,
       "failPipeline": true,
       "manifestArtifactAccount": "{{ data.app.manifest_account_name }}",
+      "manifestArtifactId": "43dea7a2-d0ed-448f-a703-eea3ccdf394a",
       "moniker": {
         "app": "{{ data.app.appname }}"
       },
