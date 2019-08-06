@@ -36,7 +36,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         prop_path (str): Path to the raw.properties.json.
     """
 
-    def render_wrapper(self, region=''):
+    def render_wrapper_kubernetes(self, region, environment):
         """Generate the base Pipeline wrapper.
 
         This renders the non-repeatable stages in a pipeline, like jenkins, baking, tagging and notifications.
@@ -54,7 +54,9 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
         deploy_type = self.settings['pipeline']['type']
-        pipeline_id = self.compare_with_existing(region=region)
+        # Pass env in as region when getting an existing pipeline ID
+        # This is because in AWS our pipelines are "name [region]" but in k8s they are "name [env/account]"
+        pipeline_id = self.compare_with_existing(region=environment)
 
         data = {
             'app': {
@@ -64,6 +66,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
                 'base': base,
                 'deploy_type': deploy_type,
                 'region': region,
+                'environment': environment,
                 'triggerjob': self.trigger_job,
                 'run_as_user': DEFAULT_RUN_AS_USER,
                 'email': email,
@@ -78,7 +81,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         # Contains generic wrapper (non-stage) pipeline configs
         wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data, formats=self.generated)
         wrapper = json.loads(wrapper)
-        # Contains kubernetes specific (non-stage) pipelie configs, like artifacts
+        # Contains kubernetes specific (non-stage) pipelie configs, like artifacts and overwriting the pipeline naming convention
         wrapper_kubernetes = get_template(template_file='pipeline/pipeline_wrapper_kubernetes.json.j2', data=data, formats=self.generated)
         wrapper_kubernetes = json.loads(wrapper_kubernetes)
         # Merge the two together, with k8s overriding defaults
@@ -105,10 +108,10 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
 
         #self.log.info('Environments and Regions for Pipelines:\n%s', json.dumps(regions_envs, indent=4))
 
-        region = self.app_name # Spinnaker region = K8S namespace, set to app name
+        region = self # Spinnaker region = K8S namespace, set to app name
         pipelines = {}
         for env in pipeline_envs:
-            pipelines[env] = self.render_wrapper(region=region)
+            pipelines[env] = self.render_wrapper_kubernetes(region=region, environment=env)
             pipeline_template_raw = construct_kubernetespipeline(
                 env=env,
                 generated=self.generated,
