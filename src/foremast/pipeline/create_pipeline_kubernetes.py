@@ -20,7 +20,6 @@ from pprint import pformat
 from ..utils import get_template
 from ..consts import DEFAULT_RUN_AS_USER
 # from .clean_pipelines import clean_pipelines
-from .construct_pipeline_block_kubernetes import construct_kubernetespipeline
 from .create_pipeline import SpinnakerPipeline
 
 
@@ -68,12 +67,15 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         for env in pipeline_envs:
             template_data = self.generate_template_data(env)
             pipelines[env] = self.render_wrapper_kubernetes(template_data)
-            pipeline_template_raw = construct_kubernetespipeline(
-                env=env,
-                generated=self.generated,
-                previous_env=None,
-                pipeline_data=self.settings['pipeline'])
-            pipeline_template = json.loads(pipeline_template_raw)
+            self.log.debug('Wrapper for env %s: %s', env, pipelines[env])
+
+            k8s_pipeline_type = self.settings['pipeline']['kubernetes']['pipeline_type']
+            template_name = 'pipeline/pipeline_kubernetes_{}.json.j2'.format(k8s_pipeline_type)
+            self.log.debug('using kubernetes.pipeline_type of "%s", template file "%s"',
+                           k8s_pipeline_type, template_name)
+
+            pipeline_json = get_template(template_file=template_name, data=template_data, formats=self.generated)
+            pipeline_template = json.loads(pipeline_json)
             # Merge template and wrapper into 1 pipeline
             pipelines[env].update(pipeline_template)
 
@@ -90,10 +92,12 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
     def generate_template_data(self, environment):
         """Generates the data used to populate the Jinja 2 template for each pipeline."""
 
-        region = self.app_name
-        email = self.settings['pipeline']['notifications']['email']
-        slack = self.settings['pipeline']['notifications']['slack']
-        deploy_type = self.settings['pipeline']['type']
+        region = self.app_name # k8s in spinnaker region = namespace (use appname instead of default)
+        pipeline = self.settings['pipeline']
+        email = pipeline['notifications']['email']
+        slack = pipeline['notifications']['slack']
+        manifest_account = pipeline['kubernetes']['manifest_account_name']
+        deploy_type = pipeline['type']
         # Pass env in as region when getting an existing pipeline ID
         # This is because in AWS our pipelines are "name [region]" but in k8s they are "name [env/account]"
         pipeline_id = self.compare_with_existing(region=environment)
@@ -110,7 +114,8 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
                 'run_as_user': DEFAULT_RUN_AS_USER,
                 'email': email,
                 'slack': slack,
-                'pipeline': self.settings['pipeline']
+                'pipeline': pipeline,
+                'manifest_account_name': manifest_account
             },
             'id': pipeline_id
         }
