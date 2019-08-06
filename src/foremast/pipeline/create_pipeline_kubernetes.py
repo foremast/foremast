@@ -48,6 +48,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
             dict: Rendered Pipeline wrapper.
         """
         # Set region to app name which is namespace in k8s
+        region = self.app_name
         base = self.base or self.settings['pipeline']['base']
 
         email = self.settings['pipeline']['notifications']['email']
@@ -62,7 +63,6 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
                 'repo_name': self.repo_name,
                 'base': base,
                 'deploy_type': deploy_type,
-                'environment': 'packaging',
                 'region': region,
                 'triggerjob': self.trigger_job,
                 'run_as_user': DEFAULT_RUN_AS_USER,
@@ -75,9 +75,15 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
+        # Contains generic wrapper (non-stage) pipeline configs
         wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data, formats=self.generated)
-
-        return json.loads(wrapper)
+        wrapper = json.loads(wrapper)
+        # Contains kubernetes specific (non-stage) pipelie configs, like artifacts
+        wrapper_kubernetes = get_template(template_file='pipeline/pipeline_wrapper_kubernetes.json.j2', data=data, formats=self.generated)
+        wrapper_kubernetes = json.loads(wrapper_kubernetes)
+        # Merge the two together, with k8s overriding defaults
+        wrapper.update(wrapper_kubernetes)
+        return wrapper
 
     def create_pipeline(self):
         """Main wrapper for pipeline creation.
@@ -104,11 +110,11 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         for env in pipeline_envs:
             pipelines[env] = self.render_wrapper(region=region)
             pipeline_template_raw = construct_kubernetespipeline(
-                    env=env,
-                    generated=self.generated,
-                    previous_env=None,
-                    #settings=self.settings[env][region],
-                    pipeline_data=self.settings['pipeline'])
+                env=env,
+                generated=self.generated,
+                previous_env=None,
+                #settings=self.settings[env][region],
+                pipeline_data=self.settings['pipeline'])
             pipeline_template = json.loads(pipeline_template_raw)
             # Merge template and wrapper into 1 pipeline
             pipelines[env].update(pipeline_template)

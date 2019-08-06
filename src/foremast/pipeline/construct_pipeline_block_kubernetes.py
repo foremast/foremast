@@ -61,11 +61,10 @@ def construct_kubernetespipeline(env='',
         'repo_name': generated.repo,
         'group_name': generated.project,
         'environment': env,
-        'region': k8s_pipeline_type, # No AWS/Azure/etc. regions for k8s deployments.  Set to k8s deployment type so it makes it into the pipeline name
+        'region': k8s_pipeline_type,
         'previous_env': previous_env,
         'promote_restrict': pipeline_data['promote_restrict'],
         'owner_email': pipeline_data['owner_email'],
-        'kubernetes_account_name': k8s_pipeline_type,
         'manifest_account_name': pipeline_data['kubernetes']['manifest_account_name']
     })
 
