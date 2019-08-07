@@ -40,7 +40,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         This renders the non-repeatable stages in a pipeline, like jenkins, baking, tagging and notifications.
 
         Args:
-            region (str): AWS Region.
+            data (dict): A dictionary with data to be used in the template
 
         Returns:
             dict: Rendered Pipeline wrapper.
@@ -53,10 +53,15 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
 
     def create_pipeline(self):
         """Main wrapper for pipeline creation.
-        1. Runs clean_pipelines to clean up existing ones
-        2. determines which environments the pipeline needs
-        3. Renders all of the pipeline blocks as defined in configs
-        4. Runs post_pipeline to create pipeline
+        1. Cleans up existing pipelines
+        2. Determines which environments and pipelines are needed
+        3. Created one pipeline PER environment given
+        4. Renders pipeline json from the template matching deployment_type given
+        5. Runs post_pipeline for each pipeline generated
+
+        Args:
+        Returns:
+            bool: True if pipelines were created successfully
         """
 
         pipeline_envs = self.environments
@@ -84,9 +89,6 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         self.log.debug('Assembled Pipelines:\n%s', pformat(pipelines))
 
         for env, pipeline in pipelines.items():
-            # ToDo: Determine if renumerate_stages is needed in k8s
-            # Needed if we can break each pipeline into seperate stages
-            # renumerate_stages(pipeline)
             self.post_pipeline(pipeline)
 
         return True
@@ -151,7 +153,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
 
         # If they specified a canary name, add it to the jinja template data
         if 'canaryConfigName' in self.settings['pipeline']['kubernetes'].keys():
-            data['canary'] = self.create_canary_config()       
+            data['canary'] = self.create_canary_config()     
         return data
 
     def create_canary_config(self):
