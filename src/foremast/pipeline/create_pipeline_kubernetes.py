@@ -119,11 +119,10 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
 
         return deleted_pipelines
 
-
     def generate_template_data(self, environment):
         """Generates the data used to populate the Jinja 2 template for each pipeline."""
 
-        region = self.app_name # k8s in spinnaker region = namespace (use appname instead of default)
+        region = self.app_name  # k8s in spinnaker region = namespace (use appname instead of default)
         pipeline = self.settings['pipeline']
         email = pipeline['notifications']['email']
         slack = pipeline['notifications']['slack']
@@ -153,7 +152,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
 
         # If they specified a canary name, add it to the jinja template data
         if 'canaryConfigName' in self.settings['pipeline']['kubernetes'].keys():
-            data['canary'] = self.create_canary_config()     
+            data['canary'] = self.create_canary_config()
         return data
 
     def create_canary_config(self):
@@ -175,7 +174,7 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         return canary
 
     def get_canary_id(self, name):
-        """Finds a canary config ID matching the name passed.  
+        """Finds a canary config ID matching the name passed.
         Assumes the canary name is unique and the first match wins.
         """
         url = "{}/v2/canaryConfig".format(API_URL)
@@ -195,4 +194,3 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
         raise SpinnakerPipelineCreationFailed(
             'Pipeline for {0}: Could not find canary config named {1}.  Options are: {2}'
             .format(self.app_name, name, names))
-        
