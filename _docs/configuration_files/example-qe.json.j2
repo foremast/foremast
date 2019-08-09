@@ -1,0 +1,16 @@
+    {
+      "requisiteStageRefIds":[""],
+      "refId": "master",
+      "type": "jenkins",
+      "name": "{{ data.app.environment|upper }}: Quality Tests",
+      "continuePipeline": false,
+      "failPipeline": true,
+      "master": "{{ data.qe.jenkins_master or 'jenkins' }}",
+      "job": "{{ data.qe.test_job }}",
+      "parameters": {
+        {% for param_name, param_value in data.qe.test_params.items() %}
+          "{{ param_name }}": "{{ param_value }}"
+          {%- if not loop.last -%},{%- endif -%}
+        {% endfor %}
+        }
+    }
