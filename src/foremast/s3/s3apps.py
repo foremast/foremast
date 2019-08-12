@@ -224,12 +224,13 @@ class S3Apps:
     def _put_bucket_notification(self):
         """Adds bucket notification configuration."""
         notification_config = {}
+
         if self.s3props['notification']['enabled']:
-            if 'topic_configurations' in self.s3props['notification']:
+            if 'topic_configurations' in self.s3props['notification'] and self.s3props['notification']['topic_configurations'] != [{}]:
                 notification_config['TopicConfigurations'] = self.s3props['notification']['topic_configurations']
-            if 'queue_configurations' in self.s3props['notification']:
+            if 'queue_configurations' in self.s3props['notification'] and self.s3props['notification']['queue_configurations'] != [{}]:
                 notification_config['QueueConfigurations'] = self.s3props['notification']['queue_configurations']
-            if 'lambda_configurations' in self.s3props['notification']:
+            if 'lambda_configurations' in self.s3props['notification'] and self.s3props['notification']['lambda_configurations'] != [{}]:
                 notification_config['LambdaFunctionConfigurations'] = \
                     self.s3props['notification']['lambda_configurations']
         LOG.debug('Notification Config: %s', notification_config)
