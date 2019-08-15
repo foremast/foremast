@@ -15,12 +15,8 @@
 #   limitations under the License.
 """Manages AWS ASG Scheduled Actions in Spinnaker. Can find, create, and delete.
 """
-import json
 import logging
 import os
-from math import floor
-
-import requests
 
 from ..utils import get_latest_server_group, get_properties, get_template, wait_for_task
 
