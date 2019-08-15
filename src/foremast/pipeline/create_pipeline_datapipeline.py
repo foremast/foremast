@@ -62,7 +62,7 @@ class SpinnakerPipelineDataPipeline(SpinnakerPipeline):
                 'base': base,
                 'deploy_type': deploy_type,
                 'environment': 'packaging',
-                'region': "region",
+                'region': region,
                 'triggerjob': self.trigger_job,
                 'run_as_user': DEFAULT_RUN_AS_USER,
                 'email': email,
