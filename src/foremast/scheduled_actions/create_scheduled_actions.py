@@ -20,6 +20,7 @@ import os
 
 from ..utils import get_latest_server_group, get_properties, get_template, wait_for_task
 
+
 class ScheduledActions:
     """Manages scheduled actions in Spinnaker
 
@@ -66,9 +67,9 @@ class ScheduledActions:
         self.log.info('Successfully created scheduled actions in %s for %s', self.env, self.app)
 
     def create_scheduled_actions(self):
-        """Wrapper function. Gets the latest server group and then runs 
-        self.prepare_scheduled_actions_template for scheduled actions.
-        This function acts as the main driver for the scheduled actions creation
+        """Wrapper function. Gets the latest server group and then runs
+        self.prepare_scheduled_actions_template for scheduled actions. This 
+        function acts as the main driver for the scheduled actions creation.
         """
         if not self.settings['asg']['scheduled_actions']:
             self.log.info("No scheduled actions found, skipping...")
