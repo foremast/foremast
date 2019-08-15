@@ -68,7 +68,7 @@ class ScheduledActions:
 
     def create_scheduled_actions(self):
         """Wrapper function. Gets the latest server group and then runs
-        self.prepare_scheduled_actions_template for scheduled actions. This 
+        self.prepare_scheduled_actions_template for scheduled actions. This
         function acts as the main driver for the scheduled actions creation.
         """
         if not self.settings['asg']['scheduled_actions']:
