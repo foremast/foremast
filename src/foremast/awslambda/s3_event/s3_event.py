@@ -57,6 +57,14 @@ def create_s3_event(app_name, env, region, bucket, triggers):
     # configure events on s3 bucket to trigger lambda function
     template_kwargs = {"lambda_arn": lambda_alias_arn, "triggers": triggers}
     config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
-    s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=json.loads(config))
+    config_json = json.loads(config)
+
+    old_config = s3_client.get_bucket_notification_configuration(Bucket=bucket)
+    if "LambdaFunctionConfigurations" in old_config:
+        for trigger in old_config["LambdaFunctionConfigurations"]:
+            if trigger["LambdaFunctionArn"] != lambda_alias_arn:
+                config_json["LambdaFunctionConfigurations"].append(trigger)
+
+    s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=config_json)
 
     LOG.info("Created lambda %s S3 event on bucket %s", app_name, bucket)
