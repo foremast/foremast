@@ -64,6 +64,10 @@ def create_s3_event(app_name, env, region, bucket, triggers):
         for trigger in old_config["LambdaFunctionConfigurations"]:
             if trigger["LambdaFunctionArn"] != lambda_alias_arn:
                 config_json["LambdaFunctionConfigurations"].append(trigger)
+    if "QueueConfigurations" in old_config:
+        config_json["QueueConfigurations"] = old_config["QueueConfigurations"]
+    if "TopicConfigurations" in old_config:
+        config_json["TopicConfigurations"] = old_config["TopicConfigurations"]
 
     s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=config_json)
 
