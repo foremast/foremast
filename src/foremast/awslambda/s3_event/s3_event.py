@@ -67,7 +67,7 @@ def create_s3_event(app_name, env, region, bucket, triggers):
         print("Existing Lambda Configuration. Skipping!")
     else:
         print("New Lambda. Appending to list.")
-    lambda_configuration.append(json.loads(config))
+    lambda_configuration.append(new_lambda)
 
 
     s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration={'LambdaFunctionConfigurations':lambda_configuration}, {'TopicConfigurations': topic_configuration}, {'QueueConfigurations':queue_configuration})
