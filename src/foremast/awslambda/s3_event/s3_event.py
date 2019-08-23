@@ -20,7 +20,7 @@ import logging
 
 import boto3
 
-from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_template
+from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_template, get_current_s3_configuration
 
 LOG = logging.getLogger(__name__)
 
@@ -57,6 +57,19 @@ def create_s3_event(app_name, env, region, bucket, triggers):
     # configure events on s3 bucket to trigger lambda function
     template_kwargs = {"lambda_arn": lambda_alias_arn, "triggers": triggers}
     config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
-    s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=json.loads(config))
+
+    lambda_s3_trigger_json = json.loads(config)    
+    sns_configuration,queue_configuration,lambda_configuration = get_current_s3_configuration(bucket, env)
+
+    new_lambda=lambda_s3_trigger_json['LambdaFunctionConfigurations']
+    # check if net new event or existing
+    if(new_lambda in lambda_configuration):
+        print("Existing Lambda Configuration. Skipping!")
+    else:
+        print("New Lambda. Appending to list.")
+    lambda_configuration.append(json.loads(config))
+
+
+    s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration={'LambdaFunctionConfigurations':lambda_configuration}, {'TopicConfigurations': topic_configuration}, {'QueueConfigurations':queue_configuration})
 
     LOG.info("Created lambda %s S3 event on bucket %s", app_name, bucket)

@@ -167,3 +167,27 @@ def remove_all_lambda_permissions(app_name='', env='', region='us-east-1'):
                 LOG.info('removed permission: %s', perm['Sid'])
             else:
                 LOG.info('Skipping deleting permission %s - Not managed by Foremast', perm['Sid'])
+
+
+def get_current_s3_configuration(bucket_name, env):
+    session = boto3.Session(profile_name=env, region_name=region)
+    s3_client = session.client('s3')
+
+    response=s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
+    
+    try:
+        sns_configurations=response['TopicConfigurations']
+    except:
+        sns_configurations=[]
+
+    try:
+        sqs_configurations=response['QueueConfigurations']
+    except:
+        sqs_configurations=[]
+
+    try:
+        lambda_configurations=response['LambdaFunctionConfigurations']
+    except:
+        lambda_configurations=[]
+
+return sns_configurations, sqs_configurations, lambda_configurations
