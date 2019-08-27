@@ -83,6 +83,7 @@ class AutoScalingPolicy:
             template_kwargs['operation'] = 'decrease'
             template_kwargs['comparisonOperator'] = 'LessThanThreshold'
             template_kwargs['scalingAdjustment'] = scale_down_adjustment
+        elif scaling_type == 'step_scaling':
 
         rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
         self.log.info('Creating a %s policy in %s for %s', scaling_type, self.env, self.app)

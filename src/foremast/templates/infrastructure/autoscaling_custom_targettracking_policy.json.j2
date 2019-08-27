@@ -1,0 +1,79 @@
+{
+    "application": "{{ app }}",
+    "description": "Upsert scaling policy {{ server_group }}",
+    "job": [
+        {
+            "type": "upsertScalingPolicy",
+            "cloudProvider": "aws",
+            "credentials": "{{ env }}",
+            "region": "{{ region }}",
+            "serverGroupName": "{{ server_group }}",
+            "adjustmentType": null,
+            "estimatedInstanceWarmup": {{ scaling_policy.instance_warmup | default(300) }},
+            "targetTrackingConfiguration": {
+                "targetValue": {{ scaling_policy.target_value }},
+                {% if scaling_policy.scaling_metric.metric_type == 'predefined' %}
+                "predefinedMetricSpecification": {
+                    "predefinedMetricType": "{{ scaling_policy.scaling_metric.metric_name }}"
+                },
+                {% elif scaling_policy.scaling_metric.metric_type == 'custom' %}
+                "customizedMetricSpecification": {
+                    "metricName": "{{ scaling_policy.scaling_metric.metric_name }}",
+                    "namespace": "{{ scaling_policy.scaling_metric.namespace }}",
+                    "dimensions": [
+                        {% for dimension in scaling_policy.scaling_metric.dimensions %}
+                            {% for dimension_name, dimenstion_value in dimension.items() %}
+                                {
+                                    "name": "{{ dimension_name }}",
+                                    "value": "{{ dimension_value }}"
+                                }{%- if not loop.last -%},{%- endif -%}
+                            {% endfor %}
+                        {% endfor %}
+                    ],
+                    "statistic": "{{ scaling_policy.scaling_metric.statistic }}"
+                },
+                {% endif %}
+                "disableScaleIn": {{ scaling_policy.disable_scale_in | default(false) }}
+            },
+            "user": "foremast"
+        }
+    ]
+}
+
+
+
+# predefined_metrics
+"custom_scaling_policies": [
+    {
+        "scaling_type": "target_tracking",
+        "instance_warmup": 350,
+        "target_value": 60,
+        "scaling_metric": {
+            "metric_type": "predefined",
+            "metric_name": "ASGAverageCPUUtilization"
+        },
+        "disable_scale_in": false
+    }
+]
+
+# custom_metrics
+"custom_scaling_policies": [
+    {
+        "scaling_type": "target_tracking",
+        "instance_warmup": 350,
+        "target_value": 250,
+        "scaling_metric": {
+            "metric_type": "custom",
+            "metric_name": "AverageQueueDepth",
+            "namespace": "AWS/SQS",
+            "dimensions": [
+                {
+                    "name": "SQSQueueName",
+                    "value": "adam-sqs-test"
+                }
+            ],
+            "statistic": "Sum"
+        },
+        "disable_scale_in": false
+    }
+]
