@@ -59,8 +59,8 @@ class S3Apps:
             shared_app = self.s3props['shared_bucket_target']
             newgenerated = get_details(app=shared_app, env=env, region=self.region)
             self.bucket = newgenerated.shared_s3_app_bucket(include_region=include_region)
-        elif self.s3props.get('bucket_name_override'):
-            self.bucket = self.s3props['bucket_override_name']
+        elif self.s3props.get('bucket_name'):
+            self.bucket = self.s3props['bucket_name']
         else:
             self.bucket = self.generated.s3_app_bucket(include_region=include_region)
 
