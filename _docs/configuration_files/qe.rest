@@ -37,4 +37,4 @@ Dictionary of Jenkins Job Parameters
 Example QE Stage JSON Configuration
 -----------------------------------
 
-.. literalinclude:: ../../src/foremast/templates/configs/configs.json.j2
+.. literalinclude:: example-qe.json.j2
