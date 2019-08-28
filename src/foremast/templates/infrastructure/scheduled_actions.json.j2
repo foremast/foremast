@@ -1,0 +1,18 @@
+{
+   "application": "{{ app }}",
+   "description": "Update Scheduled Actions for {{ server_group }}",
+   "job":[
+      {
+         "type": "upsertAsgScheduledActions",
+         "asgs": [
+            {
+               "asgName": "{{ server_group }}",
+               "region": "{{ region }}"
+            }
+         ],
+         "scheduledActions": {{ scheduled_actions | tojson }},
+         "credentials": "{{ env }}",
+         "user": "foremast"
+      }
+   ]
+}

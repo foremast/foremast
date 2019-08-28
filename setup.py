@@ -72,6 +72,7 @@ setup(
             'foremast-pipeline-onetime=foremast.runner:prepare_onetime_pipeline',
             'create-scaling-policy=foremast.runner:create_scaling_policy',
             'foremast-scaling-policy=foremast.runner:create_scaling_policy',
+            'foremast-scheduled-actions=foremast.runner:create_scheduled_actions',
             'rebuild_pipelines=foremast.runner:rebuild_pipelines',
             'foremast-pipeline-rebuild=foremast.runner:rebuild_pipelines',
             'foremast-deploy-s3app=foremast.runner:deploy_s3app',
