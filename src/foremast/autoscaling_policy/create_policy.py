@@ -53,15 +53,20 @@ class AutoScalingPolicy:
 
         self.settings = get_properties(properties_file=prop_path, env=self.env, region=self.region)
 
-    def prepare_policy_template(self, scaling_type, period_sec, server_group):
+    def prepare_policy_template(self, scaling_type, server_group, scaling_policy=None):
         """Renders scaling policy templates based on configs and variables.
         After rendering, POSTs the json to Spinnaker for creation.
 
         Args:
-            scaling_type (str): ``scale_up`` or ``scaling_down``. Type of policy
-            period_sec (int): Period of time to look at metrics for determining scale
-            server_group (str): The name of the server group to render template for
+            scaling_type (str): Type of policy: ``scale_up``, ``scale_down``, ``custom``
+            server_group (str): Server group to render and apply policy template to
+            scaling_policy (dict): Custom Scaling Policy dictionary, defaults to None.
         """
+        if self.settings['asg']['scaling_policy']['period_minutes']:
+            period_sec = int(self.settings['asg']['scaling_policy']['period_minutes']) * 60
+        else:
+            period_sec = 1800
+
         template_kwargs = {
             'app': self.app,
             'env': self.env,
@@ -70,12 +75,13 @@ class AutoScalingPolicy:
             'period_sec': period_sec,
             'scaling_policy': self.settings['asg']['scaling_policy'],
         }
+
         if scaling_type == 'scale_up':
             scale_up_adjustment = int(self.settings['asg']['scaling_policy'].get('increase_scaling_adjustment', 1))
             template_kwargs['operation'] = 'increase'
             template_kwargs['comparisonOperator'] = 'GreaterThanThreshold'
             template_kwargs['scalingAdjustment'] = scale_up_adjustment
-
+            rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
         elif scaling_type == 'scale_down':
             scale_down_adjustment = int(self.settings['asg']['scaling_policy'].get('decrease_scaling_adjustment', -1))
             cur_threshold = int(self.settings['asg']['scaling_policy']['threshold'])
@@ -83,9 +89,18 @@ class AutoScalingPolicy:
             template_kwargs['operation'] = 'decrease'
             template_kwargs['comparisonOperator'] = 'LessThanThreshold'
             template_kwargs['scalingAdjustment'] = scale_down_adjustment
+            rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
+
         elif scaling_type == 'custom':
-            print('sds')
-        rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
+            template_kwargs['scaling_policy'] = scaling_policy
+            if scaling_policy['scaling_type'] == 'step_scaling':
+                rendered_template = get_template(template_file='infrastructure/autoscaling_custom_stepscaling_policy.json.j2', **template_kwargs)
+            elif scaling_policy['scaling_type'] == 'target_tracking':
+                rendered_template = get_template(template_file='infrastructure/autoscaling_custom_targettracking_policy.json.j2', **template_kwargs)
+            else:
+                self.log.warn('Scaling Type %s not implemented or does not exist.', scaling_policy['scaling_type'])
+                raise NotImplementedError
+        
         self.log.info('Creating a %s policy in %s for %s', scaling_type, self.env, self.app)
         wait_for_task(rendered_template)
         self.log.info('Successfully created a %s policy in %s for %s', scaling_type, self.env, self.app)
@@ -109,16 +124,12 @@ class AutoScalingPolicy:
                 self.delete_existing_scaling_policy(scaling_policy, server_group)
 
         if 'scaling_policy' in self.settings['asg']:
-            if self.settings['asg']['scaling_policy']['period_minutes']:
-                period_sec = int(self.settings['asg']['scaling_policy']['period_minutes']) * 60
-            else:
-                period_sec = 1800
-
-            self.prepare_policy_template('scale_up', period_sec, server_group)
+            self.prepare_policy_template('scale_up', server_group)
             if self.settings['asg']['scaling_policy'].get('scale_down', True):
-                self.prepare_policy_template('scale_down', period_sec, server_group)
+                self.prepare_policy_template('scale_down', server_group)
         elif 'custom_scaling_policies' in self.settings['asg']:
-            self.prepare_policy_template('custom')
+            for scaling_policy in self.settings['asg']['custom_scaling_policies']:
+                self.prepare_policy_template('custom', server_group, scaling_policy)
 
     def delete_existing_scaling_policy(self, scaling_policy, server_group):
         """Given a scaling_policy and server_group, deletes the existing scaling_policy.
