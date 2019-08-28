@@ -25,7 +25,7 @@ from math import floor
 import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
-from ..utils import get_properties, get_template, wait_for_task
+from ..utils import get_latest_server_group, get_properties, get_template, wait_for_task
 
 
 class AutoScalingPolicy:
@@ -83,8 +83,8 @@ class AutoScalingPolicy:
             template_kwargs['operation'] = 'decrease'
             template_kwargs['comparisonOperator'] = 'LessThanThreshold'
             template_kwargs['scalingAdjustment'] = scale_down_adjustment
-        elif scaling_type == 'step_scaling':
-
+        elif scaling_type == 'custom':
+            print('sds')
         rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
         self.log.info('Creating a %s policy in %s for %s', scaling_type, self.env, self.app)
         wait_for_task(rendered_template)
@@ -96,40 +96,31 @@ class AutoScalingPolicy:
         for scaling up and scaling down policies.
         This function acts as the main driver for the scaling policy creationprocess
         """
-        if not self.settings['asg']['scaling_policy']:
+        if not self.settings['asg']['scaling_policy'] or not self.settings['asg']['custom_scaling_policies']:
             self.log.info("No scaling policy found, skipping...")
             return
 
-        server_group = self.get_server_group()
+        server_group = get_latest_server_group(self.env, self.app)
 
         # Find all existing and remove them
-        scaling_policies = self.get_all_existing(server_group)
-        for policy in scaling_policies:
-            for subpolicy in policy:
-                self.delete_existing_policy(subpolicy, server_group)
+        scaling_policies = self.get_all_scaling_policies(server_group)
+        for policy_block in scaling_policies:
+            for scaling_policy in policy_block:
+                self.delete_existing_scaling_policy(scaling_policy, server_group)
 
-        if self.settings['asg']['scaling_policy']['period_minutes']:
-            period_sec = int(self.settings['asg']['scaling_policy']['period_minutes']) * 60
-        else:
-            period_sec = 1800
+        if 'scaling_policy' in self.settings['asg']:
+            if self.settings['asg']['scaling_policy']['period_minutes']:
+                period_sec = int(self.settings['asg']['scaling_policy']['period_minutes']) * 60
+            else:
+                period_sec = 1800
 
-        self.prepare_policy_template('scale_up', period_sec, server_group)
-        if self.settings['asg']['scaling_policy'].get('scale_down', True):
-            self.prepare_policy_template('scale_down', period_sec, server_group)
+            self.prepare_policy_template('scale_up', period_sec, server_group)
+            if self.settings['asg']['scaling_policy'].get('scale_down', True):
+                self.prepare_policy_template('scale_down', period_sec, server_group)
+        elif 'custom_scaling_policies' in self.settings['asg']:
+            self.prepare_policy_template('custom')
 
-    def get_server_group(self):
-        """Finds the most recently deployed server group for the application.
-        This is the server group that the scaling policy will be applied to.
-
-        Returns:
-            server_group (str): Name of the newest server group
-        """
-        api_url = "{0}/applications/{1}".format(API_URL, self.app)
-        response = requests.get(api_url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
-        for server_group in response.json()['clusters'][self.env]:
-            return server_group['serverGroups'][-1]
-
-    def delete_existing_policy(self, scaling_policy, server_group):
+    def delete_existing_scaling_policy(self, scaling_policy, server_group):
         """Given a scaling_policy and server_group, deletes the existing scaling_policy.
         Scaling policies need to be deleted instead of upserted for consistency.
 
@@ -155,7 +146,7 @@ class AutoScalingPolicy:
         }
         wait_for_task(json.dumps(delete_dict))
 
-    def get_all_existing(self, server_group):
+    def get_all_scaling_policies(self, server_group):
         """Finds all existing scaling policies for an application
 
         Returns:
