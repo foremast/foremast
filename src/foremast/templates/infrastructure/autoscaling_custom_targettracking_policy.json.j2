@@ -20,20 +20,11 @@
                 "customizedMetricSpecification": {
                     "metricName": "{{ scaling_policy.scaling_metric.metric_name }}",
                     "namespace": "{{ scaling_policy.scaling_metric.namespace }}",
-                    "dimensions": [
-                        {% for dimension in scaling_policy.scaling_metric.dimensions %}
-                            {% for dimension_name, dimenstion_value in dimension.items() %}
-                                {
-                                    "name": "{{ dimension_name }}",
-                                    "value": "{{ dimension_value }}"
-                                }{%- if not loop.last -%},{%- endif -%}
-                            {% endfor %}
-                        {% endfor %}
-                    ],
+                    "dimensions": {{ scaling_policy.scaling_metric.dimensions|tojson|safe }},
                     "statistic": "{{ scaling_policy.scaling_metric.statistic }}"
                 },
                 {% endif %}
-                "disableScaleIn": {{ scaling_policy.disable_scale_in | default(false) }}
+                "disableScaleIn": {{ scaling_policy.disable_scale_in | default(false)|tojson }}
             },
             "user": "foremast"
         }
