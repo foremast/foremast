@@ -184,9 +184,9 @@ class SpinnakerPipelineKubernetesPipeline(SpinnakerPipeline):
             raise SpinnakerPipelineCreationFailed('Pipeline for {0}: {1}'.format(self.app_name,
                                                                                  canary_response.json()))
 
-        canary_configs = canary_response.json()
+        canary_options = canary_response.json()
         names = []
-        for config in canary_configs:
+        for config in canary_options:
             names.append(config['name'])
             if config['name'] == name:
                 return config['id']
