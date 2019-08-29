@@ -62,7 +62,7 @@ class AutoScalingPolicy:
             server_group (str): Server group to render and apply policy template to
             scaling_policy (dict): Custom Scaling Policy dictionary, defaults to None.
         """
-        if self.settings['asg']['scaling_policy']['period_minutes']:
+        if 'period_minutes' in self.settings['asg']['scaling_policy']:
             period_sec = int(self.settings['asg']['scaling_policy']['period_minutes']) * 60
         else:
             period_sec = 1800
@@ -123,11 +123,11 @@ class AutoScalingPolicy:
             for scaling_policy in policy_block:
                 self.delete_existing_scaling_policy(scaling_policy, server_group)
 
-        if 'scaling_policy' in self.settings['asg']:
-            self.prepare_policy_template('scale_up', server_group)
-            if self.settings['asg']['scaling_policy'].get('scale_down', True):
-                self.prepare_policy_template('scale_down', server_group)
-        elif 'custom_scaling_policies' in self.settings['asg']:
+        if self.settings['asg']['scaling_policy']:
+                self.prepare_policy_template('scale_up', server_group)
+                if self.settings['asg']['scaling_policy'].get('scale_down', True):
+                    self.prepare_policy_template('scale_down', server_group)
+        elif self.settings['asg']['custom_scaling_policies']:
             for scaling_policy in self.settings['asg']['custom_scaling_policies']:
                 self.prepare_policy_template('custom', server_group, scaling_policy)
 
