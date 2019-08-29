@@ -20,6 +20,7 @@ import json
 from ..utils import get_pipeline_id, normalize_pipeline_name
 from ..utils.lookups import FileLookup
 from .create_pipeline import SpinnakerPipeline
+from .jinja_functions import JinjaFunctions
 
 class SpinnakerPipelineManual(SpinnakerPipeline):
     """Manual JSON configured Spinnaker Pipelines."""
@@ -38,9 +39,15 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
             # Get any pipeline args defined in pipeline.json, default to empty dict if none defined
             pipeline_args = dict()
-            if 'pipeline_files_args' in self.settings['pipeline']:
-                current_vars = self.settings['pipeline']['pipeline_files_args'][i]
-                pipeline_args.update(current_vars)
+
+            # Expose permitted functions to jinja template
+            jinja_functions = JinjaFunctions(self.app_name).get_dict()
+            pipeline_args.update(jinja_functions)
+
+            # If any args set in the pipeline file add them to the pipeline_args.variables 
+            if 'pipeline_files_variables' in self.settings['pipeline']:
+                pipeline_vars = self.settings['pipeline']['pipeline_files_variables'][i]
+                pipeline_args["variables"] = pipeline_vars
 
             # Render the template
             json_string = jinja_template.render(pipeline_args)
