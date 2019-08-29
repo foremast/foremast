@@ -111,7 +111,7 @@ class AutoScalingPolicy:
         for scaling up and scaling down policies.
         This function acts as the main driver for the scaling policy creationprocess
         """
-        if not self.settings['asg']['scaling_policy'] or not self.settings['asg']['custom_scaling_policies']:
+        if not self.settings['asg']['scaling_policy'] and not self.settings['asg']['custom_scaling_policies']:
             self.log.info("No scaling policy found, skipping...")
             return
 
