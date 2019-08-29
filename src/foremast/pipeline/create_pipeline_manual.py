@@ -51,13 +51,13 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
             # Render the template
             json_string = jinja_template.render(pipeline_args)
-            json_dict = json.loads(json_string)
+            pipeline_dict = json.loads(json_string)
 
             # Override template values that shoudl be set by foremast last
-            json_dict.setdefault('application', self.app_name)
-            json_dict.setdefault('name', normalize_pipeline_name(name=json_file))
-            json_dict.setdefault('id', get_pipeline_id(app=json_dict['application'], name=json_dict['name']))
+            pipeline_dict.setdefault('application', self.app_name)
+            pipeline_dict.setdefault('name', normalize_pipeline_name(name=json_file))
+            pipeline_dict.setdefault('id', get_pipeline_id(app=pipeline_dict['application'], name=pipeline_dict['name']))
 
-            self.post_pipeline(json_dict)
+            self.post_pipeline(pipeline_dict)
 
         return True
