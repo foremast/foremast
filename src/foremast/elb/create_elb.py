@@ -14,6 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Create ELBs for Spinnaker Pipelines."""
+import os
 import json
 import logging
 from pprint import pformat
@@ -43,6 +44,7 @@ class SpinnakerELB:
         self.env = env
         self.region = region
         self.properties = get_properties(properties_file=prop_path, env=self.env, region=self.region)
+        self.git_commit = get_properties(properties_file=prop_path, env='pipeline')['config_commit']
 
     def make_elb_json(self):
         """Render the JSON template with arguments.
@@ -125,6 +127,7 @@ class SpinnakerELB:
         self.add_backend_policy(json_data)
 
         self.configure_attributes(json_data)
+        self.add_elb_tags()
 
     def add_listener_policy(self, json_data):
         """Attaches listerner policies to an ELB
@@ -274,3 +277,17 @@ class SpinnakerELB:
             LOG.debug('Load Balancer Attributes:\n%s', pformat(load_balancer_attributes))
             elbclient.modify_load_balancer_attributes(
                 LoadBalancerName=self.app, LoadBalancerAttributes=load_balancer_attributes)
+
+    def add_elb_tags(self):
+        env = boto3.session.Session(profile_name=self.env, region_name=self.region)
+        elbclient = env.client('elb')
+
+        group = os.getenv("PROJECT")
+        repo = os.getenv("GIT_REPO")
+        tags = [{"Key": "Name",         "Value": '{}{}'.format(group, repo)},
+                {"Key": "app_name",     "Value": '{}{}'.format(group, repo)},
+                {"Key": "app_group",    "Value": group},
+                {"Key": "git_project",  "Value": '{}/{}'.format(group, repo)},
+                {"Key": "git_commit",   "Value": self.git_commit},
+                {"Key": "artifact_url", "Value": os.getenv("ARTIFACT_PATH")}]
+        elbclient.add_tags(LoadBalancerNames=[self.app], Tags=tags)
