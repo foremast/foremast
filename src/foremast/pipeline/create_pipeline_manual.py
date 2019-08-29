@@ -44,7 +44,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             jinja_functions = JinjaFunctions(self.app_name).get_dict()
             pipeline_args.update(jinja_functions)
 
-            # If any args set in the pipeline file add them to the pipeline_args.variables 
+            # If any args set in the pipeline file add them to the pipeline_args.variables
             if 'pipeline_files_variables' in self.settings['pipeline']:
                 pipeline_vars = self.settings['pipeline']['pipeline_files_variables'][i]
                 pipeline_args["variables"] = pipeline_vars
@@ -56,7 +56,8 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             # Override template values that shoudl be set by foremast last
             pipeline_dict.setdefault('application', self.app_name)
             pipeline_dict.setdefault('name', normalize_pipeline_name(name=json_file))
-            pipeline_dict.setdefault('id', get_pipeline_id(app=pipeline_dict['application'], name=pipeline_dict['name']))
+            pipeline_dict.setdefault('id', get_pipeline_id(app=pipeline_dict['application'],
+                                                           name=pipeline_dict['name']))
 
             self.post_pipeline(pipeline_dict)
 
