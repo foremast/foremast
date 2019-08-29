@@ -19,7 +19,8 @@ from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 
 
 class JinjaFunctions:
-    """A class with functions that can be used in Jinja Templates.  Currently only supported in the manual pipeline type"""
+    """A class with functions that can be used in Jinja templates
+    Currently only supported in the manual pipeline type"""
     app_name = ""
 
     def __init__(self, app_name):
