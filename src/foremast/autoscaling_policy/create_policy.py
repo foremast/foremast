@@ -81,7 +81,8 @@ class AutoScalingPolicy:
             template_kwargs['operation'] = 'increase'
             template_kwargs['comparisonOperator'] = 'GreaterThanThreshold'
             template_kwargs['scalingAdjustment'] = scale_up_adjustment
-            rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
+            rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', 
+                                             **template_kwargs)
         elif scaling_type == 'scale_down':
             scale_down_adjustment = int(self.settings['asg']['scaling_policy'].get('decrease_scaling_adjustment', -1))
             cur_threshold = int(self.settings['asg']['scaling_policy']['threshold'])
@@ -89,18 +90,21 @@ class AutoScalingPolicy:
             template_kwargs['operation'] = 'decrease'
             template_kwargs['comparisonOperator'] = 'LessThanThreshold'
             template_kwargs['scalingAdjustment'] = scale_down_adjustment
-            rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
+            rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', 
+                                             **template_kwargs)
 
         elif scaling_type == 'custom':
             template_kwargs['scaling_policy'] = scaling_policy
             if scaling_policy['scaling_type'] == 'step_scaling':
-                rendered_template = get_template(template_file='infrastructure/autoscaling_custom_stepscaling_policy.json.j2', **template_kwargs)
+                rendered_template = get_template(template_file='infrastructure/autoscaling_custom_stepscaling_policy.json.j2', 
+                                                 **template_kwargs)
             elif scaling_policy['scaling_type'] == 'target_tracking':
-                rendered_template = get_template(template_file='infrastructure/autoscaling_custom_targettracking_policy.json.j2', **template_kwargs)
+                rendered_template = get_template(template_file='infrastructure/autoscaling_custom_targettracking_policy.json.j2', 
+                                                 **template_kwargs)
             else:
                 self.log.warn('Scaling Type %s not implemented or does not exist.', scaling_policy['scaling_type'])
                 raise NotImplementedError
-        
+
         self.log.info('Creating a %s policy in %s for %s', scaling_type, self.env, self.app)
         wait_for_task(rendered_template)
         self.log.info('Successfully created a %s policy in %s for %s', scaling_type, self.env, self.app)
