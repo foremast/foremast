@@ -111,7 +111,7 @@ class ForemastRunner:
                 spinnakerpipeline = pipeline.SpinnakerPipelineS3(**kwargs)
             elif pipeline_type == 'datapipeline':
                 spinnakerpipeline = pipeline.SpinnakerPipelineDataPipeline(**kwargs)
-            elif pipeline_type == 'manual':
+            elif pipeline_type == 'manual' or pipeline_type in consts.MANUAL_PIPELINE_SYNONYMS:
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             else:
                 # Handles all other pipelines
