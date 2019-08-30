@@ -12,16 +12,7 @@
             "region": "{{ region }}",
             "actionsEnabled": true,
             "comparisonOperator": "{{ scaling_policy.scaling_metric.comparison_operator }}",
-            "dimensions":[
-               {% for dimension in scaling_policy.scaling_metric.dimensions %}
-                     {% for dimension_name, dimenstion_value in dimension.items() %}
-                        {
-                           "name": "{{ dimension_name }}",
-                           "value": "{{ dimension_value }}"
-                        }{%- if not loop.last -%},{%- endif -%}
-                     {% endfor %}
-               {% endfor %}
-            ],
+            "dimensions": {{ scaling_policy.scaling_metric.dimensions|tojson|safe }},
             "evaluationPeriods": {{ scaling_policy.scaling_metric.evaluation_periods }},
             "period": {{ scaling_policy.scaling_metric.evaluation_period }},
             "threshold": {{ scaling_policy.scaling_metric.threshold }},
@@ -34,7 +25,7 @@
          "step": {
             "estimatedInstanceWarmup": {{ scaling_policy.instance_warmup | default(300) }},
             "metricAggregationType": "{{ scaling_policy.scaling_metric.statistic | default("Average") }}",
-            "stepAdjustments": {{ scaling_policy.scaling_metric.steps }}
+            "stepAdjustments": {{ scaling_policy.scaling_metric.steps|tojson|safe }}
          },
          "type": "upsertScalingPolicy",
          "user": "foremast"
