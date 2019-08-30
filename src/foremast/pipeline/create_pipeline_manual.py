@@ -19,7 +19,7 @@ import jinja2
 
 from ..utils import get_pipeline_id, normalize_pipeline_name
 from ..utils.lookups import FileLookup
-from ..consts import TEMPLATES_PATH, TEMPLATES_SCHEME_IDENTIFIER
+from ..consts import TEMPLATES_PATH, TEMPLATES_SCHEME_IDENTIFIER, TEMPLATE_VARIABLES_KEY
 from .create_pipeline import SpinnakerPipeline
 from .jinja_functions import JinjaFunctions
 
@@ -79,7 +79,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
         # If any args set in the pipeline file add them to the pipeline_args.variables
         if pipeline_vars is not None:
-            pipeline_args["variables"] = pipeline_vars
+            pipeline_args[TEMPLATE_VARIABLES_KEY] = pipeline_vars
 
         # Render the template
         return jinja_template.render(pipeline_args)
@@ -88,10 +88,10 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         """Safely gets the user defined variables from the pipeline.json file"""
         # Safely get variables out of pipeline.json if they are set
         pipe_settings = self.settings["pipeline"]
-        if "pipeline_files_variables" in pipe_settings \
-        and isinstance(pipe_settings['pipeline_files_variables'], list) \
-        and len(pipe_settings['pipeline_files_variables']) > index:
-            return pipe_settings['pipeline_files_variables'][index]
+        if TEMPLATE_VARIABLES_KEY in pipe_settings \
+        and isinstance(pipe_settings[TEMPLATE_VARIABLES_KEY], list) \
+        and len(pipe_settings[TEMPLATE_VARIABLES_KEY]) > index:
+            return pipe_settings[TEMPLATE_VARIABLES_KEY][index]
 
         # Default value is None
         return None

@@ -200,10 +200,12 @@ REGIONS = set(validate_key_values(CONFIG, 'base', 'regions', default='').split('
 MANUAL_PIPELINE_SYNONYMS = set(
     validate_key_values(CONFIG, 'base', 'manual_pipeline_synonyms', default='manual').split(','))
 ALLOWED_TYPES = set(
-    validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling,manual').split(',')) | MANUAL_PIPELINE_SYNONYMS
+    validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling,manual')
+    .split(',')) | MANUAL_PIPELINE_SYNONYMS
 RUNWAY_BASE_PATH = validate_key_values(CONFIG, 'base', 'runway_base_path', default='runway')
 TEMPLATES_PATH = validate_key_values(CONFIG, 'base', 'templates_path')
 TEMPLATES_SCHEME_IDENTIFIER = validate_key_values(CONFIG, 'base', 'templates_scheme_identifier', default='templates://')
+TEMPLATE_VARIABLES_KEY = validate_key_values(CONFIG, 'base', 'template_variables_key', default="template_variables")
 AMI_JSON_URL = validate_key_values(CONFIG, 'base', 'ami_json_url')
 DEFAULT_RUN_AS_USER = validate_key_values(CONFIG, 'base', 'default_run_as_user', default=None)
 DEFAULT_SECURITYGROUP_RULES = _generate_security_groups('default_securitygroup_rules')
