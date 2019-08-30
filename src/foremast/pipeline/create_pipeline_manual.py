@@ -19,6 +19,7 @@ import jinja2
 
 from ..utils import get_pipeline_id, normalize_pipeline_name
 from ..utils.lookups import FileLookup
+from ..consts import TEMPLATES_PATH, TEMPLATES_SCHEME_IDENTIFIER
 from .create_pipeline import SpinnakerPipeline
 from .jinja_functions import JinjaFunctions
 
@@ -30,11 +31,8 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         pipelines = self.settings['pipeline']['pipeline_files']
         self.log.info('Uploading manual Pipelines: %s', pipelines)
 
-        lookup = FileLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
-
-        for i, json_file in enumerate(pipelines):
-            # Load pipeline json into string, then into a jinja_template
-            json_string = lookup.get(filename=json_file)
+        for i, file_name in enumerate(pipelines):
+            json_string = self.get_pipeline_file_contents(file_name)
             jinja_template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(json_string)
 
             # Get any pipeline args defined in pipeline.json, default to empty dict if none defined
@@ -55,10 +53,23 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
             # Override template values that shoudl be set by foremast last
             pipeline_dict.setdefault('application', self.app_name)
-            pipeline_dict.setdefault('name', normalize_pipeline_name(name=json_file))
+            pipeline_dict.setdefault('name', normalize_pipeline_name(name=file_name.lstrip(TEMPLATES_SCHEME_IDENTIFIER)))
             pipeline_dict.setdefault('id', get_pipeline_id(app=pipeline_dict['application'],
                                                            name=pipeline_dict['name']))
 
             self.post_pipeline(pipeline_dict)
 
         return True
+
+    def get_pipeline_file_contents(self, file_name):
+        """Returns a string containing the file constants of the file passed in
+        Supports local files, files in git and shared templates in the TEMPLATES_PATH"""
+        # Check if this file is a shared template in the TEMPLATES_PATH
+        if file_name.startswith(TEMPLATES_SCHEME_IDENTIFIER):
+            file_name = file_name.lstrip(TEMPLATES_SCHEME_IDENTIFIER)
+            pipeline_templates_path = TEMPLATES_PATH.rstrip("/") + "/pipeline"
+            lookup = FileLookup(git_short=None, runway_dir=pipeline_templates_path)
+            return lookup.get(filename=file_name)
+        # Consider it a local repo file, check local or git:
+        lookup = FileLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
+        return lookup.get(filename=file_name)
