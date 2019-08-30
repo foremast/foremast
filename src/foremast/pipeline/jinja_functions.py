@@ -13,6 +13,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+"""Functions that can be exposed to Jinja2 templates"""
 import requests
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
@@ -33,7 +34,7 @@ class JinjaFunctions:
 
         return functions
 
-    def get_canary_id(self, name):
+    def get_canary_id(self, name, application=None):
         """Finds a canary config ID matching the name passed.
         Assumes the canary name is unique and the first match wins.
         """
@@ -48,7 +49,11 @@ class JinjaFunctions:
         names = []
         for config in canary_options:
             names.append(config['name'])
-            if config['name'] == name:
+            # If this canary name matches and they did not specificy the owning application
+            if config['name'] == name and application is None:
+                return config['id']
+            # If this canary name matches and the application is listed in the canary config's owners array
+            if config['name'] == name and application in config['applications']:
                 return config['id']
 
         raise SpinnakerPipelineCreationFailed(
