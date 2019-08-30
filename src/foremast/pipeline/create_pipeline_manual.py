@@ -32,28 +32,20 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         self.log.info('Uploading manual Pipelines: %s', pipelines)
 
         for i, file_name in enumerate(pipelines):
+
             json_string = self.get_pipeline_file_contents(file_name)
-            jinja_template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(json_string)
 
-            # Get any pipeline args defined in pipeline.json, default to empty dict if none defined
-            pipeline_args = dict()
+            # If this is a .j2 file render is template, otherwise treat as normal json file
+            if file_name.endswith(".j2"):
+                pipeline_vars = self.get_pipeline_variables_dict(i)
+                json_string = self.get_rendered_json(json_string, pipeline_vars)
 
-            # Expose permitted functions to jinja template
-            jinja_functions = JinjaFunctions(self.app_name).get_dict()
-            pipeline_args.update(jinja_functions)
-
-            # If any args set in the pipeline file add them to the pipeline_args.variables
-            if 'pipeline_files_variables' in self.settings['pipeline']:
-                pipeline_vars = self.settings['pipeline']['pipeline_files_variables'][i]
-                pipeline_args["variables"] = pipeline_vars
-
-            # Render the template
-            json_string = jinja_template.render(pipeline_args)
             pipeline_dict = json.loads(json_string)
 
             # Override template values that shoudl be set by foremast last
             pipeline_dict.setdefault('application', self.app_name)
-            pipeline_dict.setdefault('name', normalize_pipeline_name(name=file_name.lstrip(TEMPLATES_SCHEME_IDENTIFIER)))
+            pipeline_dict.setdefault('name',
+                                     normalize_pipeline_name(name=file_name.lstrip(TEMPLATES_SCHEME_IDENTIFIER)))
             pipeline_dict.setdefault('id', get_pipeline_id(app=pipeline_dict['application'],
                                                            name=pipeline_dict['name']))
 
@@ -73,3 +65,33 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         # Consider it a local repo file, check local or git:
         lookup = FileLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
         return lookup.get(filename=file_name)
+
+    def get_rendered_json(self, json_string, pipeline_vars=None):
+        """Takes a string of a manual template and renders it as a Jinja2 template, returning the result"""
+
+        jinja_template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(json_string)
+        # Get any pipeline args defined in pipeline.json, default to empty dict if none defined
+        pipeline_args = dict()
+
+        # Expose permitted functions to jinja template
+        jinja_functions = JinjaFunctions(self.app_name).get_dict()
+        pipeline_args.update(jinja_functions)
+
+        # If any args set in the pipeline file add them to the pipeline_args.variables
+        if pipeline_vars is not None:
+            pipeline_args["variables"] = pipeline_vars
+
+        # Render the template
+        return jinja_template.render(pipeline_args)
+
+    def get_pipeline_variables_dict(self, index):
+        """Safely gets the user defined variables from the pipeline.json file"""
+        # Safely get variables out of pipeline.json if they are set
+        pipe_settings = self.settings["pipeline"]
+        if "pipeline_files_variables" in pipe_settings \
+        and isinstance(pipe_settings['pipeline_files_variables'], list) \
+        and len(pipe_settings['pipeline_files_variables']) > index:
+            return pipe_settings['pipeline_files_variables'][index]
+
+        # Default value is None
+        return None
