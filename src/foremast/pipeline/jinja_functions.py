@@ -14,49 +14,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Functions that can be exposed to Jinja2 templates"""
-import requests
-from ..exceptions import SpinnakerPipelineCreationFailed
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 
+from ..utils import get_canary_id
 
-class JinjaFunctions:
-    """A class with functions that can be used in Jinja templates
-    Currently only supported in the manual pipeline type"""
-    app_name = ""
+def get_jinja_functions():
+    """Gets a dictionary of functions that can be exposed to Jinja templates"""
+    functions = dict()
+    functions[get_canary_id.__name__] = get_canary_id
 
-    def __init__(self, app_name):
-        self.app_name = app_name
-
-    def get_dict(self):
-        """Returns a dictionary of functions based on this classes functions which can be passed to a jinja template"""
-        functions = dict()
-        functions["get_canary_id"] = self.get_canary_id
-
-        return functions
-
-    def get_canary_id(self, name, application=None):
-        """Finds a canary config ID matching the name passed.
-        Assumes the canary name is unique and the first match wins.
-        """
-        url = "{}/v2/canaryConfig".format(API_URL)
-        canary_response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
-
-        if not canary_response.ok:
-            raise SpinnakerPipelineCreationFailed('Pipeline for {0}: {1}'.format(self.app_name,
-                                                                                 canary_response.json()))
-
-        canary_options = canary_response.json()
-        names = []
-        for config in canary_options:
-            names.append(config['name'])
-            # If this canary name matches and they did not specificy the owning application
-            if config['name'] == name and application is None:
-                return config['id']
-            # If this canary name matches and the application is listed in the canary config's owners array
-            if config['name'] == name and application in config['applications']:
-                return config['id']
-
-        raise SpinnakerPipelineCreationFailed(
-            'Pipeline for {0}: Could not find canary config named {1}.  Options are: {2}'
-            .format(self.app_name, name, names))
+    return functions
     
