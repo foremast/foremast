@@ -116,6 +116,7 @@ def normalize_pipeline_name(name=''):
         normalized_name = normalized_name.replace(bad, '_')
     return normalized_name
 
+
 def get_canary_id(name, application=None):
     """Finds a canary config ID matching the name passed.
     Assumes the canary name is unique and the first match wins.

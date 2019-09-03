@@ -23,12 +23,13 @@ from ..consts import TEMPLATES_PATH, TEMPLATES_SCHEME_IDENTIFIER, TEMPLATE_VARIA
 from .create_pipeline import SpinnakerPipeline
 from .jinja_functions import get_jinja_functions
 
+
 class SpinnakerPipelineManual(SpinnakerPipeline):
     """Manual JSON configured Spinnaker Pipelines."""
 
     def create_pipeline(self):
         """Use JSON files to create Pipelines."""
-        
+
         pipelines = self.settings['pipeline']['pipeline_files']
         self.log.info('Uploading manual Pipelines: %s', pipelines)
 
@@ -110,8 +111,8 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         # Safely get variables out of pipeline.json if they are set
         pipe_settings = self.settings["pipeline"]
         if TEMPLATE_VARIABLES_KEY in pipe_settings \
-        and isinstance(pipe_settings[TEMPLATE_VARIABLES_KEY], list) \
-        and len(pipe_settings[TEMPLATE_VARIABLES_KEY]) > index:
+           and isinstance(pipe_settings[TEMPLATE_VARIABLES_KEY], list) \
+           and len(pipe_settings[TEMPLATE_VARIABLES_KEY]) > index:
             return pipe_settings[TEMPLATE_VARIABLES_KEY][index]
 
         # Default value is None
