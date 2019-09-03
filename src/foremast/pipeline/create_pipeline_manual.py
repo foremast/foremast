@@ -28,6 +28,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
     def create_pipeline(self):
         """Use JSON files to create Pipelines."""
+        
         pipelines = self.settings['pipeline']['pipeline_files']
         self.log.info('Uploading manual Pipelines: %s', pipelines)
 
@@ -55,7 +56,13 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
     def get_pipeline_file_contents(self, file_name):
         """Returns a string containing the file constants of the file passed in
-        Supports local files, files in git and shared templates in the TEMPLATES_PATH"""
+        Supports local files, files in git and shared templates in the TEMPLATES_PATH
+
+        Args:
+            file_name (str): pipeline file name
+
+        Returns:
+            str: Contents of pipeline file."""
         # Check if this file is a shared template in the TEMPLATES_PATH
         if file_name.startswith(TEMPLATES_SCHEME_IDENTIFIER):
             file_name = file_name.lstrip(TEMPLATES_SCHEME_IDENTIFIER)
@@ -67,7 +74,14 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         return lookup.get(filename=file_name)
 
     def get_rendered_json(self, json_string, pipeline_vars=None):
-        """Takes a string of a manual template and renders it as a Jinja2 template, returning the result"""
+        """Takes a string of a manual template and renders it as a Jinja2 template, returning the result
+
+        Args:
+            json_string (str): pipeline in jinja/json format
+            pipeline_vars (dict): key/value pairs of variables the pipline expects
+
+        Returns:
+            str: pipeline json after Jinja is rendered"""
 
         jinja_template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(json_string)
         # Get any pipeline args defined in pipeline.json, default to empty dict if none defined
@@ -85,7 +99,14 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         return jinja_template.render(pipeline_args)
 
     def get_pipeline_variables_dict(self, index):
-        """Safely gets the user defined variables from the pipeline.json file"""
+        """Safely gets the user defined variables from the pipeline.json file
+
+        Args:
+            index (int): index of pipeline defined in pipeline.json
+
+        Returns:
+            dict: key/value pair of variables defined in pipeline.json"""
+
         # Safely get variables out of pipeline.json if they are set
         pipe_settings = self.settings["pipeline"]
         if TEMPLATE_VARIABLES_KEY in pipe_settings \
