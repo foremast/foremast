@@ -17,10 +17,10 @@
 
 from ..utils import get_canary_id
 
+
 def get_jinja_functions():
     """Gets a dictionary of functions that can be exposed to Jinja templates"""
     functions = dict()
     functions[get_canary_id.__name__] = get_canary_id
 
     return functions
-    
