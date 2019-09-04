@@ -95,6 +95,13 @@ class AutoScalingPolicy:
 
         elif scaling_type == 'custom':
             template_kwargs['scaling_policy'] = scaling_policy
+
+            # Helper to update Cluster Name with latest server group name
+            for each_dimension in template_kwargs['scaling_policy']['scaling_metric']['dimensions']:
+                pos = template_kwargs['scaling_policy']['scaling_metric']['dimensions'].index(each_dimension)
+                if each_dimension['name'] == 'AutoScalingGroupName' and each_dimension['value'] == 'self':
+                    template_kwargs['scaling_policy']['scaling_metric']['dimensions'][pos]['value'] = server_group
+
             if scaling_policy['scaling_type'] == 'step_scaling':
                 rendered_template = get_template(template_file='infrastructure/autoscaling_custom_stepscaling_policy.json.j2', 
                                                  **template_kwargs)
