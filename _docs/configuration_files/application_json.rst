@@ -236,131 +236,17 @@ your subnets in your cloud provider.
 ``scaling_policy``
 ******************
 
-Defines scaling policy to attach to ASG. If this block does not exist, no
-scaling policy will be attached
+To better explain this feature, this has has been moved to: :doc:`advanced_usages/scaling_policy`
 
-``scaling_policy`` *Keys*
-^^^^^^^^^^^^^^^^^^^^^^^^^
+``custom_scaling_policies``
+***************************
 
-``metric`` : The CloudWatch metric to trigger auto-scaling events.
-
-   | *Type*: string
-   | *Default*: ``"CPUUtilization"``
-   | *Options*:
-
-      - ``"CPUUtilization"``
-      -  ``"NetworkIn"``
-      -  ``"NetworkOut"``
-      -  ``"DiskReadBytes"``
-
-``threshold`` : Metrics value limit for scaling up
-
-   | *Type*: int
-
-``scale_down`` : Attach a default scale-down policy
-
-   | *Type*: boolean
-   | *Default*: ``true``
-
-``increase_scaling_adjustment`` : Amount to increment by on scale up policies
-   | *Type*: int
-   | *Default*: 1
-
-``decrease_scaling_adjustment`` : Amount to decrement by on scale down policies
-   | *Type*: int
-   | *Default*: -1
-
-``period_minutes`` : Time period to look across for determining if threshold was
-met. If you wish to have seconds, using a floating point such as .5 for 30 seconds.
-
-   | *Type*: float
-   | *Default*: 30
-   | *Units*: Minutes
-
-``statistic``: Statistic to calculate at the period to determine if threshold
-was met
-
-   | *Type*: string
-   | *Default*: ``"Average"``
-   | *Options*:
-
-      - ``"Average"``
-      - ``"Maximum"``
-      - ``"Minimum"``
-      - ``"Sum"``
-
-``instance_warmup`` : Time period to wait before adding metrics to Auto Scaling group
-
-   | *Type*: int
-   | *Default*: 600
-   | *Units*: seconds
-
-``scaling_policy`` *Example*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: json
-
-   {
-       "scaling_policy": {
-           "metric": "CPUUtilization",
-           "threshold": 90,
-           "period_minutes": 10,
-           "instance_warmup": 180,
-           "statistic": "Average",
-           "scale_down": true
-       }
-   }
+To better explain this feature, this has has been moved to: :doc:`advanced_usages/custom_scaling_policies`
 
 ``scheduled_actions``
 *********************
 
-   | *Type*: array
-   | *Default*: ``[]``
-
-Defines scheduled actions to perform on an Auto Scaling Group. You can specify multiple actions
-if needed. If this block does not exist, no scheduled actions will be attached.
-
-``scheduled_actions`` *Keys*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``recurrence`` : A valid CRON expression evaluated that is evaluated in UTC.
-
-   | *Type*: string
-
-``minSize`` : Minimum size of Auto Scaling Group
-
-   | *Type*: int
-
-``maxSize`` : Max size of Auto Scaling Group
-
-   | *Type*: int
-
-``desiredCapacity`` : Desired Capacity of Auto Scaling Group
-
-   | *Type*: int
-
-``scheduled_actions`` *Example*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: json
-
-  {
-    "scheduled_actions": [
-      {
-        "recurrence": "1 * * * *", 
-        "minSize": 1, 
-        "maxSize": 1, 
-        "desiredCapacity": 1
-      },
-      {
-        "recurrence": "2 * * * *", 
-        "minSize": 2, 
-        "maxSize": 2, 
-        "desiredCapacity": 2
-      }
-    ]
-  }
-
+To better explain this feature, this has has been moved to: :doc:`advanced_usages/scheduled_actions`
 
 ``elb`` Block
 ~~~~~~~~~~~~~

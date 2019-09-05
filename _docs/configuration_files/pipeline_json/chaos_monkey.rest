@@ -8,34 +8,34 @@ Key that configures Chaos Monkey
 ``enabled``
 ***********
 
-Enable or disable Chaos Monkey
+    Enable or disable Chaos Monkey
 
-    | *Type*: boolean
-    | *Default*: ``false``
+        | *Type*: boolean
+        | *Default*: ``false``
 
 ``mean_time``
 *************
 
-Mean time between terminations. If mean_time is n, then the probability of a
-termination on each day is 1/n
+    Mean time between terminations. If mean_time is n, then the probability of a
+    termination on each day is 1/n
 
-    | *Type*: number
-    | *Default*: ``5``
-    | *Units*: Days
+        | *Type*: number
+        | *Default*: ``5``
+        | *Units*: Days
 
 ``minimum_time``
 ****************
 
-Minimum time between terminations
+    Minimum time between terminations
 
-    | *Type*: number
-    | *Default*: ``3``
-    | *Units*: Days
+        | *Type*: number
+        | *Default*: ``3``
+        | *Units*: Days
 
 ``exceptions``
 **************
 
-Accounts that Chaos Monkey will not affect
+    Accounts that Chaos Monkey will not affect
 
-    | *Type*: array
-    | *Default*: ``[]``
+        | *Type*: array
+        | *Default*: ``[]``
