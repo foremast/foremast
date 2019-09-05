@@ -72,7 +72,7 @@ These values are hyper-specific to each end-user so not all keys will be defined
                "evaluation_periods": 3,
                "evaluation_period": 60,
                "threshold": 75,
-               "statistic": "Average"
+               "statistic": "Average",
                "dimensions": [
                   {
                         "name": "AutoScalingGroupName",
