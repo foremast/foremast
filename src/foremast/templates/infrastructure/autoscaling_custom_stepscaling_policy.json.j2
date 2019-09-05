@@ -17,14 +17,14 @@
             "period": {{ scaling_policy.scaling_metric.evaluation_period }},
             "threshold": {{ scaling_policy.scaling_metric.threshold }},
             "namespace": "{{ scaling_policy.scaling_metric.namespace }}",
-            "metricName": "{{ scaling_policy.scaling_metric.metric_name | default("CPUUtilization") }}",
-            "statistic": "{{ scaling_policy.scaling_metric.statistic | default("Average") }}",
+            "metricName": "{{ scaling_policy.scaling_metric.metric_name }}",
+            "statistic": "{{ scaling_policy.scaling_metric.statistic }}",
             "alarmActionArns":[],
             "insufficientDataActionArns":[]
          },
          "step": {
             "estimatedInstanceWarmup": {{ scaling_policy.instance_warmup | default(300) }},
-            "metricAggregationType": "{{ scaling_policy.scaling_metric.statistic | default("Average") }}",
+            "metricAggregationType": "{{ scaling_policy.scaling_metric.statistic }}",
             "stepAdjustments": {{ scaling_policy.scaling_metric.steps|tojson|safe }}
          },
          "type": "upsertScalingPolicy",
