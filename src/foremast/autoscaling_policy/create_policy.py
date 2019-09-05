@@ -103,12 +103,12 @@ class AutoScalingPolicy:
                     template_kwargs['scaling_policy']['scaling_metric']['dimensions'][pos]['value'] = server_group
 
             if scaling_policy['scaling_type'] == 'step_scaling':
-                rendered_template = \
-                    get_template(template_file='infrastructure/autoscaling_custom_stepscaling_policy.json.j2',
-                                 **template_kwargs)
+                rendered_template = get_template(
+                    template_file='infrastructure/autoscaling_custom_stepscaling_policy.json.j2',
+                    **template_kwargs)
             elif scaling_policy['scaling_type'] == 'target_tracking':
-                rendered_template = \
-                    get_template(template_file='infrastructure/autoscaling_custom_targettracking_policy.json.j2',
+                rendered_template = get_template(
+                    template_file='infrastructure/autoscaling_custom_targettracking_policy.json.j2',
                     **template_kwargs)
             else:
                 self.log.warn('Scaling Type %s not implemented or does not exist.', scaling_policy['scaling_type'])
