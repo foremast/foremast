@@ -13,7 +13,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""Functions that can be exposed to Jinja2 templates"""
+"""Functions and variables that can be exposed to Jinja2 templates"""
 
 from ..utils.kayenta import get_canary_id
 
@@ -24,3 +24,13 @@ def get_jinja_functions():
     functions[get_canary_id.__name__] = get_canary_id
 
     return functions
+
+def get_jinja_variables(pipeline):
+    """Gets a dictionary of variables from a SpinnakerPipeline that can be exposed to Jinja templates"""
+    variables = dict()
+    variables["trigger_job"] = pipeline.trigger_job
+    variables["group_name"] = pipeline.group_name
+    variables["app_name"] = pipeline.app_name
+    variables["repo_name"] = pipeline.repo_name
+
+    return variables
