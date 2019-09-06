@@ -25,6 +25,7 @@ def get_jinja_functions():
 
     return functions
 
+
 def get_jinja_variables(pipeline):
     """Gets a dictionary of variables from a SpinnakerPipeline that can be exposed to Jinja templates"""
     variables = dict()
