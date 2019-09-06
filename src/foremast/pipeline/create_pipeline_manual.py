@@ -21,7 +21,7 @@ from ..utils import get_pipeline_id, normalize_pipeline_name
 from ..utils.lookups import FileLookup
 from ..consts import TEMPLATES_PATH
 from .create_pipeline import SpinnakerPipeline
-from .jinja_functions import get_jinja_functions
+from .jinja_functions import get_jinja_functions, get_jinja_variables
 
 
 class SpinnakerPipelineManual(SpinnakerPipeline):
@@ -89,9 +89,9 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         # Get any pipeline args defined in pipeline.json, default to empty dict if none defined
         pipeline_args = dict()
 
-        # Expose permitted functions to jinja template
-        jinja_functions = get_jinja_functions()
-        pipeline_args.update(jinja_functions)
+        # Expose permitted functions and variables to the template
+        pipeline_args.update(get_jinja_functions())
+        pipeline_args.update(get_jinja_variables(self))
 
         # If any args set in the pipeline file add them to the pipeline_args.variables
         if pipeline_vars is not None:
