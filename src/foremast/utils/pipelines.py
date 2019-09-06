@@ -115,36 +115,3 @@ def normalize_pipeline_name(name=''):
     for bad in '\\/?%#':
         normalized_name = normalized_name.replace(bad, '_')
     return normalized_name
-
-
-def get_canary_id(name, application=None):
-    """Finds a canary config ID matching the name passed.
-    Assumes the canary name is unique and the first match wins.
-    Args:
-        application (str): Name of Spinnaker Application to search (optional)
-        name (str): Name of CanaryConfig to get the ID for
-
-    Returns:
-        str: ID of specified CanaryConfig.
-        None: CanaryConfig not found
-    """
-    url = "{}/v2/canaryConfig".format(API_URL)
-    canary_response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
-
-    if not canary_response.ok:
-        raise SpinnakerPipelineCreationFailed('Could not resolve canary config id for {0}: {1}'
-                                              .format(name, canary_response.json()))
-
-    canary_options = canary_response.json()
-    names = []
-    for config in canary_options:
-        names.append(config['name'])
-        # If this canary name matches and they did not specificy the owning application
-        if config['name'] == name and application is None:
-            return config['id']
-        # If this canary name matches and the application is listed in the canary config's owners array
-        if config['name'] == name and application in config['applications']:
-            return config['id']
-
-    raise SpinnakerPipelineCreationFailed(
-        'Could not resolve canary config id for: {0}.  Options are: {2}'.format(name, names))

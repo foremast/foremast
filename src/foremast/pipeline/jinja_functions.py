@@ -15,7 +15,7 @@
 #   limitations under the License.
 """Functions that can be exposed to Jinja2 templates"""
 
-from ..utils import get_canary_id
+from ..utils.kayenta import get_canary_id
 
 
 def get_jinja_functions():
