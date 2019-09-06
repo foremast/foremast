@@ -17,7 +17,6 @@
 import logging
 import requests
 
-from ..exceptions import SpinnakerPipelineCreationFailed
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 
 LOG = logging.getLogger(__name__)

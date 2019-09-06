@@ -19,7 +19,7 @@ import jinja2
 
 from ..utils import get_pipeline_id, normalize_pipeline_name
 from ..utils.lookups import FileLookup
-from ..consts import TEMPLATES_PATH, TEMPLATES_SCHEME_IDENTIFIER, TEMPLATE_VARIABLES_KEY
+from ..consts import TEMPLATES_PATH
 from .create_pipeline import SpinnakerPipeline
 from .jinja_functions import get_jinja_functions
 
@@ -47,7 +47,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             # Override template values that shoudl be set by foremast last
             pipeline_dict.setdefault('application', self.app_name)
             pipeline_dict.setdefault('name',
-                                     normalize_pipeline_name(name=file_name.lstrip(TEMPLATES_SCHEME_IDENTIFIER)))
+                                     normalize_pipeline_name(name=file_name.lstrip("templates://")))
             pipeline_dict.setdefault('id', get_pipeline_id(app=pipeline_dict['application'],
                                                            name=pipeline_dict['name']))
 
@@ -65,13 +65,14 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         Returns:
             str: Contents of pipeline file."""
         # Check if this file is a shared template in the TEMPLATES_PATH
-        if file_name.startswith(TEMPLATES_SCHEME_IDENTIFIER):
-            file_name = file_name.lstrip(TEMPLATES_SCHEME_IDENTIFIER)
+        if file_name.startswith("templates://"):
+            file_name = file_name.lstrip("templates://")
             pipeline_templates_path = TEMPLATES_PATH.rstrip("/") + "/pipeline"
             lookup = FileLookup(git_short=None, runway_dir=pipeline_templates_path)
-            return lookup.get(filename=file_name)
-        # Consider it a local repo file, check local or git:
-        lookup = FileLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
+        else:
+            # Consider it a local repo file, check local or git:
+            lookup = FileLookup(git_short=self.generated.gitlab()['main'], runway_dir=self.runway_dir)
+
         return lookup.get(filename=file_name)
 
     def get_rendered_json(self, json_string, pipeline_vars=None):
@@ -94,7 +95,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
         # If any args set in the pipeline file add them to the pipeline_args.variables
         if pipeline_vars is not None:
-            pipeline_args[TEMPLATE_VARIABLES_KEY] = pipeline_vars
+            pipeline_args["template_variables"] = pipeline_vars
 
         # Render the template
         return jinja_template.render(pipeline_args)
@@ -110,10 +111,10 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
         # Safely get variables out of pipeline.json if they are set
         pipe_settings = self.settings["pipeline"]
-        if TEMPLATE_VARIABLES_KEY in pipe_settings \
-           and isinstance(pipe_settings[TEMPLATE_VARIABLES_KEY], list) \
-           and len(pipe_settings[TEMPLATE_VARIABLES_KEY]) > index:
-            return pipe_settings[TEMPLATE_VARIABLES_KEY][index]
+        if "template_variables" in pipe_settings \
+           and isinstance(pipe_settings["template_variables"], list) \
+           and len(pipe_settings["template_variables"]) > index:
+            return pipe_settings["template_variables"][index]
 
         # Default value is None
         return None
