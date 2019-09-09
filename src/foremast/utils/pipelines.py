@@ -15,7 +15,6 @@
 #   limitations under the License.
 """Check Pipeline name to match format."""
 import logging
-
 import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT

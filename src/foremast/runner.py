@@ -116,7 +116,7 @@ class ForemastRunner:
 
         pipeline_type = self.configs['pipeline']['type']
 
-        if pipeline_type not in consts.ALLOWED_TYPES:
+        if pipeline_type not in consts.ALLOWED_TYPES and pipeline_type not in consts.MANUAL_TYPES:
             raise NotImplementedError('Pipeline type "{0}" not permitted.'.format(pipeline_type))
 
         if not onetime:
@@ -126,7 +126,7 @@ class ForemastRunner:
                 spinnakerpipeline = pipeline.SpinnakerPipelineS3(**kwargs)
             elif pipeline_type == 'datapipeline':
                 spinnakerpipeline = pipeline.SpinnakerPipelineDataPipeline(**kwargs)
-            elif pipeline_type == 'manual':
+            elif pipeline_type in consts.MANUAL_TYPES:
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             else:
                 # Handles all other pipelines

@@ -197,8 +197,11 @@ GIT_URL = validate_key_values(CONFIG, 'base', 'git_url')
 DOMAIN = validate_key_values(CONFIG, 'base', 'domain', default='example.com')
 ENVS = set(validate_key_values(CONFIG, 'base', 'envs', default='').split(','))
 REGIONS = set(validate_key_values(CONFIG, 'base', 'regions', default='').split(','))
+MANUAL_TYPES = set(
+    validate_key_values(CONFIG, 'base', 'manual_types', default='manual').split(','))
 ALLOWED_TYPES = set(
-    validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling,manual').split(','))
+    validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling')
+    .split(','))
 RUNWAY_BASE_PATH = validate_key_values(CONFIG, 'base', 'runway_base_path', default='runway')
 TEMPLATES_PATH = validate_key_values(CONFIG, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(CONFIG, 'base', 'ami_json_url')
