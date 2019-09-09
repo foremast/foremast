@@ -1,8 +1,8 @@
 .. _advanced_scaling_policy
 
-#######################
-``scaling_policy - V1``
-#######################
+#######################################
+``scaling_policy`` - V1 Cluster Scaling
+#######################################
 
 Defines scaling policy to attach to ASG. If this block does not exist, no
 scaling policy will be attached.
