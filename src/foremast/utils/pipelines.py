@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
 #   limitations under the License.
 """Check Pipeline name to match format."""
 import logging
-
-import murl
 import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
@@ -51,7 +49,7 @@ def check_managed_pipeline(name='', app_name=''):
         LOG.debug('"%s" does not end with "[region]".', name)
         raise ValueError(not_managed_message)
 
-    if len(pipeline_name_prefix) is not 1:
+    if len(pipeline_name_prefix) != 1:
         LOG.debug('"%s" does not only have one word before [region].', name)
         raise ValueError(not_managed_message)
 
@@ -72,9 +70,8 @@ def get_all_pipelines(app=''):
         requests.models.Response: Response from Gate containing Pipelines.
 
     """
-    url = murl.Url(API_URL)
-    url.path = 'applications/{app}/pipelineConfigs'.format(app=app)
-    response = requests.get(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    url = '{host}/applications/{app}/pipelineConfigs'.format(host=API_URL, app=app)
+    response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     assert response.ok, 'Could not retrieve Pipelines for {0}.'.format(app)
 

@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -71,5 +71,5 @@ def construct_datapipeline(env='',
 
     LOG.debug('Block data:\n%s', pformat(data))
 
-    pipeline_json = get_template(template_file=template_name, data=data)
+    pipeline_json = get_template(template_file=template_name, data=data, formats=generated)
     return pipeline_json

@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
 #   limitations under the License.
 """Package for foremast supporting utilities."""
 from .apps import *
+from .asg import *
 from .banners import *
 from .pipelines import *
 from .deep_chain_map import DeepChainMap
 from .elb import *
-from .gate import *
 from .encoding import *
 from .generate_filename import *
 from .dns import *

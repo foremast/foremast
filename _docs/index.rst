@@ -21,6 +21,7 @@ Contents
    advance_usages
    infra_assumptions
    lambda/index
+   halyard/index
    CONTRIBUTING
    RELEASING
    foremast/modules

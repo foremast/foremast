@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 
 import logging
 
-import awscli.customizations.datapipeline.translator as translator
 import boto3
+from awscli.customizations.datapipeline import translator
 
 from ..exceptions import DataPipelineDefinitionError
 from ..utils import get_details, get_properties
@@ -26,7 +26,7 @@ from ..utils import get_details, get_properties
 LOG = logging.getLogger(__name__)
 
 
-class AWSDataPipeline(object):
+class AWSDataPipeline:
     """Manipulate Data Pipeline."""
 
     def __init__(self, app=None, env=None, region='us-east-1', prop_path=None):

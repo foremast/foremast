@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,14 +19,22 @@ import base64
 from .templates import get_template
 
 
-def generate_encoded_user_data(env='dev', region='us-east-1', app_name='', group_name='', canary=False):
+def generate_encoded_user_data(
+        env='dev',
+        region='us-east-1',
+        generated=None,
+        group_name='',
+        pipeline_type='',
+        canary=False,
+):
     r"""Generate base64 encoded User Data.
 
     Args:
         env (str): Deployment environment, e.g. dev, stage.
         region (str): AWS Region, e.g. us-east-1.
-        app_name (str): Application name, e.g. coreforrest.
+        generated (gogoutils.Generator): Generated naming formats.
         group_name (str): Application group nane, e.g. core.
+        pipeline_type (str): Type of Foremast Pipeline to configure.
 
     Returns:
         str: base64 encoded User Data script.
@@ -49,6 +57,7 @@ def generate_encoded_user_data(env='dev', region='us-east-1', app_name='', group
         env_c, env_p, env_s = "prod", "prodp", "prods"
     else:
         env_c, env_p, env_s = env, env, env
+
     user_data = get_template(
         template_file='infrastructure/user_data.sh.j2',
         env=env,
@@ -56,7 +65,10 @@ def generate_encoded_user_data(env='dev', region='us-east-1', app_name='', group
         env_p=env_p,
         env_s=env_s,
         region=region,
-        app_name=app_name,
+        app_name=generated.app_name(),
         group_name=group_name,
-        canary=canary, )
+        pipeline_type=pipeline_type,
+        canary=canary,
+        formats=generated,
+    )
     return base64.b64encode(user_data.encode()).decode()

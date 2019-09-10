@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ from .dynamodb_stream_event import create_dynamodb_stream_event
 
 
 # pylint: disable=too-few-public-methods
-class LambdaEvent(object):
+class LambdaEvent:
     """Manipulate Lambda events."""
 
     def __init__(self, app=None, env=None, region=None, prop_path=None):

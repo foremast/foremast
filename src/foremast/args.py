@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -64,3 +64,8 @@ def add_artifact_path(parser):
 def add_artifact_version(parser):
     """Add an `artifact-version` flag to _parser_."""
     parser.add_argument('--artifact-version', help='Artifact version for S3 deployments')
+
+
+def add_provider(parser):
+    """Add an `provider` flag to _parser_."""
+    parser.add_argument('--provider', help='Cloud provider name', default='aws')

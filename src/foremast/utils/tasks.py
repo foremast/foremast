@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC #
+#   Copyright 2018 Gogo, LLC #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
@@ -26,7 +26,7 @@ from ..exceptions import SpinnakerTaskError, SpinnakerTaskInconclusiveError
 LOG = logging.getLogger(__name__)
 
 
-def post_task(task_data):
+def post_task(task_data, task_uri='/tasks'):
     """Create Spinnaker Task.
 
     Args:
@@ -39,7 +39,7 @@ def post_task(task_data):
         AssertionError: Error response from Spinnaker.
 
     """
-    url = '{}/tasks'.format(API_URL)
+    url = '{}/{}'.format(API_URL, task_uri.lstrip('/'))
 
     if isinstance(task_data, str):
         task_json = task_data
@@ -86,7 +86,7 @@ def _check_task(taskid):
     status = task_state['status']
     LOG.info('Current task status: %s', status)
 
-    if status == 'SUCCEEDED':
+    if status == 'SUCCEEDED':  # pylint: disable=no-else-return
         return status
     elif status == 'TERMINAL':
         raise SpinnakerTaskError(task_state)
@@ -122,7 +122,7 @@ def check_task(taskid, timeout=DEFAULT_TASK_TIMEOUT, wait=2):
         raise SpinnakerTaskInconclusiveError('Task failed to complete in {0} seconds: {1}'.format(timeout, taskid))
 
 
-def wait_for_task(task_data):
+def wait_for_task(task_data, task_uri='/tasks'):
     """Run task and check the result.
 
     Args:
@@ -132,7 +132,7 @@ def wait_for_task(task_data):
         str: Task status.
 
     """
-    taskid = post_task(task_data)
+    taskid = post_task(task_data, task_uri)
 
     if isinstance(task_data, str):
         json_data = json.loads(task_data)

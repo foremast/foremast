@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import json
 import logging
 from pprint import pformat
 
-from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS
+from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS, EC2_PIPELINE_TYPES
 from ..utils import generate_encoded_user_data, get_template, remove_duplicate_sg
 
 LOG = logging.getLogger(__name__)
@@ -35,7 +35,6 @@ def check_provider_healthcheck(settings, default_provider='Discovery'):
             * providers (list): Providers set to use native Health Check.
             * has_healthcheck (bool): If any native Health Checks requested.
     """
-    # pylint: disable=invalid-name
     ProviderHealthCheck = collections.namedtuple('ProviderHealthCheck', ['providers', 'has_healthcheck'])
 
     eureka_enabled = settings['app']['eureka_enabled']
@@ -103,7 +102,8 @@ def construct_pipeline_block(env='',
                              region='us-east-1',
                              settings=None,
                              pipeline_data=None,
-                             region_subnets=None):
+                             region_subnets=None,
+                             **kwargs):
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -116,6 +116,7 @@ def construct_pipeline_block(env='',
     Args:
         env (str): Deploy environment name, e.g. dev, stage, prod.
         generated (gogoutils.Generator): Gogo Application name generator.
+        kwargs (dict): Extra variables to pass to Pipeline Templates.
         previous_env (str): The previous deploy environment to use as
             Trigger.
         region (str): AWS Region to deploy to.
@@ -128,26 +129,26 @@ def construct_pipeline_block(env='',
         dict: Pipeline JSON template rendered with configurations.
 
     """
-
     LOG.info('%s block for [%s].', env, region)
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
     pipeline_type = pipeline_data['type']
-    gen_app_name = generated.app_name()
 
-    if pipeline_type in ('ec2', 'rolling'):
+    if pipeline_type in EC2_PIPELINE_TYPES:
         data = ec2_pipeline_setup(
-            appname=gen_app_name,
+            generated=generated,
             settings=settings,
             env=env,
             region=region,
+            pipeline_type=pipeline_type,
             project=generated.project,
-            region_subnets=region_subnets)
+            region_subnets=region_subnets,
+        )
     else:
         data = copy.deepcopy(settings)
 
     data['app'].update({
-        'appname': gen_app_name,
+        'appname': generated.app_name(),
         'repo_name': generated.repo,
         'group_name': generated.project,
         'environment': env,
@@ -161,32 +162,47 @@ def construct_pipeline_block(env='',
     LOG.debug('Block data:\n%s', pformat(data))
 
     template_name = get_template_name(env, pipeline_type)
-    pipeline_json = get_template(template_file=template_name, data=data)
+    pipeline_json = get_template(template_file=template_name, data=data, formats=generated, **kwargs)
     return pipeline_json
 
 
-def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='', region_subnets=None):
+def ec2_pipeline_setup(
+        generated=None,
+        project='',
+        settings=None,
+        env='',
+        pipeline_type='',
+        region='',
+        region_subnets=None,
+):
     """Handles ec2 pipeline data setup
 
     Args:
-        appname (str): Name of the application
+        generated (gogoutils.Generator): Generated naming formats.
         project (str): Group name of application
         settings (dict): Environment settings from configurations.
         env (str): Deploy environment name, e.g. dev, stage, prod.
+        pipeline_type (str): Type of Foremast Pipeline to configure.
         region (str): AWS Region to deploy to.
         region_subnets (dict): Subnets for a Region, e.g.
             {'us-west-2': ['us-west-2a', 'us-west-2b', 'us-west-2c']}.
 
     Returns:
         dict: Updated settings to pass to templates for EC2 info
-    """
 
+    """
     data = copy.deepcopy(settings)
-    user_data = generate_encoded_user_data(env=env, region=region, app_name=appname, group_name=project)
+    user_data = generate_encoded_user_data(
+        env=env,
+        region=region,
+        generated=generated,
+        group_name=project,
+        pipeline_type=pipeline_type,
+    )
 
     # Use different variable to keep template simple
     instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
-    instance_security_groups.append(appname)
+    instance_security_groups.append(generated.security_group_app)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
     instance_security_groups = remove_duplicate_sg(instance_security_groups)
 
@@ -203,7 +219,7 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
     if settings['app']['eureka_enabled']:
         elb = []
     else:
-        elb = ['{0}'.format(appname)]
+        elb = [generated.elb_app]
     LOG.info('Attaching the following ELB: %s', elb)
 
     health_checks = check_provider_healthcheck(settings)
@@ -228,7 +244,12 @@ def ec2_pipeline_setup(appname='', project='', settings=None, env='', region='',
 
     if settings['app']['canary']:
         canary_user_data = generate_encoded_user_data(
-            env=env, region=region, app_name=appname, group_name=project, canary=True)
+            env=env,
+            region=region,
+            generated=generated,
+            group_name=project,
+            canary=True,
+        )
         data['app'].update({
             'canary_encoded_user_data': canary_user_data,
         })

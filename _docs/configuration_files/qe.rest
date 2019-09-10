@@ -1,0 +1,40 @@
+``qe`` Block
+~~~~~~~~~~~~
+
+Top level key for QE settings; used by Quality Testing Stages typically post and pre 
+deployment. This specific feature is left up for custom Jinja Templates as most have
+specific testing flows. All keys in the QE block are passed and can be interpreted by
+custom Jinja2 Stages. 
+
+To facilitate this concept, this section highlights some common keys and ideas that 
+can be implemented to achieve testing Post Deploy stages (using custom paramaters 
+per environment).
+
+Refer to our full example templates here:
+https://github.com/foremast/foremast-template-examples
+
+``jenkins_master``
+******************
+
+Name of Jenkins Master configured in Spinnaker to run your Jobs against
+
+    | *Type*: string
+
+``test_job``
+************
+
+Name of Jenkins Job to Run. This defaults to the application name.
+
+    | *Type*: string
+
+``test_params``
+***************
+
+Dictionary of Jenkins Job Parameters
+
+    | *Type*: dict
+
+Example QE Stage JSON Configuration
+-----------------------------------
+
+.. literalinclude:: example-qe.json.j2

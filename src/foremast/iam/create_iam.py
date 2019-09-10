@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -49,7 +49,8 @@ def create_iam_resources(env='dev', app='', **_):
     LOG.debug('Application details: %s', details)
 
     deployment_type = app_properties['type']
-    role_trust_template = get_template('infrastructure/iam/trust/{0}_role.json.j2'.format(deployment_type))
+    role_trust_template = get_template(
+        'infrastructure/iam/trust/{0}_role.json.j2'.format(deployment_type), formats=generated)
 
     resource_action(
         client,

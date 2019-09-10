@@ -36,6 +36,17 @@ Describes the application.
     | *Type*: string
     | *Default*: ``null``
 
+.. _archaius_enabled:
+
+``archaius_enabled``
+******************
+
+Setting this value to ``true`` will autocreate archiaus pathing in
+a specified archaius S3 bucket.
+
+    | *Type*: boolean
+    | *Default*: ``false``
+
 .. _eureka_enabled:
 
 ``eureka_enabled``
@@ -85,7 +96,7 @@ Environment variables which are passed to the lambda function.
 .. code-block:: json
 
    {
-       "environment": {
+       "lambda_environment": {
            "Variables": {
                "VAR1": "val1",
                "VAR2": "val2",
@@ -93,6 +104,14 @@ Environment variables which are passed to the lambda function.
            }
        }
    }
+
+``lambda_layers``
+*****************
+
+List of AWS Lambda Layer ARNs to add to Lambda Function
+
+    | *Type*: list
+    | *Default*: ``[]``
 
 ``lambda_memory``
 *****************
@@ -114,10 +133,11 @@ Override the default generated IAM Role name.
 ``lambda_timeout``
 ******************
 
-The timeout setting for Lambda function
+The timeout setting for Lambda function. See official limits
+https://docs.aws.amazon.com/lambda/latest/dg/limits.html
 
     | *Type*: string
-    | *Default*: ``"3600"``
+    | *Default*: ``"900"``
     | *Units*: Seconds
 
 ``asg`` Block
@@ -216,72 +236,17 @@ your subnets in your cloud provider.
 ``scaling_policy``
 ******************
 
-Defines scaling policy to attach to ASG. If this block does not exist, no
-scaling policy will be attached
+To better explain this feature, this has has been moved to: :doc:`advanced_usages/scaling_policy`
 
-``scaling_policy`` *Keys*
-^^^^^^^^^^^^^^^^^^^^^^^^^
+``custom_scaling_policies``
+***************************
 
-``metric`` : The CloudWatch metric to trigger auto-scaling events.
+To better explain this feature, this has has been moved to: :doc:`advanced_usages/custom_scaling_policies`
 
-   | *Type*: string
-   | *Default*: ``"CPUUtilization"``
-   | *Options*:
+``scheduled_actions``
+*********************
 
-      - ``"CPUUtilization"``
-      -  ``"NetworkIn"``
-      -  ``"NetworkOut"``
-      -  ``"DiskReadBytes"``
-
-``threshold`` : Metrics value limit for scaling up
-
-   | *Type*: int
-
-``scale_down`` : Attach a default scale-down policy
-
-   | *Type*: boolean
-   | *Default*: ``true``
-
-``period_minutes`` : Time period to look across for determining if threshold was
-met. If you wish to have seconds, using a floating point such as .5 for 30 seconds.
-
-   | *Type*: float
-   | *Default*: 30
-   | *Units*: Minutes
-
-``statistic``: Statistic to calculate at the period to determine if threshold
-was met
-
-   | *Type*: string
-   | *Default*: ``"Average"``
-   | *Options*:
-
-      - ``"Average"``
-      - ``"Maximum"``
-      - ``"Minimum"``
-      - ``"Sum"``
-
-``instance_warmup`` : Time period to wait before adding metrics to Auto Scaling group
-
-   | *Type*: int
-   | *Default*: 600
-   | *Units*: seconds
-
-``scaling_policy`` *Example*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: json
-
-   {
-       "scaling_policy": {
-           "metric": "CPUUtilization",
-           "threshold": 90,
-           "period_minutes": 10,
-           "instance_warmup": 180,
-           "statistic": "Average",
-           "scale_down": true
-       }
-   }
+To better explain this feature, this has has been moved to: :doc:`advanced_usages/scheduled_actions`
 
 ``elb`` Block
 ~~~~~~~~~~~~~
@@ -519,8 +484,8 @@ Spinnaker strategy to use for deployments.
          deploy to CANARY path
        - ``"alpha"`` - Only used in S3 deployments. Causes pipeline to first
          deploy to an ALPHA path
-       - ``"mirror"`` - Only used in S3 deployments. Contents are deployed as-is.
-       No version or LATEST directory. 
+       - ``"mirror"`` - Only used in S3 deployments. Contents are deployed
+         as-is, no version or LATEST directory
 
 ``security_group`` Block
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -621,44 +586,8 @@ details
     | *Type*: array
     | *Default*: ``[]``
 
-``datapipeline`` Block
-~~~~~~~~~~~~~~~~~~~~~~
-
-Top level key for AWS Data Pipeline settings. Only necessary for Data Pipeline
-deployments.
-
-``name``
-********
-
-Name of the Data Pipeline. This defaults to the application name.
-
-    | *Type*: string
-    | *Default*: ``$appname``
-
-``description``
-***************
-
-Description of the Data Pipeline.
-
-    | *Type*: string
-    | *Default*: ``""``
-
-``activate_on_deploy``
-**********************
-
-Activates a Data Pipeline after deployment. Useful for OnDemand pipelines
-
-    | *Type*: boolean
-    | *Default*: ``false``
-
-``json_definition``
-*******************
-
-The exported JSON definition of the AWS Data Pipeline. You can get this by
-clicking "Export" in the AWS Console when creating the Data Pipeline.
-
-    | *Type*: object
-    | *Default*: ``{}``
+.. include:: datapipeline.rest
 
 .. include:: s3.rest
 
+.. include:: qe.rest

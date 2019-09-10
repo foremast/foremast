@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 from configparser import ConfigParser
 from unittest.mock import patch
 
-from foremast.consts import ALLOWED_TYPES, DEFAULT_SECURITYGROUP_RULES, _generate_security_groups, extract_formats
+from foremast.consts import (ALLOWED_TYPES, DEFAULT_SECURITYGROUP_RULES, EC2_PIPELINE_TYPES, RUNWAY_BASE_PATH,
+                             _generate_security_groups, extract_formats, validate_key_values)
 
 
 def test_consts_extract_formats():
@@ -61,3 +62,19 @@ def test_parse_security_group(values):
 def test_parse_security_group_dict(mock_keys):
     """Validate security groups are handled properly if dictionary is in dyanmic config"""
     assert {'': ['g3']} == _generate_security_groups('default_elb_securitygroups')
+
+
+def test_parse_ec2_pipeline_types():
+    """Validate EC2 Pipeline Types."""
+    assert EC2_PIPELINE_TYPES == ('ec2', 'rolling')
+    assert isinstance(EC2_PIPELINE_TYPES, tuple)
+
+def test_consts_default_runway_base_path():
+    """Validate default runway base path remains unchanged"""
+    assert RUNWAY_BASE_PATH == 'runway'
+
+def test_consts_custom_runway_base_path():
+    """Validate custom runway base path changes as expected"""
+    sample_config = {'base': {'runway_base_path': 'custom'}}
+    result = validate_key_values(sample_config, 'base', 'runway_base_path', default='runway')
+    assert result == 'custom'

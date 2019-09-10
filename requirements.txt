@@ -3,8 +3,8 @@ boto3
 deepmerge
 gogo-utils
 jinja2
-murl
+pluginbase
 python-gitlab
 requests
-tryagain
 slacker
+tryagain

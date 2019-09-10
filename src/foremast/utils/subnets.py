@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -57,11 +57,10 @@ def get_subnets(
         raise SpinnakerTimeout(subnet_response.text)
 
     subnet_list = subnet_response.json()
-
     for subnet in subnet_list:
-        LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t' '%(availabilityZone)s', subnet)
+        LOG.debug('Subnet Response: %s', subnet)
 
-        if subnet['target'] == target:
+        if subnet.get('target', '') == target:
             availability_zone = subnet['availabilityZone']
             account = subnet['account']
             subnet_region = subnet['region']

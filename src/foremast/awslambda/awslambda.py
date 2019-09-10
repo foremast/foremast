@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, g
 LOG = logging.getLogger(__name__)
 
 
-class LambdaFunction(object):
+class LambdaFunction:
     """Manipulate Lambda function."""
 
     def __init__(self, app, env, region, prop_path):
@@ -59,6 +59,7 @@ class LambdaFunction(object):
         self.settings = get_properties(prop_path, env=self.env, region=self.region)
         app = self.settings['app']
         self.lambda_environment = app['lambda_environment']
+        self.lambda_layers = app['lambda_layers']
         self.memory = app['lambda_memory']
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
         self.timeout = app['lambda_timeout']
@@ -181,7 +182,8 @@ class LambdaFunction(object):
                 Description=self.description,
                 Timeout=int(self.timeout),
                 MemorySize=int(self.memory),
-                VpcConfig=vpc_config)
+                VpcConfig=vpc_config,
+                Layers=self.lambda_layers)
 
             if self.concurrency_limit:
                 self.lambda_client.put_function_concurrency(
@@ -241,7 +243,8 @@ class LambdaFunction(object):
                 Publish=False,
                 VpcConfig=vpc_config,
                 Tags={'app_group': self.group,
-                      'app_name': self.app_name})
+                      'app_name': self.app_name},
+                Layers=self.lambda_layers)
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)

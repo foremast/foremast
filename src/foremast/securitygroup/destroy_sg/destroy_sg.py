@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -37,12 +37,9 @@ def destroy_sg(app='', env='', region='', **_):
     """
     vpc = get_vpc_id(account=env, region=region)
 
-    try:
-        url = '{api}/securityGroups/{env}/{region}/{app}'.format(api=API_URL, env=env, region=region, app=app)
-        payload = {'vpcId': vpc}
-        security_group = requests.get(url, params=payload, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
-    except AssertionError:
-        raise
+    url = '{api}/securityGroups/{env}/{region}/{app}'.format(api=API_URL, env=env, region=region, app=app)
+    payload = {'vpcId': vpc}
+    security_group = requests.get(url, params=payload, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     if not security_group:
         LOG.info('Nothing to delete.')

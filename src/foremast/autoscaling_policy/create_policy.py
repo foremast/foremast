@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ from math import floor
 import requests
 
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
-from ..utils import get_properties, get_template, wait_for_task
+from ..utils import get_latest_server_group, get_properties, get_template, wait_for_task
 
 
 class AutoScalingPolicy:
@@ -53,15 +53,20 @@ class AutoScalingPolicy:
 
         self.settings = get_properties(properties_file=prop_path, env=self.env, region=self.region)
 
-    def prepare_policy_template(self, scaling_type, period_sec, server_group):
+    def prepare_policy_template(self, scaling_type, server_group, scaling_policy=None):
         """Renders scaling policy templates based on configs and variables.
         After rendering, POSTs the json to Spinnaker for creation.
 
         Args:
-            scaling_type (str): ``scale_up`` or ``scaling_down``. Type of policy
-            period_sec (int): Period of time to look at metrics for determining scale
-            server_group (str): The name of the server group to render template for
+            scaling_type (str): Type of policy: ``scale_up``, ``scale_down``, ``custom``
+            server_group (str): Server group to render and apply policy template to
+            scaling_policy (dict): Custom Scaling Policy dictionary, defaults to None.
         """
+        if 'period_minutes' in self.settings['asg']['scaling_policy']:
+            period_sec = int(self.settings['asg']['scaling_policy']['period_minutes']) * 60
+        else:
+            period_sec = 1800
+
         template_kwargs = {
             'app': self.app,
             'env': self.env,
@@ -70,19 +75,45 @@ class AutoScalingPolicy:
             'period_sec': period_sec,
             'scaling_policy': self.settings['asg']['scaling_policy'],
         }
+
         if scaling_type == 'scale_up':
+            scale_up_adjustment = int(self.settings['asg']['scaling_policy'].get('increase_scaling_adjustment', 1))
             template_kwargs['operation'] = 'increase'
             template_kwargs['comparisonOperator'] = 'GreaterThanThreshold'
-            template_kwargs['scalingAdjustment'] = 1
-
+            template_kwargs['scalingAdjustment'] = scale_up_adjustment
+            rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2',
+                                             **template_kwargs)
         elif scaling_type == 'scale_down':
+            scale_down_adjustment = int(self.settings['asg']['scaling_policy'].get('decrease_scaling_adjustment', -1))
             cur_threshold = int(self.settings['asg']['scaling_policy']['threshold'])
             self.settings['asg']['scaling_policy']['threshold'] = floor(cur_threshold * 0.5)
             template_kwargs['operation'] = 'decrease'
             template_kwargs['comparisonOperator'] = 'LessThanThreshold'
-            template_kwargs['scalingAdjustment'] = -1
+            template_kwargs['scalingAdjustment'] = scale_down_adjustment
+            rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2',
+                                             **template_kwargs)
 
-        rendered_template = get_template(template_file='infrastructure/autoscaling_policy.json.j2', **template_kwargs)
+        elif scaling_type == 'custom':
+            template_kwargs['scaling_policy'] = scaling_policy
+
+            # Helper to update Cluster Name with latest server group name
+            for each_dimension in template_kwargs['scaling_policy']['scaling_metric']['dimensions']:
+                pos = template_kwargs['scaling_policy']['scaling_metric']['dimensions'].index(each_dimension)
+                if each_dimension['name'] == 'AutoScalingGroupName' and each_dimension['value'] == '$self':
+                    template_kwargs['scaling_policy']['scaling_metric']['dimensions'][pos]['value'] = server_group
+
+            if scaling_policy['scaling_type'] == 'step_scaling':
+                rendered_template = get_template(
+                    template_file='infrastructure/autoscaling_custom_stepscaling_policy.json.j2',
+                    **template_kwargs)
+            elif scaling_policy['scaling_type'] == 'target_tracking':
+                rendered_template = get_template(
+                    template_file='infrastructure/autoscaling_custom_targettracking_policy.json.j2',
+                    **template_kwargs)
+            else:
+                self.log.warn('Scaling Type %s not implemented or does not exist.', scaling_policy['scaling_type'])
+                raise NotImplementedError
+
         self.log.info('Creating a %s policy in %s for %s', scaling_type, self.env, self.app)
         wait_for_task(rendered_template)
         self.log.info('Successfully created a %s policy in %s for %s', scaling_type, self.env, self.app)
@@ -93,40 +124,27 @@ class AutoScalingPolicy:
         for scaling up and scaling down policies.
         This function acts as the main driver for the scaling policy creationprocess
         """
-        if not self.settings['asg']['scaling_policy']:
+        if not self.settings['asg']['scaling_policy'] and not self.settings['asg']['custom_scaling_policies']:
             self.log.info("No scaling policy found, skipping...")
             return
 
-        server_group = self.get_server_group()
+        server_group = get_latest_server_group(self.env, self.app)
 
         # Find all existing and remove them
-        scaling_policies = self.get_all_existing(server_group)
-        for policy in scaling_policies:
-            for subpolicy in policy:
-                self.delete_existing_policy(subpolicy, server_group)
+        scaling_policies = self.get_all_scaling_policies(server_group)
+        for policy_block in scaling_policies:
+            for scaling_policy in policy_block:
+                self.delete_existing_scaling_policy(scaling_policy, server_group)
 
-        if self.settings['asg']['scaling_policy']['period_minutes']:
-            period_sec = int(self.settings['asg']['scaling_policy']['period_minutes']) * 60
-        else:
-            period_sec = 1800
+        if self.settings['asg']['scaling_policy']:
+                self.prepare_policy_template('scale_up', server_group)
+                if self.settings['asg']['scaling_policy'].get('scale_down', True):
+                    self.prepare_policy_template('scale_down', server_group)
+        elif self.settings['asg']['custom_scaling_policies']:
+            for scaling_policy in self.settings['asg']['custom_scaling_policies']:
+                self.prepare_policy_template('custom', server_group, scaling_policy)
 
-        self.prepare_policy_template('scale_up', period_sec, server_group)
-        if self.settings['asg']['scaling_policy'].get('scale_down', True):
-            self.prepare_policy_template('scale_down', period_sec, server_group)
-
-    def get_server_group(self):
-        """Finds the most recently deployed server group for the application.
-        This is the server group that the scaling policy will be applied to.
-
-        Returns:
-            server_group (str): Name of the newest server group
-        """
-        api_url = "{0}/applications/{1}".format(API_URL, self.app)
-        response = requests.get(api_url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
-        for server_group in response.json()['clusters'][self.env]:
-            return server_group['serverGroups'][-1]
-
-    def delete_existing_policy(self, scaling_policy, server_group):
+    def delete_existing_scaling_policy(self, scaling_policy, server_group):
         """Given a scaling_policy and server_group, deletes the existing scaling_policy.
         Scaling policies need to be deleted instead of upserted for consistency.
 
@@ -152,7 +170,7 @@ class AutoScalingPolicy:
         }
         wait_for_task(json.dumps(delete_dict))
 
-    def get_all_existing(self, server_group):
+    def get_all_scaling_policies(self, server_group):
         """Finds all existing scaling policies for an application
 
         Returns:

@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ def get_vpc_id(account, region):
             configured.
 
     """
-    url = '{0}/vpcs'.format(API_URL)
+    url = '{0}/networks/aws'.format(API_URL)
     response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     if not response.ok:
@@ -50,8 +50,8 @@ def get_vpc_id(account, region):
     vpcs = response.json()
 
     for vpc in vpcs:
-        LOG.debug('VPC: %(name)s, %(account)s, %(region)s => %(id)s', vpc)
-        if all([vpc['name'] == 'vpc', vpc['account'] == account, vpc['region'] == region]):
+        LOG.debug('VPC Response: %s', vpc)
+        if 'name' in vpc and all([vpc['name'] == 'vpc', vpc['account'] == account, vpc['region'] == region]):
             LOG.info('Found VPC ID for %s in %s: %s', account, region, vpc['id'])
             vpc_id = vpc['id']
             break

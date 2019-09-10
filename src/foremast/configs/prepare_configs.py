@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import collections
 import logging
 
-from ..consts import ENVS, REGIONS
+from ..consts import ENVS, REGIONS, RUNWAY_BASE_PATH
 from ..utils import DeepChainMap, FileLookup
 
 LOG = logging.getLogger(__name__)
@@ -36,7 +36,9 @@ def process_git_configs(git_short=''):
     """
     LOG.info('Processing application.json files from GitLab "%s".', git_short)
     file_lookup = FileLookup(git_short=git_short)
-    app_configs = process_configs(file_lookup, 'runway/application-master-{env}.json', 'runway/pipeline.json')
+    app_configs = process_configs(file_lookup,
+                                  RUNWAY_BASE_PATH + '/application-master-{env}.json',
+                                  RUNWAY_BASE_PATH + '/pipeline.json')
     commit_obj = file_lookup.project.commits.get('master')
     config_commit = commit_obj.attributes['id']
     LOG.info('Commit ID used: %s', config_commit)

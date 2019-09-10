@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -61,7 +61,12 @@ def construct_pipeline_block_lambda(env='',
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
     gen_app_name = generated.app_name()
-    user_data = generate_encoded_user_data(env=env, region=region, app_name=gen_app_name, group_name=generated.project)
+    user_data = generate_encoded_user_data(
+        env=env,
+        region=region,
+        generated=generated,
+        group_name=generated.project,
+    )
 
     # Use different variable to keep template simple
     instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
@@ -90,5 +95,5 @@ def construct_pipeline_block_lambda(env='',
 
     LOG.debug('Block data:\n%s', pformat(data))
 
-    pipeline_json = get_template(template_file=template_name, data=data)
+    pipeline_json = get_template(template_file=template_name, data=data, formats=generated)
     return pipeline_json

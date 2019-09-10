@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ from pprint import pformat
 
 import requests
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..consts import API_URL, DEFAULT_RUN_AS_USER, EC2_PIPELINE_TYPES, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import ami_lookup, generate_packer_filename, get_details, get_properties, get_subnets, get_template
 from .clean_pipelines import clean_pipelines
@@ -54,6 +54,7 @@ class SpinnakerPipeline:
         self.generated = get_details(app=app)
         self.app_name = self.generated.app_name()
         self.group_name = self.generated.project
+        self.repo_name = self.generated.repo
 
         self.settings = get_properties(prop_path)
         self.environments = self.settings['pipeline']['env']
@@ -81,8 +82,8 @@ class SpinnakerPipeline:
         self.log.debug('Pipeline creation response:\n%s', pipeline_response.text)
 
         if not pipeline_response.ok:
-            raise SpinnakerPipelineCreationFailed(
-                'Failed to create pipeline for {0}: {1}'.format(self.app_name, pipeline_response.json()))
+            raise SpinnakerPipelineCreationFailed('Pipeline for {0}: {1}'.format(self.app_name,
+                                                                                 pipeline_response.json()))
 
         self.log.info('Successfully created "%s" pipeline in application "%s".', pipeline_dict['name'],
                       pipeline_dict['application'])
@@ -97,6 +98,7 @@ class SpinnakerPipeline:
 
         Returns:
             dict: Rendered Pipeline wrapper.
+
         """
         base = self.settings['pipeline']['base']
 
@@ -120,10 +122,13 @@ class SpinnakerPipeline:
             'app': {
                 'ami_id': ami_id,
                 'appname': self.app_name,
+                'group_name': self.group_name,
+                'repo_name': self.repo_name,
                 'base': base,
                 'environment': 'packaging',
                 'region': region,
                 'triggerjob': self.trigger_job,
+                'run_as_user': DEFAULT_RUN_AS_USER,
                 'email': email,
                 'slack': slack,
                 'root_volume_size': root_volume_size,
@@ -136,7 +141,7 @@ class SpinnakerPipeline:
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
-        wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data)
+        wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data, formats=self.generated)
 
         return json.loads(wrapper)
 
@@ -145,6 +150,7 @@ class SpinnakerPipeline:
 
         Returns:
             str: Pipeline config json
+
         """
         url = "{0}/applications/{1}/pipelineConfigs".format(API_URL, self.app_name)
         resp = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
@@ -161,6 +167,7 @@ class SpinnakerPipeline:
 
         Returns:
             str: pipeline_id if existing, empty string of not.
+
         """
         pipelines = self.get_existing_pipelines()
         pipeline_id = None
@@ -205,12 +212,20 @@ class SpinnakerPipeline:
         subnets = None
         pipelines = {}
         for region, envs in regions_envs.items():
+            self.generated.data.update({
+                'region': region,
+            })
+
             # TODO: Overrides for an environment no longer makes sense. Need to
             # provide override for entire Region possibly.
             pipelines[region] = self.render_wrapper(region=region)
 
             previous_env = None
             for env in envs:
+                self.generated.data.update({
+                    'env': env,
+                })
+
                 pipeline_block_data = {
                     "env": env,
                     "generated": self.generated,
@@ -220,7 +235,7 @@ class SpinnakerPipeline:
                     "pipeline_data": self.settings['pipeline'],
                 }
 
-                if self.settings['pipeline']['type'] in ('ec2', 'rolling'):
+                if self.settings['pipeline']['type'] in EC2_PIPELINE_TYPES:
                     if not subnets:
                         subnets = get_subnets()
                     try:

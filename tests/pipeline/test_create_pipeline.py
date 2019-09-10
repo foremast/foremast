@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Test create_pipeline functionality"""
-
 from unittest import mock
 
 import pytest
-
 from foremast.pipeline import SpinnakerPipeline
 
+TEST_FORMAT_GENERATOR = mock.Mock()
 TEST_SETTINGS = {
     'dev': {
         'regions': ['us-east-1'],
@@ -49,17 +48,17 @@ TEST_SETTINGS = {
 }
 
 
+@pytest.fixture
 @mock.patch('foremast.pipeline.create_pipeline.get_properties')
 @mock.patch('foremast.pipeline.create_pipeline.get_details')
 @mock.patch('foremast.pipeline.create_pipeline.os')
-@pytest.fixture
 def spinnaker_pipeline(mock_os, mock_get_details, mock_get_prop):
     """Sets up pipeline fixture object"""
     mock_get_prop.return_value = TEST_SETTINGS
     pipelineObj = SpinnakerPipeline(
         app='appgroup',
         trigger_job='a_group_app', )
-    pipelineObj.generated = 'test'
+    pipelineObj.generated = TEST_FORMAT_GENERATOR
     pipelineObj.app_name = 'appgroup'
     pipelineObj.group_name = 'group'
     return pipelineObj
@@ -76,7 +75,7 @@ def test_create_pipeline_ec2(mock_post, mock_renumerate, mock_construct, mock_su
     """test pipeline creation if ec2 pipeline."""
     test_block_data = {
         "env": "dev",
-        "generated": "test",
+        "generated": TEST_FORMAT_GENERATOR,
         "previous_env": None,
         "region": "us-east-1",
         "settings": spinnaker_pipeline.settings["dev"]["us-east-1"],

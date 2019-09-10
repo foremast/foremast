@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -32,15 +32,17 @@ import os
 
 import gogoutils
 
-from foremast import (app, autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
-                      securitygroup, slacknotify, utils)
+from foremast import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
+                      scheduled_actions, securitygroup, slacknotify, utils)
+from foremast.plugin_manager import PluginManager
+
 
 from .args import add_debug
 
 LOG = logging.getLogger(__name__)
 
 
-class ForemastRunner(object):
+class ForemastRunner:
     """Wrap each pipes module in a way that is easy to invoke."""
 
     def __init__(self):
@@ -56,6 +58,7 @@ class ForemastRunner(object):
         self.artifact_path = os.getenv("ARTIFACT_PATH")
         self.artifact_version = os.getenv("ARTIFACT_VERSION")
         self.promote_stage = os.getenv("PROMOTE_STAGE", "latest")
+        self.provider = os.getenv("PROVIDER", "aws")
 
         self.git_project = "{}/{}".format(self.group, self.repo)
         parsed = gogoutils.Parser(self.git_project)
@@ -68,6 +71,12 @@ class ForemastRunner(object):
         self.raw_path = "./raw.properties"
         self.json_path = self.raw_path + ".json"
         self.configs = None
+
+    def plugin_manager(self, service):
+        """Wrapper around PluginManager"""
+        manager = PluginManager(service, self.provider)
+        plugin = manager.load()
+        return plugin
 
     def write_configs(self):
         """Generate the configurations needed for pipes."""
@@ -83,9 +92,15 @@ class ForemastRunner(object):
     def create_app(self):
         """Create the spinnaker application."""
         utils.banner("Creating Spinnaker App")
-        spinnakerapp = app.SpinnakerApp(app=self.app, email=self.email, project=self.group, repo=self.repo,
-                                        pipeline_config=self.configs['pipeline'])
-        spinnakerapp.create_app()
+        plugin = self.plugin_manager('app')
+
+        spinnakerapp = plugin.SpinnakerApp(
+            app=self.app,
+            email=self.email,
+            project=self.group,
+            repo=self.repo,
+            pipeline_config=self.configs['pipeline'])
+        spinnakerapp.create()
 
     def create_pipeline(self, onetime=None):
         """Create the spinnaker pipeline(s)."""
@@ -101,7 +116,7 @@ class ForemastRunner(object):
 
         pipeline_type = self.configs['pipeline']['type']
 
-        if pipeline_type not in consts.ALLOWED_TYPES:
+        if pipeline_type not in consts.ALLOWED_TYPES and pipeline_type not in consts.MANUAL_TYPES:
             raise NotImplementedError('Pipeline type "{0}" not permitted.'.format(pipeline_type))
 
         if not onetime:
@@ -111,7 +126,7 @@ class ForemastRunner(object):
                 spinnakerpipeline = pipeline.SpinnakerPipelineS3(**kwargs)
             elif pipeline_type == 'datapipeline':
                 spinnakerpipeline = pipeline.SpinnakerPipelineDataPipeline(**kwargs)
-            elif pipeline_type == 'manual':
+            elif pipeline_type in consts.MANUAL_TYPES:
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             else:
                 # Handles all other pipelines
@@ -223,6 +238,13 @@ class ForemastRunner(object):
             app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
         policyobj.create_policy()
 
+    def create_scheduled_actions(self):
+        """Create Scheduled Actions for app in environment"""
+        utils.banner("Creating Scheduled Actions")
+        actionsobj = scheduled_actions.ScheduledActions(
+            app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
+        actionsobj.create_scheduled_actions()
+
     def create_datapipeline(self):
         """Creates data pipeline and adds definition"""
         utils.banner("Creating Data Pipeline")
@@ -254,12 +276,15 @@ def prepare_infrastructure():
     runner.write_configs()
     runner.create_app()
 
+    archaius = runner.configs[runner.env]['app']['archaius_enabled']
     eureka = runner.configs[runner.env]['app']['eureka_enabled']
     deploy_type = runner.configs['pipeline']['type']
 
     if deploy_type not in ['s3', 'datapipeline']:
         runner.create_iam()
-        runner.create_archaius()
+        # TODO: Refactor Archaius to be fully featured
+        if archaius:
+            runner.create_archaius()
         runner.create_secgroups()
 
     if eureka:
@@ -302,6 +327,14 @@ def create_scaling_policy():
     runner = ForemastRunner()
     runner.write_configs()
     runner.create_autoscaling_policy()
+    runner.cleanup()
+
+
+def create_scheduled_actions():
+    """Create Scheduled Actions for an Auto Scaling Group."""
+    runner = ForemastRunner()
+    runner.write_configs()
+    runner.create_scheduled_actions()
     runner.cleanup()
 
 

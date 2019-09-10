@@ -37,10 +37,26 @@ Add CloudWatch Limited access.
    | *Type*: boolean
    | *Default*: ``false``
 
+``datapipeline``
+*******
+
+Allows a data pipeline to be trigger e.g. via lambda.
+
+   | *Type*: boolean
+   | *Default*: ``false``
+
 ``dynamodb``
 ************
 
 Add DynamoDB access to tables listed.
+
+   | *Type*: array
+   | *Default*: ``[]``
+
+``elasticache``
+*****************
+
+Add Elasticache access to clusters listed.
 
    | *Type*: array
    | *Default*: ``[]``
@@ -52,6 +68,14 @@ Add ElasticSearch access to domains listed.
 
    | *Type*: array
    | *Default*: ``[]``
+
+``emr``
+*******
+
+Add EMR Full access.
+
+   | *Type*: boolean
+   | *Default*: ``false``
 
 ``firehose``
 ************
@@ -73,6 +97,14 @@ Add Glue GetTable and GetDatabase access.
 ***********
 
 Add Kinesis Streams access to streams listed.
+
+   | *Type*: array
+   | *Default*: ``[]``
+
+``kms``
+***********
+
+Add KMS Decrypt access to KMS keys listed.
 
    | *Type*: array
    | *Default*: ``[]``
@@ -128,6 +160,14 @@ Add SimpleDB access to SimpleDB Domains listed.
    | *Type*: array
    | *Default*: ``[]``
 
+``secretsmanager``
+***********
+
+Add Secrets Manager access to the secrets listed.
+
+   | *Type*: array
+   | *Default*: ``[]``
+
 ``ses``
 *******
 
@@ -148,6 +188,14 @@ Add SNS access.
 *******
 
 Add SQS access.
+
+   | *Type*: boolean
+   | *Default*: ``false``
+
+``xray``
+********
+
+Add AWS XRay access.
 
    | *Type*: boolean
    | *Default*: ``false``

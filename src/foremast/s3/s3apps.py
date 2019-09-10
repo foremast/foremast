@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
 
 
 # pylint: disable=too-few-public-methods
-class S3Apps(object):
+class S3Apps:
     """Configure infrastructure and policies for S3 web applications."""
 
     def __init__(self, app, env, region, prop_path, primary_region='us-east-1'):
@@ -59,6 +59,8 @@ class S3Apps(object):
             shared_app = self.s3props['shared_bucket_target']
             newgenerated = get_details(app=shared_app, env=env, region=self.region)
             self.bucket = newgenerated.shared_s3_app_bucket(include_region=include_region)
+        elif self.s3props.get('bucket_name'):
+            self.bucket = self.s3props['bucket_name']
         else:
             self.bucket = self.generated.s3_app_bucket(include_region=include_region)
 
@@ -89,6 +91,7 @@ class S3Apps(object):
             self._put_bucket_lifecycle()
             self._put_bucket_versioning()
             self._put_bucket_encryption()
+            self._put_bucket_notification()
             self._put_bucket_tagging()
 
     def _bucket_exists(self):
@@ -219,6 +222,27 @@ class S3Apps(object):
         _response = self.s3client.put_bucket_logging(Bucket=self.bucket, BucketLoggingStatus=logging_config)
         LOG.debug('Response setting up S3 logging: %s', _response)
         LOG.info('S3 logging configuration updated')
+
+    def _put_bucket_notification(self):
+        """Adds bucket notification configuration."""
+        notification_config = {}
+
+        if self.s3props['notification']['enabled']:
+            if 'topic_configurations' in self.s3props['notification'] and \
+                    self.s3props['notification']['topic_configurations'] != [{}]:
+                notification_config['TopicConfigurations'] = self.s3props['notification']['topic_configurations']
+            if 'queue_configurations' in self.s3props['notification'] and \
+                    self.s3props['notification']['queue_configurations'] != [{}]:
+                notification_config['QueueConfigurations'] = self.s3props['notification']['queue_configurations']
+            if 'lambda_configurations' in self.s3props['notification'] and \
+                    self.s3props['notification']['lambda_configurations'] != [{}]:
+                notification_config['LambdaFunctionConfigurations'] = \
+                    self.s3props['notification']['lambda_configurations']
+        LOG.debug('Notification Config: %s', notification_config)
+        _response = self.s3client.put_bucket_notification_configuration(Bucket=self.bucket,
+                                                                        NotificationConfiguration=notification_config)
+        LOG.debug('Response setting up S3 notification: %s', _response)
+        LOG.info('S3 notification configuration updated')
 
     def _put_bucket_tagging(self):
         """Add bucket tags to bucket."""

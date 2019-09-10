@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ setup(
     install_requires=REQUIREMENTS,
     include_package_data=True,
     keywords="aws gogo infrastructure netflixoss python spinnaker",
-    url='https://github.com/gogoair/foremast',
-    download_url='https://github.com/gogoair/foremast',
+    url='https://github.com/foremast/foremast',
+    download_url='https://github.com/foremast/foremast',
     platforms=['OS Independent'],
     license='Apache License (2.0)',
     classifiers=[
@@ -43,6 +43,8 @@ setup(
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
     ],
@@ -70,6 +72,7 @@ setup(
             'foremast-pipeline-onetime=foremast.runner:prepare_onetime_pipeline',
             'create-scaling-policy=foremast.runner:create_scaling_policy',
             'foremast-scaling-policy=foremast.runner:create_scaling_policy',
+            'foremast-scheduled-actions=foremast.runner:create_scheduled_actions',
             'rebuild_pipelines=foremast.runner:rebuild_pipelines',
             'foremast-pipeline-rebuild=foremast.runner:rebuild_pipelines',
             'foremast-deploy-s3app=foremast.runner:deploy_s3app',

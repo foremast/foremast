@@ -107,6 +107,27 @@ relative to where you where you are running the Foremast commands. See
 
     | *Required*: No
 
+``runway_base_path``
+******************
+
+Base path to use when looking for custom runway directories. If provided,
+Foremast will first look for Foremast runway files in this directory. 
+This is useful if you have a different folder or location to store pipeline
+configuration values.
+
+    | *Type*: str
+    | *Default*: ``runway``
+    | *Required*: No
+
+``default_run_as_user``
+***********************
+
+Default user to run pipelines as. This is needed for leveraging service accounts in Fiat.
+
+    | *Type*: str
+    | *Default*: ``null``
+    | *Required*: No
+
 ``default_ec2_securitygroups``
 ******************************
 
@@ -140,6 +161,12 @@ security group name, it will self-reference to its own application name.
 
     | *Required*: No
     | *Example*: ``{ "bastion" : [ { "start_port": "22", "end_port": "22", "protocol": "tcp" } ] }``
+
+``ec2_pipeline_types``
+**********************
+
+.. autodata:: foremast.consts.EC2_PIPELINE_TYPES
+   :noindex:
 
 ``gate_client_cert``
 ********************

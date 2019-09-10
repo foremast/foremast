@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ def auto_service(pipeline_settings={}, services={}):
     return services
 
 
-def render_policy_template(  # pylint: disable=R0913
+def render_policy_template(  # pylint: disable=too-many-arguments
         account_number='',
         app='coreforrest',
         env='dev',

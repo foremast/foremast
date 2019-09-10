@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -21,8 +21,9 @@ import logging
 from pprint import pformat
 
 import requests
+from gogoutils import Generator
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
+from ..consts import API_URL, APP_FORMATS, DEFAULT_RUN_AS_USER, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
 from ..exceptions import ForemastError
 from ..utils import get_template, wait_for_task
 
@@ -49,6 +50,7 @@ class SpinnakerApp:
         self.appinfo = {'app': app, 'email': email, 'project': project, 'repo': repo}
         self.appname = app
         self.pipeline_config = pipeline_config
+        self.generated = Generator(project=project, repo=repo, formats=APP_FORMATS)
 
     def get_accounts(self, provider='aws'):
         """Get Accounts added to Spinnaker.
@@ -92,7 +94,7 @@ class SpinnakerApp:
         wait_for_task(jsondata)
 
         self.log.info("Successfully created %s application", self.appname)
-        return
+        return jsondata
 
     def retrieve_template(self):
         """Sets the instance links with pipeline_configs and then renders template files
@@ -103,8 +105,12 @@ class SpinnakerApp:
         links = self.retrieve_instance_links()
         self.log.debug('Links is \n%s', pformat(links))
         self.pipeline_config['instance_links'].update(links)
-        jsondata = get_template(template_file='infrastructure/app_data.json.j2',
-                                appinfo=self.appinfo, pipeline_config=self.pipeline_config)
+        jsondata = get_template(
+            template_file='infrastructure/app_data.json.j2',
+            appinfo=self.appinfo,
+            pipeline_config=self.pipeline_config,
+            formats=self.generated,
+            run_as_user=DEFAULT_RUN_AS_USER)
         self.log.debug('jsondata is %s', pformat(jsondata))
         return jsondata
 

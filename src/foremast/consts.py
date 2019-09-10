@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ import ast
 import json
 import logging
 import sys
-from configparser import ConfigParser, DuplicateSectionError
-from os import getcwd, path
+from configparser import ConfigParser
+from os import getcwd, getenv, path
 from os.path import exists, expanduser, expandvars
 
 LOG = logging.getLogger(__name__)
@@ -39,6 +39,15 @@ SHORT_LOGGING_FORMAT = '[%(levelname)s] %(message)s'
 
 logging.basicConfig(format=LOGGING_FORMAT)
 logging.getLogger(__package__.split('.')[0]).setLevel(logging.INFO)
+
+GOOD_STATUSES = frozenset(('SUCCEEDED', ))
+SKIP_STATUSES = frozenset(('NOT_STARTED', ))
+
+DEFAULT_DYNAMIC_CONFIG_FILE = '{path}/config.py'.format(path=getcwd())
+"""Default `config.py` file path is in the current directory.
+
+To override, use the `FOREMAST_CONFIG_FILE` environment variable.
+"""
 
 
 def validate_key_values(config_handle, section, key, default=None):
@@ -53,18 +62,13 @@ def validate_key_values(config_handle, section, key, default=None):
     Returns:
         object: ``str`` when *key* exists, otherwise *default* object.
     """
-    try:
-        config_handle.add_section(section)
+    if section not in config_handle:
         LOG.info('Section missing from configurations: [%s]', section)
-    except DuplicateSectionError:
-        pass
-
-    section_handle = config_handle[section]
 
     try:
-        value = section_handle[key]
+        value = config_handle[section][key]
     except KeyError:
-        LOG.warning('[%s] missing key "%s", using %r.', section_handle.name, key, default)
+        LOG.warning('[%s] missing key "%s", using %r.', section, key, default)
         value = default
 
     return value
@@ -73,49 +77,46 @@ def validate_key_values(config_handle, section, key, default=None):
 def extract_formats(config_handle):
     """Get application formats.
 
+    See :class:`gogoutils.Formats` for available options.
+
     Args:
         config_handle (configparser.ConfigParser): Instance of configurations.
 
     Returns:
-        object: ``str`` when *key* exists, otherwise *default* object.
-        dict: of formats in {$format_type: $format_pattern}.
-        See (gogoutils.Formats) for available options.
+        dict: Formats in ``{$format_type: $format_pattern}``.
+
     """
-    formats = {}
-
-    if config_handle.has_section('formats'):
-        formats = dict(config_handle['formats'])
-
+    configurations = dict(config_handle)
+    formats = dict(configurations.get('formats', {}))
     return formats
 
 
-def load_dynamic_config(configurations, config_dir=getcwd()):
+def load_dynamic_config(config_file=DEFAULT_DYNAMIC_CONFIG_FILE):
     """Load and parse dynamic config"""
-    # Create full path of config
-    config_file = '{path}/config.py'.format(path=config_dir)
+    dynamic_configurations = {}
 
     # Insert config path so we can import it
     sys.path.insert(0, path.dirname(path.abspath(config_file)))
     try:
         config_module = __import__('config')
 
-        for key, value in config_module.CONFIG.items():
-            LOG.debug('Importing %s with key %s', key, value)
-            # Update configparser object
-            configurations.update({key: value})
+        dynamic_configurations = config_module.CONFIG
     except ImportError:
         # Provide a default if config not found
-        configurations = {}
+        LOG.error('ImportError: Unable to load dynamic config. Check config.py file imports!')
+
+    return dynamic_configurations
 
 
 def find_config():
-    """Look for **foremast.cfg** in config_locations.
+    """Look for **foremast.cfg** in config_locations or ``./config.py``.
 
     Raises:
         SystemExit: No configuration file found.
 
     Returns:
-        ConfigParser: found configuration file
+        dict: Found dynamic or static configuration.
+
     """
     config_locations = [
         '/etc/foremast/foremast.cfg',
@@ -125,19 +126,19 @@ def find_config():
     configurations = ConfigParser()
 
     cfg_file = configurations.read(config_locations)
-    dynamic_config_file = '{path}/config.py'.format(path=getcwd())
+    dynamic_config_file = getenv('FOREMAST_CONFIG_FILE', DEFAULT_DYNAMIC_CONFIG_FILE)
 
     if cfg_file:
         LOG.info('Loading static configuration file.')
     elif exists(dynamic_config_file):
         LOG.info('Loading dynamic configuration file.')
-        load_dynamic_config(configurations)
+        configurations = load_dynamic_config(config_file=dynamic_config_file)
     else:
         config_locations.append(dynamic_config_file)
         LOG.warning('No configuration found in the following locations:\n%s', '\n'.join(config_locations))
         LOG.warning('Using defaults...')
 
-    return configurations
+    return dict(configurations)
 
 
 def _remove_empty_entries(entries):
@@ -154,7 +155,7 @@ def _convert_string_to_native(value):
     result = None
 
     try:
-        result = ast.literal_eval(value)
+        result = ast.literal_eval(str(value))
     except (SyntaxError, ValueError):
         # Likely a string
         result = value.split(',')
@@ -196,13 +197,31 @@ GIT_URL = validate_key_values(CONFIG, 'base', 'git_url')
 DOMAIN = validate_key_values(CONFIG, 'base', 'domain', default='example.com')
 ENVS = set(validate_key_values(CONFIG, 'base', 'envs', default='').split(','))
 REGIONS = set(validate_key_values(CONFIG, 'base', 'regions', default='').split(','))
+MANUAL_TYPES = set(
+    validate_key_values(CONFIG, 'base', 'manual_types', default='manual').split(','))
 ALLOWED_TYPES = set(
-    validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling').split(','))
+    validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling')
+    .split(','))
+RUNWAY_BASE_PATH = validate_key_values(CONFIG, 'base', 'runway_base_path', default='runway')
 TEMPLATES_PATH = validate_key_values(CONFIG, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(CONFIG, 'base', 'ami_json_url')
+DEFAULT_RUN_AS_USER = validate_key_values(CONFIG, 'base', 'default_run_as_user', default=None)
 DEFAULT_SECURITYGROUP_RULES = _generate_security_groups('default_securitygroup_rules')
 DEFAULT_EC2_SECURITYGROUPS = _generate_security_groups('default_ec2_securitygroups')
 DEFAULT_ELB_SECURITYGROUPS = _generate_security_groups('default_elb_securitygroups')
+
+EC2_PIPELINE_TYPES = tuple(validate_key_values(CONFIG, 'base', 'ec2_pipeline_types', default='ec2,rolling').split(','))
+"""Comma separated list of Pipeline Types to treat as EC2 deployments.
+
+This is useful when defining custom Pipeline Types. When Pipeline Type matches,
+EC2 specific data is used in deployment, such as Auto Scaling Groups and
+Availability Zones.
+
+    | *Default*: ``ec2,rolling``
+    | *Required*: No
+    | *Example*: ``ec2,infrastructure,propeller``
+"""
+
 SECURITYGROUP_REPLACEMENTS = _convert_string_to_native(
     validate_key_values(
         CONFIG,

@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ from ..utils import get_details, get_properties
 LOG = logging.getLogger(__name__)
 
 
-class S3Deployment(object):
+class S3Deployment:
     """Handle uploading artifacts to S3 and S3 deployment strategies."""
 
     def __init__(self, app, env, region, prop_path, artifact_path, artifact_version, primary_region='us-east-1'):
@@ -57,6 +57,9 @@ class S3Deployment(object):
             shared_app = self.s3props['shared_bucket_target']
             newgenerated = get_details(app=shared_app, env=env, region=region)
             self.bucket = newgenerated.shared_s3_app_bucket(include_region=include_region)
+            self.s3path = app
+        elif self.s3props.get('bucket_name'):
+            self.bucket = self.s3props['bucket_name']
             self.s3path = app
         else:
             self.bucket = generated.s3_app_bucket(include_region=include_region)

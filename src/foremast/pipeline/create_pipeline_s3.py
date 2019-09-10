@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import json
 from pprint import pformat
 
 from ..utils import get_template
+from ..consts import DEFAULT_RUN_AS_USER
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_s3 import construct_pipeline_block_s3
 from .create_pipeline import SpinnakerPipeline
@@ -59,11 +60,14 @@ class SpinnakerPipelineS3(SpinnakerPipeline):
         data = {
             'app': {
                 'appname': self.app_name,
+                'group_name': self.group_name,
+                'repo_name': self.repo_name,
                 'base': base,
                 'deploy_type': deploy_type,
                 'environment': 'packaging',
                 'region': region,
                 'triggerjob': self.trigger_job,
+                'run_as_user': DEFAULT_RUN_AS_USER,
                 'email': email,
                 'slack': slack,
                 'pipeline': self.settings['pipeline']
@@ -73,7 +77,7 @@ class SpinnakerPipelineS3(SpinnakerPipeline):
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
-        wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data)
+        wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data, formats=self.generated)
 
         return json.loads(wrapper)
 

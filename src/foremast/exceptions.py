@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,6 +14,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Foremast and Spinnaker related custom exceptions."""
+import logging
+import pprint
+
+from .consts import GOOD_STATUSES, SKIP_STATUSES
+
+LOG = logging.getLogger(__name__)
 
 
 class ForemastError(Exception):
@@ -69,7 +75,15 @@ class SpinnakerTaskError(SpinnakerError):
 
     def __init__(self, task_state):
         errors = []
+
+        skip_statuses = GOOD_STATUSES.union(SKIP_STATUSES)
+
         for stage in task_state['execution']['stages']:
+            LOG.debug('Stage:\n%s', pprint.pformat(stage))
+
+            if stage.get('status') in skip_statuses:
+                continue
+
             context = stage['context']
 
             try:
@@ -173,3 +187,7 @@ class S3SharedBucketNotFound(ForemastError):
 
 class DataPipelineDefinitionError(ForemastError):
     """Error Creating Data Pipeline."""
+
+
+class PluginNotFound(ForemastError):
+    """Error finding a plugin."""

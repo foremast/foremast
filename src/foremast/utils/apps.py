@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 import logging
 
 import gogoutils
-import murl
 import requests
 
 from ..consts import API_URL, APP_FORMATS, GATE_CA_BUNDLE, GATE_CLIENT_CERT
@@ -34,9 +33,8 @@ def get_all_apps():
 
     """
     LOG.info('Retreiving list of all Spinnaker applications')
-    url = murl.Url(API_URL)
-    url.path = 'applications'
-    response = requests.get(url.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    url = '{}/applications'.format(API_URL)
+    response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     assert response.ok, 'Could not retrieve application list'
 
@@ -58,10 +56,9 @@ def get_details(app='groupproject', env='dev', region='us-east-1'):
             _user_.
 
     """
-    api = murl.Url(API_URL)
-    api.path = 'applications/{app}'.format(app=app)
+    url = '{host}/applications/{app}'.format(host=API_URL, app=app)
 
-    request = requests.get(api.url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    request = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     if not request.ok:
         raise SpinnakerAppNotFound('"{0}" not found.'.format(app))
