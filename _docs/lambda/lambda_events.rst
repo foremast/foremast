@@ -216,7 +216,7 @@ DynamoDB Stream
 ~~~~~~~~~~~~~~~~
 
 A lambda event that triggers off a DynamoDB Stream. Make sure to grant access
-to the DynamoDB table for the lambda iam role via the services block by 
+to the DynamoDB table for the lambda IAM role via the services block by 
 providing the table name. If both stream and table key present, default behavior uses stream.
 
 ``stream``
