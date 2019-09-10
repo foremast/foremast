@@ -47,15 +47,25 @@ def create_dynamodb_stream_event(app_name, env, region, rules):
     lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
 
     event_sources = lambda_client.list_event_source_mappings(FunctionName=lambda_alias_arn)
+    LOG.debug('Found event sources: {0}'.format(event_sources))
+
     for each_source in event_sources['EventSourceMappings']:
         if each_source['EventSourceArn'] == stream_arn:
-            LOG.debug("DynamoDB stream event trigger already exists, skipping...")
+            event_uuid = each_source['UUID']
+            lambda_client.update_event_source_mapping(
+                UUID=event_uuid,
+                FunctionName=lambda_alias_arn,
+                BatchSize=rules.get('batch_size', 100),
+                MaximumBatchingWindowInSeconds=rules.get('batch_window', 0))
+            LOG.debug('DynamoDB stream event trigger updated')
             break
     else:
         lambda_client.create_event_source_mapping(
             EventSourceArn=stream_arn,
             FunctionName=lambda_alias_arn,
-            StartingPosition='TRIM_HORIZON')
-        LOG.debug("DynamoDB stream event trigger created")
+            BatchSize=rules.get('batch_size', 100),
+            MaximumBatchingWindowInSeconds=rules.get('batch_window', 0),
+            StartingPosition=rules.get('starting_postion', 'TRIM_HORIZON'))
+        LOG.debug('DynamoDB stream event trigger created')
 
-    LOG.info("Created DynamoDB stream event trigger on %s for %s", lambda_alias_arn, stream_arn)
+    LOG.info('Created DynamoDB stream event trigger on %s for %s', lambda_alias_arn, stream_arn)

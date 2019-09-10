@@ -51,6 +51,13 @@ This example would go in the :ref:`application_json` configuration file.
          "api_name": "lambdatest-api",
          "resource": "/index",
          "method": "GET"
+       },
+       {
+         "type": "dynamodb-streams",
+         "table": "arn:aws:dynamodb:us-east-1:111111111111:table/dynamotest-stream",
+         "batch_size": 100,
+         "batch_window": 0,
+         "starting_position": "TRIM_HORIZON"
        }
      ]
    }
@@ -77,160 +84,192 @@ Specifies what type of Lambda event/trigger to use. This needs to be set for all
 S3 Event
 ~~~~~~~~
 
-A Lambda trigger on S3 bucket actions.
+    A Lambda trigger on S3 bucket actions.
 
-``bucket``
-**********
+    ``bucket``
+    **********
 
-The bucket of the event to monitor.
+    The bucket of the event to monitor.
 
-    | *Required*: True
+        | *Required*: True
 
 
-``events``
-**********
+    ``events``
+    **********
 
-The S3 event to trigger the lambda function from.
+    The S3 event to trigger the lambda function from.
 
-    | *Type*: List
-    | *Required*: True
-    | *Example*: ``["s3:ObjectCreated:*", "s3:ObjectedRemoved:Delete"]``
+        | *Type*: List
+        | *Required*: True
+        | *Example*: ``["s3:ObjectCreated:*", "s3:ObjectedRemoved:Delete"]``
 
-``prefix``
-**********
+    ``prefix``
+    **********
 
-Sets up a prefix filter on S3 bucket events.
+    Sets up a prefix filter on S3 bucket events.
 
-    | *Required*: False
-    | *Example*: ``"logs/"``
+        | *Required*: False
+        | *Example*: ``"logs/"``
 
-``suffix``
-**********
+    ``suffix``
+    **********
 
-Sets up a suffix filter on s3 bucket events.
+    Sets up a suffix filter on s3 bucket events.
 
-    | *Required*: False
-    | *Example*: ``"jpg"``
+        | *Required*: False
+        | *Example*: ``"jpg"``
 
 SNS Event
 ~~~~~~~~~
 
-A Lambda trigger on SNS topic events.
+    A Lambda trigger on SNS topic events.
 
-``topic``
-*********
+    ``topic``
+    *********
 
-The SNS topic name to monitor for events.
+    The SNS topic name to monitor for events.
 
-    | *Required*: True
+        | *Required*: True
 
 Cloudwatch Event
 ~~~~~~~~~~~~~~~~
 
-A Cloudwatch Scheduled event for Lambda triggers.
+    A Cloudwatch Scheduled event for Lambda triggers.
 
-``schedule``
-************
+    ``schedule``
+    ************
 
-The rate or cron string to trigger the Lambda function.
+    The rate or cron string to trigger the Lambda function.
 
-    | *Required*: True
-    | *Examples*:
+        | *Required*: True
+        | *Examples*:
 
-        - ``"rate(5 minutes)"``
-        - ``"cron(0 17 ? * MON-FRI *)"``
+            - ``"rate(5 minutes)"``
+            - ``"cron(0 17 ? * MON-FRI *)"``
 
-``rule_name``
-*************
+    ``rule_name``
+    *************
 
-The name of the cloudwatch rule being created.
+    The name of the cloudwatch rule being created.
 
-    | *Required*: False
-    | *Default*: ``"{app_name}+{schedule}"``
+        | *Required*: False
+        | *Default*: ``"{app_name}+{schedule}"``
 
-``rule_description``
-*********************
+    ``rule_description``
+    *********************
 
-Description of the rule being created.
+    Description of the rule being created.
 
-    | *Required*: False
+        | *Required*: False
 
 Cloudwatch Log Event
 ~~~~~~~~~~~~~~~~~~~~
 
-A lambda event that triggers off a Cloudwatch log action.
+    A lambda event that triggers off a Cloudwatch log action.
 
-``log_group``
-*************
+    ``log_group``
+    *************
 
-The name of the log group to monitor.
+    The name of the log group to monitor.
 
-    | *Required*: True
-    | *Example*: ``"/aws/lambda/test_function"``
+        | *Required*: True
+        | *Example*: ``"/aws/lambda/test_function"``
 
-``filter_name``
-***************
+    ``filter_name``
+    ***************
 
-The name of the filter on log event.
+    The name of the filter on log event.
 
-    | *Required*: True
+        | *Required*: True
 
-``filter_pattern``
-******************
+    ``filter_pattern``
+    ******************
 
-The pattern to look for in the ``log_group`` for triggering a Lambda function.
+    The pattern to look for in the ``log_group`` for triggering a Lambda function.
 
-    | *Required*: True
-    | *Example*: ``"warning"``
+        | *Required*: True
+        | *Example*: ``"warning"``
 
 API Gateway Event
 ~~~~~~~~~~~~~~~~~
 
-Sets up an API Gatway event to trigger a lambda function.
+    Sets up an API Gatway event to trigger a lambda function.
 
-``api_name``
-************
+    ``api_name``
+    ************
 
-The name of an existing API Gateway. If not provided, an API will be created.
+    The name of an existing API Gateway. If not provided, an API will be created.
 
-    | *Required*: False
-    | *Default*: ``{app_name}``
+        | *Required*: False
+        | *Default*: ``{app_name}``
 
-``resource``
-************
+    ``resource``
+    ************
 
-The API resource to tie the Lambda function to.
+    The API resource to tie the Lambda function to.
 
-    | *Required*: True
-    | *Example*: ``"/test"``
+        | *Required*: True
+        | *Example*: ``"/test"``
 
-``method``
-***********
+    ``method``
+    ***********
 
-The API Method to trigger the Lambda function.
+    The API Method to trigger the Lambda function.
 
-    | *Required*: True
-    | *Example*: ``"GET"``
+        | *Required*: True
+        | *Example*: ``"GET"``
 
 DynamoDB Stream
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
-A lambda event that triggers off a DynamoDB Stream. Make sure to grant access
-to the DynamoDB table for the lambda IAM role via the services block by 
-providing the table name. If both stream and table key present, default behavior uses stream.
+    A lambda event that triggers off a DynamoDB Stream. Make sure to grant access
+    to the DynamoDB table for the lambda IAM role via the services block by 
+    providing the table name. If both stream and table key present, default behavior uses stream.
 
-``stream``
-*********
+    ``stream``
+    *********
 
-DynamoDB Stream ARN to use for triggering lambda. Only table or stream needed, not both.
+    DynamoDB Stream ARN to use for triggering lambda. Only table or stream needed, not both.
 
-    | *Required*: False
-    | *Example*: ``"arn:aws:dynamodb:us-east-1:111111111111:table/foremast-test/stream/2018-06-07T03:12:22.234"``
+        | *Required*: False
+        | *Example*: ``"arn:aws:dynamodb:us-east-1:111111111111:table/foremast-test/stream/2018-06-07T03:12:22.234"``
 
-``table``
-*********
+    ``table``
+    *********
 
-DynamoDB Table ARN to use for triggering lambda. Only table or stream needed, not both.
+    DynamoDB Table ARN to use for triggering lambda. Only table or stream needed, not both.
 
-    | *Required*: False
-    | *Example*: ``"arn:aws:dynamodb:us-east-1:111111111111:table/foremast-test"``
+        | *Required*: False
+        | *Example*: ``"arn:aws:dynamodb:us-east-1:111111111111:table/foremast-test"``
+
+    ``batch_size``
+    **************
+
+    The maximum number of items to retrieve in a single batch.
+
+        | *Required*: False
+        | *Type*: int
+        | *Default*: ``100``
+        | *Max*: ``1000``
+
+    ``batch_window``
+    ****************
+
+    The maximum amount of time to gather records before invoking the function, in seconds.
+
+        | *Required*: False
+        | *Type*: int
+        | *Default*: ``0``
+        | *Max*: ``300``
+
+    ``starting_position``
+    *********************
+
+    The position in a stream from which to start reading.
+
+        | *Required*: False
+        | *Type*: string
+        | *Default*: ``TRIM_HORIZON``
+        | *Options*:
+            - TRIM_HORIZON
+            - LATEST
