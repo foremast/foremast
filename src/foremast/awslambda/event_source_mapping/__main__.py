@@ -13,17 +13,17 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-"""Create DynamoDB stream lambda event trigger"""
+"""Create Event Source Mapping trigger for AWS Lambda"""
 import argparse
 import logging
 
 from ...args import add_app, add_debug, add_env, add_region
 from ...consts import LOGGING_FORMAT
-from .dynamodb_stream_event import create_dynamodb_stream_event
+from .event_source_mapping import create_event_source_mapping_trigger
 
 
 def main():
-    """Create DynamoDB stream lambda event trigger."""
+    """Create Event Source Mapping trigger for AWS Lambda"""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)
@@ -35,7 +35,7 @@ def main():
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
-    assert create_dynamodb_stream_event(**vars(args))
+    assert create_event_source_mapping_trigger(**vars(args))
 
 
 if __name__ == '__main__':
