@@ -21,7 +21,7 @@ from .cloudwatch_event import create_cloudwatch_event
 from .cloudwatch_log_event import create_cloudwatch_log_event
 from .s3_event import create_s3_event
 from .sns_event import create_sns_event
-from .dynamodb_stream_event import create_dynamodb_stream_event
+from .event_source_mapping import create_event_source_mapping_trigger
 
 
 # pylint: disable=too-few-public-methods
@@ -56,8 +56,9 @@ class LambdaEvent:
                 create_sns_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
             if trigger['type'] == 'dynamodb-stream':
-                create_dynamodb_stream_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
-
+                create_event_source_mapping_trigger(app_name=self.app_name, env=self.env, region=self.region, 
+                                                    event_source='DynamoDB', rules=trigger)
+                                                    
             if trigger['type'] == 'cloudwatch-event':
                 create_cloudwatch_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
