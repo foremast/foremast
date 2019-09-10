@@ -25,8 +25,10 @@ def check_arn_type(arn_string):
         LOG.debug("ARN Split: %s %s %s", _prefix, table, *stream)
         if stream:
             arn_type = "dynamodb-stream"
-        else:
+        elif table:
             arn_type = "dynamodb-table"
+        else:
+            raise Exception('ARN Type could not be determined from {0}. Check provided ARN String.'.format(arn_string))
 
     return arn_type
 
@@ -49,14 +51,15 @@ def lookup_latest_dynamodb_stream(account, region, arn_string=None, table_name=N
     dynamodb_streams_client = session.client('dynamodbstreams')
 
     if arn_string:
-        table_name = arn_string.split(':')[-1].split('table/')[-1]
-    LOG.info(table_name)
-    table_response = dynamodb_client.describe_table(TableName=table_name)
-    table_info = table_response['Table']
+        _prefix, table_name, *stream = arn_string.split('/')
+        LOG.info('DynamoDB Stream ARN provided. Looking up Table Name from: {0}'.format(arn_string))
 
-    if not table_info:
-        LOG.critical("No DynamoDB table named %s found.", table_name)
-        raise DynamoDBTableNotFound('No DynamoDB table named {0} found'.format(table_name))
+    LOG.info('Checking DynamoDB Table Response of table {0}'.format(table_name))
+    table_response = dynamodb_client.describe_table(TableName=table_name)
+
+    if 'Table' not in table_response:
+        LOG.critical("No DynamoDB table named %s was found.", table_name)
+        raise DynamoDBTableNotFound('No DynamoDB table named {0} was found'.format(table_name))
 
     streams_response = dynamodb_streams_client.list_streams(TableName=table_name)
     streams = streams_response['Streams']
