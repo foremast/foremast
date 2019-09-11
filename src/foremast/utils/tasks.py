@@ -13,6 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """POST a new task or check status of running task."""
+import copy
 import json
 import logging
 from functools import partial
@@ -75,8 +76,11 @@ def _check_task(taskid):
 
     LOG.info('Checking taskid %s', taskid)
 
+    headers = copy.copy(HEADERS)
+    headers.pop('content-type')
+
     url = '{}/tasks/{}'.format(API_URL, taskid)
-    task_response = requests.get(url, headers=HEADERS, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    task_response = requests.get(url, headers=headers, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
 
     LOG.debug(task_response.json())
 
