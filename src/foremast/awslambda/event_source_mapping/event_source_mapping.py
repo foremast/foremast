@@ -59,7 +59,7 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
         }
     }
 
-    if event_source == 'DynamoDB':
+    if event_source == 'dynamodb-stream':
         trigger_arn = rules.get('stream_arn')
         if not trigger_arn:
             trigger_arn = rules.get('table_arn')
@@ -67,9 +67,9 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
                 raise DynamoDBTableNotFound
 
         event_source_arn = get_dynamodb_stream_arn(arn_string=trigger_arn, account=env, region=region)
-    elif event_source == 'Kinesis':
+    elif event_source == 'kinesis-stream':
         event_source_arn = rules.get('stream_arn')
-    elif event_source == 'SQS':
+    elif event_source == 'sqs':
         event_source_arn = rules.get('queue_arn')
     else:
         raise NotImplementedError
@@ -99,4 +99,4 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
         LOG.debug('{0} event trigger created'.format(event_defaults[event_source]['service_name']))
 
     LOG.info('Created {} event trigger on {} for {}'.format(event_defaults[event_source]['service_name'], 
-                                                            lambda_alias_arn, event_source_arn)
+                                                            lambda_alias_arn, event_source_arn))
