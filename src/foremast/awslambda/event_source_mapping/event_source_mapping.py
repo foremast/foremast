@@ -98,5 +98,5 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             StartingPosition=rules.get('starting_postion', event_defaults[event_source]['starting_position']))
         LOG.debug('{0} event trigger created'.format(event_defaults[event_source]['service_name']))
 
-    LOG.info('Created {} event trigger on {} for {}'.format(event_defaults[event_source]['service_name'], 
+    LOG.info('Created {} event trigger on {} for {}'.format(event_defaults[event_source]['service_name'],
                                                             lambda_alias_arn, event_source_arn))
