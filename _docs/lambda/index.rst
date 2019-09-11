@@ -1,5 +1,6 @@
-AWS Lambda Pipeline
-===================
+###############################
+Foremast - AWS Lambda Pipelines
+###############################
 
 .. toctree::
    :maxdepth: 2

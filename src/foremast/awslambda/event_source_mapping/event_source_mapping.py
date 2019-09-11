@@ -37,39 +37,49 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
     """
     session = boto3.Session(profile_name=env, region_name=region)
     lambda_client = session.client('lambda')
+    event_defaults = {
+        'DynamoDB': {'batch_size': 100, 'batch_window': 0, 'starting_position': 'TRIM_HORIZON'},
+        'Kinesis': {'batch_size': 100, 'batch_window': 0, 'starting_position': 'TRIM_HORIZON'},
+        'SQS': {'batch_size': 10, 'batch_window': 0, 'starting_position': 'TRIM_HORIZON'}
+    }
 
     if event_source == 'DynamoDB':
-        trigger_arn = rules.get('stream')
+        trigger_arn = rules.get('stream_arn')
         if not trigger_arn:
-            trigger_arn = rules.get('table')
+            trigger_arn = rules.get('table_arn')
             if not trigger_arn:
                 raise DynamoDBTableNotFound
 
-        source_arn = get_dynamodb_stream_arn(arn_string=trigger_arn, account=env, region=region)
+        event_source_arn = get_dynamodb_stream_arn(arn_string=trigger_arn, account=env, region=region)
+    elif event_source == 'Kinesis':
+        event_source_arn = rules.get('stream_arn')
+    elif event_source == 'SQS':
+        event_source_arn = rules.get('queue_arn')
     else:
         raise NotImplementedError
+
     lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
 
     event_sources = lambda_client.list_event_source_mappings(FunctionName=lambda_alias_arn)
     LOG.debug('Found event sources: {0}'.format(event_sources))
 
     for each_source in event_sources['EventSourceMappings']:
-        if each_source['EventSourceArn'] == source_arn:
+        if each_source['EventSourceArn'] == event_source_arn:
             event_uuid = each_source['UUID']
             lambda_client.update_event_source_mapping(
                 UUID=event_uuid,
                 FunctionName=lambda_alias_arn,
-                BatchSize=rules.get('batch_size', 100),
-                MaximumBatchingWindowInSeconds=rules.get('batch_window', 0))
+                BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
+                MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']))
             LOG.debug('{0} event trigger updated'.format(event_source))
             break
     else:
         lambda_client.create_event_source_mapping(
-            EventSourceArn=source_arn,
+            EventSourceArn=event_source_arn,
             FunctionName=lambda_alias_arn,
-            BatchSize=rules.get('batch_size', 100),
-            MaximumBatchingWindowInSeconds=rules.get('batch_window', 0),
-            StartingPosition=rules.get('starting_postion', 'TRIM_HORIZON'))
+            BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
+            MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']),
+            StartingPosition=rules.get('starting_postion', event_defaults[event_source]['starting_position']))
         LOG.debug('{0} event trigger created'.format(event_source))
 
-    LOG.info('Created %s event trigger on %s for %s', event_source, lambda_alias_arn, source_arn)
+    LOG.info('Created %s event trigger on %s for %s', event_source, lambda_alias_arn, event_source_arn)
