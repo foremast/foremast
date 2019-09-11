@@ -52,20 +52,10 @@ class LambdaEvent:
         triggers = self.properties['lambda_triggers']
 
         for trigger in triggers:
-            if trigger['type'] == 'sns':
-                create_sns_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
-
-            if trigger['type'] == 'dynamodb-stream':
-                create_event_source_mapping_trigger(app_name=self.app_name, env=self.env, region=self.region, 
-                                                    event_source='DynamoDB', rules=trigger)
-
-            if trigger['type'] == 'kinesis-stream':
-                create_event_source_mapping_trigger(app_name=self.app_name, env=self.env, region=self.region, 
-                                                    event_source='Kinesis', rules=trigger)
-
-            if trigger['type'] == 'sqs':
-                create_event_source_mapping_trigger(app_name=self.app_name, env=self.env, region=self.region, 
-                                                    event_source='SQS', rules=trigger)
+            if trigger['type'] == 'api-gateway':
+                apigateway = APIGateway(
+                    app=self.app_name, env=self.env, region=self.region, rules=trigger, prop_path=self.prop_path)
+                apigateway.setup_lambda_api()
 
             if trigger['type'] == 'cloudwatch-event':
                 create_cloudwatch_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
@@ -73,10 +63,12 @@ class LambdaEvent:
             if trigger['type'] == 'cloudwatch-logs':
                 create_cloudwatch_log_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
-            if trigger['type'] == 'api-gateway':
-                apigateway = APIGateway(
-                    app=self.app_name, env=self.env, region=self.region, rules=trigger, prop_path=self.prop_path)
-                apigateway.setup_lambda_api()
+            if trigger['type'] in ['dynamodb-stream', 'kinesis-stream', 'sqs']:
+                create_event_source_mapping_trigger(app_name=self.app_name, env=self.env, region=self.region,
+                                                    event_source=trigger['type'], rules=trigger)
+
+            if trigger['type'] == 'sns':
+                create_sns_event(app_name=self.app_name, env=self.env, region=self.region, rules=trigger)
 
         # filter all triggers to isolate s3 triggers so we can operate on the entire group
         s3_triggers = [x for x in triggers if x['type'] == 's3']

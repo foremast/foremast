@@ -38,9 +38,25 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
     session = boto3.Session(profile_name=env, region_name=region)
     lambda_client = session.client('lambda')
     event_defaults = {
-        'DynamoDB': {'batch_size': 100, 'batch_window': 0, 'starting_position': 'TRIM_HORIZON'},
-        'Kinesis': {'batch_size': 100, 'batch_window': 0, 'starting_position': 'TRIM_HORIZON'},
-        'SQS': {'batch_size': 10, 'batch_window': 0, 'starting_position': 'TRIM_HORIZON'}
+        'dynamodb-stream': {
+            'service_name': 'DynamoDB Stream',
+            'batch_size': 100,
+            'batch_window': 0,
+            'starting_position': 'TRIM_HORIZON'
+        },
+        'kinesis-stream': {
+            'service_name': 'Kinesis Stream',
+            'batch_size': 100,
+            'batch_window': 0,
+            'starting_position':
+            'TRIM_HORIZON'
+        },
+        'sqs': {
+            'service_name': 'SQS Queue',
+            'batch_size': 10,
+            'batch_window': 0,
+            'starting_position': 'TRIM_HORIZON'
+        }
     }
 
     if event_source == 'DynamoDB':
@@ -71,7 +87,7 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
                 FunctionName=lambda_alias_arn,
                 BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
                 MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']))
-            LOG.debug('{0} event trigger updated'.format(event_source))
+            LOG.debug('{0} event trigger updated'.format(event_defaults[event_source]['service_name']))
             break
     else:
         lambda_client.create_event_source_mapping(
@@ -80,6 +96,7 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
             MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']),
             StartingPosition=rules.get('starting_postion', event_defaults[event_source]['starting_position']))
-        LOG.debug('{0} event trigger created'.format(event_source))
+        LOG.debug('{0} event trigger created'.format(event_defaults[event_source]['service_name']))
 
-    LOG.info('Created %s event trigger on %s for %s', event_source, lambda_alias_arn, event_source_arn)
+    LOG.info('Created {} event trigger on {} for {}'.format(event_defaults[event_source]['service_name'], 
+                                                            lambda_alias_arn, event_source_arn)
