@@ -18,7 +18,7 @@ import logging
 
 import requests
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, VPC_NAME
 from ..exceptions import SpinnakerVPCIDNotFound, SpinnakerVPCNotFound
 
 LOG = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ def get_vpc_id(account, region):
 
     for vpc in vpcs:
         LOG.debug('VPC Response: %s', vpc)
-        if 'name' in vpc and all([vpc['name'] == 'vpc', vpc['account'] == account, vpc['region'] == region]):
+        if 'name' in vpc and all([vpc['name'] == VPC_NAME, vpc['account'] == account, vpc['region'] == region]):
             LOG.info('Found VPC ID for %s in %s: %s', account, region, vpc['id'])
             vpc_id = vpc['id']
             break
