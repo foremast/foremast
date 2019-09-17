@@ -5,6 +5,7 @@ CONFIG = {
         'domain': 'example.com',
         'envs': 'dev,stage,prod',
         'regions': 'us-east-1,us-west-2',
+        'vpc_name': 'vpc',
         'ami_json_url': 'http://s3.bucketname.com/ami_lookup.json',
         'git_url': 'https://git.example.com',
         'gate_api_url': 'http://gate-api.example.com:8084',

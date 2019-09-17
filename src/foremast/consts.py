@@ -200,6 +200,7 @@ API_URL = validate_key_values(CONFIG, 'base', 'gate_api_url')
 GIT_URL = validate_key_values(CONFIG, 'base', 'git_url')
 DOMAIN = validate_key_values(CONFIG, 'base', 'domain', default='example.com')
 ENVS = set(validate_key_values(CONFIG, 'base', 'envs', default='').split(','))
+VPC_NAME = validate_key_values(CONFIG, 'base', 'vpc_name', default='vpc')
 REGIONS = set(validate_key_values(CONFIG, 'base', 'regions', default='').split(','))
 MANUAL_TYPES = set(
     validate_key_values(CONFIG, 'base', 'manual_types', default='manual').split(','))
