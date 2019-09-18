@@ -29,6 +29,7 @@ import ast
 import json
 import logging
 import sys
+import importlib.util
 from configparser import ConfigParser
 from os import getcwd, getenv, path
 from os.path import exists, expanduser, expandvars
@@ -98,9 +99,10 @@ def load_dynamic_config(config_file=DEFAULT_DYNAMIC_CONFIG_FILE):
     # Insert config path so we can import it
     sys.path.insert(0, path.dirname(path.abspath(config_file)))
     try:
-        config_module = __import__('config')
-
-        dynamic_configurations = config_module.CONFIG
+        config_file_spec = importlib.util.spec_from_file_location("config", config_file)
+        config_file_module = importlib.util.module_from_spec(config_file_spec)
+        config_file_spec.loader.exec_module(config_file_module)
+        dynamic_configurations = config_file_module.CONFIG
     except ImportError:
         # Provide a default if config not found
         LOG.error('ImportError: Unable to load dynamic config. Check config.py file imports!')
