@@ -106,6 +106,8 @@ def load_dynamic_config(config_file=DEFAULT_DYNAMIC_CONFIG_FILE):
     except ImportError:
         # Provide a default if config not found
         LOG.error('ImportError: Unable to load dynamic config. Check config.py file imports!')
+    except AttributeError:
+        LOG.error('AttributeError: Unable to load CONFIG from %s', config_file)
 
     return dynamic_configurations
 
