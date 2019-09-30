@@ -30,6 +30,27 @@ Foremast will look in the following locations, in order, for the
 3. ``/etc/foremast/foremast/cfg``
 4. ``./config.py``
 
+Specifying a Configuration file
+-------------------------------
+
+Optionally, it is possible to specify the location of a configuration file for Foremast to use by 
+setting the ``FOREMAST_CONFIG_FILE`` environment variable.  This is useful if you do not store your 
+config file in one of the locations listed above, or if you need to toggle between multiple
+configuration files to support different configurations.  
+
+Example: A config file for two different Spinnaker Instances
+
+.. code-block:: console
+
+    # Generate pipeline for spinnaker1
+    FOREMAST_CONFIG_FILE=config-spinnaker1.py
+    foremast generate pipeline
+    # Generate pipeline for spinnaker2
+    FOREMAST_CONFIG_FILE=config-spinnaker2.py
+    foremast generate pipeline
+
+
+
 Configuration Details
 ---------------------
 
