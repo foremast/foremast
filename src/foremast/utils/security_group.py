@@ -48,7 +48,7 @@ def get_security_group_id(name='', env='', region=''):
 
     LOG.info('Find %s sg in %s [%s] in %s', name, env, region, vpc_id)
 
-    uri = '/securityGroups/{1}/{2}/{3}?vpcId={4}'.format(env, region, name, vpc_id)
+    uri = '/securityGroups/{0}/{1}/{2}?vpcId={3}'.format(env, region, name, vpc_id)
     response = gate_request(uri=uri)
     assert response.ok
 
