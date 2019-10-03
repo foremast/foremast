@@ -128,7 +128,6 @@ def test_utils_post_slack_message(mock_slack):
 
 
 @mock.patch('gate_request')
-@mock.patch('foremast.utils.apps.API_URL', 'http://test.com')
 def test_utils_apps_get_details(mock_gate_request):
     data = {'attributes': {'repoProjectKey': 'group', 'repoSlug': 'repo1'}}
     mock_gate_request.return_value.json.return_value = data
@@ -143,7 +142,6 @@ def test_utils_apps_get_details(mock_gate_request):
 
 
 @mock.patch('gate_request')
-@mock.patch('foremast.utils.apps.API_URL', 'http://test.com')
 def test_utils_apps_get_all_apps(mock_gate_request):
     data = []
     mock_gate_request.return_value.json.return_value = data
