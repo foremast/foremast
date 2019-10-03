@@ -16,9 +16,7 @@
 """Get VPC ID."""
 import logging
 
-import requests
-
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, VPC_NAME
+from ..utils.gate import gate_request
 from ..exceptions import SpinnakerVPCIDNotFound, SpinnakerVPCNotFound
 
 LOG = logging.getLogger(__name__)
@@ -41,8 +39,8 @@ def get_vpc_id(account, region):
             configured.
 
     """
-    url = '{0}/networks/aws'.format(API_URL)
-    response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    uri = '/networks/aws'
+    response = gate_request(uri)
 
     if not response.ok:
         raise SpinnakerVPCNotFound(response.text)
