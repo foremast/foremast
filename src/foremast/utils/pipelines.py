@@ -15,9 +15,8 @@
 #   limitations under the License.
 """Check Pipeline name to match format."""
 import logging
-import requests
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 
@@ -70,8 +69,8 @@ def get_all_pipelines(app=''):
         requests.models.Response: Response from Gate containing Pipelines.
 
     """
-    url = '{host}/applications/{app}/pipelineConfigs'.format(host=API_URL, app=app)
-    response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    uri = '/applications/{app}/pipelineConfigs'.format(app=app)
+    response = gate_request(uri)
 
     assert response.ok, 'Could not retrieve Pipelines for {0}.'.format(app)
 
