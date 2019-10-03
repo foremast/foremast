@@ -2,16 +2,15 @@ import google.auth
 import google.auth.app_engine
 import google.auth.compute_engine.credentials
 import google.auth.iam
-from google.auth.transport.requests import Request
+from google.auth.transport.requests import Request as GoogleAuthRequest
 import google.oauth2.credentials
 import google.oauth2.service_account
-import requests
-import requests_toolbelt.adapters.appengine
 import logging
 
-GOOGLE_IAP_IAM_SCOPE = 'https://www.googleapis.com/auth/iam' # Used in request to Google for OIDC Scope
-GOOGLE_OAUTH_TOKEN_URI = 'https://www.googleapis.com/oauth2/v4/token' # Endpoint for getting tokens for Id Aware Proxy
+GOOGLE_IAP_IAM_SCOPE = 'https://www.googleapis.com/auth/iam'  # Used in request to Google for OIDC Scope
+GOOGLE_OAUTH_TOKEN_URI = 'https://www.googleapis.com/oauth2/v4/token'  # Endpoint for getting tokens for Id Aware Proxy
 LOG = logging.getLogger(__name__)
+
 
 def get_google_iap_bearer_token(client_id, key_path):
     """Makes a request to an application protected by Identity-Aware Proxy.
@@ -39,13 +38,12 @@ def get_google_iap_bearer_token(client_id, key_path):
             'target_audience': client_id
         })
 
-    # Create jtw signed by svc account.  This is sent to Google to get a 
-    # GOOGLE SIGNED jwt token
+    # Create jtw signed by svc account.  This is sent to Google to get a Google signed jwt token
     LOG.debug("Getting service account JWT from endpoint %s", GOOGLE_OAUTH_TOKEN_URI)
     service_account_jwt = (
         service_account_credentials._make_authorization_grant_assertion())
     # Get Google Signed JWT Token
-    request = google.auth.transport.requests.Request()
+    request = GoogleAuthRequest()
     body = {
         'assertion': service_account_jwt,
         'grant_type': google.oauth2._client._JWT_GRANT_TYPE,
