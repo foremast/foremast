@@ -40,7 +40,7 @@ def find_elb(name='', env='', region=''):
     """
     LOG.info('Find %s ELB in %s [%s].', name, env, region)
 
-    uri = '/applications/{1}/loadBalancers'.format(name)
+    uri = '/applications/{0}/loadBalancers'.format(name)
     response = gate_request(uri=uri)
     assert response.ok
 
