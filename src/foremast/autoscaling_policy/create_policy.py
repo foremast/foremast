@@ -22,9 +22,7 @@ import logging
 import os
 from math import floor
 
-import requests
-
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..utils.gate import gate_request
 from ..utils import get_latest_server_group, get_properties, get_template, wait_for_task
 
 
@@ -177,8 +175,8 @@ class AutoScalingPolicy:
             scalingpolicies (list): List of all existing scaling policies for the application
         """
         self.log.info("Checking for existing scaling policy")
-        url = "{0}/applications/{1}/clusters/{2}/{1}/serverGroups".format(API_URL, self.app, self.env)
-        response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+        uri = "/applications/{1}/clusters/{2}/{1}/serverGroups".format(self.app, self.env)
+        response = gate_request(uri=uri)
         assert response.ok, "Error looking for existing Autoscaling Policy for {0}: {1}".format(self.app, response.text)
 
         scalingpolicies = []

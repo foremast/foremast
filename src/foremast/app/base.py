@@ -2,12 +2,11 @@
 import copy
 import logging
 
-import requests
-
-from ..common.base import BasePlugin
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
-from ..exceptions import ForemastError
+from ..consts import LINKS
 from ..utils import get_template
+from ..common.base import BasePlugin
+from ..utils.gate import gate_request
+from ..exceptions import ForemastError
 
 
 # pylint: disable=abstract-method
@@ -74,8 +73,8 @@ class BaseApp(BasePlugin):
         Raises:
             AssertionError: Failure getting accounts from Spinnaker.
         """
-        url = '{gate}/credentials'.format(gate=API_URL)
-        response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+        uri = '/credentials'
+        response = gate_request(uri=uri)
         assert response.ok, 'Failed to get accounts: {0}'.format(response.text)
 
         all_accounts = response.json()

@@ -22,7 +22,7 @@ from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 LOG = logging.getLogger(__name__)
 OAUTH_ENABLED = False
 
-def gate_request(method='GET', uri=None, headers=None, data=None):
+def gate_request(method='GET', uri=None, headers=None, data=None, params=None):
     """Make a request to Gate's API via various auth methods
 
     Args:
@@ -37,9 +37,11 @@ def gate_request(method='GET', uri=None, headers=None, data=None):
         headers['Bearer'] = get_token()
 
     if method == 'GET':
-        response = requests.get(url, headers=headers, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+        response = requests.get(url, params=params, headers=headers, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
     elif method == 'POST':
         response = requests.post(url, data=data, headers=headers, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    elif method == 'DELETE':
+        response = requests.delete(url, headers=headers, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
     else:
         raise NotImplementedError
 
