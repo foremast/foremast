@@ -70,7 +70,7 @@ def get_all_pipelines(app=''):
 
     """
     uri = '/applications/{app}/pipelineConfigs'.format(app=app)
-    response = gate_request(uri)
+    response = gate_request(uri=uri)
 
     assert response.ok, 'Could not retrieve Pipelines for {0}.'.format(app)
 
