@@ -40,7 +40,7 @@ def get_vpc_id(account, region):
 
     """
     uri = '/networks/aws'
-    response = gate_request(uri)
+    response = gate_request(uri=uri)
 
     if not response.ok:
         raise SpinnakerVPCNotFound(response.text)

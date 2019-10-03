@@ -70,7 +70,7 @@ def get_env_credential(env='dev'):
 
     """
     uri = '/credentials/{env}'.format(env=env)
-    credential_response = gate_request(uri)
+    credential_response = gate_request(uri=uri)
 
     assert credential_response.ok, 'Could not get credentials from Spinnaker.'
 

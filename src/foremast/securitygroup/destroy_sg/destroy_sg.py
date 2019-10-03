@@ -37,7 +37,7 @@ def destroy_sg(app='', env='', region='', **_):
 
     uri = '/securityGroups/{env}/{region}/{app}'.format(env=env, region=region, app=app)
     payload = {'vpcId': vpc}
-    security_group = gate_request(uri, params=payload)
+    security_group = gate_request(uri=uri, params=payload)
 
     if not security_group:
         LOG.info('Nothing to delete.')

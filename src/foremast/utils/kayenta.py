@@ -30,7 +30,7 @@ def get_canary_id(name, application=None):
         None: CanaryConfig not found
     """
     uri = '/v2/canaryConfig'
-    canary_response = gate_request(uri)
+    canary_response = gate_request(uri=uri)
 
     if not canary_response.ok:
         raise SpinnakerPipelineCreationFailed('Could not resolve canary config id for {0}: {1}'
