@@ -18,10 +18,9 @@ import logging
 from collections import defaultdict
 from pprint import pformat
 
-import requests
 from tryagain import retries
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..utils.gate import gate_request
 from ..exceptions import SpinnakerSubnetError, SpinnakerTimeout
 
 LOG = logging.getLogger(__name__)
@@ -50,8 +49,8 @@ def get_subnets(
     account_az_dict = defaultdict(defaultdict)
     subnet_id_dict = defaultdict(defaultdict)
 
-    subnet_url = '{0}/subnets/aws'.format(API_URL)
-    subnet_response = requests.get(subnet_url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    uri = '/subnets/aws'
+    subnet_response = gate_request(uri=uri)
 
     if not subnet_response.ok:
         raise SpinnakerTimeout(subnet_response.text)

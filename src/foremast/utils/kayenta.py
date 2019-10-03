@@ -14,10 +14,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Set of utility functions for Spinnaker's kayenta canary service"""
-import requests
-
+from ..utils.gate import gate_request
 from ..exceptions import SpinnakerPipelineCreationFailed
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 
 
 def get_canary_id(name, application=None):
@@ -31,8 +29,8 @@ def get_canary_id(name, application=None):
         str: ID of specified CanaryConfig.
         None: CanaryConfig not found
     """
-    url = "{}/v2/canaryConfig".format(API_URL)
-    canary_response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    uri = '/v2/canaryConfig'
+    canary_response = gate_request(uri)
 
     if not canary_response.ok:
         raise SpinnakerPipelineCreationFailed('Could not resolve canary config id for {0}: {1}'

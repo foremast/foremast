@@ -17,9 +17,7 @@
 """AWS Auto Scaling Group related utilities."""
 import logging
 
-import requests
-
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 
@@ -30,8 +28,8 @@ def get_latest_server_group(env, app):
     Returns:
         server_group (str): Name of the newest server group
     """
-    api_url = "{0}/applications/{1}".format(API_URL, app)
-    response = requests.get(api_url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    uri = "/applications/{1}".format(app)
+    response = gate_request(uri=uri)
 
     for server_group in response.json()['clusters'][env]:
         LOG.debug("Server Group Response: %s", server_group)
