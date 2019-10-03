@@ -76,7 +76,7 @@ def test_utils_pipeline_check_managed():
             check_managed_pipeline(name=name, app_name='app')
 
 
-@mock.patch('foremast.utils.gate.gate_request')
+@mock.patch('foremast.utils.gate_request')
 def test_utils_pipeline_get_all_pipelines(mock_gate_request):
     mock_gate_request.return_value.json.return_value = {}
     result = get_all_pipelines(app='app')
