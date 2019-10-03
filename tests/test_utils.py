@@ -76,7 +76,7 @@ def test_utils_pipeline_check_managed():
             check_managed_pipeline(name=name, app_name='app')
 
 
-@mock.patch('foremast.utils.gate_request')
+@mock.patch('foremast.utils.pipelines.gate_request')
 def test_utils_pipeline_get_all_pipelines(mock_gate_request):
     mock_gate_request.return_value.json.return_value = {}
     result = get_all_pipelines(app='app')
@@ -108,7 +108,7 @@ def test_utils_generate_packer_filename():
     assert a == 'aws_us-east-1_chroot.json'
 
 
-@mock.patch('foremast.utils.gate.gate_request')
+@mock.patch('foremast.utils.elb.gate_request')
 def test_utils_find_elb(gate_request_mock):
     results = [{'account': 'dev', 'region': 'us-east-1', 'dnsname': 'appdns'}]
     gate_request_mock.return_value.json.return_value = results
@@ -127,7 +127,7 @@ def test_utils_post_slack_message(mock_slack):
     mock_slack.called
 
 
-@mock.patch('foremast.utils.gate.gate_request')
+@mock.patch('foremast.utils.apps.gate_request')
 def test_utils_apps_get_details(mock_gate_request):
     data = {'attributes': {'repoProjectKey': 'group', 'repoSlug': 'repo1'}}
     mock_gate_request.return_value.json.return_value = data
@@ -141,7 +141,7 @@ def test_utils_apps_get_details(mock_gate_request):
         assert result.app_name() == 'repo1group'
 
 
-@mock.patch('foremast.utils.gate.gate_request')
+@mock.patch('foremast.utils.apps.gate_request')
 def test_utils_apps_get_all_apps(mock_gate_request):
     data = []
     mock_gate_request.return_value.json.return_value = data
@@ -261,7 +261,7 @@ def test_find_existing_record(mock_session):
         dns_values['env'], dns_values['zone_id'], 'bad.example.com', check_key='Type', check_value='CNAME') == None
 
 
-@mock.patch('foremast.utils.gate.gate_request')
+@mock.patch('foremast.utils.security_group.gate_request')
 @mock.patch('foremast.utils.security_group.get_vpc_id')
 def test_utils_sg_get_security_group_id(mock_vpc_id, mock_gate_request):
     data = {'id': 100}
@@ -282,7 +282,7 @@ def test_utils_sg_get_security_group_id(mock_vpc_id, mock_gate_request):
         result = get_security_group_id()
 
 
-@mock.patch('foremast.utils.gate.gate_request')
+@mock.patch('foremast.utils.vpc.gate_request')
 def test_utils_vpc_get_vpc_id(mock_gate_request):
     data = [
         {
@@ -346,7 +346,7 @@ def test_utils_subnets_get_subnets(mock_gate_request):
     }
 
 
-@mock.patch('foremast.utils.gate.gate_request')
+@mock.patch('foremast.utils.subnets.gate_request')
 def test_utils_subnets_get_subnets_multiple_az(mock_gate_request):
     """Find multiple Availability Zones."""
     mock_gate_request.return_value.json.return_value = SUBNET_DATA
@@ -356,7 +356,7 @@ def test_utils_subnets_get_subnets_multiple_az(mock_gate_request):
     assert result == {'dev': {'us-west-2': [['us-west-2a', 'us-west-2b']], 'us-east-1': [[]]}}
 
 
-@mock.patch('foremast.utils.gate.gate_request')
+@mock.patch('foremast.utils.subnets.gate_request')
 def test_utils_subnets_get_subnets_subnet_not_found(mock_gate_request):
     """Trigger SpinnakerSubnetError when no subnets found."""
     mock_gate_request.return_value.json.return_value = SUBNET_DATA
@@ -367,7 +367,7 @@ def test_utils_subnets_get_subnets_subnet_not_found(mock_gate_request):
         assert result == {'us-west-1': [[]]}
 
 
-@mock.patch('foremast.utils.gate.gate_request')
+@mock.patch('foremast.utils.subnets.gate_request')
 def test_utils_subnets_get_subnets_api_error(mock_gate_request):
     """Trigger SpinnakerTimeout when API has error."""
     mock_gate_request.return_value.json.return_value = SUBNET_DATA
