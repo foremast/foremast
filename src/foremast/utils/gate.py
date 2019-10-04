@@ -36,11 +36,13 @@ def gate_request(method='GET', uri=None, headers={}, data={}, params={}):
 
     url = '{host}{uri}'.format(host=API_URL, uri=uri)
 
-    if GATE_AUTHENTICATION['google_iap']['enabled']:
-        iap_response = get_google_iap_bearer_token(GATE_AUTHENTICATION['google_iap']['oauth_client_id'],
-                                                   GATE_AUTHENTICATION['google_iap']['sa_credentials_path'])
-        if 'id_token' not in iap_response:
-            raise GoogleIAPTokenError
+    if GATE_AUTHENTICATION:
+        if 'google_iap' in GATE_AUTHENTICATION:
+            iap_response = get_google_iap_bearer_token(GATE_AUTHENTICATION['google_iap']['oauth_client_id'], 
+                                                       GATE_AUTHENTICATION['google_iap']['sa_credentials_path'])
+
+            if 'id_token' not in iap_response:
+                raise GoogleIAPTokenError
 
         headers['Authorization'] = 'Bearer {}'.format(iap_response['id_token'])
         LOG.info('Successfully set Google IAP Bearer Token in Request.')
