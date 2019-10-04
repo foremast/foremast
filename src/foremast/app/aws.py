@@ -17,7 +17,10 @@ class SpinnakerApp(base.BaseApp):
             AssertionError: Application creation failed.
 
         """
-        self.appinfo['accounts'] = self.get_accounts()
+
+        # Retaining abstract account list for backwards compatability
+        # Refer to #366
+        self.appinfo['accounts'] = ['default']
         self.log.debug('Pipeline Config\n%s', pformat(self.pipeline_config))
         self.log.debug('App info:\n%s', pformat(self.appinfo))
         jsondata = self.render_application_template()
