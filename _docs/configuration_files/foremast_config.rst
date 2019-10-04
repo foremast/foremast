@@ -219,17 +219,67 @@ passwords
 ``gitlab_token``
 ****************
 
-Gitlab token used for authentication in Foremast
+    Gitlab token used for authentication in Foremast
 
-    | *Required*: No
+        | *Required*: No
 
 ``slack_token``
 ***************
 
-Slack token used for authentication when sending Slack messages from Foremast
+    Slack token used for authentication when sending Slack messages from Foremast
 
-    | *Required*: No
+        | *Required*: No
 
+``gate_authentication`` Keys
+****************************
+
+    Credential Provider Object used to authenticate to Gate
+
+        | *Type*: Object
+        | *Default*: ``None``
+        | *Example Configuration*:
+
+            .. code-block:: json
+
+            {
+                'credentials': {
+                    'gate_authentication': {
+                        'google_iap': {
+                            'enabled': False,
+                            'oauth_client_id': 'some_id.apps.googleusercontent.com',
+                            'sa_credentials_path': '/tmp/google-service-account.json'
+                        }
+                    }
+                }
+            }
+
+``google_iap`` Keys
+*******************
+
+    We currently support in addition to x509, Google Identity Aware Proxy authentication.
+
+    ``enabled``
+    ^^^^^^^^^^^
+
+        Determines if this authentication method should be used or not.
+
+        | *Type*: boolean
+        | *Default*: ``False``
+    
+    ``oauth_client_id``
+
+        Application Client ID using Identity Aware Proxy. Can be found in the Google Cloud Console
+
+        | *Type*: string
+        | *Default*: ``None``
+
+    ``sa_credentials_path``
+
+        Path to Google Cloud Service Account used to Authenticate to Identity Aware Proxy.
+        Must be added to IAP in GCP console to grant permission.
+
+        | *Type*: string
+        | *Default*: ``None``
 
 ``[whitelists]``
 ~~~~~~~~~~~~~~~~
