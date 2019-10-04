@@ -77,6 +77,14 @@ https://aws.amazon.com/ec2/instance-types/ for details
     | *Type*: string
     | *Default*: ``"t2.micro"``
 
+``lambda_dlq``
+*****************
+
+A dead letter queue configuration that specifies the queue or topic where Lambda sends asynchronous events when they fail processing 
+
+    | *Type*: string
+    | *Default*: ``""``
+
 ``lambda_environment``
 **********************
 
