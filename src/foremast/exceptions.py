@@ -38,6 +38,14 @@ class GitLabApiError(ForemastError):
     """GitLab API did not return a good status."""
 
 
+class GoogleIAPTokenError(ForemastError):
+    """Google IAP Token Request did not return a good status."""
+
+
+class GoogleIAPError(ForemastError):
+    """Google IAP did not return a good status."""
+
+
 class SpinnakerError(ForemastError):
     """Spinnaker related error."""
 

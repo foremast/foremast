@@ -39,7 +39,7 @@ def gate_request(method='GET', uri=None, headers={}, data={}, params={}):
         iap_response = get_google_iap_bearer_token(GATE_AUTHENTICATION['google_iap']['oauth_client_id'], 
                                                    GATE_AUTHENTICATION['google_iap']['sa_credentials_path'])
         LOG.info(iap_response)
-        headers['Authentication'] = 'Bearer {}'.format(iap_response['id_token'])
+        headers['Authorization'] = 'Bearer {}'.format(iap_response['id_token'])
         LOG.info(headers)
     
     #LOG.debug('Headers Posting to Gate: ', headers)
