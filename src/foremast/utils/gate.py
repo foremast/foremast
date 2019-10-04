@@ -22,6 +22,7 @@ from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 LOG = logging.getLogger(__name__)
 OAUTH_ENABLED = False
 
+
 def gate_request(method='GET', uri=None, headers=None, data=None, params=None):
     """Make a request to Gate's API via various auth methods
 
@@ -34,7 +35,8 @@ def gate_request(method='GET', uri=None, headers=None, data=None, params=None):
     url = '{host}{uri}'.format(host=API_URL, uri=uri)
 
     if OAUTH_ENABLED:
-        headers['Bearer'] = get_token()
+        headers['Bearer'] = ""
+        raise NotImplementedError
 
     if method == 'GET':
         response = requests.get(url, params=params, headers=headers, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
@@ -46,6 +48,3 @@ def gate_request(method='GET', uri=None, headers=None, data=None, params=None):
         raise NotImplementedError
 
     return response
-
-def get_token():
-    return 'asdfasdf'
