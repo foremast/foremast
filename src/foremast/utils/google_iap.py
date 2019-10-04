@@ -20,7 +20,7 @@ def get_google_iap_bearer_token(client_id, key_path):
       key_path: Path to Google Cloud Service Account Credentials in JSON Format
 
     Returns:
-      The JWT Bearer Token
+      Mapping[str, str]: The JSON-decoded response data.
     """
 
     LOG.debug("Parsing Google Cloud Service Account credentials")
@@ -48,6 +48,5 @@ def get_google_iap_bearer_token(client_id, key_path):
         'assertion': service_account_jwt,
         'grant_type': google.oauth2._client._JWT_GRANT_TYPE,
     }
-    token_response = google.oauth2._client._token_endpoint_request(
-        request, GOOGLE_OAUTH_TOKEN_URI, body)
-    return token_response['id_token']
+
+    return google.oauth2._client._token_endpoint_request(request, GOOGLE_OAUTH_TOKEN_URI, body)
