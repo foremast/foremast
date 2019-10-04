@@ -236,6 +236,7 @@ SECURITYGROUP_REPLACEMENTS = _convert_string_to_native(
     ))
 GITLAB_TOKEN = validate_key_values(CONFIG, 'credentials', 'gitlab_token')
 SLACK_TOKEN = validate_key_values(CONFIG, 'credentials', 'slack_token')
+GOOGLE_IAP_CONFIG = validate_key_values(CONFIG, 'credentials', 'google_iap', default={})
 DEFAULT_TASK_TIMEOUT = validate_key_values(CONFIG, 'task_timeouts', 'default', default=120)
 TASK_TIMEOUTS = json.loads(validate_key_values(CONFIG, 'task_timeouts', 'envs', default="{}"))
 ASG_WHITELIST = set(validate_key_values(CONFIG, 'whitelists', 'asg_whitelist', default='').split(','))

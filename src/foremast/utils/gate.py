@@ -17,7 +17,8 @@
 import logging
 import requests
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from .google_iap import get_google_iap_bearer_token
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, GOOGLE_IAP_CONFIG
 
 LOG = logging.getLogger(__name__)
 OAUTH_ENABLED = False
@@ -33,6 +34,13 @@ def gate_request(method='GET', uri=None, headers=None, data=None, params=None):
     response = None
 
     url = '{host}{uri}'.format(host=API_URL, uri=uri)
+
+    if GOOGLE_IAP_CONFIG:
+        iap_response = get_google_iap_bearer_token(GOOGLE_IAP_CONFIG['oauth_client_id'], 
+                                                   GOOGLE_IAP_CONFIG['sa_credentials_path'])
+        headers['Authentication'] = 'Bearer {}'.format(iap_response['id_token'])
+    
+    LOG.debug('Headers Posting to Gate: {}', headers)
 
     method = method.upper()
     if method == 'GET':
