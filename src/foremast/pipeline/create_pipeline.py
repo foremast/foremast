@@ -150,7 +150,7 @@ class SpinnakerPipeline:
             str: Pipeline config json
 
         """
-        uri = "/applications/{1}/pipelineConfigs".format(self.app_name)
+        uri = "/applications/{0}/pipelineConfigs".format(self.app_name)
         resp = gate_request(uri=uri)
         assert resp.ok, 'Failed to lookup pipelines for {0}: {1}'.format(self.app_name, resp.text)
 
