@@ -56,6 +56,7 @@ def get_properties_with_triggers(triggers):
             'lambda_timeout': 0,
             'lambda_environment': None,
             'lambda_layers': None,
+            'lambda_dlq': None,
         },
         "lambda_triggers": triggers
     }
