@@ -19,6 +19,13 @@ CONFIG = {
     'credentials': {
         'gitlab_token': '123token23423343',
         'slack_token': '123slack3203120312',
+        'gate_authentication': {
+            'google_iap': {
+                'enabled': False,
+                'oauth_client_id': 'leeroyjenkins.apps.googleusercontent.com',
+                'sa_credentials_path': '/tmp/service-account-creds.json'
+            }
+        }
     },
 
     'whitelists': {

@@ -36,7 +36,7 @@ def gate_request(method='GET', uri=None, headers={}, data={}, params={}):
 
     url = '{host}{uri}'.format(host=API_URL, uri=uri)
 
-    if GATE_AUTHENTICATION['google_iap']:
+    if GATE_AUTHENTICATION['google_iap']['enabled']:
         iap_response = get_google_iap_bearer_token(GATE_AUTHENTICATION['google_iap']['oauth_client_id'],
                                                    GATE_AUTHENTICATION['google_iap']['sa_credentials_path'])
         if 'id_token' not in iap_response:
