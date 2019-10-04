@@ -18,13 +18,13 @@ import logging
 import requests
 
 from .google_iap import get_google_iap_bearer_token
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, GOOGLE_IAP_CONFIG
+from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, GATE_AUTHENTICATION
 
 LOG = logging.getLogger(__name__)
 OAUTH_ENABLED = False
 
 
-def gate_request(method='GET', uri=None, headers=None, data=None, params=None):
+def gate_request(method='GET', uri=None, headers={}, data={}, params={}):
     """Make a request to Gate's API via various auth methods
 
     Args:
@@ -35,12 +35,14 @@ def gate_request(method='GET', uri=None, headers=None, data=None, params=None):
 
     url = '{host}{uri}'.format(host=API_URL, uri=uri)
 
-    if GOOGLE_IAP_CONFIG:
-        iap_response = get_google_iap_bearer_token(GOOGLE_IAP_CONFIG['oauth_client_id'], 
-                                                   GOOGLE_IAP_CONFIG['sa_credentials_path'])
+    if GATE_AUTHENTICATION['google_iap']:
+        iap_response = get_google_iap_bearer_token(GATE_AUTHENTICATION['google_iap']['oauth_client_id'], 
+                                                   GATE_AUTHENTICATION['google_iap']['sa_credentials_path'])
+        LOG.info(iap_response)
         headers['Authentication'] = 'Bearer {}'.format(iap_response['id_token'])
+        LOG.info(headers)
     
-    LOG.debug('Headers Posting to Gate: {}', headers)
+    #LOG.debug('Headers Posting to Gate: ', headers)
 
     method = method.upper()
     if method == 'GET':
@@ -52,4 +54,8 @@ def gate_request(method='GET', uri=None, headers=None, data=None, params=None):
     else:
         raise NotImplementedError
 
+    if response.status_code in ['401', '403', '503']:
+        response.raise_for_status()
+
+    LOG.info(response.content)
     return response
