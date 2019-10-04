@@ -52,7 +52,6 @@ def test_iam_construct_policy(gate_request, get_base_settings):
     policy = json.loads(policy_json)
 
 
-@mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.gate_request')
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
 def test_construct_cloudwatchlogs(gate_request, get_base_settings):

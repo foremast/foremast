@@ -16,6 +16,7 @@
 """Get VPC ID."""
 import logging
 
+from ..consts import VPC_NAME
 from ..utils.gate import gate_request
 from ..exceptions import SpinnakerVPCIDNotFound, SpinnakerVPCNotFound
 
