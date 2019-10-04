@@ -23,7 +23,7 @@ def test_utils_retry_task(mock_check_task):
 @mock.patch('foremast.utils.tasks.gate_request')
 def test_task_success(mock_gate_request):
     """Successful Task."""
-    mock_gate_request.get.return_value.json.return_value = {'status': SUCCESS_MESSAGE}
+    mock_gate_request.return_value.json.return_value = {'status': SUCCESS_MESSAGE}
 
     result = _check_task(taskid='')
 
@@ -33,7 +33,7 @@ def test_task_success(mock_gate_request):
 @mock.patch('foremast.utils.tasks.gate_request')
 def test_task_failure(mock_gate_request):
     """Failed Task."""
-    mock_gate_request.get.return_value.json.return_value = {
+    mock_gate_request.return_value.json.return_value = {
         'status': FAIL_MESSAGE,
         'execution': {
             'stages': [],
