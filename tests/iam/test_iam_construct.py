@@ -31,9 +31,9 @@ def get_base_settings():
 
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
-@mock.patch('foremast.utils.credentials.requests.get')
+@mock.patch('foremast.utils.credentials.gate_request')
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
-def test_iam_construct_policy(requests_get, get_base_settings):
+def test_iam_construct_policy(gate_request, get_base_settings):
     """Check general assemblage."""
     settings = get_base_settings
 
@@ -54,9 +54,9 @@ def test_iam_construct_policy(requests_get, get_base_settings):
 
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
-@mock.patch('foremast.utils.credentials.requests.get')
+@mock.patch('foremast.utils.credentials.gate_request')
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
-def test_construct_cloudwatchlogs(requests_get, get_base_settings):
+def test_construct_cloudwatchlogs(gate_request, get_base_settings):
     """Check Lambda Policy."""
     pipeline_settings = get_base_settings
     pipeline_settings.update({'services': {'cloudwatchlogs': True}, 'type': 'lambda'})
@@ -75,9 +75,9 @@ def test_construct_cloudwatchlogs(requests_get, get_base_settings):
 
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
-@mock.patch('foremast.utils.credentials.requests.get')
+@mock.patch('foremast.utils.credentials.gate_request')
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
-def test_construct_s3(requests_get, get_base_settings):
+def test_construct_s3(gate_request, get_base_settings):
     """Check S3 Policy."""
     pipeline_settings = get_base_settings
     pipeline_settings.update({'services': {'s3': True}})
@@ -105,9 +105,9 @@ def test_construct_s3(requests_get, get_base_settings):
 
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
-@mock.patch('foremast.utils.credentials.requests.get')
+@mock.patch('foremast.utils.credentials.gate_request')
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
-def test_construct_s3_buckets(requests_get, get_base_settings):
+def test_construct_s3_buckets(gate_request, get_base_settings):
     """Check S3 Policy with multiple Buckets listed."""
     pipeline_settings = get_base_settings
     pipeline_settings.update({'services': {'s3': ['Bucket1', 'Bucket2']}})
@@ -132,9 +132,9 @@ def test_construct_s3_buckets(requests_get, get_base_settings):
 
 
 @mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
-@mock.patch('foremast.utils.credentials.requests.get')
+@mock.patch('foremast.utils.credentials.gate_request')
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
-def test_construct_sdb_domains(requests_get, get_base_settings):
+def test_construct_sdb_domains(gate_request, get_base_settings):
     """Check SimpleDB Policy with multiple Domains listed."""
     pipeline_settings = get_base_settings
     pipeline_settings.update({'services': {'sdb': ['Domain1', 'Domain2']}})
