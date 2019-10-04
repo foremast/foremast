@@ -18,6 +18,7 @@ import logging
 import requests
 
 from .google_iap import get_google_iap_bearer_token
+from ..exceptions import GoogleIAPTokenError
 from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, GATE_AUTHENTICATION
 
 LOG = logging.getLogger(__name__)
@@ -36,13 +37,13 @@ def gate_request(method='GET', uri=None, headers={}, data={}, params={}):
     url = '{host}{uri}'.format(host=API_URL, uri=uri)
 
     if GATE_AUTHENTICATION['google_iap']:
-        iap_response = get_google_iap_bearer_token(GATE_AUTHENTICATION['google_iap']['oauth_client_id'], 
+        iap_response = get_google_iap_bearer_token(GATE_AUTHENTICATION['google_iap']['oauth_client_id'],
                                                    GATE_AUTHENTICATION['google_iap']['sa_credentials_path'])
-        LOG.info(iap_response)
+        if 'id_token' not in iap_response:
+            raise GoogleIAPTokenError
+
         headers['Authorization'] = 'Bearer {}'.format(iap_response['id_token'])
-        LOG.info(headers)
-    
-    #LOG.debug('Headers Posting to Gate: ', headers)
+        LOG.info('Successfully set Google IAP Bearer Token in Request.')
 
     method = method.upper()
     if method == 'GET':
