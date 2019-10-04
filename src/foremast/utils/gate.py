@@ -34,10 +34,7 @@ def gate_request(method='GET', uri=None, headers=None, data=None, params=None):
 
     url = '{host}{uri}'.format(host=API_URL, uri=uri)
 
-    if OAUTH_ENABLED:
-        headers['Bearer'] = ""
-        raise NotImplementedError
-
+    method = method.upper()
     if method == 'GET':
         response = requests.get(url, params=params, headers=headers, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
     elif method == 'POST':
