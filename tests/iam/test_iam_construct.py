@@ -30,7 +30,6 @@ def get_base_settings():
     return json.loads(get_template(template_file='configs/pipeline.json.j2'))
 
 
-@mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.gate_request')
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
 def test_iam_construct_policy(gate_request, get_base_settings):
@@ -74,7 +73,6 @@ def test_construct_cloudwatchlogs(gate_request, get_base_settings):
     assert all(action.startswith('logs:') for action in statement['Action'])
 
 
-@mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.gate_request')
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
 def test_construct_s3(gate_request, get_base_settings):
@@ -104,7 +102,6 @@ def test_construct_s3(gate_request, get_base_settings):
     assert len(allow_edit_policy['Resource']) == 0
 
 
-@mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.gate_request')
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
 def test_construct_s3_buckets(gate_request, get_base_settings):
@@ -131,7 +128,6 @@ def test_construct_s3_buckets(gate_request, get_base_settings):
     assert len(allow_edit_policy['Resource']) == 2
 
 
-@mock.patch('foremast.utils.credentials.API_URL', 'http://test.com')
 @mock.patch('foremast.utils.credentials.gate_request')
 @mock.patch('foremast.utils.templates.TEMPLATES_PATH', None)
 def test_construct_sdb_domains(gate_request, get_base_settings):
