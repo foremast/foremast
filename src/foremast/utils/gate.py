@@ -38,7 +38,7 @@ def gate_request(method='GET', uri=None, headers={}, data={}, params={}):
 
     if GATE_AUTHENTICATION:
         if 'google_iap' in GATE_AUTHENTICATION:
-            iap_response = get_google_iap_bearer_token(GATE_AUTHENTICATION['google_iap']['oauth_client_id'], 
+            iap_response = get_google_iap_bearer_token(GATE_AUTHENTICATION['google_iap']['oauth_client_id'],
                                                        GATE_AUTHENTICATION['google_iap']['sa_credentials_path'])
 
             if 'id_token' not in iap_response:
