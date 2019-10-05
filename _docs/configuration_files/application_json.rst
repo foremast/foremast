@@ -82,8 +82,20 @@ https://aws.amazon.com/ec2/instance-types/ for details
 
 A dead letter queue configuration that specifies the queue or topic where Lambda sends asynchronous events when they fail processing 
 
-    | *Type*: string
-    | *Default*: ``""``
+Dead Letter Queues are supported in either SNS or SQS and pass in the ARN. See https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html for more details
+
+    | *Type*: array
+    | *Default*: ``[]``
+
+``lambda_dlq`` *Example*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: json
+
+   "lambda_dlq": {
+            "TargetArn": "arn:aws:sns:us-east-1:accountnumber:topic"
+        }
+
 
 ``lambda_environment``
 **********************
