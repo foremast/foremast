@@ -19,8 +19,8 @@ import logging
 import boto3
 from tryagain import retries
 
-from ..utils.gate import gate_request
 from ..exceptions import SpinnakerElbNotFound
+from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 

@@ -36,7 +36,6 @@ from foremast import (autoscaling_policy, awslambda, configs, consts, datapipeli
                       scheduled_actions, securitygroup, slacknotify, utils)
 from foremast.plugin_manager import PluginManager
 
-
 from .args import add_debug
 
 LOG = logging.getLogger(__name__)

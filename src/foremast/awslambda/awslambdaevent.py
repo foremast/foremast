@@ -15,13 +15,12 @@
 #   limitations under the License.
 """Create Lambda event triggers."""
 from ..utils import get_properties, remove_all_lambda_permissions
-
 from .api_gateway_event import APIGateway
 from .cloudwatch_event import create_cloudwatch_event
 from .cloudwatch_log_event import create_cloudwatch_log_event
+from .event_source_mapping import create_event_source_mapping_trigger
 from .s3_event import create_s3_event
 from .sns_event import create_sns_event
-from .event_source_mapping import create_event_source_mapping_trigger
 
 
 # pylint: disable=too-few-public-methods

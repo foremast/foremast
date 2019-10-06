@@ -19,8 +19,8 @@ import logging
 
 import boto3
 
-from ...utils import get_lambda_alias_arn, get_dynamodb_stream_arn
 from ...exceptions import DynamoDBTableNotFound
+from ...utils import get_dynamodb_stream_arn, get_lambda_alias_arn
 
 LOG = logging.getLogger(__name__)
 

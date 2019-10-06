@@ -3,7 +3,7 @@ import logging
 
 import boto3
 
-from ..exceptions import DynamoDBTableNotFound, DynamoDBStreamNotFound
+from ..exceptions import DynamoDBStreamNotFound, DynamoDBTableNotFound
 
 LOG = logging.getLogger(__name__)
 

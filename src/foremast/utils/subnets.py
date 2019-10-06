@@ -20,8 +20,8 @@ from pprint import pformat
 
 from tryagain import retries
 
-from ..utils.gate import gate_request
 from ..exceptions import SpinnakerSubnetError, SpinnakerTimeout
+from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 

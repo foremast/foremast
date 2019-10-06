@@ -19,8 +19,8 @@ import logging
 import gogoutils
 
 from ..consts import APP_FORMATS
-from ..utils.gate import gate_request
 from ..exceptions import SpinnakerAppNotFound
+from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 

@@ -18,9 +18,9 @@ import logging
 
 from tryagain import retries
 
-from ..utils import gate_request
 from ..consts import SECURITYGROUP_REPLACEMENTS
 from ..exceptions import SpinnakerSecurityGroupError
+from ..utils import gate_request
 from .vpc import get_vpc_id
 
 LOG = logging.getLogger(__name__)

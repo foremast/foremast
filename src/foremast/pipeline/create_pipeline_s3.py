@@ -18,8 +18,8 @@ import collections
 import json
 from pprint import pformat
 
-from ..utils import get_template
 from ..consts import DEFAULT_RUN_AS_USER
+from ..utils import get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_s3 import construct_pipeline_block_s3
 from .create_pipeline import SpinnakerPipeline

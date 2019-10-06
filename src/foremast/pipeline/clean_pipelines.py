@@ -18,10 +18,10 @@ import logging
 
 import requests
 
-from ..utils.gate import gate_request
 from ..consts import RUNWAY_BASE_PATH
 from ..exceptions import SpinnakerPipelineCreationFailed, SpinnakerPipelineDeletionFailed
 from ..utils import check_managed_pipeline, get_all_pipelines, normalize_pipeline_name
+from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 
