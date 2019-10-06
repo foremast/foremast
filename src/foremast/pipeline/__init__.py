@@ -15,8 +15,8 @@
 #   limitations under the License.
 """Package for the creation of spinnaker pipelines"""
 from .create_pipeline import SpinnakerPipeline
-from .create_pipeline_lambda import SpinnakerPipelineLambda
-from .create_pipeline_s3 import SpinnakerPipelineS3
 from .create_pipeline_datapipeline import SpinnakerPipelineDataPipeline
+from .create_pipeline_lambda import SpinnakerPipelineLambda
 from .create_pipeline_manual import SpinnakerPipelineManual
 from .create_pipeline_onetime import SpinnakerPipelineOnetime
+from .create_pipeline_s3 import SpinnakerPipelineS3
