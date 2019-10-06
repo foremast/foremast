@@ -22,8 +22,8 @@ import logging
 import os
 from math import floor
 
-from ..utils.gate import gate_request
 from ..utils import get_latest_server_group, get_properties, get_template, wait_for_task
+from ..utils.gate import gate_request
 
 
 class AutoScalingPolicy:

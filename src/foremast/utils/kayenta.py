@@ -14,8 +14,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Set of utility functions for Spinnaker's kayenta canary service"""
-from ..utils.gate import gate_request
 from ..exceptions import SpinnakerPipelineCreationFailed
+from ..utils.gate import gate_request
 
 
 def get_canary_id(name, application=None):

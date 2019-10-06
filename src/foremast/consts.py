@@ -26,10 +26,10 @@ descending order. First found wins.
    :language: ini
 """
 import ast
+import importlib.util
 import json
 import logging
 import sys
-import importlib.util
 from configparser import ConfigParser
 from os import getcwd, getenv, path
 from os.path import exists, expanduser, expandvars

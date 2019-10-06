@@ -1,11 +1,12 @@
+import logging
+
 import google.auth
 import google.auth.app_engine
 import google.auth.compute_engine.credentials
 import google.auth.iam
-from google.auth.transport.requests import Request as GoogleAuthRequest
 import google.oauth2.credentials
 import google.oauth2.service_account
-import logging
+from google.auth.transport.requests import Request as GoogleAuthRequest
 
 GOOGLE_IAP_IAM_SCOPE = 'https://www.googleapis.com/auth/iam'  # Used in request to Google for OIDC Scope
 GOOGLE_OAUTH_TOKEN_URI = 'https://www.googleapis.com/oauth2/v4/token'  # Endpoint for getting tokens for Id Aware Proxy

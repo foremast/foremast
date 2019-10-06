@@ -22,10 +22,10 @@ from pprint import pformat
 
 from gogoutils import Generator
 
-from ..utils.gate import gate_request
+from ..consts import APP_FORMATS, DEFAULT_RUN_AS_USER, LINKS
 from ..exceptions import ForemastError
 from ..utils import get_template, wait_for_task
-from ..consts import APP_FORMATS, DEFAULT_RUN_AS_USER, LINKS
+from ..utils.gate import gate_request
 
 
 class SpinnakerApp:

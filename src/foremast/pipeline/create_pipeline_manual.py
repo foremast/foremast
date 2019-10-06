@@ -15,11 +15,12 @@
 #   limitations under the License.
 """Create manual Pipeline for Spinnaker."""
 import json
+
 import jinja2
 
+from ..consts import TEMPLATES_PATH
 from ..utils import get_pipeline_id, normalize_pipeline_name
 from ..utils.lookups import FileLookup
-from ..consts import TEMPLATES_PATH
 from .create_pipeline import SpinnakerPipeline
 from .jinja_functions import get_jinja_functions, get_jinja_variables
 

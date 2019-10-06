@@ -20,9 +20,9 @@ from functools import partial
 
 from tryagain import call as retry_call
 
-from ..utils import gate_request
 from ..consts import DEFAULT_TASK_TIMEOUT, HEADERS, TASK_TIMEOUTS
 from ..exceptions import SpinnakerTaskError, SpinnakerTaskInconclusiveError
+from ..utils import gate_request
 
 LOG = logging.getLogger(__name__)
 

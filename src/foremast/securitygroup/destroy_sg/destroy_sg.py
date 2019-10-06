@@ -16,8 +16,8 @@
 """Destroy Security Group Resources."""
 import logging
 
-from ...utils.gate import gate_request
 from ...utils import get_template, get_vpc_id, wait_for_task
+from ...utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 

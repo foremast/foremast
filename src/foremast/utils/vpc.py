@@ -17,8 +17,8 @@
 import logging
 
 from ..consts import VPC_NAME
-from ..utils.gate import gate_request
 from ..exceptions import SpinnakerVPCIDNotFound, SpinnakerVPCNotFound
+from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 

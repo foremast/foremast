@@ -15,11 +15,12 @@
 #   limitations under the License.
 """Centralized Methods interacting with the Spinnaker Gate API."""
 import logging
+
 import requests
 
-from .google_iap import get_google_iap_bearer_token
+from ..consts import API_URL, GATE_AUTHENTICATION, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ..exceptions import GoogleIAPTokenError
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, GATE_AUTHENTICATION
+from .google_iap import get_google_iap_bearer_token
 
 LOG = logging.getLogger(__name__)
 OAUTH_ENABLED = False
