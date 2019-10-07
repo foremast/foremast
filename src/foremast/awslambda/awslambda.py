@@ -60,11 +60,8 @@ class LambdaFunction:
         app = self.settings['app']
         self.lambda_environment = app['lambda_environment']
         self.lambda_layers = app['lambda_layers']
-<<<<<<< HEAD
         self.lambda_dlq = app['lambda_dlq']
-=======
         self.lambda_tracing = app['lambda_tracing']
->>>>>>> adding lambda tracing capabilities
         self.memory = app['lambda_memory']
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
         self.timeout = app['lambda_timeout']
@@ -189,11 +186,8 @@ class LambdaFunction:
                 MemorySize=int(self.memory),
                 VpcConfig=vpc_config,
                 Layers=self.lambda_layers,
-<<<<<<< HEAD
-                DeadLetterConfig=self.lambda_dlq)
-=======
+                DeadLetterConfig=self.lambda_dlq,
                 TracingConfig=self.lambda_tracing)
->>>>>>> adding lambda tracing capabilities
 
             if self.concurrency_limit:
                 self.lambda_client.put_function_concurrency(
@@ -255,11 +249,8 @@ class LambdaFunction:
                 Tags={'app_group': self.group,
                       'app_name': self.app_name},
                 Layers=self.lambda_layers,
-<<<<<<< HEAD
-                DeadLetterConfig=self.lambda_dlq)
-=======
+                DeadLetterConfig=self.lambda_dlq,
                 TracingConfig=self.lambda_tracing)
->>>>>>> adding lambda tracing capabilities
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
