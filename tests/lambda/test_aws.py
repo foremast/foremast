@@ -19,6 +19,7 @@ TEST_PROPERTIES = {
         'lambda_environment': None,
         'lambda_layers': None,
         'lambda_dlq': None,
+        'lambda_tracing': None,
     }
 }
 GENERATED_IAM = {
