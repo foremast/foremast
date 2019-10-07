@@ -160,6 +160,28 @@ https://docs.aws.amazon.com/lambda/latest/dg/limits.html
     | *Default*: ``"900"``
     | *Units*: Seconds
 
+``lambda_tracing``
+******************
+
+Lambda Tracing feature allows you to enable X-Ray APIs to your lambda function to identify performance bottlenecks and troubleshoot requests that are in error. 
+
+If you've enabled X-Ray tracing in a service that invokes your function, Lambda sends traces to X-Ray automatically. The upstream service, such as Amazon API Gateway, or an application hosted on Amazon EC2 that is instrumented with the X-Ray SDK, samples incoming requests and adds a tracing header that tells Lambda to send traces or not. For a full list of services that support active instrumentation, see Supported AWS Services in the AWS X-Ray Developer Guide. For more details see: https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+
+Currently AWS API supports Active or PassThrough.
+
+    | *Type*: array
+    | *Default*: ``[]``
+
+``lambda_tracing`` *Example*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: json
+
+   "lambda_tracing": {
+            "TracingConfig": "Active"
+        }
+
+
 ``asg`` Block
 ~~~~~~~~~~~~~
 
