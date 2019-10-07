@@ -5,6 +5,7 @@ CONFIG = {
         'domain': 'example.com',
         'envs': 'dev,stage,prod',
         'regions': 'us-east-1,us-west-2',
+        'vpc_name': 'vpc',
         'ami_json_url': 'http://s3.bucketname.com/ami_lookup.json',
         'git_url': 'https://git.example.com',
         'gate_api_url': 'http://gate-api.example.com:8084',
@@ -18,6 +19,13 @@ CONFIG = {
     'credentials': {
         'gitlab_token': '123token23423343',
         'slack_token': '123slack3203120312',
+        'gate_authentication': {
+            'google_iap': {
+                'enabled': False,
+                'oauth_client_id': 'leeroyjenkins.apps.googleusercontent.com',
+                'sa_credentials_path': '/tmp/service-account-creds.json'
+            }
+        }
     },
 
     'whitelists': {

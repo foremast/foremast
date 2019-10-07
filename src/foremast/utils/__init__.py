@@ -15,6 +15,7 @@
 #   limitations under the License.
 """Package for foremast supporting utilities."""
 from .apps import *
+from .asg import *
 from .banners import *
 from .pipelines import *
 from .deep_chain_map import DeepChainMap
@@ -36,4 +37,5 @@ from .get_cloudwatch_event_rule import get_cloudwatch_event_rule
 from .awslambda import *
 from .get_sns_subscriptions import get_sns_subscriptions
 from .get_sns_topic_arn import get_sns_topic_arn
+from .dynamodb_stream import get_dynamodb_stream_arn
 from .roles import *

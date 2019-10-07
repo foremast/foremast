@@ -16,11 +16,11 @@
 """Get security group id."""
 import logging
 
-import requests
 from tryagain import retries
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, SECURITYGROUP_REPLACEMENTS
+from ..consts import SECURITYGROUP_REPLACEMENTS
 from ..exceptions import SpinnakerSecurityGroupError
+from ..utils import gate_request
 from .vpc import get_vpc_id
 
 LOG = logging.getLogger(__name__)
@@ -48,8 +48,8 @@ def get_security_group_id(name='', env='', region=''):
 
     LOG.info('Find %s sg in %s [%s] in %s', name, env, region, vpc_id)
 
-    url = '{0}/securityGroups/{1}/{2}/{3}?vpcId={4}'.format(API_URL, env, region, name, vpc_id)
-    response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    uri = '/securityGroups/{0}/{1}/{2}?vpcId={3}'.format(env, region, name, vpc_id)
+    response = gate_request(uri=uri)
     assert response.ok
 
     result = response.json()

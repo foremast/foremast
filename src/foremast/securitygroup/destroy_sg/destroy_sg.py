@@ -16,10 +16,8 @@
 """Destroy Security Group Resources."""
 import logging
 
-import requests
-
-from ...consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT
 from ...utils import get_template, get_vpc_id, wait_for_task
+from ...utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 
@@ -37,9 +35,9 @@ def destroy_sg(app='', env='', region='', **_):
     """
     vpc = get_vpc_id(account=env, region=region)
 
-    url = '{api}/securityGroups/{env}/{region}/{app}'.format(api=API_URL, env=env, region=region, app=app)
+    uri = '/securityGroups/{env}/{region}/{app}'.format(env=env, region=region, app=app)
     payload = {'vpcId': vpc}
-    security_group = requests.get(url, params=payload, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    security_group = gate_request(uri=uri, params=payload)
 
     if not security_group:
         LOG.info('Nothing to delete.')

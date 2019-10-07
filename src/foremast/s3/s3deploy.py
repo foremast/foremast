@@ -58,6 +58,9 @@ class S3Deployment:
             newgenerated = get_details(app=shared_app, env=env, region=region)
             self.bucket = newgenerated.shared_s3_app_bucket(include_region=include_region)
             self.s3path = app
+        elif self.s3props.get('bucket_name'):
+            self.bucket = self.s3props['bucket_name']
+            self.s3path = app
         else:
             self.bucket = generated.s3_app_bucket(include_region=include_region)
             self.s3path = self.s3props['path'].lstrip('/')

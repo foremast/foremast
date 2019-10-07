@@ -6,10 +6,12 @@
         "eureka_enabled": false,
         "instance_profile": "{{ profile }}",
         "instance_type": "t2.micro",
+        "lambda_dlq": [],
         "lambda_environment": {},
         "lambda_layers": [],
         "lambda_memory": "128",
         "lambda_role": null,
+        "lambda_tracing": [],
         "lambda_timeout": "30",
         "canary": false,
         "lambda_concurrency_limit": null
@@ -26,7 +28,9 @@
         "provider_healthcheck": {
             "amazon": false
         },
-        "scaling_policy": {}
+        "scaling_policy": {},
+        "custom_scaling_policies":[],
+        "scheduled_actions": []
     },
     "elb": {
         "certificate": null,
@@ -71,6 +75,7 @@
     "lambda_triggers": [],
     "s3": {
         "shared_bucket_master": false,
+        "bucket_name": "",
         "path": "/",
         "bucket_acl": "private",
         "bucket_policy": {},
@@ -117,7 +122,7 @@
             "mfa_delete": "Disabled"
         },
         "website": {
-            "enabled": true,
+            "enabled": false,
             "index_suffix": "index.html",
             "error_document": "404.html"
         }

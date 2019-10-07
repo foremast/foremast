@@ -26,6 +26,7 @@ descending order. First found wins.
    :language: ini
 """
 import ast
+import importlib.util
 import json
 import logging
 import sys
@@ -98,12 +99,15 @@ def load_dynamic_config(config_file=DEFAULT_DYNAMIC_CONFIG_FILE):
     # Insert config path so we can import it
     sys.path.insert(0, path.dirname(path.abspath(config_file)))
     try:
-        config_module = __import__('config')
-
-        dynamic_configurations = config_module.CONFIG
+        config_file_spec = importlib.util.spec_from_file_location("config", config_file)
+        config_file_module = importlib.util.module_from_spec(config_file_spec)
+        config_file_spec.loader.exec_module(config_file_module)
+        dynamic_configurations = config_file_module.CONFIG
     except ImportError:
         # Provide a default if config not found
         LOG.error('ImportError: Unable to load dynamic config. Check config.py file imports!')
+    except AttributeError:
+        LOG.error('AttributeError: Unable to load CONFIG from %s', config_file)
 
     return dynamic_configurations
 
@@ -196,9 +200,13 @@ API_URL = validate_key_values(CONFIG, 'base', 'gate_api_url')
 GIT_URL = validate_key_values(CONFIG, 'base', 'git_url')
 DOMAIN = validate_key_values(CONFIG, 'base', 'domain', default='example.com')
 ENVS = set(validate_key_values(CONFIG, 'base', 'envs', default='').split(','))
+VPC_NAME = validate_key_values(CONFIG, 'base', 'vpc_name', default='vpc')
 REGIONS = set(validate_key_values(CONFIG, 'base', 'regions', default='').split(','))
+MANUAL_TYPES = set(
+    validate_key_values(CONFIG, 'base', 'manual_types', default='manual').split(','))
 ALLOWED_TYPES = set(
-    validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling,manual').split(','))
+    validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling')
+    .split(','))
 RUNWAY_BASE_PATH = validate_key_values(CONFIG, 'base', 'runway_base_path', default='runway')
 TEMPLATES_PATH = validate_key_values(CONFIG, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(CONFIG, 'base', 'ami_json_url')
@@ -228,6 +236,7 @@ SECURITYGROUP_REPLACEMENTS = _convert_string_to_native(
     ))
 GITLAB_TOKEN = validate_key_values(CONFIG, 'credentials', 'gitlab_token')
 SLACK_TOKEN = validate_key_values(CONFIG, 'credentials', 'slack_token')
+GATE_AUTHENTICATION = validate_key_values(CONFIG, 'credentials', 'gate_authentication', default={})
 DEFAULT_TASK_TIMEOUT = validate_key_values(CONFIG, 'task_timeouts', 'default', default=120)
 TASK_TIMEOUTS = json.loads(validate_key_values(CONFIG, 'task_timeouts', 'envs', default="{}"))
 ASG_WHITELIST = set(validate_key_values(CONFIG, 'whitelists', 'asg_whitelist', default='').split(','))

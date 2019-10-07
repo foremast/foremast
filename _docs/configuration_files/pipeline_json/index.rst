@@ -34,9 +34,9 @@ Specifies what type of pipeline to use for the application.
         - ``"ec2"`` - Sets up an AWS EC2 pipeline and infrastructure
         - ``"datapipeline"`` - Sets up an AWS Data Pipeline infrastructure
         - ``"lambda"`` - Sets up an AWS Lambda pipeline and infrastructure
-        - ``"manual"`` - Create Pipelines from raw JSON, use with :ref:`pipeline_files`.
         - ``"s3"`` - Sets up an AWS S3 pipeline and infrastructure
         - ``"rolling"`` - Sets up a "rolling" style pipeline. Requires custom templates.
+        - ``"manual"`` - Sets up pipelines from raw Spinnaker Pipeline JSON; more info: :doc:`../advanced_usages/index`.
 
 ``owner_email``
 ~~~~~~~~~~~~~~~
@@ -85,7 +85,6 @@ List of accounts that the application will be deployed to. Order matters as it d
     | *Type*: array
     | *Default*: ``["stage", "prod"]``
 
-.. include:: manual.rest
 .. include:: image.rest
 .. include:: lambda.rest
 .. include:: services.rest

@@ -20,12 +20,12 @@ Looks to see if the application exists, and if not creates the application.
 import logging
 from pprint import pformat
 
-import requests
 from gogoutils import Generator
 
-from ..consts import API_URL, APP_FORMATS, DEFAULT_RUN_AS_USER, GATE_CA_BUNDLE, GATE_CLIENT_CERT, LINKS
+from ..consts import APP_FORMATS, DEFAULT_RUN_AS_USER, LINKS
 from ..exceptions import ForemastError
 from ..utils import get_template, wait_for_task
+from ..utils.gate import gate_request
 
 
 class SpinnakerApp:
@@ -64,8 +64,8 @@ class SpinnakerApp:
         Raises:
             AssertionError: Failure getting accounts from Spinnaker.
         """
-        url = '{gate}/credentials'.format(gate=API_URL)
-        response = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+        uri = '/credentials'
+        response = gate_request(uri=uri)
         assert response.ok, 'Failed to get accounts: {0}'.format(response.text)
 
         all_accounts = response.json()

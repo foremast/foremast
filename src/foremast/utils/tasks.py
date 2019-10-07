@@ -13,15 +13,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """POST a new task or check status of running task."""
+import copy
 import json
 import logging
 from functools import partial
 
-import requests
 from tryagain import call as retry_call
 
-from ..consts import API_URL, DEFAULT_TASK_TIMEOUT, GATE_CA_BUNDLE, GATE_CLIENT_CERT, HEADERS, TASK_TIMEOUTS
+from ..consts import DEFAULT_TASK_TIMEOUT, HEADERS, TASK_TIMEOUTS
 from ..exceptions import SpinnakerTaskError, SpinnakerTaskInconclusiveError
+from ..utils import gate_request
 
 LOG = logging.getLogger(__name__)
 
@@ -39,14 +40,14 @@ def post_task(task_data, task_uri='/tasks'):
         AssertionError: Error response from Spinnaker.
 
     """
-    url = '{}/{}'.format(API_URL, task_uri.lstrip('/'))
+    uri = '/{}'.format(task_uri.lstrip('/'))
 
     if isinstance(task_data, str):
         task_json = task_data
     else:
         task_json = json.dumps(task_data)
 
-    resp = requests.post(url, data=task_json, headers=HEADERS, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    resp = gate_request(method='POST', uri=uri, data=task_json, headers=HEADERS)
     resp_json = resp.json()
 
     LOG.debug(resp_json)
@@ -75,8 +76,11 @@ def _check_task(taskid):
 
     LOG.info('Checking taskid %s', taskid)
 
-    url = '{}/tasks/{}'.format(API_URL, taskid)
-    task_response = requests.get(url, headers=HEADERS, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    headers = copy.copy(HEADERS)
+    headers.pop('content-type')
+
+    uri = '/tasks/{}'.format(taskid)
+    task_response = gate_request(uri=uri, headers=headers)
 
     LOG.debug(task_response.json())
 

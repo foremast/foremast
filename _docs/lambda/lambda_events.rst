@@ -1,19 +1,16 @@
 .. _lambda_events:
 
-==========================
+##########################
 Lambda Triggers and Events
-==========================
+##########################
+
+Foremast supports multiple Lambda events. These are configured in the :ref:`application_json` config and set as a list under the :ref:`lambda_trigger` key.
 
 .. contents::
    :local:
 
-Purpose
--------
-
-Foremast supports multiple Lambda events. These are configured in the :ref:`application_json` config and set as a list under the :ref:`lambda_trigger` key.
-
 Example Configuration
----------------------
+*********************
 
 This example would go in the :ref:`application_json` configuration file.
 
@@ -22,17 +19,10 @@ This example would go in the :ref:`application_json` configuration file.
    {
      "lambda_triggers": [
        {
-         "type": "s3",
-         "bucket": "app-bucket-dev",
-         "events": [
-           "s3:ObjectCreated:*"
-         ],
-         "prefix": "",
-         "suffix": ""
-       },
-       {
-         "type": "sns",
-         "topic": "app-dns-dev"
+         "type": "api-gateway",
+         "api_name": "lambdatest-api",
+         "resource": "/index",
+         "method": "GET"
        },
        {
          "type": "cloudwatch-event",
@@ -47,166 +37,341 @@ This example would go in the :ref:`application_json` configuration file.
          "filter_pattern": ""
        },
        {
-         "type": "api-gateway",
-         "api_name": "lambdatest-api",
-         "resource": "/index",
-         "method": "GET"
+         "type": "dynamodb-stream",
+         "table_arn": "arn:aws:dynamodb:us-east-1:111111111111:table/dynamotest-stream",
+         "stream_arn": "",
+         "batch_size": 100,
+         "batch_window": 0,
+         "starting_position": "TRIM_HORIZON"
+       },
+       {
+         "type": "kinesis-stream",
+         "stream_arn": "arn:aws:kinesis:us-east-1:111111111111:stream/kinesistest-stream",
+         "batch_size": 100,
+         "batch_window": 0,
+         "starting_position": "TRIM_HORIZON"
+       },
+       {
+         "type": "s3",
+         "bucket": "app-bucket-dev",
+         "events": [
+           "s3:ObjectCreated:*"
+         ],
+         "prefix": "",
+         "suffix": ""
+       },
+       {
+         "type": "sns",
+         "topic": "app-dns-dev"
+       },
+       {
+         "type": "sqs",
+         "queue_arn": "arn:aws:sqs:us-east-1:111111111111:sqstest-queue",
+         "batch_size": 10
        }
      ]
    }
 
 Configuration Details
-----------------------
-
-``type``
-~~~~~~~~
-
-Specifies what type of Lambda event/trigger to use. This needs to be set for all events.
-
-    | *Options*:
-
-        - ``"s3"`` - S3 Lambda trigger
-        - ``"sns"`` - SNS Lambda trigger
-        - ``"cloudwatch-event"`` - Cloudwatch event Lambda trigger
-        - ``"cloudwatch-logs"`` - Cloudwatch logs event Lambda trigger
-        - ``"api-gateway"`` - API Gateway Lambda trigger
-
-    | *Required*: True
-
-S3 Event
-~~~~~~~~
-
-A Lambda trigger on S3 bucket actions.
-
-``bucket``
-**********
-
-The bucket of the event to monitor.
-
-    | *Required*: True
-
-
-``events``
-**********
-
-The S3 event to trigger the lambda function from.
-
-    | *Type*: List
-    | *Required*: True
-    | *Example*: ``["s3:ObjectCreated:*", "s3:ObjectedRemoved:Delete"]``
-
-``prefix``
-**********
-
-Sets up a prefix filter on S3 bucket events.
-
-    | *Required*: False
-    | *Example*: ``"logs/"``
-
-``suffix``
-**********
-
-Sets up a suffix filter on s3 bucket events.
-
-    | *Required*: False
-    | *Example*: ``"jpg"``
-
-SNS Event
-~~~~~~~~~
-
-A Lambda trigger on SNS topic events.
-
-``topic``
-*********
-
-The SNS topic name to monitor for events.
-
-    | *Required*: True
-
-Cloudwatch Event
-~~~~~~~~~~~~~~~~
-
-A Cloudwatch Scheduled event for Lambda triggers.
-
-``schedule``
-************
-
-The rate or cron string to trigger the Lambda function.
-
-    | *Required*: True
-    | *Examples*:
-
-        - ``"rate(5 minutes)"``
-        - ``"cron(0 17 ? * MON-FRI *)"``
-
-``rule_name``
-*************
-
-The name of the cloudwatch rule being created.
-
-    | *Required*: False
-    | *Default*: ``"{app_name}+{schedule}"``
-
-``rule_description``
 *********************
 
-Description of the rule being created.
+``type``
+========
 
-    | *Required*: False
+    Specifies what type of Lambda event/trigger to use. This needs to be set for all events.
 
-Cloudwatch Log Event
-~~~~~~~~~~~~~~~~~~~~
+        | *Type*: string
+        | *Required*: True
+        | *Options*:
 
-A lambda event that triggers off a Cloudwatch log action.
+            - ``"api-gateway"`` - API Gateway Lambda trigger
+            - ``"cloudwatch-event"`` - Cloudwatch Event Lambda trigger
+            - ``"cloudwatch-logs"`` - Cloudwatch Logs Lambda trigger
+            - ``"dynamodb-stream"`` - DynamoDB Stream Lambda trigger
+            - ``"kinesis-stream"`` - Kinesis Stream Lambda trigger
+            - ``"sns"`` - SNS Lambda trigger
+            - ``"sqs"`` - SQS Queue Lambda trigger
+            - ``"s3"`` - S3 Lambda trigger
 
-``log_group``
-*************
-
-The name of the log group to monitor.
-
-    | *Required*: True
-    | *Example*: ``"/aws/lambda/test_function"``
-
-``filter_name``
-***************
-
-The name of the filter on log event.
-
-    | *Required*: True
-
-``filter_pattern``
-******************
-
-The pattern to look for in the ``log_group`` for triggering a Lambda function.
-
-    | *Required*: True
-    | *Example*: ``"warning"``
-
-API Gateway Event
-~~~~~~~~~~~~~~~~~
+``api-gateway`` Trigger *Keys*
+==============================
 
 Sets up an API Gatway event to trigger a lambda function.
 
 ``api_name``
-************
+^^^^^^^^^^^^
 
-The name of an existing API Gateway. If not provided, an API will be created.
+    The name of an existing API Gateway. If not provided, an API will be created.
 
-    | *Required*: False
-    | *Default*: ``{app_name}``
+        | *Type*: string
+        | *Required*: False
+        | *Default*: ``{app_name}``
 
 ``resource``
-************
+^^^^^^^^^^^^
 
-The API resource to tie the Lambda function to.
+    The API resource to tie the Lambda function to.
 
-    | *Required*: True
-    | *Example*: ``"/test"``
+        | *Type*: string
+        | *Required*: True
+        | *Example*: ``"/test"``
 
 ``method``
-***********
+^^^^^^^^^^
 
-The API Method to trigger the Lambda function.
+    The API Method to trigger the Lambda function.
 
-    | *Required*: True
-    | *Example*: ``"GET"``
+        | *Type*: string
+        | *Required*: True
+        | *Example*: ``"GET"``
+
+``cloudwatch-event`` Trigger *Keys*
+===================================
+
+A Cloudwatch Scheduled event for Lambda triggers.
+
+``schedule``
+^^^^^^^^^^^^
+
+    The rate or cron string to trigger the Lambda function.
+
+        | *Type*: string
+        | *Required*: True
+        | *Examples*:
+
+            - ``"rate(5 minutes)"``
+            - ``"cron(0 17 ? * MON-FRI *)"``
+
+``rule_name``
+^^^^^^^^^^^^^
+
+    The name of the cloudwatch rule being created.
+
+        | *Type*: string
+        | *Required*: False
+        | *Default*: ``"{app_name}+{schedule}"``
+
+``rule_description``
+^^^^^^^^^^^^^^^^^^^^
+
+    Description of the rule being created.
+
+        | *Type*: string
+        | *Required*: False
+
+``cloudwatch-logs`` Trigger *Keys*
+===================================
+
+A lambda event that triggers off a Cloudwatch log action.
+
+``log_group``
+^^^^^^^^^^^^^
+
+    The name of the log group to monitor.
+
+        | *Type*: string
+        | *Required*: True
+        | *Example*: ``"/aws/lambda/test_function"``
+
+``filter_name``
+^^^^^^^^^^^^^^^
+
+    The name of the filter on log event.
+
+        | *Type*: string
+        | *Required*: True
+
+``filter_pattern``
+^^^^^^^^^^^^^^^^^^
+
+    The pattern to look for in the ``log_group`` for triggering a Lambda function.
+
+        | *Type*: string
+        | *Required*: True
+        | *Example*: ``"warning"``
+
+``dynamodb-stream`` Trigger *Keys*
+==================================
+
+    A lambda event that triggers off a DynamoDB Stream. 
+
+    .. warning:: Ensure IAM Role has permissions to the DynamoDB table/stream via ``"services"`` block
+    
+    .. info:: If both ``stream_arn`` and ``table_arn`` keys are present, default behavior uses ``stream_arn`` as it is more specific.
+
+``stream_arn``
+^^^^^^^^^^^^^^
+
+    DynamoDB Stream ARN to use for triggering lambda.
+
+        | *Type*: string
+        | *Required*: True, if ``table_arn`` is not set.
+        | *Example*: ``"arn:aws:dynamodb:us-east-1:111111111111:table/foremast-test/stream/2018-06-07T03:12:22.234"``
+
+``table_arn``
+^^^^^^^^^^^^^
+
+    DynamoDB Table ARN to use for triggering lambda. 
+    
+    .. info:: If specified, Foremast will lookup and use the latest Stream ARN.
+
+        | *Type*: string
+        | *Required*: True, if ``stream_arn`` is not set.
+        | *Example*: ``"arn:aws:dynamodb:us-east-1:111111111111:table/foremast-test"``
+
+``batch_size``
+^^^^^^^^^^^^^^
+
+    The maximum number of items to retrieve in a single batch.
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``100``
+        | *Max*: ``1000``
+
+``batch_window``
+^^^^^^^^^^^^^^^^
+
+    The maximum amount of time to gather records before invoking the function, in seconds.
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``0``
+        | *Max*: ``300``
+
+``starting_position``
+^^^^^^^^^^^^^^^^^^^^^
+
+    The position in a stream from which to start reading.
+
+        | *Type*: string
+        | *Required*: False
+        | *Default*: ``TRIM_HORIZON``
+        | *Options*:
+
+            -  ``TRIM_HORIZON``
+            -  ``LATEST``
+
+``kinesis-stream`` Trigger *Keys*
+=================================
+
+    A lambda event that triggers off a Kinesis Stream. 
+    
+    .. warning:: Ensure IAM Role has permissions to the Kinesis Stream via ``"services"`` block
+
+``stream_arn``
+^^^^^^^^^^^^^^
+
+    Kinesis Stream ARN to use for triggering lambda.
+
+        | *Type*: string
+        | *Required*: True
+        | *Example*: ``"arn:aws:kinesis:us-east-1:111111111111:stream/kinesistest-stream"``
+
+``batch_size``
+^^^^^^^^^^^^^^
+
+    The maximum number of items to retrieve in a single batch.
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``100``
+        | *Max*: ``10000``
+
+``batch_window``
+^^^^^^^^^^^^^^^^
+
+    The maximum amount of time to gather records before invoking the function, in seconds.
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``0``
+        | *Max*: ``300``
+
+``starting_position``
+^^^^^^^^^^^^^^^^^^^^^
+
+    The position in a stream from which to start reading.
+
+        | *Type*: string
+        | *Required*: False
+        | *Default*: ``TRIM_HORIZON``
+        | *Options*:
+
+            -  ``TRIM_HORIZON``
+            -  ``LATEST``
+
+``s3`` Trigger *Keys*
+=====================
+
+A Lambda trigger on S3 bucket actions.
+
+``bucket``
+^^^^^^^^^^
+
+    The bucket of the event to monitor.
+
+        | *Type*: string
+        | *Required*: True
+
+``events``
+^^^^^^^^^^
+
+    The S3 event to trigger the lambda function from.
+
+        | *Type*: List
+        | *Required*: True
+        | *Example*: ``["s3:ObjectCreated:*", "s3:ObjectedRemoved:Delete"]``
+
+``prefix``
+^^^^^^^^^^
+
+    Sets up a prefix filter on S3 bucket events.
+
+        | *Required*: False
+        | *Example*: ``"logs/"``
+
+``suffix``
+^^^^^^^^^^
+
+    Sets up a suffix filter on s3 bucket events.
+
+        | *Required*: False
+        | *Example*: ``"jpg"``
+
+``sns`` Trigger *Keys*
+======================
+
+A Lambda trigger on SNS topic events.
+
+``topic``
+^^^^^^^^^
+
+    The SNS topic name to monitor for events.
+
+        | *Type*: string
+        | *Required*: True
+
+``sqs`` Trigger *Keys*
+======================
+
+A Lambda trigger on SQS queue events.
+
+``queue_arn``
+^^^^^^^^^^^^^
+
+    SQS Queue ARN to use for triggering lambda.
+
+        | *Type*: string
+        | *Required*: True
+        | *Example*: ``"arn:aws:sqs:us-east-1:111111111111:sqstest-queue"``
+
+``batch_size``
+^^^^^^^^^^^^^^
+
+    The maximum number of items to retrieve in a single batch.
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``10``
+        | *Max*: ``10``

@@ -12,3 +12,4 @@ Configuration Files
    region_overrides
    aws_creds
    ami_json
+   advanced_usages/index

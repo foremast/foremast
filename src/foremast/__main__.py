@@ -58,6 +58,15 @@ def add_autoscaling(subparsers):
     autoscaling_parser.set_defaults(func=runner.create_scaling_policy)
 
 
+def add_scheduled_actions(subparsers):
+    """Auto Scaling Group Scheduled Actions subcommands."""
+    scheduled_actions_parser = subparsers.add_parser(
+        'scheduledactions',
+        help=runner.create_scheduled_actions.__doc__,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    scheduled_actions_parser.set_defaults(func=runner.create_scheduled_actions)
+
+
 def add_validate(subparsers):
     """Validate Spinnaker setup."""
     validate_parser = subparsers.add_parser(
@@ -95,6 +104,7 @@ def main(manual_args=None):
     add_pipeline(subparsers)
     add_rebuild(subparsers)
     add_autoscaling(subparsers)
+    add_scheduled_actions(subparsers)
     add_validate(subparsers)
 
     CliArgs = collections.namedtuple('CliArgs', ['parsed', 'extra'])

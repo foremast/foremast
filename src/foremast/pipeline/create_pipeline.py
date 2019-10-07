@@ -20,11 +20,10 @@ import logging
 import os
 from pprint import pformat
 
-import requests
-
-from ..consts import API_URL, DEFAULT_RUN_AS_USER, EC2_PIPELINE_TYPES, GATE_CA_BUNDLE, GATE_CLIENT_CERT
+from ..consts import DEFAULT_RUN_AS_USER, EC2_PIPELINE_TYPES
 from ..exceptions import SpinnakerPipelineCreationFailed
 from ..utils import ami_lookup, generate_packer_filename, get_details, get_properties, get_subnets, get_template
+from ..utils.gate import gate_request
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block import construct_pipeline_block
 from .renumerate_stages import renumerate_stages
@@ -65,7 +64,7 @@ class SpinnakerPipeline:
         Args:
             pipeline (json): json of the pipeline to be created in Spinnaker
         """
-        url = "{0}/pipelines".format(API_URL)
+        uri = '/pipelines'
 
         if isinstance(pipeline, str):
             pipeline_json = pipeline
@@ -76,8 +75,7 @@ class SpinnakerPipeline:
 
         self.log.debug('Pipeline JSON:\n%s', pipeline_json)
 
-        pipeline_response = requests.post(
-            url, data=pipeline_json, headers=self.header, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+        pipeline_response = gate_request(method='POST', uri=uri, data=pipeline_json, headers=self.header)
 
         self.log.debug('Pipeline creation response:\n%s', pipeline_response.text)
 
@@ -152,8 +150,8 @@ class SpinnakerPipeline:
             str: Pipeline config json
 
         """
-        url = "{0}/applications/{1}/pipelineConfigs".format(API_URL, self.app_name)
-        resp = requests.get(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+        uri = "/applications/{0}/pipelineConfigs".format(self.app_name)
+        resp = gate_request(uri=uri)
         assert resp.ok, 'Failed to lookup pipelines for {0}: {1}'.format(self.app_name, resp.text)
 
         return resp.json()

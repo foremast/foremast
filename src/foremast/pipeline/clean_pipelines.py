@@ -18,9 +18,10 @@ import logging
 
 import requests
 
-from ..consts import API_URL, GATE_CA_BUNDLE, GATE_CLIENT_CERT, RUNWAY_BASE_PATH
+from ..consts import RUNWAY_BASE_PATH
 from ..exceptions import SpinnakerPipelineCreationFailed, SpinnakerPipelineDeletionFailed
 from ..utils import check_managed_pipeline, get_all_pipelines, normalize_pipeline_name
+from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 
@@ -31,8 +32,9 @@ def delete_pipeline(app='', pipeline_name=''):
 
     LOG.warning('Deleting Pipeline: %s', safe_pipeline_name)
 
-    url = '{host}/pipelines/{app}/{pipeline}'.format(host=API_URL, app=app, pipeline=safe_pipeline_name)
-    response = requests.delete(url, verify=GATE_CA_BUNDLE, cert=GATE_CLIENT_CERT)
+    uri = '/pipelines/{app}/{pipeline}'.format(app=app, pipeline=safe_pipeline_name)
+
+    response = gate_request(method='DELETE', uri=uri)
 
     if not response.ok:
         LOG.debug('Delete response code: %d', response.status_code)

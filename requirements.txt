@@ -8,3 +8,7 @@ python-gitlab
 requests
 slacker
 tryagain
+google-auth==1.6.2
+requests_toolbelt==0.9.1
+PyJWT==1.7.1
+cryptography==2.5

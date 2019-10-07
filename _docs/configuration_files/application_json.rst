@@ -85,6 +85,26 @@ Each region in your AWS account has a Lambda concurrency limit. The concurrency 
 If you exceed a concurrency limit, Lambda starts throttling the offending functions by rejecting requests. Depending on the invocation type, you’ll run into the following situations:
 
 More info on limits can be found here: https://docs.aws.amazon.com/lambda/latest/dg/limits.html
+=======
+``lambda_dlq``
+*****************
+
+A dead letter queue configuration that specifies the queue or topic where Lambda sends asynchronous events when they fail processing 
+
+Dead Letter Queues are supported in either SNS or SQS and pass in the ARN. See https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html for more details
+
+    | *Type*: array
+    | *Default*: ``[]``
+
+``lambda_dlq`` *Example*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: json
+
+   "lambda_dlq": {
+            "TargetArn": "arn:aws:sns:us-east-1:accountnumber:topic"
+        }
+
 
 ``lambda_environment``
 **********************
@@ -148,6 +168,28 @@ https://docs.aws.amazon.com/lambda/latest/dg/limits.html
     | *Type*: string
     | *Default*: ``"900"``
     | *Units*: Seconds
+
+``lambda_tracing``
+******************
+
+Lambda Tracing feature allows you to enable X-Ray APIs to your lambda function to identify performance bottlenecks and troubleshoot requests that are in error. 
+
+If you've enabled X-Ray tracing in a service that invokes your function, Lambda sends traces to X-Ray automatically. The upstream service, such as Amazon API Gateway, or an application hosted on Amazon EC2 that is instrumented with the X-Ray SDK, samples incoming requests and adds a tracing header that tells Lambda to send traces or not. For a full list of services that support active instrumentation, see Supported AWS Services in the AWS X-Ray Developer Guide. For more details see: https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+
+Currently AWS API supports Active or PassThrough.
+
+    | *Type*: array
+    | *Default*: ``[]``
+
+``lambda_tracing`` *Example*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: json
+
+   "lambda_tracing": {
+            "TracingConfig": "Active"
+        }
+
 
 ``asg`` Block
 ~~~~~~~~~~~~~
@@ -245,80 +287,17 @@ your subnets in your cloud provider.
 ``scaling_policy``
 ******************
 
-Defines scaling policy to attach to ASG. If this block does not exist, no
-scaling policy will be attached
+To better explain this feature, this has has been moved to: :doc:`advanced_usages/scaling_policy`
 
-``scaling_policy`` *Keys*
-^^^^^^^^^^^^^^^^^^^^^^^^^
+``custom_scaling_policies``
+***************************
 
-``metric`` : The CloudWatch metric to trigger auto-scaling events.
+To better explain this feature, this has has been moved to: :doc:`advanced_usages/custom_scaling_policies`
 
-   | *Type*: string
-   | *Default*: ``"CPUUtilization"``
-   | *Options*:
+``scheduled_actions``
+*********************
 
-      - ``"CPUUtilization"``
-      -  ``"NetworkIn"``
-      -  ``"NetworkOut"``
-      -  ``"DiskReadBytes"``
-
-``threshold`` : Metrics value limit for scaling up
-
-   | *Type*: int
-
-``scale_down`` : Attach a default scale-down policy
-
-   | *Type*: boolean
-   | *Default*: ``true``
-
-``increase_scaling_adjustment`` : Amount to increment by on scale up policies
-   | *Type*: int
-   | *Default*: 1
-
-``decrease_scaling_adjustment`` : Amount to decrement by on scale down policies
-   | *Type*: int
-   | *Default*: -1
-
-``period_minutes`` : Time period to look across for determining if threshold was
-met. If you wish to have seconds, using a floating point such as .5 for 30 seconds.
-
-   | *Type*: float
-   | *Default*: 30
-   | *Units*: Minutes
-
-``statistic``: Statistic to calculate at the period to determine if threshold
-was met
-
-   | *Type*: string
-   | *Default*: ``"Average"``
-   | *Options*:
-
-      - ``"Average"``
-      - ``"Maximum"``
-      - ``"Minimum"``
-      - ``"Sum"``
-
-``instance_warmup`` : Time period to wait before adding metrics to Auto Scaling group
-
-   | *Type*: int
-   | *Default*: 600
-   | *Units*: seconds
-
-``scaling_policy`` *Example*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: json
-
-   {
-       "scaling_policy": {
-           "metric": "CPUUtilization",
-           "threshold": 90,
-           "period_minutes": 10,
-           "instance_warmup": 180,
-           "statistic": "Average",
-           "scale_down": true
-       }
-   }
+To better explain this feature, this has has been moved to: :doc:`advanced_usages/scheduled_actions`
 
 ``elb`` Block
 ~~~~~~~~~~~~~

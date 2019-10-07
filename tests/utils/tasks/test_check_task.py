@@ -20,20 +20,20 @@ def test_utils_retry_task(mock_check_task):
     assert mock_check_task.call_count == 2
 
 
-@mock.patch('foremast.utils.tasks.requests')
-def test_task_success(mock_requests):
+@mock.patch('foremast.utils.tasks.gate_request')
+def test_task_success(mock_gate_request):
     """Successful Task."""
-    mock_requests.get.return_value.json.return_value = {'status': SUCCESS_MESSAGE}
+    mock_gate_request.return_value.json.return_value = {'status': SUCCESS_MESSAGE}
 
     result = _check_task(taskid='')
 
     assert result == SUCCESS_MESSAGE
 
 
-@mock.patch('foremast.utils.tasks.requests')
-def test_task_failure(mock_requests):
+@mock.patch('foremast.utils.tasks.gate_request')
+def test_task_failure(mock_gate_request):
     """Failed Task."""
-    mock_requests.get.return_value.json.return_value = {
+    mock_gate_request.return_value.json.return_value = {
         'status': FAIL_MESSAGE,
         'execution': {
             'stages': [],
@@ -44,10 +44,10 @@ def test_task_failure(mock_requests):
         _check_task(taskid='')
 
 
-@mock.patch('foremast.utils.tasks.requests')
-def test_task_unknown(mock_requests):
+@mock.patch('foremast.utils.tasks.gate_request')
+def test_task_unknown(mock_gate_request):
     """Unknown Task status raises exception to keep polling."""
-    mock_requests.get.return_value.json.return_value = {'status': ''}
+    mock_gate_request.get.return_value.json.return_value = {'status': ''}
 
     with pytest.raises(ValueError):
         _check_task(taskid='')

@@ -33,7 +33,7 @@ import os
 import gogoutils
 
 from foremast import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
-                      securitygroup, slacknotify, utils)
+                      scheduled_actions, securitygroup, slacknotify, utils)
 from foremast.plugin_manager import PluginManager
 
 from .args import add_debug
@@ -115,7 +115,7 @@ class ForemastRunner:
 
         pipeline_type = self.configs['pipeline']['type']
 
-        if pipeline_type not in consts.ALLOWED_TYPES:
+        if pipeline_type not in consts.ALLOWED_TYPES and pipeline_type not in consts.MANUAL_TYPES:
             raise NotImplementedError('Pipeline type "{0}" not permitted.'.format(pipeline_type))
 
         if not onetime:
@@ -125,7 +125,7 @@ class ForemastRunner:
                 spinnakerpipeline = pipeline.SpinnakerPipelineS3(**kwargs)
             elif pipeline_type == 'datapipeline':
                 spinnakerpipeline = pipeline.SpinnakerPipelineDataPipeline(**kwargs)
-            elif pipeline_type == 'manual':
+            elif pipeline_type in consts.MANUAL_TYPES:
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             else:
                 # Handles all other pipelines
@@ -237,6 +237,13 @@ class ForemastRunner:
             app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
         policyobj.create_policy()
 
+    def create_scheduled_actions(self):
+        """Create Scheduled Actions for app in environment"""
+        utils.banner("Creating Scheduled Actions")
+        actionsobj = scheduled_actions.ScheduledActions(
+            app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
+        actionsobj.create_scheduled_actions()
+
     def create_datapipeline(self):
         """Creates data pipeline and adds definition"""
         utils.banner("Creating Data Pipeline")
@@ -319,6 +326,14 @@ def create_scaling_policy():
     runner = ForemastRunner()
     runner.write_configs()
     runner.create_autoscaling_policy()
+    runner.cleanup()
+
+
+def create_scheduled_actions():
+    """Create Scheduled Actions for an Auto Scaling Group."""
+    runner = ForemastRunner()
+    runner.write_configs()
+    runner.create_scheduled_actions()
     runner.cleanup()
 
 

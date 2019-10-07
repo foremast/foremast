@@ -14,5 +14,5 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from .awslambdaevent import *
 from .awslambda import *
+from .awslambdaevent import *

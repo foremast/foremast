@@ -38,6 +38,14 @@ class GitLabApiError(ForemastError):
     """GitLab API did not return a good status."""
 
 
+class GoogleIAPTokenError(ForemastError):
+    """Google IAP Token Request did not return a good status."""
+
+
+class GoogleIAPError(ForemastError):
+    """Google IAP did not return a good status."""
+
+
 class SpinnakerError(ForemastError):
     """Spinnaker related error."""
 
@@ -143,6 +151,14 @@ class SpinnakerSubnetError(SpinnakerError):
 
 class InvalidEventConfiguration(ForemastError):
     """Invalid AWS Lambda event configuration."""
+
+
+class DynamoDBTableNotFound(ForemastError):
+    """DynamoDB Table was not found."""
+
+
+class DynamoDBStreamNotFound(ForemastError):
+    """DynamoDB Table Streams was not found."""
 
 
 class SNSTopicNotFound(ForemastError):

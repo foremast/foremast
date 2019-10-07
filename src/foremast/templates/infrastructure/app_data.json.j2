@@ -1,9 +1,7 @@
 {
 "job": [
-    {%for account in appinfo.accounts %}
     {
         "type":"createApplication",
-        "account":"{{ account.name }}",
         "application":{
             "cloudProviders":"aws",
             "name": "{{ appinfo.app }}",
@@ -48,9 +46,8 @@
             ]
         },
         "user": "foremast"
-    }{% if not loop.last %},{% endif %}
-    {% endfor %}
+    }
   ],
-"application": "{{ appinfo.app }}",
-"description": "Created application {{ appinfo.app }}"
+  "application": "{{ appinfo.app }}",
+  "description": "Created application {{ appinfo.app }}"
 }

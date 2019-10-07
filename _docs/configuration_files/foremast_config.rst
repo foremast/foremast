@@ -30,6 +30,27 @@ Foremast will look in the following locations, in order, for the
 3. ``/etc/foremast/foremast/cfg``
 4. ``./config.py``
 
+Specifying a Configuration file
+-------------------------------
+
+Optionally, it is possible to specify the location of a configuration file for Foremast to use by 
+setting the ``FOREMAST_CONFIG_FILE`` environment variable.  This is useful if you do not store your 
+config file in one of the locations listed above, or if you need to toggle between multiple
+configuration files to support different configurations.  
+
+Example: A config file for two different Spinnaker Instances
+
+.. code-block:: console
+
+    # Generate pipeline for spinnaker1
+    FOREMAST_CONFIG_FILE=config-spinnaker1.py
+    foremast generate pipeline
+    # Generate pipeline for spinnaker2
+    FOREMAST_CONFIG_FILE=config-spinnaker2.py
+    foremast generate pipeline
+
+
+
 Configuration Details
 ---------------------
 
@@ -198,17 +219,67 @@ passwords
 ``gitlab_token``
 ****************
 
-Gitlab token used for authentication in Foremast
+    Gitlab token used for authentication in Foremast
 
-    | *Required*: No
+        | *Required*: No
 
 ``slack_token``
 ***************
 
-Slack token used for authentication when sending Slack messages from Foremast
+    Slack token used for authentication when sending Slack messages from Foremast
 
-    | *Required*: No
+        | *Required*: No
 
+``gate_authentication`` Keys
+****************************
+
+    Credential Provider Object used to authenticate to Gate
+
+        | *Type*: Object
+        | *Default*: ``None``
+        | *Example Configuration*:
+
+            .. code-block:: json
+
+            {
+                'credentials': {
+                    'gate_authentication': {
+                        'google_iap': {
+                            'enabled': False,
+                            'oauth_client_id': 'some_id.apps.googleusercontent.com',
+                            'sa_credentials_path': '/tmp/google-service-account.json'
+                        }
+                    }
+                }
+            }
+
+``google_iap`` Keys
+*******************
+
+    We currently support in addition to x509, Google Identity Aware Proxy authentication.
+
+    ``enabled``
+    ^^^^^^^^^^^
+
+        Determines if this authentication method should be used or not.
+
+        | *Type*: boolean
+        | *Default*: ``False``
+    
+    ``oauth_client_id``
+
+        Application Client ID using Identity Aware Proxy. Can be found in the Google Cloud Console
+
+        | *Type*: string
+        | *Default*: ``None``
+
+    ``sa_credentials_path``
+
+        Path to Google Cloud Service Account used to Authenticate to Identity Aware Proxy.
+        Must be added to IAP in GCP console to grant permission.
+
+        | *Type*: string
+        | *Default*: ``None``
 
 ``[whitelists]``
 ~~~~~~~~~~~~~~~~
