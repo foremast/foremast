@@ -28,7 +28,7 @@ def get_latest_server_group(env, app):
     Returns:
         server_group (str): Name of the newest server group
     """
-    uri = "/applications/{1}".format(app)
+    uri = "/applications/{0}".format(app)
     response = gate_request(uri=uri)
 
     for server_group in response.json()['clusters'][env]:
