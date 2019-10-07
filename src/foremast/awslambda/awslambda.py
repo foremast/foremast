@@ -185,7 +185,7 @@ class LambdaFunction:
                 MemorySize=int(self.memory),
                 VpcConfig=vpc_config,
                 Layers=self.lambda_layers,
-                DeadLetterConfig={'TargetArn': self.lambda_dlq})
+                DeadLetterConfig=self.lambda_dlq)
 
             if self.concurrency_limit:
                 self.lambda_client.put_function_concurrency(
@@ -247,7 +247,7 @@ class LambdaFunction:
                 Tags={'app_group': self.group,
                       'app_name': self.app_name},
                 Layers=self.lambda_layers,
-                DeadLetterConfig={'TargetArn': self.lambda_dlq})
+                DeadLetterConfig=self.lambda_dlq)
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
