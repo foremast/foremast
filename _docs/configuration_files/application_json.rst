@@ -93,8 +93,8 @@ A dead letter queue configuration that specifies the queue or topic where Lambda
 
 Dead Letter Queues are supported in either SNS or SQS and pass in the ARN. See https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html for more details
 
-    | *Type*: array
-    | *Default*: ``[]``
+    | *Type*: Object
+    | *Default*: ``{}``
 
 ``lambda_dlq`` *Example*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -178,8 +178,8 @@ If you've enabled X-Ray tracing in a service that invokes your function, Lambda 
 
 Currently AWS API supports Active or PassThrough.
 
-    | *Type*: array
-    | *Default*: ``[]``
+    | *Type*: Object
+    | *Default*: ``{}``
 
 ``lambda_tracing`` *Example*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
