@@ -67,7 +67,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             str: Contents of pipeline file."""
         # Check if this file is a shared template in the TEMPLATES_PATH
         if file_name.startswith("templates://"):
-            if TEMPLATES_PATH is None: 
+            if TEMPLATES_PATH is None:
                 raise Exception("Cannot use templates:// schema without TEMPLATES_PATH")
             file_name = file_name.lstrip("templates://")
             pipeline_templates_path = TEMPLATES_PATH.rstrip("/") + "/pipeline"
