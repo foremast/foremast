@@ -41,7 +41,11 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             # If this is a .j2 file render is template, otherwise treat as normal json file
             if file_name.endswith(".j2"):
                 pipeline_vars = self.get_pipeline_variables_dict(i)
-                json_string = self.get_rendered_json(json_string, pipeline_vars)
+                try:
+                    json_string = self.get_rendered_json(json_string, pipeline_vars)
+                except:
+                    self.log.error("Exception raised during Jinja 2 template rendering.  Check syntax in templates.")
+                    raise
 
             pipeline_dict = json.loads(json_string)
 
