@@ -45,7 +45,9 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
                 pipeline_vars = self.get_pipeline_variables_dict(i)
                 try:
                     json_string = self.get_rendered_json(json_string, pipeline_vars).strip()
-                except:
+                # Catch all exceptions (we don't know what errors the jinja2 user code may throw)
+                # Add logging, then re-raise
+                except Exception:
                     self.log.error("Exception raised during Jinja 2 template rendering.  Check syntax in templates.")
                     raise
                 self.log.info("Jinja2 template successfully rendered")
@@ -56,7 +58,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
                 # Helpful debugging logging, then re-raise fatal exception
                 if is_jinja_template:
                     self.log.error("JSONDecodeError parsing rendered Jinja template, verify it produces valid json")
-                    self.log.debug(json_string) # Log rendered jinja2 to help debug
+                    self.log.debug(json_string)
                 else:
                     self.log.error("JSONDecodeError parsing json, verify template is vaild json")
                 raise
