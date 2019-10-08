@@ -175,7 +175,7 @@ class AutoScalingPolicy:
             scalingpolicies (list): List of all existing scaling policies for the application
         """
         self.log.info("Checking for existing scaling policy")
-        uri = "/applications/{1}/clusters/{2}/{1}/serverGroups".format(self.app, self.env)
+        uri = "/applications/{0}/clusters/{1}/{0}/serverGroups".format(self.app, self.env)
         response = gate_request(uri=uri)
         assert response.ok, "Error looking for existing Autoscaling Policy for {0}: {1}".format(self.app, response.text)
 
