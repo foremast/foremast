@@ -39,15 +39,27 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             json_string = self.get_pipeline_file_contents(file_name)
 
             # If this is a .j2 file render is template, otherwise treat as normal json file
+            is_jinja_template = False
             if file_name.endswith(".j2"):
+                is_jinja_template = True
                 pipeline_vars = self.get_pipeline_variables_dict(i)
                 try:
-                    json_string = self.get_rendered_json(json_string, pipeline_vars)
+                    json_string = self.get_rendered_json(json_string, pipeline_vars).strip()
                 except:
                     self.log.error("Exception raised during Jinja 2 template rendering.  Check syntax in templates.")
                     raise
+                self.log.info("Jinja2 template successfully rendered")
 
-            pipeline_dict = json.loads(json_string)
+            try:
+                pipeline_dict = json.loads(json_string)
+            except json.JSONDecodeError:
+                # Helpful debugging logging, then re-raise fatal exception
+                if is_jinja_template:
+                    self.log.error("JSONDecodeError parsing rendered Jinja template, verify it produces valid json")
+                    self.log.debug(json_string) # Log rendered jinja2 to help debug
+                else:
+                    self.log.error("JSONDecodeError parsing json, verify template is vaild json")
+                raise
 
             # Override template values that shoudl be set by foremast last
             pipeline_dict.setdefault('application', self.app_name)
