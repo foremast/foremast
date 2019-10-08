@@ -24,6 +24,7 @@ from ..utils.lookups import FileLookup
 from .create_pipeline import SpinnakerPipeline
 from .jinja_functions import get_jinja_functions, get_jinja_variables
 
+
 class SpinnakerPipelineManual(SpinnakerPipeline):
     """Manual JSON configured Spinnaker Pipelines."""
 
