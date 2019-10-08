@@ -88,7 +88,8 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         Returns:
             str: pipeline json after Jinja is rendered"""
 
-        jinja_template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(json_string)
+        loader = jinja2.FileSystemLoader(TEMPLATES_PATH)
+        jinja_template = jinja2.Environment(loader=loader).from_string(json_string)
         # Get any pipeline args defined in pipeline.json, default to empty dict if none defined
         pipeline_args = dict()
 
