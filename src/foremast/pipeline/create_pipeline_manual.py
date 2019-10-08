@@ -15,15 +15,14 @@
 #   limitations under the License.
 """Create manual Pipeline for Spinnaker."""
 import json
-
 import jinja2
+
 
 from ..consts import TEMPLATES_PATH
 from ..utils import get_pipeline_id, normalize_pipeline_name
 from ..utils.lookups import FileLookup
 from .create_pipeline import SpinnakerPipeline
 from .jinja_functions import get_jinja_functions, get_jinja_variables
-
 
 class SpinnakerPipelineManual(SpinnakerPipeline):
     """Manual JSON configured Spinnaker Pipelines."""
@@ -88,10 +87,20 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         Returns:
             str: pipeline json after Jinja is rendered"""
 
-        loader = jinja2.FileSystemLoader(TEMPLATES_PATH)
-        jinja_template = jinja2.Environment(loader=loader).from_string(json_string)
-        # Get any pipeline args defined in pipeline.json, default to empty dict if none defined
-        pipeline_args = dict()
+        try:
+            if TEMPLATES_PATH:
+                loader = jinja2.FileSystemLoader(TEMPLATES_PATH)
+            else:
+                loader = jinja2.BaseLoader()
+
+            jinja_template = jinja2.Environment(loader=loader).from_string(json_string)
+            # Get any pipeline args defined in pipeline.json, default to empty dict if none defined
+            pipeline_args = dict()
+        except jinja2.TemplateNotFound:
+            # Log paths searched for debugging, then re-raise
+            message = 'Jinja2 TemplateNotFound exception in paths {paths}'.format(paths=loader.searchpath)
+            self.log.error(message)
+            raise
 
         # Expose permitted functions and variables to the template
         pipeline_args.update(get_jinja_functions())
