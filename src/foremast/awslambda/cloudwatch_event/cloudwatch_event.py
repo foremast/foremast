@@ -70,14 +70,14 @@ def create_cloudwatch_event(app_name, env, region, rules):
     principal = "events.amazonaws.com"
     statement_id = '{}_cloudwatch_{}'.format(app_name, rule_name)
     source_arn = 'arn:aws:events:{}:{}:rule/{}'.format(region, account_id, rule_name)
-    add_lambda_permissions(function=lambda_arn,
+    add_lambda_permissions(
+        function=lambda_arn,
         statement_id=statement_id,
         action='lambda:InvokeFunction',
         principal=principal,
         source_arn=source_arn,
         env=env,
-        region=region
-    )
+        region=region)
 
     # Create CloudWatch rule
     if rule_type == 'schedule':
