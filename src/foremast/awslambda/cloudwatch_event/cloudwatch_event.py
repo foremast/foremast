@@ -39,13 +39,19 @@ def create_cloudwatch_event(app_name, env, region, rules):
     cloudwatch_client = session.client('events')
 
     rule_name = rules.get('rule_name')
+    rule_type = rules.get('rule_type', 'schedule')
     schedule = rules.get('schedule')
+    event_pattern = rules.get('event_pattern')
     rule_description = rules.get('rule_description')
     json_input = rules.get('json_input', {})
 
-    if schedule is None:
-        LOG.critical('Schedule is required and no schedule is defined!')
-        raise InvalidEventConfiguration('Schedule is required and no schedule is defined!')
+    if rule_type == 'schedule' and schedule is None:
+        LOG.critical('A CloudWatch Schedule is required and no schedule pattern is defined!')
+        raise InvalidEventConfiguration('A CloudWatch Schedule is required and no schedule is defined!')
+
+    if rule_type == 'event_pattern' and event_pattern is None:
+        LOG.critical('A CloudWatch Event Pattern is required and no event pattern is defined!')
+        raise InvalidEventConfiguration('A CloudWatch Event Pattern is required and no event pattern is defined!')
 
     if rule_name is None:
         LOG.critical('Rule name is required and no rule_name is defined!')
@@ -64,35 +70,38 @@ def create_cloudwatch_event(app_name, env, region, rules):
     principal = "events.amazonaws.com"
     statement_id = '{}_cloudwatch_{}'.format(app_name, rule_name)
     source_arn = 'arn:aws:events:{}:{}:rule/{}'.format(region, account_id, rule_name)
-    add_lambda_permissions(
-        function=lambda_arn,
+    add_lambda_permissions(function=lambda_arn,
         statement_id=statement_id,
         action='lambda:InvokeFunction',
         principal=principal,
         source_arn=source_arn,
         env=env,
-        region=region, )
+        region=region
+    )
 
-    # Create Cloudwatch rule
-    cloudwatch_client.put_rule(
-        Name=rule_name,
-        ScheduleExpression=schedule,
-        State='ENABLED',
-        Description=rule_description, )
+    # Create CloudWatch rule
+    if rule_type == 'schedule':
+        cloudwatch_client.put_rule(
+            Name=rule_name,
+            ScheduleExpression=schedule,
+            State='ENABLED',
+            Description=rule_description)
+        LOG.info('Created CloudWatch Rule "%s" with %s: %s', rule_name, rule_type, schedule)
+    elif rule_type == 'event_pattern':
+        cloudwatch_client.put_rule(
+            Name=rule_name,
+            EventPattern=event_pattern,
+            State='ENABLED',
+            Description=rule_description)
+        LOG.info('Created CloudWatch Rule "%s" with %s: %s', rule_name, rule_type, event_pattern)
 
-    targets = []
-    # TODO: read this one from file event-config-*.json
     json_payload = '{}'.format(json.dumps(json_input))
-
-    target = {
+    targets = [{
         "Id": app_name,
         "Arn": lambda_arn,
         "Input": json_payload,
-    }
-
-    targets.append(target)
+    }]
 
     put_targets_response = cloudwatch_client.put_targets(Rule=rule_name, Targets=targets)
-    LOG.debug('Cloudwatch put targets response: %s', put_targets_response)
-
-    LOG.info('Created Cloudwatch event "%s" with schedule: %s', rule_name, schedule)
+    LOG.debug('CloudWatch PutTargets Response: %s', put_targets_response)
+    LOG.info('Configured CloudWatch Rule Target: %s', lambda_arn)

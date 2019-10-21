@@ -26,9 +26,17 @@ This example would go in the :ref:`application_json` configuration file.
        },
        {
          "type": "cloudwatch-event",
-         "schedule": "rate(5 minutes)",
          "rule_name": "app cron - 5min",
-         "rule_description": "triggers lambda function every five minutes"
+         "rule_type": "schedule"
+         "rule_description": "triggers lambda function every five minutes",
+         "schedule": "rate(5 minutes)"
+       },
+       {
+         "type": "cloudwatch-event",
+         "rule_name": "GuardDutyEvents",
+         "rule_type": "event_pattern"
+         "rule_description": "Trigger Lambda Function for every AWS GuardDutyEvent",
+         "event_pattern": {"source": ["aws.guardduty"]}
        },
        {
          "type": "cloudwatch-logs",
@@ -125,10 +133,86 @@ Sets up an API Gatway event to trigger a lambda function.
         | *Required*: True
         | *Example*: ``"GET"``
 
-``cloudwatch-event`` Trigger *Keys*
-===================================
+``cloudwatch-event`` Event Pattern Trigger *Keys*
+=================================================
 
-A Cloudwatch Scheduled event for Lambda triggers.
+A CloudWatch event pattern for Lambda triggers.
+
+``rule_name``
+^^^^^^^^^^^^^
+
+    The name of the CloudWatch rule being created.
+
+        | *Type*: string
+        | *Required*: True
+
+``rule_type``
+^^^^^^^^^^^^^
+
+    Type of CloudWatch Rule to create, must be set to ``"event_pattern"`` for Event Pattern Triggers.
+
+        | *Type*: string
+        | *Required*: True
+        | *Default*: ``"schedule"``
+        | *Values*:
+
+            - ``"schedule"``
+            - ``"event_pattern"``
+
+``rule_description``
+^^^^^^^^^^^^^^^^^^^^
+
+    Description of the rule being created.
+
+        | *Type*: string
+        | *Required*: False
+
+``event_pattern``
+^^^^^^^^^^^^^^^^^
+
+    CloudWatch Rule Event Pattern JSON. Usage Help can be found using the CloudWatch Rule GUI or the Docs:
+    https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html
+
+        | *Type*: string
+        | *Required*: True
+        | *Examples*:
+
+            - ``{"source": ["aws.guardduty"]}``
+            - ``{"source": [ "aws.ec2" ], "detail-type": ["EC2 Instance State-change Notification"], "detail": {"state": ["running"]}}``
+
+``cloudwatch-event`` Schedule Trigger *Keys*
+============================================
+
+A CloudWatch Scheduled event for Lambda triggers.
+
+``rule_name``
+^^^^^^^^^^^^^
+
+    The name of the CloudWatch rule being created.
+
+        | *Type*: string
+        | *Required*: True
+
+``rule_type``
+^^^^^^^^^^^^^
+
+    Type of CloudWatch Rule to create
+
+        | *Type*: string
+        | *Required*: False
+        | *Default*: ``"schedule"``
+        | *Values*:
+
+            - ``"schedule"``
+            - ``"event_pattern"``
+
+``rule_description``
+^^^^^^^^^^^^^^^^^^^^
+
+    Description of the rule being created.
+
+        | *Type*: string
+        | *Required*: False
 
 ``schedule``
 ^^^^^^^^^^^^
@@ -142,25 +226,8 @@ A Cloudwatch Scheduled event for Lambda triggers.
             - ``"rate(5 minutes)"``
             - ``"cron(0 17 ? * MON-FRI *)"``
 
-``rule_name``
-^^^^^^^^^^^^^
-
-    The name of the cloudwatch rule being created.
-
-        | *Type*: string
-        | *Required*: False
-        | *Default*: ``"{app_name}+{schedule}"``
-
-``rule_description``
-^^^^^^^^^^^^^^^^^^^^
-
-    Description of the rule being created.
-
-        | *Type*: string
-        | *Required*: False
-
 ``cloudwatch-logs`` Trigger *Keys*
-===================================
+==================================
 
 A lambda event that triggers off a Cloudwatch log action.
 
