@@ -95,12 +95,15 @@ def create_cloudwatch_event(app_name, env, region, rules):
             Description=rule_description)
         LOG.info('Created CloudWatch Rule "%s" with %s: %s', rule_name, rule_type, event_pattern)
 
-    json_payload = '{}'.format(json.dumps(json_input))
     targets = [{
         "Id": app_name,
         "Arn": lambda_arn,
-        "Input": json_payload,
     }]
+
+    if json_input:
+        json_payload = '{}'.format(json.dumps(json_input))
+        for each_target in targets:
+            each_target['Input'] = json_payload
 
     put_targets_response = cloudwatch_client.put_targets(Rule=rule_name, Targets=targets)
     LOG.debug('CloudWatch PutTargets Response: %s', put_targets_response)
