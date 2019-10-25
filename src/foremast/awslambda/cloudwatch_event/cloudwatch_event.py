@@ -90,7 +90,7 @@ def create_cloudwatch_event(app_name, env, region, rules):
     elif rule_type == 'event_pattern':
         cloudwatch_client.put_rule(
             Name=rule_name,
-            EventPattern=event_pattern,
+            EventPattern=json.dumps(event_pattern),
             State='ENABLED',
             Description=rule_description)
         LOG.info('Created CloudWatch Rule "%s" with %s: %s', rule_name, rule_type, event_pattern)

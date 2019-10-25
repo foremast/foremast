@@ -27,14 +27,14 @@ This example would go in the :ref:`application_json` configuration file.
        {
          "type": "cloudwatch-event",
          "rule_name": "app cron - 5min",
-         "rule_type": "schedule"
+         "rule_type": "schedule",
          "rule_description": "triggers lambda function every five minutes",
          "schedule": "rate(5 minutes)"
        },
        {
          "type": "cloudwatch-event",
          "rule_name": "GuardDutyEvents",
-         "rule_type": "event_pattern"
+         "rule_type": "event_pattern",
          "rule_description": "Trigger Lambda Function for every AWS GuardDutyEvent",
          "event_pattern": {"source": ["aws.guardduty"]}
        },
