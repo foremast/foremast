@@ -48,14 +48,12 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             'service_name': 'Kinesis Stream',
             'batch_size': 100,
             'batch_window': 0,
-            'starting_position':
-            'TRIM_HORIZON'
+            'starting_position': 'TRIM_HORIZON'
         },
         'sqs': {
             'service_name': 'SQS Queue',
             'batch_size': 10,
-            'batch_window': 0,
-            'starting_position': 'TRIM_HORIZON'
+            'batch_window': 0
         }
     }
 
@@ -90,12 +88,19 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             LOG.debug('{0} event trigger updated'.format(event_defaults[event_source]['service_name']))
             break
     else:
-        lambda_client.create_event_source_mapping(
-            EventSourceArn=event_source_arn,
-            FunctionName=lambda_alias_arn,
-            BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
-            MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']),
-            StartingPosition=rules.get('starting_postion', event_defaults[event_source]['starting_position']))
+        if event_source == 'sqs':
+            lambda_client.create_event_source_mapping(
+                EventSourceArn=event_source_arn,
+                FunctionName=lambda_alias_arn,
+                BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
+                MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']))
+        else:
+            lambda_client.create_event_source_mapping(
+                EventSourceArn=event_source_arn,
+                FunctionName=lambda_alias_arn,
+                BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
+                MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']),
+                StartingPosition=rules.get('starting_postion', event_defaults[event_source]['starting_position']))
         LOG.debug('{0} event trigger created'.format(event_defaults[event_source]['service_name']))
 
     LOG.info('Created {} event trigger on {} for {}'.format(event_defaults[event_source]['service_name'],
