@@ -57,6 +57,16 @@ def create_s3_event(app_name, env, region, bucket, triggers):
     # configure events on s3 bucket to trigger lambda function
     template_kwargs = {"lambda_arn": lambda_alias_arn, "triggers": triggers}
     config = get_template(template_file='infrastructure/lambda/s3_event.json.j2', **template_kwargs)
-    s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=json.loads(config))
 
-    LOG.info("Created lambda %s S3 event on bucket %s", app_name, bucket)
+    # Get Bucket Tags to check if buckets are locked down from automated attachment
+    bucket_tag_response = s3_client.get_bucket_tagging(Bucket=bucket)
+    bucket_tags = bucket_tag_response['TagSet']
+    LOG.debug('Bucket Tags: %s', bucket_tags)
+
+    disable_lambda_trigger_tag = {'Key': 'FOREMAST_LAMBDA_RESTRICT_BUCKET_NOTIFICATIONS', 'Value': 'true'}
+
+    if disable_lambda_trigger_tag in bucket_tags:
+        LOG.warning('WARN: Target S3 bucket limits bucket events. Check bucket for tag %s', disable_lambda_trigger_tag)
+    else:
+        s3_client.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=json.loads(config))
+        LOG.info("Created lambda %s S3 event on bucket %s", app_name, bucket)
