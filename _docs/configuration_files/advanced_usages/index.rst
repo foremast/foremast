@@ -88,3 +88,16 @@ Scheduled Actions
       :maxdepth: 2
 
       scheduled_actions
+
+Foremast AWS Tags
+*****************
+
+    Foremast has the ability to perform a lot of actions, but Foremast is currently not stateful.
+
+    .. note::  Scheduled Actions persist between clusters as they are done at the service level. As a result, ensure you
+               delete scheduled actions manually via the Spinnaker UI if you remove them from Foremast configuration files.
+
+    .. toctree::
+      :maxdepth: 2
+
+      foremast_tags
