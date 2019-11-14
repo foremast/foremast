@@ -154,7 +154,7 @@ class LambdaFunction:
             LOG.debug('Create alias error: %s', error)
             LOG.info("Alias creation failed. Retrying...")
             raise
-    
+
     @backoff.on_exception(backoff.expo,
                           boto3.exceptions.botocore.exceptions.ClientError,
                           max_tries=3,
@@ -169,7 +169,7 @@ class LambdaFunction:
             LOG.debug('Update alias error: %s', error)
             LOG.info("Alias update failed. Retrying...")
             raise
-
+    
     @backoff.on_exception(backoff.expo,
                           SystemExit,
                           max_tries=3,
