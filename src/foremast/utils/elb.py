@@ -24,6 +24,7 @@ from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 
+
 @retries(max_attempts=6, wait=10, exceptions=(AssertionError, SpinnakerElbNotFound))
 def find_elb(name='', env='', region=''):
     """Get an application's AWS elb dns name.
