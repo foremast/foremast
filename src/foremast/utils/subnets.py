@@ -30,7 +30,7 @@ LOG = logging.getLogger(__name__)
 @backoff.on_exception(backoff.expo,
                       SpinnakerTimeout,
                       max_tries=6,
-                      jitter=None)
+                      jitter=None) #noqa
 def get_subnets(
         target='ec2',
         purpose='internal',
