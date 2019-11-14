@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
 
 
 # TODO: split up into get_az, and get_subnet_id
-@backoff.on_exception(backoff.expo,SpinnakerTimeout,max_tries=6,jitter=None) #noqa
+@backoff.on_exception(backoff.expo,SpinnakerTimeout,max_tries=6,jitter=None)  # noqa
 def get_subnets(
         target='ec2',
         purpose='internal',

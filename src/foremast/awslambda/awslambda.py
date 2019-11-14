@@ -169,7 +169,7 @@ class LambdaFunction:
             LOG.debug('Update alias error: %s', error)
             LOG.info("Alias update failed. Retrying...")
             raise
-    
+
     @backoff.on_exception(backoff.expo,
                           SystemExit,
                           max_tries=3,
