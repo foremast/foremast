@@ -15,7 +15,6 @@
 #   limitations under the License.
 """Search for ELB DNS name."""
 import logging
-from tryagain import retries
 import backoff
 
 import boto3
@@ -27,10 +26,9 @@ LOG = logging.getLogger(__name__)
 
 
 @backoff.on_exception(backoff.expo,
-                      AssertionError,
-                      SpinnakerElbNotFound,
-                      max_tries=3,
-                      jitter=None)
+    (AssertionError,SpinnakerElbNotFound),
+    max_tries=3,
+    jitter=None)
 def find_elb(name='', env='', region=''):
     """Get an application's AWS elb dns name.
 
