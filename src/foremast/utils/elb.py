@@ -16,6 +16,7 @@
 """Search for ELB DNS name."""
 import logging
 from tryagain import retries
+import backoff
 
 import boto3
 
@@ -25,7 +26,11 @@ from ..utils.gate import gate_request
 LOG = logging.getLogger(__name__)
 
 
-@retries(max_attempts=6, wait=10, exceptions=(AssertionError, SpinnakerElbNotFound))
+@backoff.on_exception(backoff.expo,
+                      AssertionError,
+                      SpinnakerElbNotFound,
+                      max_tries=3,
+                      jitter=None)
 def find_elb(name='', env='', region=''):
     """Get an application's AWS elb dns name.
 

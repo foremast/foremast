@@ -19,7 +19,7 @@ import logging
 import zipfile
 
 import boto3
-from tryagain import retries
+import backoff
 
 from ..exceptions import RequiredKeyNotFound
 from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets
@@ -136,7 +136,10 @@ class LambdaFunction:
             sg_ids.append(sg_id)
         return sg_ids
 
-    @retries(max_attempts=10, wait=3, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
+    @backoff.on_exception(backoff.expo,
+                      boto3.exceptions.botocore.exceptions.ClientError,
+                      max_tries=5,
+                      jitter=None)
     def create_alias(self):
         """Create lambda alias with env name and points it to $LATEST."""
         LOG.info('Creating alias %s', self.env)
@@ -151,8 +154,11 @@ class LambdaFunction:
             LOG.debug('Create alias error: %s', error)
             LOG.info("Alias creation failed. Retrying...")
             raise
-
-    @retries(max_attempts=10, wait=3, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
+    
+    @backoff.on_exception(backoff.expo,
+                      boto3.exceptions.botocore.exceptions.ClientError,
+                      max_tries=3,
+                      jitter=None)
     def update_alias(self):
         """Update lambda alias to point to $LATEST."""
         LOG.info('Updating alias %s to point to $LATEST', self.env)
@@ -163,8 +169,11 @@ class LambdaFunction:
             LOG.debug('Update alias error: %s', error)
             LOG.info("Alias update failed. Retrying...")
             raise
-
-    @retries(max_attempts=10, wait=3, exceptions=(SystemExit))
+    
+    @backoff.on_exception(backoff.expo,
+                      SystemExit,
+                      max_tries=3,
+                      jitter=None)
     def update_function_configuration(self, vpc_config):
         """Update existing Lambda function configuration.
 
@@ -211,7 +220,10 @@ class LambdaFunction:
 
         LOG.info("Successfully updated Lambda configuration.")
 
-    @retries(max_attempts=10, wait=3, exceptions=(SystemExit))
+    @backoff.on_exception(backoff.expo,
+                      SystemExit,
+                      max_tries=3,
+                      jitter=None)
     def create_function(self, vpc_config):
         """Create lambda function, configures lambda parameters.
 

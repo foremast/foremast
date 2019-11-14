@@ -19,7 +19,7 @@ import logging
 
 import boto3
 import botocore
-from tryagain import retries
+import backoff
 
 from foremast.utils import (add_lambda_permissions, get_details, get_env_credential, get_lambda_alias_arn,
                             get_lambda_arn, get_properties)
@@ -150,8 +150,11 @@ class APIGateway:
             env=self.env,
             region=self.region,
             source_arn=global_api_source_arn)
-
-    @retries(max_attempts=10, wait=6, exceptions=(botocore.exceptions.ClientError))
+    
+    @backoff.on_exception(backoff.expo,
+                      botocore.exceptions.ClientError,
+                      max_tries=5,
+                      jitter=None)
     def create_api_deployment(self):
         """Create API deployment of ENV name."""
         try:

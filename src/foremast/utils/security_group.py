@@ -16,7 +16,7 @@
 """Get security group id."""
 import logging
 
-from tryagain import retries
+import backoff
 
 from ..consts import SECURITYGROUP_REPLACEMENTS
 from ..exceptions import SpinnakerSecurityGroupError
@@ -26,7 +26,10 @@ from .vpc import get_vpc_id
 LOG = logging.getLogger(__name__)
 
 
-@retries(max_attempts=10, wait=6, exceptions=(SpinnakerSecurityGroupError))
+@backoff.on_exception(backoff.expo,
+                      SpinnakerSecurityGroupError,
+                      max_tries=5,
+                      jitter=None)
 def get_security_group_id(name='', env='', region=''):
     """Get a security group ID.
 

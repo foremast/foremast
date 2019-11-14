@@ -18,7 +18,7 @@ import logging
 from collections import defaultdict
 from pprint import pformat
 
-from tryagain import retries
+import backoff
 
 from ..exceptions import SpinnakerSubnetError, SpinnakerTimeout
 from ..utils.gate import gate_request
@@ -27,7 +27,10 @@ LOG = logging.getLogger(__name__)
 
 
 # TODO: split up into get_az, and get_subnet_id
-@retries(max_attempts=10, wait=6.0, exceptions=SpinnakerTimeout)  # noqa
+@backoff.on_exception(backoff.expo,
+                      SpinnakerTimeout,
+                      max_tries=6,
+                      jitter=None)
 def get_subnets(
         target='ec2',
         purpose='internal',
