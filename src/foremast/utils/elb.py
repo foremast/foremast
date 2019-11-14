@@ -15,9 +15,9 @@
 #   limitations under the License.
 """Search for ELB DNS name."""
 import logging
+from tryagain import retries
 
 import boto3
-import backoff
 
 from ..exceptions import SpinnakerElbNotFound
 from ..utils.gate import gate_request
