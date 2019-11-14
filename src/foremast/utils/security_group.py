@@ -26,7 +26,7 @@ from .vpc import get_vpc_id
 LOG = logging.getLogger(__name__)
 
 
-@retries(max_attempts=5, wait=2, exceptions=(SpinnakerSecurityGroupError))
+@retries(max_attempts=10, wait=6, exceptions=(SpinnakerSecurityGroupError))
 def get_security_group_id(name='', env='', region=''):
     """Get a security group ID.
 

@@ -151,7 +151,7 @@ class APIGateway:
             region=self.region,
             source_arn=global_api_source_arn)
 
-    @retries(max_attempts=5, wait=2, exceptions=(botocore.exceptions.ClientError))
+    @retries(max_attempts=10, wait=6, exceptions=(botocore.exceptions.ClientError))
     def create_api_deployment(self):
         """Create API deployment of ENV name."""
         try:

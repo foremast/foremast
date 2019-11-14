@@ -136,7 +136,7 @@ class LambdaFunction:
             sg_ids.append(sg_id)
         return sg_ids
 
-    @retries(max_attempts=3, wait=1, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
+    @retries(max_attempts=10, wait=3, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
     def create_alias(self):
         """Create lambda alias with env name and points it to $LATEST."""
         LOG.info('Creating alias %s', self.env)
@@ -152,7 +152,7 @@ class LambdaFunction:
             LOG.info("Alias creation failed. Retrying...")
             raise
 
-    @retries(max_attempts=3, wait=1, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
+    @retries(max_attempts=10, wait=3, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
     def update_alias(self):
         """Update lambda alias to point to $LATEST."""
         LOG.info('Updating alias %s to point to $LATEST', self.env)
@@ -164,7 +164,7 @@ class LambdaFunction:
             LOG.info("Alias update failed. Retrying...")
             raise
 
-    @retries(max_attempts=3, wait=1, exceptions=(SystemExit))
+    @retries(max_attempts=10, wait=3, exceptions=(SystemExit))
     def update_function_configuration(self, vpc_config):
         """Update existing Lambda function configuration.
 
@@ -211,7 +211,7 @@ class LambdaFunction:
 
         LOG.info("Successfully updated Lambda configuration.")
 
-    @retries(max_attempts=3, wait=1, exceptions=(SystemExit))
+    @retries(max_attempts=10, wait=3, exceptions=(SystemExit))
     def create_function(self, vpc_config):
         """Create lambda function, configures lambda parameters.
 
