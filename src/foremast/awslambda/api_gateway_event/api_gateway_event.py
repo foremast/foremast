@@ -150,11 +150,11 @@ class APIGateway:
             env=self.env,
             region=self.region,
             source_arn=global_api_source_arn)
-    
+        
     @backoff.on_exception(backoff.expo,
-        botocore.exceptions.ClientError,
-        max_tries=5,
-        jitter=None)
+                          botocore.exceptions.ClientError,
+                          max_tries=5,
+                          jitter=None)
     def create_api_deployment(self):
         """Create API deployment of ENV name."""
         try:

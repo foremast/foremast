@@ -27,9 +27,9 @@ LOG = logging.getLogger(__name__)
 
 
 @backoff.on_exception(backoff.expo,
-    SpinnakerSecurityGroupError,
-    max_tries=5,
-    jitter=None)
+                      SpinnakerSecurityGroupError,
+                      max_tries=5,
+                      jitter=None)
 def get_security_group_id(name='', env='', region=''):
     """Get a security group ID.
 

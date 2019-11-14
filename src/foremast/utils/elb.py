@@ -26,9 +26,9 @@ LOG = logging.getLogger(__name__)
 
 
 @backoff.on_exception(backoff.expo,
-    (AssertionError,SpinnakerElbNotFound),
-    max_tries=3,
-    jitter=None)
+                      (AssertionError,SpinnakerElbNotFound),
+                      max_tries=3,
+                      jitter=None)
 def find_elb(name='', env='', region=''):
     """Get an application's AWS elb dns name.
 

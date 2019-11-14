@@ -137,9 +137,9 @@ class LambdaFunction:
         return sg_ids
 
     @backoff.on_exception(backoff.expo,
-        boto3.exceptions.botocore.exceptions.ClientError,
-        max_tries=5,
-        jitter=None)
+                          boto3.exceptions.botocore.exceptions.ClientError,
+                          max_tries=5,
+                          jitter=None)
     def create_alias(self):
         """Create lambda alias with env name and points it to $LATEST."""
         LOG.info('Creating alias %s', self.env)
@@ -156,9 +156,9 @@ class LambdaFunction:
             raise
     
     @backoff.on_exception(backoff.expo,
-        boto3.exceptions.botocore.exceptions.ClientError,
-        max_tries=3,
-        jitter=None)
+                          boto3.exceptions.botocore.exceptions.ClientError,
+                          max_tries=3,
+                          jitter=None)
     def update_alias(self):
         """Update lambda alias to point to $LATEST."""
         LOG.info('Updating alias %s to point to $LATEST', self.env)
@@ -169,11 +169,11 @@ class LambdaFunction:
             LOG.debug('Update alias error: %s', error)
             LOG.info("Alias update failed. Retrying...")
             raise
-    
+
     @backoff.on_exception(backoff.expo,
-        SystemExit,
-        max_tries=3,
-        jitter=None)
+                          SystemExit,
+                          max_tries=3,
+                          jitter=None)
     def update_function_configuration(self, vpc_config):
         """Update existing Lambda function configuration.
 
@@ -221,9 +221,9 @@ class LambdaFunction:
         LOG.info("Successfully updated Lambda configuration.")
 
     @backoff.on_exception(backoff.expo,
-        SystemExit,
-        max_tries=3,
-        jitter=None)
+                          SystemExit,
+                          max_tries=3,
+                          jitter=None)
     def create_function(self, vpc_config):
         """Create lambda function, configures lambda parameters.
 
