@@ -16,12 +16,15 @@
 """Functions and variables that can be exposed to Jinja2 templates"""
 
 from ..utils.kayenta import get_canary_id
+from ..utils.pipelines import get_pipeline_id, normalize_pipeline_name
 
 
 def get_jinja_functions():
     """Gets a dictionary of functions that can be exposed to Jinja templates"""
     functions = dict()
     functions[get_canary_id.__name__] = get_canary_id
+    functions[get_pipeline_id.__name__] = get_pipeline_id
+    functions[normalize_pipeline_name.__name__] = normalize_pipeline_name
 
     return functions
 
