@@ -52,8 +52,7 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
         },
         'sqs': {
             'service_name': 'SQS Queue',
-            'batch_size': 10,
-            'batch_window': 0
+            'batch_size': 10
         }
     }
 
@@ -92,8 +91,7 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             lambda_client.create_event_source_mapping(
                 EventSourceArn=event_source_arn,
                 FunctionName=lambda_alias_arn,
-                BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
-                MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']))
+                BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']))
         else:
             lambda_client.create_event_source_mapping(
                 EventSourceArn=event_source_arn,
