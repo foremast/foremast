@@ -47,7 +47,7 @@ def gate_request(method='GET', uri=None, headers={}, data={}, params={}):
 
             headers['Authorization'] = 'Bearer {}'.format(iap_response['id_token'])
             LOG.info('Successfully set Google IAP Bearer Token in Request.')
-        
+
         elif 'github' in GATE_AUTHENTICATION:
             github_token = GATE_AUTHENTICATION['github']['token']
             headers['Authorization'] = 'Bearer {}'.format(github_token)
