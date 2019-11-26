@@ -239,7 +239,7 @@ passwords
         | *Default*: ``None``
         | *Example Configuration*:
 
-            .. code-block:: json
+.. code-block:: json
 
             {
                 'credentials': {
@@ -248,6 +248,9 @@ passwords
                             'enabled': False,
                             'oauth_client_id': 'some_id.apps.googleusercontent.com',
                             'sa_credentials_path': '/tmp/google-service-account.json'
+                        },
+                        'github': {
+                            'token': '<GITHUB_TOKEN>'
                         }
                     }
                 }

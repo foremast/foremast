@@ -45,8 +45,13 @@ def gate_request(method='GET', uri=None, headers={}, data={}, params={}):
             if 'id_token' not in iap_response:
                 raise GoogleIAPTokenError
 
-        headers['Authorization'] = 'Bearer {}'.format(iap_response['id_token'])
-        LOG.info('Successfully set Google IAP Bearer Token in Request.')
+            headers['Authorization'] = 'Bearer {}'.format(iap_response['id_token'])
+            LOG.info('Successfully set Google IAP Bearer Token in Request.')
+        
+        elif 'github' in GATE_AUTHENTICATION:
+            github_token = GATE_AUTHENTICATION['github']['token']
+            headers['Authorization'] = 'Bearer {}'.format(github_token)
+            LOG.info('Successfully set Github Bearer Token in Request.')
 
     method = method.upper()
     if method == 'GET':
