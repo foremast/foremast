@@ -16,7 +16,7 @@
 """Functions and variables that can be exposed to Jinja2 templates"""
 
 from ..utils.kayenta import get_canary_id
-from ..utils.pipelines import get_pipeline_id, normalize_pipeline_name
+from ..utils.pipelines import get_pipeline_id
 
 
 def get_jinja_functions():
