@@ -24,7 +24,6 @@ def get_jinja_functions():
     functions = dict()
     functions[get_canary_id.__name__] = get_canary_id
     functions[get_pipeline_id.__name__] = get_pipeline_id
-    functions[normalize_pipeline_name.__name__] = normalize_pipeline_name
 
     return functions
 
