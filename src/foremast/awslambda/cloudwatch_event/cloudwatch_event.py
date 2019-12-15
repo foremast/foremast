@@ -68,7 +68,7 @@ def create_cloudwatch_event(app_name, env, region, rules):
     # Add lambda permissions
     account_id = get_env_credential(env=env)['accountId']
     principal = "events.amazonaws.com"
-    statement_id = '{}_cloudwatch_{}'.format(app_name, rule_name)
+    statement_id = 'cloudwatch_{}'.format(rule_name)
     source_arn = 'arn:aws:events:{}:{}:rule/{}'.format(region, account_id, rule_name)
     add_lambda_permissions(
         function=lambda_arn,
