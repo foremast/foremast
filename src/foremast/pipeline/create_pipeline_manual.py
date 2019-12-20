@@ -48,7 +48,8 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
                 # Catch all exceptions (we don't know what errors the jinja2 user code may throw)
                 # Add logging, then re-raise
                 except Exception:
-                    self.log.exception("Exception raised during Jinja 2 template rendering.  Check syntax in templates.")
+                    log_message = "Exception raised during Jinja 2 template rendering.  Check syntax in templates."
+                    self.log.exception(log_message)
                     raise
                 self.log.info("Jinja2 template successfully rendered")
 
@@ -73,9 +74,9 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             for pipeline_dict in pipelines:
                 pipeline_dict.setdefault('application', self.app_name)
                 pipeline_dict.setdefault('name',
-                                        normalize_pipeline_name(name=file_name.lstrip("templates://")))
+                                         normalize_pipeline_name(name=file_name.lstrip("templates://")))
                 pipeline_dict.setdefault('id', get_pipeline_id(app=pipeline_dict['application'],
-                                                            name=pipeline_dict['name']))
+                                                               name=pipeline_dict['name']))
                 self.post_pipeline(pipeline_dict)
 
         return True
