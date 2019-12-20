@@ -48,12 +48,18 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
                 # Catch all exceptions (we don't know what errors the jinja2 user code may throw)
                 # Add logging, then re-raise
                 except Exception:
-                    self.log.error("Exception raised during Jinja 2 template rendering.  Check syntax in templates.")
+                    self.log.exception("Exception raised during Jinja 2 template rendering.  Check syntax in templates.")
                     raise
                 self.log.info("Jinja2 template successfully rendered")
 
             try:
-                pipeline_dict = json.loads(json_string)
+                pipelines = json.loads(json_string)
+                # result may be a single pipeline object, or list of pipeline objects
+                # if a single pipeline object, transform to list with one pipeline object inside
+                if not isinstance(pipelines, list):
+                    self.log.debug("single pipeline object rendered, transforming to list")
+                    pipelines = [pipelines]
+
             except json.JSONDecodeError:
                 # Helpful debugging logging, then re-raise fatal exception
                 if is_jinja_template:
@@ -63,14 +69,14 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
                     self.log.error("JSONDecodeError parsing json, verify template is vaild json")
                 raise
 
-            # Override template values that shoudl be set by foremast last
-            pipeline_dict.setdefault('application', self.app_name)
-            pipeline_dict.setdefault('name',
-                                     normalize_pipeline_name(name=file_name.lstrip("templates://")))
-            pipeline_dict.setdefault('id', get_pipeline_id(app=pipeline_dict['application'],
-                                                           name=pipeline_dict['name']))
-
-            self.post_pipeline(pipeline_dict)
+            # Create all pipelines
+            for pipeline_dict in pipelines:
+                pipeline_dict.setdefault('application', self.app_name)
+                pipeline_dict.setdefault('name',
+                                        normalize_pipeline_name(name=file_name.lstrip("templates://")))
+                pipeline_dict.setdefault('id', get_pipeline_id(app=pipeline_dict['application'],
+                                                            name=pipeline_dict['name']))
+                self.post_pipeline(pipeline_dict)
 
         return True
 
