@@ -93,7 +93,7 @@ Getting a Spinnaker Pipeline's JSON Body
          
          .. code-block:: json
 
-            {
+            [{
                 "schema" : "v2",
                 "locked": {
                   "allowUnlockUi": false,
@@ -108,4 +108,55 @@ Getting a Spinnaker Pipeline's JSON Body
                 }
                 "pipeline": {},
                 "triggers": []
-            }
+            }]
+
+Formatting your pipeline template file
+****************************************
+
+Your pipeline template file should return an array with 1 or more Spinnaker pipeline definitions. 
+Using an array allows Foremast to support the creation of more than one pipeline using
+a single pipeline template file.  The most common usecase for this is creating
+two pipelines that are dependent on eachother, for example one pipeline that triggers when
+another finishes running.  If only one pipeline is desired you should still use an array, but 
+only place one Spinnaker pipeline definition in the array.
+
+*multiple-pipelines-jinja-example.json.j2*
+         
+  .. code-block:: json
+
+    [{
+        "name" : "The first pipeline",
+        "schema" : "v2",
+        "locked": {
+          "allowUnlockUi": false,
+          "ui": true
+        },
+        "protect": false,
+        "metadata": {
+            "name": "{{ template_variables.key }}",
+            "description": "Deploys code to {{ template_variables.region }}",
+            "owner": "{{ template_variables.name }}",
+            "scopes": ["global"]
+        }
+        "pipeline": {},
+        "triggers": []
+    },{
+        "name" : "The second pipeline",
+        "schema" : "v2",
+        "locked": {
+          "allowUnlockUi": false,
+          "ui": true
+        },
+        "protect": false,
+        "metadata": {
+            "name": "{{ template_variables.key }}",
+            "description": "Deploys code to {{ template_variables.region }}",
+            "owner": "{{ template_variables.name }}",
+            "scopes": ["global"]
+        }
+        "pipeline": {},
+        "triggers": []
+    }]
+
+  .. note::   | `template_variables` are shared per file.  Multiple Spinnaker pipelines defined in 
+              | a single file are sharing a common set of variables
