@@ -187,7 +187,7 @@ Currently AWS API supports Active or PassThrough.
 .. code-block:: json
 
    "lambda_tracing": {
-            "TracingConfig": "Active"
+            "Mode": "Active"
         }
 
 
