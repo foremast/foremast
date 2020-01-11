@@ -56,6 +56,7 @@ class ForemastRunner:
         self.runway_dir = os.getenv("RUNWAY_DIR")
         self.artifact_path = os.getenv("ARTIFACT_PATH")
         self.artifact_version = os.getenv("ARTIFACT_VERSION")
+        self.artifact_branch = os.getenv("ARTIFACT_BRANCH", "master")
         self.promote_stage = os.getenv("PROMOTE_STAGE", "latest")
         self.provider = os.getenv("PROVIDER", "aws")
 
@@ -167,6 +168,7 @@ class ForemastRunner:
             prop_path=self.json_path,
             artifact_path=self.artifact_path,
             artifact_version=self.artifact_version,
+            artifact_branch=self.artifact_branch,
             primary_region=primary_region)
         s3obj.upload_artifacts()
 
@@ -181,6 +183,7 @@ class ForemastRunner:
             prop_path=self.json_path,
             artifact_path=self.artifact_path,
             artifact_version=self.artifact_version,
+            artifact_branch=self.artifact_branch,
             primary_region=primary_region)
         s3obj.promote_artifacts(promote_stage=self.promote_stage)
 
