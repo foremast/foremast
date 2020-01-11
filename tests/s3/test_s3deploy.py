@@ -26,7 +26,7 @@ def test_get_cmd(s3deployment):
     """Tests s3.S3Deployment._get_upload_cmd returns correct cmd"""
     expected_nomirror_cmd = "aws s3 sync /artifact s3://testapp/1 --delete --exact-timestamps --profile dev"
     expected_mirror_cmd = "aws s3 sync /artifact s3://testapp/ --delete --exact-timestamps --profile dev"
-    actual_nomirror_cmd = s3deployment._get_upload_cmd()
+    actual_nomirror_cmd = s3deployment._get_upload_cmd(deploy_strategy="highlander")
     actual_mirror_cmd = s3deployment._get_upload_cmd(deploy_strategy="mirror")
     assert actual_nomirror_cmd == expected_nomirror_cmd
     assert actual_mirror_cmd == expected_mirror_cmd
