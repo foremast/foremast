@@ -27,7 +27,8 @@ LOG = logging.getLogger(__name__)
 class S3Deployment:
     """Handle uploading artifacts to S3 and S3 deployment strategies."""
 
-    def __init__(self, app, env, region, prop_path, artifact_path, artifact_version, artifact_branch, primary_region='us-east-1'):
+    def __init__(self, app, env, region, prop_path, 
+                 artifact_path, artifact_version, artifact_branch, primary_region='us-east-1'):
         """S3 deployment object.
 
         Args:
