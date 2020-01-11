@@ -18,6 +18,7 @@ def s3deployment(mock_get_details, mock_get_props):
                                 region="us-east-1",
                                 prop_path="/",
                                 artifact_path="/artifact",
+                                artifact_branch="master",
                                 artifact_version="1")
     return deployobj
 
