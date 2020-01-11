@@ -30,7 +30,7 @@ def test_get_cmd(s3deployment):
     actual_mirror_cmd = s3deployment._get_upload_cmd(mirror=True)
     assert actual_nomirror_cmd == expected_nomirror_cmd
     assert actual_mirror_cmd == expected_mirror_cmd
-    
+
 def test_path_formatter(s3deployment):
     """Tests s3.S3Deployment._path_formatter returns correct path"""
     expected_latest_path = "s3://testapp/LATEST"
@@ -39,4 +39,3 @@ def test_path_formatter(s3deployment):
     actual_mirror_path = s3deployment._path_formatter("MIRROR")
     assert actual_latest_path == expected_latest_path
     assert actual_mirror_path == expected_mirror_path
-
