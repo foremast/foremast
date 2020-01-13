@@ -21,6 +21,7 @@ Contents
    advance_usages
    infra_assumptions
    lambda/index
+   s3/index
    halyard/index
    CONTRIBUTING
    RELEASING
