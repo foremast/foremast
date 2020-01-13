@@ -1,5 +1,6 @@
-AWS S3 Pipeline
-===================
+###########################
+Foremast - AWS S3 Pipelines
+###########################
 
 .. toctree::
    :maxdepth: 2

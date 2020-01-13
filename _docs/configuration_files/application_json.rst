@@ -537,6 +537,8 @@ Spinnaker strategy to use for deployments.
          deploy to an ALPHA path
        - ``"mirror"`` - Only used in S3 deployments. Contents are deployed
          as-is, no version or LATEST directory
+       - ``"branchrelease"`` - Only used in S3 deployments. S3 Folders coorelate to 
+         Git Branches, using versions and LATEST directory
 
 ``security_group`` Block
 ~~~~~~~~~~~~~~~~~~~~~~~~
