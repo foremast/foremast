@@ -161,7 +161,7 @@ class AutoScalingPolicy:
                 "serverGroupName": server_group,
                 "credentials": self.env,
                 "region": self.region,
-                "provider": "{{ provider }}",
+                "provider": "aws",
                 "type": "deleteScalingPolicy",
                 "user": "foremast-autoscaling-policy"
             }]
