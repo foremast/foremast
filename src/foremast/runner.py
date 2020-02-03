@@ -32,8 +32,8 @@ import os
 
 import gogoutils
 
-from foremast import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
-                      scheduled_actions, securitygroup, slacknotify, utils)
+from . import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
+               scheduled_actions, securitygroup, slacknotify, utils)
 from .app import SpinnakerApp
 from .args import add_debug
 
