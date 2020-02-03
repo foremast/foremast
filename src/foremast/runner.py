@@ -34,8 +34,7 @@ import gogoutils
 
 from foremast import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
                       scheduled_actions, securitygroup, slacknotify, utils)
-from foremast.plugin_manager import PluginManager
-
+from .app import SpinnakerApp
 from .args import add_debug
 
 LOG = logging.getLogger(__name__)
@@ -72,12 +71,6 @@ class ForemastRunner:
         self.json_path = self.raw_path + ".json"
         self.configs = None
 
-    def plugin_manager(self, service):
-        """Wrapper around PluginManager"""
-        manager = PluginManager(service, self.provider)
-        plugin = manager.load()
-        return plugin
-
     def write_configs(self):
         """Generate the configurations needed for pipes."""
         utils.banner("Generating Configs")
@@ -92,9 +85,8 @@ class ForemastRunner:
     def create_app(self):
         """Create the spinnaker application."""
         utils.banner("Creating Spinnaker App")
-        plugin = self.plugin_manager('app')
-
-        spinnakerapp = plugin.SpinnakerApp(
+        spinnakerapp = SpinnakerApp(
+            provider=self.provider,
             app=self.app,
             email=self.email,
             project=self.group,

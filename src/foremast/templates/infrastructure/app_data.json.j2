@@ -3,7 +3,7 @@
     {
         "type":"createApplication",
         "application":{
-            "cloudProviders":"aws",
+            "cloudProviders":"{{ appinfo.provider }}",
             "name": "{{ appinfo.app }}",
             "email": "{{ appinfo.email }}",
             "repoType": "github",
