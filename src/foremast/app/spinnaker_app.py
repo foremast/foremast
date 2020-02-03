@@ -1,5 +1,4 @@
 """Base App."""
-import abc
 import copy
 import logging
 
