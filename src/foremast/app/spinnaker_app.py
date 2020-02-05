@@ -13,7 +13,7 @@ from ..utils.gate import gate_request
 class SpinnakerApp:
     """Base App."""
 
-    def __init__(self, provider, pipeline_config, app, email, project, repo):
+    def __init__(self, provider, pipeline_config=None, app=None, email=None, project=None, repo=None):
         """Class to manage and create Spinnaker applications
 
         Args:

@@ -4,7 +4,7 @@ from unittest import mock
 from foremast.app import SpinnakerApp
 
 
-@mock.patch('foremast.app.aws.base.LINKS', new={'example1': 'https://example1.com'})
+@mock.patch('foremast.app.spinnaker_app.LINKS', new={'example1': 'https://example1.com'})
 def test_default_instance_links():
     """Validate default instance_links are being populated properly."""
     pipeline_config = {
@@ -16,13 +16,13 @@ def test_default_instance_links():
     combined = {'example1': 'https://example1.com'}
     combined.update(pipeline_config['instance_links'])
 
-    spinnaker_app = SpinnakerApp(pipeline_config=pipeline_config)
+    spinnaker_app = SpinnakerApp("aws", pipeline_config=pipeline_config)
     instance_links = spinnaker_app.retrieve_instance_links()
 
     assert instance_links == combined, "Instance Links are not being retrieved properly"
 
 
-@mock.patch('foremast.app.aws.base.LINKS', new={'example': 'example1', 'example': 'example2'})
+@mock.patch('foremast.app.spinnaker_app.LINKS', new={'example': 'example1', 'example': 'example2'})
 def test_duplicate_instance_links():
     """Validate behavior when two keys are identical."""
 
@@ -31,7 +31,7 @@ def test_duplicate_instance_links():
     }
 
     duplicate = {'example': 'example2'}
-    spinnaker_app = PLUGIN.SpinnakerApp(pipeline_config=pipeline_config)
+    spinnaker_app = SpinnakerApp("aws", pipeline_config=pipeline_config)
     instance_links = spinnaker_app.retrieve_instance_links()
 
     assert instance_links == duplicate, "Instance links handing duplicates are wrong."
