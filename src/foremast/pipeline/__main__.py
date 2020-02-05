@@ -24,6 +24,7 @@ from ..args import add_app, add_debug, add_properties
 from ..consts import ENVS, LOGGING_FORMAT
 from .create_pipeline import SpinnakerPipeline
 from .create_pipeline_lambda import SpinnakerPipelineLambda
+from .create_pipeline_cloudfunction import SpinnakerPipelineCloudFunction
 from .create_pipeline_onetime import SpinnakerPipelineOnetime
 from .create_pipeline_s3 import SpinnakerPipelineS3
 
@@ -67,6 +68,10 @@ def main():
             spinnakerapps.create_pipeline()
         elif args.type == "s3":
             spinnakerapps = SpinnakerPipelineS3(
+                app=args.app, trigger_job=args.triggerjob, prop_path=args.properties, base=args.base)
+            spinnakerapps.create_pipeline()
+        elif args.type == "cloudfunction":
+            spinnakerapps = SpinnakerPipelineCloudFunction(
                 app=args.app, trigger_job=args.triggerjob, prop_path=args.properties, base=args.base)
             spinnakerapps.create_pipeline()
 
