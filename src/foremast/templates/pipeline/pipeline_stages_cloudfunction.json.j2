@@ -1,0 +1,7 @@
+[
+    {% if data.app.previous_env %}
+    {% include "pipeline/stage-judgement-nonprod.json.j2" %},
+    {% endif %}
+    {% include "pipeline/stage-infrastructure-setup-cloudfunction.json.j2" %},
+    {% include "pipeline/stage-deploy-cloudfunction.json.j2" %}
+]
