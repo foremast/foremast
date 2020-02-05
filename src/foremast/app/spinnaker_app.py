@@ -2,20 +2,18 @@
 import copy
 import logging
 
-from ..common.base import BasePlugin
+from pprint import pformat
 from ..consts import LINKS
 from ..exceptions import ForemastError
-from ..utils import get_template
+from ..utils import get_template, wait_for_task
 from ..utils.gate import gate_request
 
 
 # pylint: disable=abstract-method
-class BaseApp(BasePlugin):
+class SpinnakerApp:
     """Base App."""
 
-    resource = 'app'
-
-    def __init__(self, pipeline_config=None, app=None, email=None, project=None, repo=None):
+    def __init__(self, provider, pipeline_config=None, app=None, email=None, project=None, repo=None):
         """Class to manage and create Spinnaker applications
 
         Args:
@@ -26,6 +24,7 @@ class BaseApp(BasePlugin):
             repo (str): Repository name
 
         """
+
         self.log = logging.getLogger(__name__)
 
         self.appinfo = {
@@ -33,9 +32,30 @@ class BaseApp(BasePlugin):
             'email': email,
             'project': project,
             'repo': repo,
+            'provider': provider
         }
+
         self.appname = app
         self.pipeline_config = pipeline_config
+
+    def create(self):
+        """Send a POST to spinnaker to create a new application with class variables.
+
+                Raises:
+                    AssertionError: Application creation failed.
+
+                """
+
+        # Retaining abstract account list for backwards compatibility
+        # Refer to #366
+        self.appinfo['accounts'] = ['default']
+        self.log.debug('Pipeline Config\n%s', pformat(self.pipeline_config))
+        self.log.debug('App info:\n%s', pformat(self.appinfo))
+        jsondata = self.render_application_template()
+        wait_for_task(jsondata)
+
+        self.log.info("Successfully created %s application", self.appname)
+        return jsondata
 
     def render_application_template(self):
         """Render application from configs.
@@ -61,11 +81,8 @@ class BaseApp(BasePlugin):
 
         return instance_links
 
-    def get_accounts(self, provider='aws'):
+    def get_accounts(self):
         """Get Accounts added to Spinnaker.
-
-        Args:
-            provider (str): What provider to find accounts for.
 
         Returns:
             list: list of dicts of Spinnaker credentials matching _provider_.
@@ -82,10 +99,10 @@ class BaseApp(BasePlugin):
 
         filtered_accounts = []
         for account in all_accounts:
-            if account['type'] == provider:
+            if account['type'] == self.provider:
                 filtered_accounts.append(account)
 
         if not filtered_accounts:
-            raise ForemastError('No Accounts matching {0}.'.format(provider))
+            raise ForemastError('No Accounts matching {0}.'.format(self.provider))
 
         return filtered_accounts

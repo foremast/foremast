@@ -24,7 +24,7 @@ import gogoutils
 
 from ..args import add_app, add_debug, add_properties, add_provider
 from ..consts import APP_FORMATS, LOGGING_FORMAT
-from ..plugin_manager import PluginManager
+from ..app import SpinnakerApp
 from ..utils import get_properties
 
 
@@ -56,13 +56,16 @@ def main():
         project = args.project
         repo = args.repo
 
-    manager = PluginManager('app', args.provider)
-    plugin = manager.load()
-
     app_properties = get_properties(args.properties, 'pipeline')
-    spinnakerapps = plugin.SpinnakerApp(
-        app=args.app, email=args.email, project=project, repo=repo, pipeline_config=app_properties)
-    spinnakerapps.create()
+    spinnakerapp = SpinnakerApp(
+        provider=args.provider,
+        app=args.app,
+        email=args.email,
+        project=project,
+        repo=repo,
+        pipeline_config=app_properties
+    )
+    spinnakerapp.create()
 
 
 if __name__ == '__main__':
