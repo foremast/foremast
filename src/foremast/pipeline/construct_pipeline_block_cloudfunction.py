@@ -29,7 +29,6 @@ def construct_pipeline_block_cloudfunction(env='',
                                     generated=None,
                                     previous_env=None,
                                     region='us-east1',
-                                    region_subnets=None,
                                     settings=None,
                                     pipeline_data=None):
     """Create the Pipeline JSON from template.
@@ -44,8 +43,6 @@ def construct_pipeline_block_cloudfunction(env='',
             Trigger.
         region (str): GCP Region to deploy to.
         settings (dict): Environment settings from configurations.
-        region_subnets (dict): Subnets for a Region, e.g.
-            {'us-west-2': ['us-west-2a', 'us-west-2b', 'us-west-2c']}.
 
     Returns:
         dict: Pipeline JSON template rendered with configurations.
@@ -84,7 +81,6 @@ def construct_pipeline_block_cloudfunction(env='',
         'group_name': generated.project,
         'environment': env,
         'region': region,
-        'az_dict': json.dumps(region_subnets),
         'previous_env': previous_env,
         'encoded_user_data': user_data,
         'instance_security_groups': json.dumps(instance_security_groups),

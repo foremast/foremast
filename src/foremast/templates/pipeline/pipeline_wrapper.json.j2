@@ -28,7 +28,7 @@
     }
   ],
   "stages": [
-    {% if data.app.deploy_type not in ["lambda", "s3", "datapipeline"] %}
+    {% if data.app.deploy_type not in ["lambda", "s3", "datapipeline", "cloudfunction"] %}
       {% include "pipeline/stage-bake.json.j2" %}
     {% endif %}
    ]

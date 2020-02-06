@@ -120,6 +120,8 @@ class ForemastRunner:
                 spinnakerpipeline = pipeline.SpinnakerPipelineDataPipeline(**kwargs)
             elif pipeline_type in consts.MANUAL_TYPES:
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
+            elif pipeline_type == 'cloudfunction':
+                spinnakerpipeline = pipeline.SpinnakerPipelineCloudFunction(**kwargs)
             else:
                 # Handles all other pipelines
                 spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)

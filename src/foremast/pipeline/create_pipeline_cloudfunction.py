@@ -32,7 +32,6 @@ class SpinnakerPipelineCloudFunction(SpinnakerPipeline):
     Args:
         app (str): Application name.
         trigger_job (str): Jenkins trigger job.
-        base (str): Base image name (i.e: fedora).
         prop_path (str): Path to the raw.properties.json.
     """
 
@@ -47,11 +46,6 @@ class SpinnakerPipelineCloudFunction(SpinnakerPipeline):
         Returns:
             dict: Rendered Pipeline wrapper.
         """
-        base = self.settings['pipeline']['base']
-
-        if self.base:
-            base = self.base
-
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
         deploy_type = self.settings['pipeline']['type']
@@ -62,7 +56,6 @@ class SpinnakerPipelineCloudFunction(SpinnakerPipeline):
                 'appname': self.app_name,
                 'group_name': self.group_name,
                 'repo_name': self.repo_name,
-                'base': base,
                 'deploy_type': deploy_type,
                 'environment': 'packaging',
                 'region': region,
@@ -104,24 +97,15 @@ class SpinnakerPipelineCloudFunction(SpinnakerPipeline):
 
         pipelines = {}
         for region, envs in regions_envs.items():
-            # TODO: Overrides for an environment no longer makes sense. Need to
-            # provide override for entire Region possibly.
             pipelines[region] = self.render_wrapper(region=region)
 
             previous_env = None
             for env in envs:
-                try:
-                    region_subnets = {region: subnets[env][region]}
-                except KeyError:
-                    self.log.info('%s is not available for %s.', env, region)
-                    continue
-
                 block = construct_pipeline_block_cloudfunction(
                     env=env,
                     generated=self.generated,
                     previous_env=previous_env,
                     region=region,
-                    region_subnets=region_subnets,
                     settings=self.settings[env][region],
                     pipeline_data=self.settings['pipeline'])
                 pipelines[region]['stages'].extend(json.loads(block))
