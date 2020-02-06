@@ -205,7 +205,7 @@ REGIONS = set(validate_key_values(CONFIG, 'base', 'regions', default='').split('
 MANUAL_TYPES = set(
     validate_key_values(CONFIG, 'base', 'manual_types', default='manual').split(','))
 ALLOWED_TYPES = set(
-    validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling')
+    validate_key_values(CONFIG, 'base', 'types', default='ec2,lambda,s3,datapipeline,rolling,cloudfunction')
     .split(','))
 RUNWAY_BASE_PATH = validate_key_values(CONFIG, 'base', 'runway_base_path', default='runway')
 TEMPLATES_PATH = validate_key_values(CONFIG, 'base', 'templates_path')

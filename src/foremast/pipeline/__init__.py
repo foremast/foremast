@@ -20,3 +20,4 @@ from .create_pipeline_lambda import SpinnakerPipelineLambda
 from .create_pipeline_manual import SpinnakerPipelineManual
 from .create_pipeline_onetime import SpinnakerPipelineOnetime
 from .create_pipeline_s3 import SpinnakerPipelineS3
+from .create_pipeline_cloudfunction import SpinnakerPipelineCloudFunction
