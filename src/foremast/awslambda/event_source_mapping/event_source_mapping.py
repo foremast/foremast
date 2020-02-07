@@ -45,7 +45,7 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             'starting_position': 'TRIM_HORIZON',
             'split_on_error': False,
             'max_retry_attempts': 10000,
-            'destination_config':{}
+            'destination_config': {}
         },
         'kinesis-stream': {
             'service_name': 'Kinesis Stream',
@@ -54,7 +54,7 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             'starting_position': 'TRIM_HORIZON',
             'split_on_error': False,
             'max_retry': 10000,
-            'destination_config':{}
+            'destination_config': {}
         },
         'sqs': {
             'service_name': 'SQS Queue',
