@@ -89,11 +89,16 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
                 lambda_client.update_event_source_mapping(
                     UUID=event_uuid,
                     FunctionName=lambda_alias_arn,
-                    BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
-                    MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']),
-                    BisectBatchOnFunctionError=rules.get('split_on_error', event_defaults[event_source]['split_on_error']),
-                    MaximumRetryAttempts=rules.get('max_retry', event_defaults[event_source]['max_retry']),
-                    DestinationConfig=rules.get('destination_config', event_defaults[event_source]['destination_config']))
+                    BatchSize=rules.
+                    get('batch_size', event_defaults[event_source]['batch_size']),
+                    MaximumBatchingWindowInSeconds=rules.
+                    get('batch_window', event_defaults[event_source]['batch_window']),
+                    BisectBatchOnFunctionError=rules.
+                    get('split_on_error', event_defaults[event_source]['split_on_error']),
+                    MaximumRetryAttempts=rules.
+                    get('max_retry', event_defaults[event_source]['max_retry']),
+                    DestinationConfig=rules.
+                    get('destination_config', event_defaults[event_source]['destination_config']))
                 LOG.debug('{0} event trigger updated'.format(event_defaults[event_source]['service_name']))
             except KeyError:
                 LOG.debug('{0} ran into KeyError, trying alternative update method'.format(
@@ -115,12 +120,18 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             lambda_client.create_event_source_mapping(
                 EventSourceArn=event_source_arn,
                 FunctionName=lambda_alias_arn,
-                BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
-                MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']),
-                StartingPosition=rules.get('starting_position', event_defaults[event_source]['starting_position']),
-                BisectBatchOnFunctionError=rules.get('split_on_error', event_defaults[event_source]['split_on_error']),
-                MaximumRetryAttempts=rules.get('max_retry', event_defaults[event_source]['max_retry']),
-                DestinationConfig=rules.get('destination_config', event_defaults[event_source]['destination_config']))
+                BatchSize=rules.
+                get('batch_size', event_defaults[event_source]['batch_size']),
+                MaximumBatchingWindowInSeconds=rules.
+                get('batch_window', event_defaults[event_source]['batch_window']),
+                StartingPosition=rules.
+                get('starting_position', event_defaults[event_source]['starting_position']),
+                BisectBatchOnFunctionError=rules.
+                get('split_on_error', event_defaults[event_source]['split_on_error']),
+                MaximumRetryAttempts=rules.
+                get('max_retry', event_defaults[event_source]['max_retry']),
+                DestinationConfig=rules.
+                get('destination_config', event_defaults[event_source]['destination_config']))
         LOG.debug('{0} event hello 2 trigger created'.format(event_defaults[event_source]['service_name']))
 
     LOG.info('Created {} event trigger on {} for {}'.format(event_defaults[event_source]['service_name'],
