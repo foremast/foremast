@@ -50,14 +50,28 @@ This example would go in the :ref:`application_json` configuration file.
          "stream_arn": "",
          "batch_size": 100,
          "batch_window": 0,
-         "starting_position": "TRIM_HORIZON"
+         "starting_position": "TRIM_HORIZON",
+         "max_retry": 3000,
+         "split_on_error": true,
+         "destination_config":{
+         "OnFailure": {
+            "Destination":"arn:aws:sns:us-east-1:111111111111:snstest-queue"
+            }
+         }
        },
        {
          "type": "kinesis-stream",
          "stream_arn": "arn:aws:kinesis:us-east-1:111111111111:stream/kinesistest-stream",
          "batch_size": 100,
          "batch_window": 0,
-         "starting_position": "TRIM_HORIZON"
+         "starting_position": "TRIM_HORIZON",
+         "max_retry": 3000,
+         "split_on_error": true,
+         "destination_config":{
+         "OnFailure": {
+            "Destination":"arn:aws:sqs:us-east-1:111111111111:sqstest-queue"
+            }
+         }
        },
        {
          "type": "s3",
@@ -319,6 +333,42 @@ A lambda event that triggers off a Cloudwatch log action.
             -  ``TRIM_HORIZON``
             -  ``LATEST``
 
+``max_retry``
+^^^^^^^^^^^^^^^^^^^^^
+
+    Skips retrying a batch of records when it has reached the Maximum Retry Attempts.
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``10000``
+        | *Max*: ``10000``  
+
+``split_on_error``
+^^^^^^^^^^^^^^^^^^^^^
+
+    Breaks the impacted batch of records into two when a function returns an error, and retries them separately.
+
+        | *Type*: boolean
+        | *Required*: False
+        | *Default*: ``false``
+        | *Options*:
+
+            -  ``true``
+            -  ``false``
+
+``destination_config``
+^^^^^^^^^^^^^^^^^^^^^
+
+     Continue processing records after error, and send metadata of bad data record to an SQS queue or SNS topic.
+
+        | *Type*: string
+        | *Required*: False
+        | *Default*: ````
+        | *Options*:
+
+            -  ``arn:aws:sqs:us-east-1:111111111111:sqstest-queue``
+            -  ``arn:aws:sns:us-east-1:111111111111:snstest-queue``
+
 ``kinesis-stream`` Trigger *Keys*
 =================================
 
@@ -367,6 +417,42 @@ A lambda event that triggers off a Cloudwatch log action.
 
             -  ``TRIM_HORIZON``
             -  ``LATEST``
+
+``max_retry``
+^^^^^^^^^^^^^^^^^^^^^
+
+    Skips retrying a batch of records when it has reached the Maximum Retry Attempts.
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``10000``
+        | *Max*: ``10000``  
+
+``split_on_error``
+^^^^^^^^^^^^^^^^^^^^^
+
+    Breaks the impacted batch of records into two when a function returns an error, and retries them separately.
+
+        | *Type*: boolean
+        | *Required*: False
+        | *Default*: ``false``
+        | *Options*:
+
+            -  ``true``
+            -  ``false``
+
+``destination_config``
+^^^^^^^^^^^^^^^^^^^^^
+
+     Continue processing records after error, and send metadata of bad data record to an SQS queue or SNS topic.
+
+        | *Type*: string
+        | *Required*: False
+        | *Default*: ````
+        | *Options*:
+
+            -  ``arn:aws:sqs:us-east-1:111111111111:sqstest-queue``
+            -  ``arn:aws:sns:us-east-1:111111111111:snstest-queue``
 
 ``s3`` Trigger *Keys*
 =====================

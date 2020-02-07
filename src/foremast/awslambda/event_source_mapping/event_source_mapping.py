@@ -42,13 +42,19 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             'service_name': 'DynamoDB Stream',
             'batch_size': 100,
             'batch_window': 0,
-            'starting_position': 'TRIM_HORIZON'
+            'starting_position': 'TRIM_HORIZON',
+            'split_on_error': False,
+            'max_retry_attempts': 10000,
+            'destination_config':{}
         },
         'kinesis-stream': {
             'service_name': 'Kinesis Stream',
             'batch_size': 100,
             'batch_window': 0,
-            'starting_position': 'TRIM_HORIZON'
+            'starting_position': 'TRIM_HORIZON',
+            'split_on_error': False,
+            'max_retry': 10000,
+            'destination_config':{}
         },
         'sqs': {
             'service_name': 'SQS Queue',
@@ -79,12 +85,25 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
     for each_source in event_sources['EventSourceMappings']:
         if each_source['EventSourceArn'] == event_source_arn:
             event_uuid = each_source['UUID']
-            lambda_client.update_event_source_mapping(
-                UUID=event_uuid,
-                FunctionName=lambda_alias_arn,
-                BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
-                MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']))
-            LOG.debug('{0} event trigger updated'.format(event_defaults[event_source]['service_name']))
+            try:
+                lambda_client.update_event_source_mapping(
+                    UUID=event_uuid,
+                    FunctionName=lambda_alias_arn,
+                    BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
+                    MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']),
+                    BisectBatchOnFunctionError=rules.get('split_on_error', event_defaults[event_source]['split_on_error']),
+                    MaximumRetryAttempts=rules.get('max_retry', event_defaults[event_source]['max_retry']),
+                    DestinationConfig=rules.get('destination_config', event_defaults[event_source]['destination_config']))
+                LOG.debug('{0} event trigger updated'.format(event_defaults[event_source]['service_name']))
+            except KeyError:
+                LOG.debug('{0} ran into KeyError, trying alternative update method'.format(
+                    event_defaults[event_source]['service_name']))
+            else:
+                lambda_client.update_event_source_mapping(
+                    UUID=event_uuid,
+                    FunctionName=lambda_alias_arn,
+                    BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']))
+                LOG.debug('{0} event hello trigger updated'.format(event_defaults[event_source]['service_name']))
             break
     else:
         if event_source == 'sqs':
@@ -98,8 +117,11 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
                 FunctionName=lambda_alias_arn,
                 BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']),
                 MaximumBatchingWindowInSeconds=rules.get('batch_window', event_defaults[event_source]['batch_window']),
-                StartingPosition=rules.get('starting_postion', event_defaults[event_source]['starting_position']))
-        LOG.debug('{0} event trigger created'.format(event_defaults[event_source]['service_name']))
+                StartingPosition=rules.get('starting_position', event_defaults[event_source]['starting_position']),
+                BisectBatchOnFunctionError=rules.get('split_on_error', event_defaults[event_source]['split_on_error']),
+                MaximumRetryAttempts=rules.get('max_retry', event_defaults[event_source]['max_retry']),
+                DestinationConfig=rules.get('destination_config', event_defaults[event_source]['destination_config']))
+        LOG.debug('{0} event hello 2 trigger created'.format(event_defaults[event_source]['service_name']))
 
     LOG.info('Created {} event trigger on {} for {}'.format(event_defaults[event_source]['service_name'],
                                                             lambda_alias_arn, event_source_arn))
