@@ -369,6 +369,16 @@ A lambda event that triggers off a Cloudwatch log action.
             -  ``arn:aws:sqs:us-east-1:111111111111:sqstest-queue``
             -  ``arn:aws:sns:us-east-1:111111111111:snstest-queue``
 
+``max_record_age``
+^^^^^^^^^^^^^^^^^^^^^
+
+    Maximum age of a record that is send to the function for processing.
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``604800``
+        | *Max*: ``604800`` 
+
 ``kinesis-stream`` Trigger *Keys*
 =================================
 
@@ -453,6 +463,16 @@ A lambda event that triggers off a Cloudwatch log action.
 
             -  ``arn:aws:sqs:us-east-1:111111111111:sqstest-queue``
             -  ``arn:aws:sns:us-east-1:111111111111:snstest-queue``
+
+``max_record_age``
+^^^^^^^^^^^^^^^^^^^^^
+
+    Maximum age of a record that is send to the function for processing.
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``604800``
+        | *Max*: ``604800`` 
 
 ``s3`` Trigger *Keys*
 =====================
