@@ -45,7 +45,8 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             'starting_position': 'TRIM_HORIZON',
             'split_on_error': False,
             'max_retry_attempts': 10000,
-            'destination_config': {}
+            'destination_config': {},
+            'max_record_age': 604800
         },
         'kinesis-stream': {
             'service_name': 'Kinesis Stream',
@@ -54,7 +55,8 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             'starting_position': 'TRIM_HORIZON',
             'split_on_error': False,
             'max_retry': 10000,
-            'destination_config': {}
+            'destination_config': {},
+            'max_record_age': 604800
         },
         'sqs': {
             'service_name': 'SQS Queue',
@@ -98,7 +100,9 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
                 MaximumRetryAttempts=rules.
                 get('max_retry', event_defaults[event_source]['max_retry']),
                 DestinationConfig=rules.
-                get('destination_config', event_defaults[event_source]['destination_config']))
+                get('destination_config', event_defaults[event_source]['destination_config']),
+                MaximumRecordAgeInSeconds=rules.
+                get('max_record_age', event_defaults[event_source]['max_record_age']))
             LOG.debug('{0} event trigger updated'.format(event_defaults[event_source]['service_name']))
             break
         else:
@@ -130,7 +134,9 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
                 MaximumRetryAttempts=rules.
                 get('max_retry', event_defaults[event_source]['max_retry']),
                 DestinationConfig=rules.
-                get('destination_config', event_defaults[event_source]['destination_config']))
+                get('destination_config', event_defaults[event_source]['destination_config']),
+                MaximumRecordAgeInSeconds=rules.
+                get('max_record_age', event_defaults[event_source]['max_record_age']))
         LOG.debug('{0} event trigger created'.format(event_defaults[event_source]['service_name']))
 
     LOG.info('Created {} event trigger on {} for {}'.format(event_defaults[event_source]['service_name'],
