@@ -8,13 +8,26 @@
     "master": "JenkinsCI",
     "job": "cloudfunction-promote",
     "parameters": {
-      "PROJECT": "{{ data.app.group_name }}",
-      "GIT_REPO": "{{ data.app.repo_name }}",
-      "ENV": "{{ data.app.environment }}",
-      "REGION": "{{ data.app.region }}",
-      "OWNER_EMAIL": "{{ data.app.owner_email }}",
-      "FUNCTION_NAME": "{{ data.app.function_name }}",
-      "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
-      "APP_NAME": "{{ data.app.appname }}"
-      }
+        "PROJECT": "{{ data.app.group_name }}",
+        "GIT_REPO": "{{ data.app.repo_name }}",
+        "ENV": "{{ data.app.environment }}",
+        "REGION": "{{ data.app.region }}",
+        "OWNER_EMAIL": "{{ data.app.owner_email }}",
+        "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
+        "APP_NAME": "{{ data.app.appname }}",
+
+        "VPC_CONNECTOR": "{{ data.app.vpc_connector }}",
+        "MEMORY": "{{ data.app.memory }}",
+        "IGNORE_FILE": "{{ data.app.ignore_file }}",
+        "SERVICE_ACCOUNT": "{{ data.app.service_account }}",
+        "MAX_INSTANCES": "{{ data.app.max_instances }}",
+        "ENTRY_POINT": "{{ data.app.entry_point }}",
+        "GCP_PROJECT": "{{ data.app.gcp_project }}",
+        "RUNTIME": "{{ data.app.runtime }}",
+        "TRIGGER_TYPE": "{{ data.app.trigger_type }}",
+        "TRIGGER_TOPIC": "{{ data.app.trigger_topic }}",
+        "TRIGGER_EVENT": "{{ data.app.trigger_event }}",
+        "TRIGGER_RESOURCE": "{{ data.app.trigger_resource }}",
+        "TRIGGER_BUCKET": "{{ data.app.trigger_bucket }}"
+    }
   }
