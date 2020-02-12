@@ -15,22 +15,20 @@
 #   limitations under the License.
 """Construct a block section of Stages in a Spinnaker Pipeline."""
 import copy
-import json
 import logging
 from pprint import pformat
 
-from ..consts import DEFAULT_EC2_SECURITYGROUPS
-from ..utils import generate_encoded_user_data, get_template, remove_duplicate_sg
+from ..utils import generate_encoded_user_data, get_template
 
 LOG = logging.getLogger(__name__)
 
 
 def construct_pipeline_block_cloudfunction(env='',
-                                    generated=None,
-                                    previous_env=None,
-                                    region='us-east1',
-                                    settings=None,
-                                    pipeline_data=None):
+                                           generated=None,
+                                           previous_env=None,
+                                           region='us-east1',
+                                           settings=None,
+                                           pipeline_data=None):
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -43,6 +41,7 @@ def construct_pipeline_block_cloudfunction(env='',
             Trigger.
         region (str): GCP Region to deploy to.
         settings (dict): Environment settings from configurations.
+        pipeline_data (dict): Data from pipeline configuration
 
     Returns:
         dict: Pipeline JSON template rendered with configurations.
