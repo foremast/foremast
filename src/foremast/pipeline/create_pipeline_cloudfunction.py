@@ -19,7 +19,7 @@ import json
 from pprint import pformat
 
 from ..consts import DEFAULT_RUN_AS_USER
-from ..utils import get_subnets, get_template
+from ..utils import get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_cloudfunction import construct_pipeline_block_cloudfunction
 from .create_pipeline import SpinnakerPipeline
@@ -27,13 +27,7 @@ from .renumerate_stages import renumerate_stages
 
 
 class SpinnakerPipelineCloudFunction(SpinnakerPipeline):
-    """Manipulate Spinnaker Pipelines.
-
-    Args:
-        app (str): Application name.
-        trigger_job (str): Jenkins trigger job.
-        prop_path (str): Path to the raw.properties.json.
-    """
+    """Creates a Cloud Function Spinnaker pipeline"""
 
     def render_wrapper(self, region='us-east1'):
         """Generate the base Pipeline wrapper.
@@ -92,8 +86,6 @@ class SpinnakerPipelineCloudFunction(SpinnakerPipeline):
             for region in self.settings[env]['regions']:
                 regions_envs[region].append(env)
         self.log.info('Environments and Regions for Pipelines:\n%s', json.dumps(regions_envs, indent=4))
-
-        subnets = get_subnets()
 
         pipelines = {}
         for region, envs in regions_envs.items():
