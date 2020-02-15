@@ -20,6 +20,7 @@ TEST_PROPERTIES = {
         'lambda_layers': None,
         'lambda_dlq': None,
         'lambda_tracing': None,
+        'lambda_qualifier_permission': None,
     }
 }
 GENERATED_IAM = {

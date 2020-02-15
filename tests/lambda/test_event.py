@@ -58,6 +58,7 @@ def get_properties_with_triggers(triggers):
             'lambda_layers': None,
             'lambda_dlq': None,
             'lambda_tracing': None,
+            'lambda_qualifier_permission': None,
         },
         "lambda_triggers": triggers
     }
