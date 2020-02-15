@@ -61,7 +61,7 @@ class LambdaFunction:
         self.lambda_environment = app['lambda_environment']
         self.lambda_layers = app['lambda_layers']
         self.lambda_dlq = app['lambda_dlq']
-        self.qualifier_permissions = app['qualifier_permissions']
+        self.lambda_qualifier_permissions = app['lambda_qualifier_permissions']
         self.lambda_tracing = app['lambda_tracing']
         self.memory = app['lambda_memory']
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
@@ -176,7 +176,7 @@ class LambdaFunction:
         lambda_arn = get_lambda_arn(app=app_name, account=env, region=region)
         account_id = get_env_credential(env=env)['accountId']
 
-        for qualifiers in self.qualifier_permissions:
+        for qualifiers in self.lambda_qualifier_permissions:
             principal = qualifiers['principal']
             statement_id = qualifiers['statement-id']
             source_arn = qualifiers['source-arn']
