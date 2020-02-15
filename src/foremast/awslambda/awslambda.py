@@ -55,13 +55,13 @@ class LambdaFunction:
         self.description = self.pipeline['app_description']
         self.handler = self.pipeline['handler']
         self.vpc_enabled = self.pipeline['vpc_enabled']
-        self.qualifier_permissions = self.pipeline['qualifier_permissions']
 
         self.settings = get_properties(prop_path, env=self.env, region=self.region)
         app = self.settings['app']
         self.lambda_environment = app['lambda_environment']
         self.lambda_layers = app['lambda_layers']
         self.lambda_dlq = app['lambda_dlq']
+        self.qualifier_permissions = app['qualifier_permissions']
         self.lambda_tracing = app['lambda_tracing']
         self.memory = app['lambda_memory']
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
