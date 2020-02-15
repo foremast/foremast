@@ -134,6 +134,26 @@ Environment variables which are passed to the lambda function.
        }
    }
 
+``lambda_qualifier_permission``
+**********************
+
+When using an S3 pipeline to a bucket with multiple lambda functions they don't have any out of the box granted permissions to invoke the function in the instance of e.g. an S3 put event. 
+
+    | *Type*: Object
+    | *Default*: ``{}``
+
+``lambda_qualifier_permission`` *Example*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: json
+
+   "lambda_qualifier_permission": {
+            "statement-id": "s3-datalake-access", 
+            "principal": "s3.amazonaws.com", 
+            "source-arn": "arn:aws:s3:::bucket"
+        }
+
+
 ``lambda_layers``
 *****************
 

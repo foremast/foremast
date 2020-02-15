@@ -22,7 +22,7 @@ import boto3
 from tryagain import retries
 
 from ..exceptions import RequiredKeyNotFound
-from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets
+from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets, get_env_credential, add_lambda_permissions
 
 LOG = logging.getLogger(__name__)
 
@@ -55,6 +55,7 @@ class LambdaFunction:
         self.description = self.pipeline['app_description']
         self.handler = self.pipeline['handler']
         self.vpc_enabled = self.pipeline['vpc_enabled']
+        self.qualifier_permissions = self.pipeline['qualifier_permissions']
 
         self.settings = get_properties(prop_path, env=self.env, region=self.region)
         app = self.settings['app']
@@ -106,6 +107,21 @@ class LambdaFunction:
             LOG.info('No alias %s found for function %s', self.env, self.app_name)
         return matched_alias
 
+    def _check_lambda_qualifier_permission(self):
+        """Check if lambda function qualifier exists.
+
+        Returns:
+            True if qualifier does exist
+            False if qualifier does not exist
+        """
+        exists = False
+        try:
+            self.lambda_client.get_policy(FunctionName=self.app_name, Qualifier=self.env)
+            exists = True
+        except boto3.exceptions.botocore.exceptions.ClientError:
+            pass
+        return exists
+
     def _vpc_config(self):
         """Get VPC config."""
         if self.vpc_enabled:
@@ -151,6 +167,28 @@ class LambdaFunction:
             LOG.debug('Create alias error: %s', error)
             LOG.info("Alias creation failed. Retrying...")
             raise
+
+    @retries(max_attempts=3, wait=1, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
+    def create_qualifier_permissions(self):
+        """Create lambda qualifier"""
+        LOG.info('Creating lambda qualifier permissions %s', self.env)
+
+        lambda_arn = get_lambda_arn(app=app_name, account=env, region=region)
+        account_id = get_env_credential(env=env)['accountId']
+
+        for qualifiers in self.qualifier_permissions:
+            principal = qualifiers['principal']
+            statement_id = qualifiers['statement-id']
+            source_arn = qualifiers['source-arn']
+
+            add_lambda_permissions(
+                function=lambda_arn,
+                statement_id=statement_id,
+                action='lambda:InvokeFunction',
+                principal=principal,
+                source_arn=source_arn,
+                env=env,
+                region=region)
 
     @retries(max_attempts=3, wait=1, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
     def update_alias(self):
@@ -274,3 +312,7 @@ class LambdaFunction:
             self.update_alias()
         else:
             self.create_alias()
+
+        if self.settings['app']['lambda_qualifier_permission']:
+            if not self._check_lambda_qualifier_permission():
+                self.create_qualifier_permissions
