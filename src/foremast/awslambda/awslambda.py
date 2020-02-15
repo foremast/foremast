@@ -61,7 +61,7 @@ class LambdaFunction:
         self.lambda_environment = app['lambda_environment']
         self.lambda_layers = app['lambda_layers']
         self.lambda_dlq = app['lambda_dlq']
-        self.lambda_qualifier_permissions = app['lambda_qualifier_permissions']
+        self.lambda_qualifier_permission = app['lambda_qualifier_permission']
         self.lambda_tracing = app['lambda_tracing']
         self.memory = app['lambda_memory']
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
