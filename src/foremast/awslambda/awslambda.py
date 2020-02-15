@@ -23,7 +23,7 @@ from tryagain import retries
 
 from ..exceptions import RequiredKeyNotFound
 from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets
-from ..utils import get_env_credential, add_lambda_permissions
+from ..utils import add_lambda_permissions
 LOG = logging.getLogger(__name__)
 
 
@@ -174,7 +174,6 @@ class LambdaFunction:
         LOG.info('Creating lambda qualifier permissions %s', self.env)
 
         lambda_arn = get_lambda_arn(app=self.app_name, account=self.env, region=self.region)
-        account_id = get_env_credential(env=self.env)['accountId']
 
         for qualifiers in self.lambda_qualifier_permissions:
             principal = qualifiers['principal']
