@@ -24,6 +24,7 @@ def get_jinja_functions():
     functions = dict()
     functions[get_canary_id.__name__] = get_canary_id
     functions[get_pipeline_id.__name__] = get_pipeline_id
+    functions[raise_exception.__name__] = raise_exception
 
     return functions
 
@@ -37,3 +38,8 @@ def get_jinja_variables(pipeline):
     variables["repo_name"] = pipeline.repo_name
 
     return variables
+
+
+def raise_exception(message):
+    """A function for raising an exception from inside a Jinja Template"""
+    raise Exception(message)
