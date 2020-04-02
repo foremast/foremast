@@ -17,27 +17,48 @@
 directly interface with IAM so this package mostly uses Google's cloud packages
 """
 
-from google.oauth2 import service_account
 import googleapiclient.discovery
+import logging
 
-def create_service_account(project_id, name, display_name):
+LOG = logging.getLogger(__name__)
+
+
+def create_service_account(credentials, project_id, name):
     """Creates a service account."""
 
-    credentials = service_account.Credentials.from_service_account_file(
-        filename=os.environ['GOOGLE_APPLICATION_CREDENTIALS'],
-        scopes=['https://www.googleapis.com/auth/cloud-platform'])
+    service_accounts = list_service_accounts(credentials, project_id)
+
+    # Check if the SA already exists
+    for account in service_accounts['accounts']:
+        if name == account['displayName']:
+            LOG.info("GCP service account %s already exists", name)
+            return
+
+    LOG.info("GCP service account %s does not exist", name)
 
     service = googleapiclient.discovery.build(
-        'iam', 'v1', credentials=credentials)
+        'iam', 'v1', credentials=credentials, cache_discovery=False)
 
-    my_service_account = service.projects().serviceAccounts().create(
+    app_svc_account = service.projects().serviceAccounts().create(
         name='projects/' + project_id,
         body={
             'accountId': name,
             'serviceAccount': {
-                'displayName': display_name
+                'displayName': name
             }
         }).execute()
 
-    print('Created service account: ' + my_service_account['email'])
-    return my_service_account
+    LOG.info("Created GCP service account with email %s", app_svc_account['email'])
+    return app_svc_account
+
+
+def list_service_accounts(credentials, project_id):
+    """Lists all service accounts for the given project."""
+
+    service = googleapiclient.discovery.build(
+        'iam', 'v1', credentials=credentials, cache_discovery=False)
+
+    service_accounts = service.projects().serviceAccounts().list(
+        name='projects/' + project_id).execute()
+
+    return service_accounts
