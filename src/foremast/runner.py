@@ -33,10 +33,11 @@ import os
 import gogoutils
 
 from . import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
-               scheduled_actions, securitygroup, slacknotify, utils)
+               scheduled_actions, securitygroup, slacknotify, utils, gcp_iam)
 from .app import SpinnakerApp
 from .args import add_debug
 from .exceptions import ForemastError
+from .utils import gcp_environment
 
 LOG = logging.getLogger(__name__)
 
@@ -131,9 +132,16 @@ class ForemastRunner:
 
         spinnakerpipeline.create_pipeline()
 
-    def create_iam(self):
-        """Create IAM resources."""
-        utils.banner("Creating IAM")
+    def create_gcp_iam(self, env: gcp_environment.GcpEnvironment):
+        """Create GCP IAM resources."""
+        utils.banner("Creating GCP IAM")
+        gcp_iam.create_service_account(credentials=env.get_credentials(),
+                                       project_id=env.service_account_project,
+                                       name=self.app)
+
+    def create_aws_iam(self):
+        """Create AWS IAM resources."""
+        utils.banner("Creating AWS IAM")
         iam.create_iam_resources(env=self.env, app=self.app)
 
     def create_archaius(self):
@@ -279,10 +287,10 @@ def prepare_infrastructure():
         raise ForemastError("pipeline.type is required")
 
     if pipeline_type in consts.GCP_TYPES:
-        LOG.info("Will create GCP Infrastructure for pipeline.type '{0}'", pipeline_type)
-
+        LOG.info("Will create GCP Infrastructure for pipeline.type '%s'", pipeline_type)
+        prepare_infrastructure_gcp(runner)
     elif pipeline_type in consts.AWS_TYPES:
-        LOG.info("Will create AWS Infrastructure for pipeline.type '{0}'", pipeline_type)
+        LOG.info("Will create AWS Infrastructure for pipeline.type '%s'", pipeline_type)
         prepare_infrastructure_aws(runner, pipeline_type)
     else:
         error_message = ("pipeline.type of '{0}' is not supported. "
@@ -291,18 +299,24 @@ def prepare_infrastructure():
                          ).format(pipeline_type)
         raise ForemastError(error_message)
 
-def prepare_infrastructure_gcp(runner, deploy_type):
-    """Creates GCP infrastructure for a specific env."""
-    LOG.info("hi from GCP")
 
-def prepare_infrastructure_aws(runner, deploy_type):
+def prepare_infrastructure_gcp(runner):
+    """Creates GCP infrastructure for a specific env."""
+    all_gcp_envs = gcp_environment.GcpEnvironment.get_environments_from_config()
+    if runner.env not in all_gcp_envs:
+        raise ForemastError("GCP environment %s not found in configuration", runner.env)
+    current_env = all_gcp_envs[runner.env]
+    runner.create_gcp_iam(current_env)
+
+
+def prepare_infrastructure_aws(runner, pipeline_type):
     """Creates AWS infrastructure for a specific env."""
     archaius = runner.configs[runner.env]['app']['archaius_enabled']
     eureka = runner.configs[runner.env]['app']['eureka_enabled']
 
     runner.create_app()
 
-    if deploy_type not in ['s3', 'datapipeline']:
+    if pipeline_type not in ['s3', 'datapipeline']:
         runner.create_iam()
         # TODO: Refactor Archaius to be fully featured
         if archaius:
@@ -311,12 +325,12 @@ def prepare_infrastructure_aws(runner, deploy_type):
 
     if eureka:
         LOG.info("Eureka Enabled, skipping ELB and DNS setup")
-    elif deploy_type == "lambda":
+    elif pipeline_type == "lambda":
         LOG.info("Lambda Enabled, skipping ELB and DNS setup")
         runner.create_awslambda()
-    elif deploy_type == "s3":
+    elif pipeline_type == "s3":
         runner.create_s3app()
-    elif deploy_type == 'datapipeline':
+    elif pipeline_type == 'datapipeline':
         runner.create_datapipeline()
     else:
         LOG.info("No Eureka, running ELB and DNS setup")
@@ -325,6 +339,7 @@ def prepare_infrastructure_aws(runner, deploy_type):
 
     runner.slack_notify()
     runner.cleanup()
+
 
 def prepare_app_pipeline():
     """Entry point for application setup and initial pipeline in Spinnaker."""

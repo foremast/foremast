@@ -251,6 +251,8 @@ GATE_CLIENT_CERT = expandvars(expanduser(validate_key_values(CONFIG, 'base', 'ga
 GATE_CA_BUNDLE = expandvars(expanduser(validate_key_values(CONFIG, 'base', 'gate_ca_bundle', default='')))
 LINKS = _convert_string_to_native(validate_key_values(CONFIG, 'links', 'default', default='{}'))
 
+GCP_ENVS = validate_key_values(CONFIG, 'gcp', 'envs', default={})
+
 HEADERS = {
     'accept': '*/*',
     'content-type': 'application/json',
