@@ -36,6 +36,7 @@ from . import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns
                scheduled_actions, securitygroup, slacknotify, utils)
 from .app import SpinnakerApp
 from .args import add_debug
+from .exceptions import ForemastError
 
 LOG = logging.getLogger(__name__)
 
@@ -268,13 +269,38 @@ class ForemastRunner:
 def prepare_infrastructure():
     """Entry point for preparing the infrastructure in a specific env."""
     runner = ForemastRunner()
-
     runner.write_configs()
-    runner.create_app()
 
+    try:
+        pipeline_type = runner.configs['pipeline']['type']
+        if pipeline_type is None or pipeline_type.isspace():
+            raise ForemastError("pipeline.type is required")
+    except KeyError:
+        raise ForemastError("pipeline.type is required")
+
+    if pipeline_type in consts.GCP_TYPES:
+        LOG.info("Will create GCP Infrastructure for pipeline.type '{0}'", pipeline_type)
+
+    elif pipeline_type in consts.AWS_TYPES:
+        LOG.info("Will create AWS Infrastructure for pipeline.type '{0}'", pipeline_type)
+        prepare_infrastructure_aws(runner, pipeline_type)
+    else:
+        error_message = ("pipeline.type of '{0}' is not supported. "
+                         "If this is a manual pipeline it is required you specify the " 
+                         "pipeline type in AWS_MANUAL_TYPES or GCP_MANUAL_TYPES"
+                         ).format(pipeline_type)
+        raise ForemastError(error_message)
+
+def prepare_infrastructure_gcp(runner, deploy_type):
+    """Creates GCP infrastructure for a specific env."""
+    LOG.info("hi from GCP")
+
+def prepare_infrastructure_aws(runner, deploy_type):
+    """Creates AWS infrastructure for a specific env."""
     archaius = runner.configs[runner.env]['app']['archaius_enabled']
     eureka = runner.configs[runner.env]['app']['eureka_enabled']
-    deploy_type = runner.configs['pipeline']['type']
+
+    runner.create_app()
 
     if deploy_type not in ['s3', 'datapipeline']:
         runner.create_iam()
@@ -299,7 +325,6 @@ def prepare_infrastructure():
 
     runner.slack_notify()
     runner.cleanup()
-
 
 def prepare_app_pipeline():
     """Entry point for application setup and initial pipeline in Spinnaker."""
