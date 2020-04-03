@@ -25,6 +25,7 @@ class GcpEnvironment:
         self.name = name
         self.service_account_project = None
         self.service_account_path = None
+        self.secret_manager_project = None
         self.__dict__.update(entries)
 
     def get_credentials(self):

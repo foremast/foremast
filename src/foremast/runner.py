@@ -37,7 +37,7 @@ from . import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns
 from .app import SpinnakerApp
 from .args import add_debug
 from .exceptions import ForemastError
-from .utils import gcp_environment
+from .utils.gcp_environment import GcpEnvironment
 
 LOG = logging.getLogger(__name__)
 
@@ -132,17 +132,18 @@ class ForemastRunner:
 
         spinnakerpipeline.create_pipeline()
 
-    def create_gcp_iam(self, env: gcp_environment.GcpEnvironment):
-        """Create GCP IAM resources."""
-        utils.banner("Creating GCP IAM")
-        gcp_iam.create_service_account(credentials=env.get_credentials(),
-                                       project_id=env.service_account_project,
-                                       name=self.app)
-
     def create_aws_iam(self):
         """Create AWS IAM resources."""
         utils.banner("Creating AWS IAM")
         iam.create_iam_resources(env=self.env, app=self.app)
+
+    def create_gcp_iam(self, env: GcpEnvironment):
+        """Create GCP IAM resources."""
+        utils.banner("Creating GCP IAM")
+        services = None
+        if "services" in self.configs["pipeline"]:
+            services = self.configs["pipeline"]["services"]
+        gcp_iam.create_iam_resources(env=env, app_name=self.app, services=services)
 
     def create_archaius(self):
         """Create S3 bucket for Archaius."""
@@ -302,11 +303,11 @@ def prepare_infrastructure():
 
 def prepare_infrastructure_gcp(runner):
     """Creates GCP infrastructure for a specific env."""
-    all_gcp_envs = gcp_environment.GcpEnvironment.get_environments_from_config()
+    all_gcp_envs = GcpEnvironment.get_environments_from_config()
     if runner.env not in all_gcp_envs:
         raise ForemastError("GCP environment %s not found in configuration", runner.env)
-    current_env = all_gcp_envs[runner.env]
-    runner.create_gcp_iam(current_env)
+    env = all_gcp_envs[runner.env]
+    runner.create_gcp_iam(env)
 
 
 def prepare_infrastructure_aws(runner, pipeline_type):
@@ -317,7 +318,7 @@ def prepare_infrastructure_aws(runner, pipeline_type):
     runner.create_app()
 
     if pipeline_type not in ['s3', 'datapipeline']:
-        runner.create_iam()
+        runner.create_aws_iam()
         # TODO: Refactor Archaius to be fully featured
         if archaius:
             runner.create_archaius()
