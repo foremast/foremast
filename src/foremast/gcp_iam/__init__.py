@@ -17,48 +17,10 @@
 directly interface with IAM so this package mostly uses Google's cloud packages
 """
 
-import googleapiclient.discovery
 import logging
+from .service_account import create_service_account, list_service_accounts
+from .policy import get_policy, set_policy, modify_policy_remove_member, modify_policy_add_binding
+from .secretmanager import modify_policy_grant_secrets
+from .create_iam_resources import create_iam_resources
 
 LOG = logging.getLogger(__name__)
-
-
-def create_service_account(credentials, project_id, name):
-    """Creates a service account."""
-
-    service_accounts = list_service_accounts(credentials, project_id)
-
-    # Check if the SA already exists
-    for account in service_accounts['accounts']:
-        if name == account['displayName']:
-            LOG.info("GCP service account %s already exists", name)
-            return
-
-    LOG.info("GCP service account %s does not exist", name)
-
-    service = googleapiclient.discovery.build(
-        'iam', 'v1', credentials=credentials, cache_discovery=False)
-
-    app_svc_account = service.projects().serviceAccounts().create(
-        name='projects/' + project_id,
-        body={
-            'accountId': name,
-            'serviceAccount': {
-                'displayName': name
-            }
-        }).execute()
-
-    LOG.info("Created GCP service account with email %s", app_svc_account['email'])
-    return app_svc_account
-
-
-def list_service_accounts(credentials, project_id):
-    """Lists all service accounts for the given project."""
-
-    service = googleapiclient.discovery.build(
-        'iam', 'v1', credentials=credentials, cache_discovery=False)
-
-    service_accounts = service.projects().serviceAccounts().list(
-        name='projects/' + project_id).execute()
-
-    return service_accounts

@@ -16,11 +16,12 @@
 """Retrieve GCP Credentials"""
 
 from google.oauth2 import service_account
-from ..utils import gcp_environment
+from ..utils.gcp_environment import GcpEnvironment
 
-def get_credentials(env: gcp_environment.GcpEnvironment):
+
+def get_credentials(env: GcpEnvironment):
     """Gets a GCP service account credentials"""
     credentials = service_account.Credentials.from_service_account_file(
-        filename=env.s,
+        filename=env.service_account_project,
         scopes=['https://www.googleapis.com/auth/cloud-platform'])
     return credentials

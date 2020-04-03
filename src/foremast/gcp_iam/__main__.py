@@ -21,7 +21,7 @@ import argparse
 import logging
 import os
 
-from .create_service_account import create_service_account
+from .service_account import create_service_account
 from ..args import add_app, add_debug, add_env
 from ..consts import LOGGING_FORMAT
 
@@ -29,18 +29,13 @@ LOG = logging.getLogger(__name__)
 
 
 def main():
-    """Command to manage GCP IAM services accounts and permissions
-    """
+    """Command to manage GCP IAM services accounts and permissions"""
     logging.basicConfig(format=LOGGING_FORMAT)
 
     parser = argparse.ArgumentParser(description=main.__doc__)
     add_debug(parser)
     add_app(parser)
     add_env(parser)
-    # ToDo: Move to function
-    parser.add_argument(
-        '--iam-project', default=os.getenv('GCP_IAM_PROJECT'),
-        help='GCP Project for the service account, overrides $GCP_IAM_PROJECT')
     args = parser.parse_args()
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
