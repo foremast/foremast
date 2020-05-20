@@ -202,7 +202,7 @@ class LambdaFunction:
                 self.lambda_client.put_function_event_invoke_config(
                     FunctionName=self.app_name,
                     DestinationConfig=self.lambda_destinations
-                    )
+                )
 
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
