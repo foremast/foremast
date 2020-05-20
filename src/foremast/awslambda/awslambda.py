@@ -60,6 +60,7 @@ class LambdaFunction:
         app = self.settings['app']
         self.lambda_environment = app['lambda_environment']
         self.lambda_layers = app['lambda_layers']
+        self.lambda_destinations = app['lambda_destinations']
         self.lambda_dlq = app['lambda_dlq']
         self.lambda_tracing = app['lambda_tracing']
         self.memory = app['lambda_memory']
@@ -196,6 +197,12 @@ class LambdaFunction:
                 )
             else:
                 self.lambda_client.delete_function_concurrency(FunctionName=self.app_name)
+
+            if self.lambda_destinations:
+                self.lambda_client.put_function_event_invoke_config(
+                    FunctionName=self.app_name,
+                    DestinationConfig=self.lambda_destinations
+                    )
 
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:

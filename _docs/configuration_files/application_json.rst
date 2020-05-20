@@ -86,6 +86,36 @@ If you exceed a concurrency limit, Lambda starts throttling the offending functi
 
 More info on limits can be found here: https://docs.aws.amazon.com/lambda/latest/dg/limits.html
 
+``lambda_destinations``
+*****************
+
+This feature provides the ability to control what happens when a function is successful or fails e.g. if a specific function fails you may want to invoke another lambda function to perform some error management. In the past you would have to add this bespoke functionality into your code. 
+
+Destinations currently support following:
+* ARN of Lambda Function
+* ARN of SQS Queue
+* ARN of SNS Topic
+* ARN of Amazon EventBridge event bus
+
+You may either an individual destination path OR one for both success and failure. 
+
+More details on lambda destinations can be found here: https://aws.amazon.com/blogs/compute/introducing-aws-lambda-destinations/
+
+    | *Type*: Object
+    | *Default*: ``{}``
+
+``lambda_destinations`` *Example*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: json
+
+   "lambda_destinations": {
+    "OnSuccess": { "Destination": "arn"},
+    "OnFailure": { "Destination": "arn"}
+    }
+
+
+
 ``lambda_dlq``
 *****************
 
