@@ -1,9 +1,10 @@
-dist: xenial
-sudo: false
 language: python
-cache: false
 
-matrix:
+os: linux
+
+dist: xenial
+
+jobs:
   include:
     - python: 3.6
       env: TOXENV=py36
@@ -22,26 +23,30 @@ install:
 script:
   - tox -e $TOXENV
 
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/a57f158d4365b3598713
-    on_success: never
-    on_failure: always
-    on_start: never
 deploy:
+
 - provider: pypi
-  user: foremast-deployer
+  username: foremast-deployer
   password:
     secure: UfsQ12Ox1wB5nWSIC26zJle2a3TM+agVkHjCV9y1z7DUMhvQgSx05M9cWL8ZsAQBGhjeF8HPwgxTxg9Kr3ayR4m/BuQIztsahiMhg1DK3taOEla+WcT3/+EVPgGwn5w91Vntn3S4j4f7Ym8WqDdI/o0m/Bn6Lt6Cx/dPXTskhNXp/SaHW/Xd6r32objsD4UqKRVOb/WGFtDfDypZc/Uz1aXkaFCR8CFzebxWh3eKWhdgJE5x13bNEPDUz3X1Al872SSF/3vQ8H2rtZxtODROPjaxNrrTKdEh9f4/q5NHWxyEuyViBk7YHdzuZxinHScxFv3roBy29jl+qSzZgdTNYBKeMp7YJqiOshgCUFLPQHTHZyUpb3E/ELAC2ULJOwD+Wz5Fo84gVFwUNu5I7qQiWeQa4+9y0qjpGFFGLNf5GspUpBY8dzkF9ZjPadpmWfU2IaMIYQ7W3fojz8ok8jZ2CCrXiZEm400WRewI7SIqLmBZZAIZ08yJSyTTJgH32YfeVCBKGkiRVd1U4H4xTnxaghrRktC3M3NZgbxpUosiQY6k2k85I6J0jv5Q12k+mi5sU6G3z36ZPeu4+gGNqCERbwVK2aITQDh5HC/tw++FLyxTwZ0l5xahWHzxgwobplbk18bcAUdoPmgDT0w9x0zeRwfdY5S9RwfAakYPDMB02dE=
   distributions: bdist_wheel
   on:
     condition: $TOXENV = lint
+    
 - provider: pypi
-  user: foremast-deployer
+  username: foremast-deployer
   password:
     secure: UfsQ12Ox1wB5nWSIC26zJle2a3TM+agVkHjCV9y1z7DUMhvQgSx05M9cWL8ZsAQBGhjeF8HPwgxTxg9Kr3ayR4m/BuQIztsahiMhg1DK3taOEla+WcT3/+EVPgGwn5w91Vntn3S4j4f7Ym8WqDdI/o0m/Bn6Lt6Cx/dPXTskhNXp/SaHW/Xd6r32objsD4UqKRVOb/WGFtDfDypZc/Uz1aXkaFCR8CFzebxWh3eKWhdgJE5x13bNEPDUz3X1Al872SSF/3vQ8H2rtZxtODROPjaxNrrTKdEh9f4/q5NHWxyEuyViBk7YHdzuZxinHScxFv3roBy29jl+qSzZgdTNYBKeMp7YJqiOshgCUFLPQHTHZyUpb3E/ELAC2ULJOwD+Wz5Fo84gVFwUNu5I7qQiWeQa4+9y0qjpGFFGLNf5GspUpBY8dzkF9ZjPadpmWfU2IaMIYQ7W3fojz8ok8jZ2CCrXiZEm400WRewI7SIqLmBZZAIZ08yJSyTTJgH32YfeVCBKGkiRVd1U4H4xTnxaghrRktC3M3NZgbxpUosiQY6k2k85I6J0jv5Q12k+mi5sU6G3z36ZPeu4+gGNqCERbwVK2aITQDh5HC/tw++FLyxTwZ0l5xahWHzxgwobplbk18bcAUdoPmgDT0w9x0zeRwfdY5S9RwfAakYPDMB02dE=
   distributions: bdist_wheel
   on:
     condition: $TOXENV = lint
     tags: true
+    
+notifications:
+  webhooks:
+    urls: https://webhooks.gitter.im/e/a57f158d4365b3598713
+    on_success: never
+    on_failure: always
+    on_start: never
+
+cache: false
