@@ -59,6 +59,7 @@ def get_properties_with_triggers(triggers):
             'lambda_dlq': None,
             'lambda_tracing': None,
             'lambda_destinations': None,
+            'lambda_subnet_count': None,
         },
         "lambda_triggers": triggers
     }

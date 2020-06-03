@@ -68,7 +68,7 @@ class LambdaFunction:
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
         self.timeout = app['lambda_timeout']
         self.concurrency_limit = app.get('lambda_concurrency_limit')
-        self.subnet_count = self.pipeline['lambda_subnet_count']
+        self.subnet_count = app['lambda_subnet_count']
 
         self.role_arn = get_role_arn(self.role, self.env, self.region)
 
