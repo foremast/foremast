@@ -21,6 +21,7 @@ TEST_PROPERTIES = {
         'lambda_dlq': None,
         'lambda_tracing': None,
         'lambda_destinations': None,
+        'lambda_subnet_count': None,
     }
 }
 GENERATED_IAM = {
