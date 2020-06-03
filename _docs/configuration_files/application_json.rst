@@ -66,7 +66,7 @@ instance profile based on the default string. Specifying a different profile
 name assumes the profile exists.
 
     | *Type*: string
-    | *Default*: ``"${stack}_${app}_profile"``
+    | *Default*: ``"${group}_${app}_profile"``
 
 ``instance_type``
 *****************
@@ -187,7 +187,21 @@ The amount of memory to give a Lambda function
 Override the default generated IAM Role name.
 
     | *Type*: string
-    | *Default*: ``"${stack}_${app}_role"``
+    | *Default*: ``"${group}_${app}_role"``
+
+``lambda_subnet_count``
+***********************
+
+Enables ablity to specify subnet resiliency of lambda functions. By default, uses all subnets of type ``subnet_purpose`` specified.
+
+Each VPC in your AWS account has a Hyperplane ENI limit. The ENI Limit determines how many Hyperplane ENIs you can have in one VPC. The limit applies to Lambda in the same VPC and is set to 250 by default. If you exceed a ENI Limit, Lambda deployment will fail with a Hyperplane ENI Limit error. 
+
+At this time, you will need to submit a limit increase or reduce how many SG:Subnet Tuples you have per function. When you connect a function to a VPC, Lambda creates an elastic network interface for each combination of security group and subnet in your function's VPC configuration.
+
+More info on limits can be found here: https://docs.aws.amazon.com/lambda/latest/dg/limits.html
+
+    | *Type*: int
+    | *Default*: ``<<MAX SUBNET COUNT>>``
 
 ``lambda_timeout``
 ******************

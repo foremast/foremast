@@ -13,6 +13,14 @@ Lambda function description
     | *Type*: string
     | *Default*: ``"default description"``
 
+``handler``
+***********
+
+The function that Lambda calls to beign execution
+
+    | *Type*: string
+    | *Default*: ``"main"``
+
 ``runtime``
 ***********
 
@@ -34,14 +42,6 @@ Since value is passed directly to the lambda API new runtimes are automatically 
         - ``"dotnetcore2.0"``
         - ``"nodejs4.3-edge"``
         - ``"go1.x"``
-
-``handler``
-***********
-
-The function that Lambda calls to beign execution
-
-    | *Type*: string
-    | *Default*: ``"main"``
 
 ``vpc_enabled``
 ***************
