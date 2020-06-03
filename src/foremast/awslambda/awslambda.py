@@ -56,7 +56,6 @@ class LambdaFunction:
         self.handler = self.pipeline['handler']
         self.vpc_enabled = self.pipeline['vpc_enabled']
 
-
         self.settings = get_properties(prop_path, env=self.env, region=self.region)
         app = self.settings['app']
         self.lambda_environment = app['lambda_environment']
