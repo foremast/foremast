@@ -38,7 +38,7 @@ Add CloudWatch Limited access.
    | *Default*: ``false``
 
 ``datapipeline``
-*******
+****************
 
 Allows a data pipeline to be trigger e.g. via lambda.
 
@@ -54,7 +54,7 @@ Add DynamoDB access to tables listed.
    | *Default*: ``[]``
 
 ``elasticache``
-*****************
+***************
 
 Add Elasticache access to clusters listed.
 
@@ -117,6 +117,14 @@ Add Lambda access.
    | *Type*: boolean
    | *Default*: ``false``
 
+``parameterstore``
+******************
+
+Add SSM ParameterStore PutParameter and GetParametersByPath access based on app name.
+
+   | *Type*: boolean
+   | *Default*: ``false``
+
 ``rds-db``
 **********
 
@@ -161,7 +169,7 @@ Add SimpleDB access to SimpleDB Domains listed.
    | *Default*: ``[]``
 
 ``secretsmanager``
-***********
+******************
 
 Add Secrets Manager access to the secrets listed.
 

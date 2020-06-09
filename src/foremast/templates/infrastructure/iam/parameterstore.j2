@@ -1,0 +1,9 @@
+        {
+            "Sid": "ParameterStore",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:PutParameter",
+                "ssm:GetParametersByPath"
+            ],
+            "Resource": "arn:aws:ssm:{{ region }}:{{ account_number }}:parameter/{{ app }}/*"
+        }
