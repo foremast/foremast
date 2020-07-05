@@ -48,4 +48,4 @@ def get_canary_id(name, application=None):
             return config['id']
 
     raise SpinnakerPipelineCreationFailed(
-        'Could not resolve canary config id for: {0}.  Options are: {2}'.format(name, names))
+        'Could not resolve canary config id for: {0}.  Options are: {1}'.format(name, names))
