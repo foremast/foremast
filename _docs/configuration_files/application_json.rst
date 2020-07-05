@@ -164,6 +164,25 @@ Environment variables which are passed to the lambda function.
        }
    }
 
+``lambda_filesystems``
+*****************
+
+List of Dictionaries that are passed with the EFS filesystem configuration. Expects the ARN of the filesystem and the Local Mount Path
+
+    | *Type*: list
+    | *Default*: ``[]``
+
+``lambda_filesystems`` *Example*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: json
+
+   {
+    "Arn": "arn",
+    "LocalMountPath": "/mnt/efs/"
+   }
+
+
 ``lambda_layers``
 *****************
 
