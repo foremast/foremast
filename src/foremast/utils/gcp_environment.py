@@ -24,16 +24,6 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-class GcpResource:
-    def __init__(self, **entries):
-        self.project = None
-        self.__dict__.update(entries)
-
-    def validate(self):
-        if self.project is None:
-            raise KeyError("A project must be specified when creating or referencing a GCP Resource")
-
-
 class GcpEnvironment:
 
     def __init__(self, name, **entries):
