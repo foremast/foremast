@@ -7,7 +7,13 @@ LOG = logging.getLogger(__name__)
 
 GCP_IAM_ROLE_SECRETS = "roles/secretmanager.secretAccessor"
 GCP_IAM_ROLE_DATASTORE = "roles/datastore.user"
-GCP_IAM_ROLES = [GCP_IAM_ROLE_SECRETS, GCP_IAM_ROLE_DATASTORE]
+GCP_IAM_ROLE_PUBSUB_EDITOR = "roles/pubsub.editor"
+GCP_IAM_ROLE_PUBSUB_VIEWER = "roles/pubsub.viewer"
+GCP_IAM_ROLE_PUBSUB_PUBLISHER = "roles/pubsub.publisher"
+GCP_IAM_ROLE_PUBSUB_SUBSCRIBER = "roles/pubsub.subscriber"
+GCP_IAM_ROLES = [GCP_IAM_ROLE_SECRETS, GCP_IAM_ROLE_DATASTORE,
+                 GCP_IAM_ROLE_PUBSUB_EDITOR, GCP_IAM_ROLE_PUBSUB_PUBLISHER, GCP_IAM_ROLE_PUBSUB_SUBSCRIBER,
+                 GCP_IAM_ROLE_PUBSUB_VIEWER]
 
 
 def create_iam_resources(env: GcpEnvironment, app_name: str, services: dict = None):
@@ -41,6 +47,19 @@ def create_iam_resources(env: GcpEnvironment, app_name: str, services: dict = No
             # Datastore
             if "datastore" in project_services:
                 modify_policy_add_binding(policy, GCP_IAM_ROLE_DATASTORE, member, condition=None)
+            # Pub/Sub
+            if "pubsub" in project_services:
+                for pub_sub in project_services["pubsub"]:
+                    if "roles" not in pub_sub:
+                        raise KeyError("Roles must be defined when requested PubSub IAM access")
+                    if "editor" in pub_sub['roles']:
+                        modify_policy_add_binding(policy, GCP_IAM_ROLE_PUBSUB_EDITOR, member, condition=None)
+                    if "viewer" in pub_sub['roles']:
+                        modify_policy_add_binding(policy, GCP_IAM_ROLE_PUBSUB_VIEWER, member, condition=None)
+                    if "subscriber" in pub_sub['roles']:
+                        modify_policy_add_binding(policy, GCP_IAM_ROLE_PUBSUB_SUBSCRIBER, member, condition=None)
+                    if "publisher" in pub_sub['roles']:
+                        modify_policy_add_binding(policy, GCP_IAM_ROLE_PUBSUB_PUBLISHER, member, condition=None)
 
         # if the policy was edited, send to Google APIs
         if policy_was_updated:
