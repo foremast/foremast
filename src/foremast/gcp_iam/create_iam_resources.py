@@ -6,7 +6,8 @@ import logging
 LOG = logging.getLogger(__name__)
 
 GCP_IAM_ROLE_SECRETS = "roles/secretmanager.secretAccessor"
-GCP_IAM_ROLES = [GCP_IAM_ROLE_SECRETS]
+GCP_IAM_ROLE_DATASTORE = "roles/datastore.user"
+GCP_IAM_ROLES = [GCP_IAM_ROLE_SECRETS, GCP_IAM_ROLE_DATASTORE]
 
 
 def create_iam_resources(env: GcpEnvironment, app_name: str, services: dict = None):
@@ -33,9 +34,13 @@ def create_iam_resources(env: GcpEnvironment, app_name: str, services: dict = No
         if project_id in service_by_project:
             policy_was_updated = True
             project_services = service_by_project[project_id]
+            # SecretsManager:
             # In GCP it is secretmanager (not plural), but support both so people don't hate us
             if "secretmanager" in project_services or "secretsmanager" in project_services:
                 modify_policy_add_binding(policy, GCP_IAM_ROLE_SECRETS, member, condition=None)
+            # Datastore
+            if "datastore" in project_services:
+                modify_policy_add_binding(policy, GCP_IAM_ROLE_DATASTORE, member, condition=None)
 
         # if the policy was edited, send to Google APIs
         if policy_was_updated:
@@ -74,13 +79,13 @@ def _get_services_by_project(services: dict, env: GcpEnvironment):
             project = env.get_project(project_prefix)
             project_id = project['projectId']
             # If this is the first time the project is referenced, create the key
-            if resource['project'] not in services_by_project:
+            if project_id not in services_by_project:
                 services_by_project[project_id] = dict()
             # If this project does not have this service yet, add it
             if service_type not in services_by_project[project_id]:
-                services_by_project[project_id][service_type] = dict()
+                services_by_project[project_id][service_type] = []
             # Finally add this resource
-            services_by_project[project_id][service_type] = resource
+            services_by_project[project_id][service_type].append(resource)
 
     return services_by_project
 
