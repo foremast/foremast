@@ -70,7 +70,11 @@ def set_policy(credentials, project_id, policy):
 
 
 def modify_policy_remove_member(policy, roles, member):
-    """Removes a member from a role binding if the role is in the given roles"""
+    """Removes a member from a role binding if the role is in the given roles.
+    Returns true if that member was found and removed, false is the member was
+    not found."""
+
+    was_removed = False
 
     # Policy has no bindings to remove
     if "bindings" not in policy:
@@ -85,9 +89,9 @@ def modify_policy_remove_member(policy, roles, member):
 
         # If member exists in the binding, remove the member
         if member in binding["members"]:
-            condition_name = None if "condition" not in binding else binding["condition"]["title"]
-            LOG.debug("Removed %s from role %s with condition '%s'", member, binding["role"], condition_name)
+            LOG.debug("Removed %s from role %s with condition '%s'", member, binding["role"])
             binding["members"].remove(member)
+            was_removed = True
 
     policy["bindings"] = _remove_bindings_without_members(policy["bindings"], roles)
 

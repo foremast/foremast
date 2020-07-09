@@ -46,6 +46,10 @@ class GoogleIAPError(ForemastError):
     """Google IAP did not return a good status."""
 
 
+class GoogleInfrastructureError(ForemastError):
+    """Error while executing Google Cloud Platform Infrastructure steps"""
+
+
 class SpinnakerError(ForemastError):
     """Spinnaker related error."""
 
@@ -195,3 +199,4 @@ class S3SharedBucketNotFound(ForemastError):
 
 class DataPipelineDefinitionError(ForemastError):
     """Error Creating Data Pipeline."""
+
