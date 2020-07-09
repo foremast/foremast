@@ -44,7 +44,8 @@ def create_service_account(credentials, project_id, name):
         body={
             'accountId': name,
             'serviceAccount': {
-                'displayName': name
+                'displayName': name,
+                'description': 'Managed by Foremast'
             }
         }).execute()
 

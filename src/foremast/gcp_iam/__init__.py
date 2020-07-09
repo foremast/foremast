@@ -20,7 +20,6 @@ directly interface with IAM so this package mostly uses Google's cloud packages
 import logging
 from .service_account import create_service_account, list_service_accounts
 from .policy import get_policy, set_policy, modify_policy_remove_member, modify_policy_add_binding
-from .secretmanager import modify_policy_grant_secrets
 from .create_iam_resources import create_iam_resources
 
 LOG = logging.getLogger(__name__)
