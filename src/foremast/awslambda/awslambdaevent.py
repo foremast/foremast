@@ -14,6 +14,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Create Lambda event triggers."""
+
+import logging
+
 from ..utils import get_properties, remove_all_lambda_permissions
 from .api_gateway_event import APIGateway
 from .cloudwatch_event import create_cloudwatch_event
@@ -22,6 +25,7 @@ from .event_source_mapping import create_event_source_mapping_trigger
 from .s3_event import create_s3_event
 from .sns_event import create_sns_event
 
+LOG = logging.getLogger(__name__)
 
 # pylint: disable=too-few-public-methods
 class LambdaEvent:
@@ -46,9 +50,11 @@ class LambdaEvent:
         """Create all defined lambda events for an lambda application."""
 
         # Clean up lambda permissions before creating triggers
+
         remove_all_lambda_permissions(app_name=self.app_name, env=self.env, region=self.region)
 
         triggers = self.properties['lambda_triggers']
+        LOG.debug('Lambda triggers defined: %s', triggers)
 
         for trigger in triggers:
             if trigger['type'] == 'api-gateway':
