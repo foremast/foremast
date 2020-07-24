@@ -147,6 +147,21 @@ Sets up an API Gatway event to trigger a lambda function.
         | *Required*: True
         | *Example*: ``"GET"``
 
+``api_type``
+^^^^^^^^^^
+
+    The API Type for the gateway integration.
+
+        | *Type*: string
+        | *Required*: False
+        | *Default*: ``"AWS"``
+        | *Values*:
+
+            - ``"HTTP"``
+            - ``"MOCK"``
+            - ``"HTTP_PROXY"``
+            - ``"AWS_PROXY"``
+
 ``cloudwatch-event`` Event Pattern Trigger *Keys*
 =================================================
 
