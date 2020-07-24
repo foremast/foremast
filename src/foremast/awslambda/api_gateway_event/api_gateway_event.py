@@ -87,13 +87,19 @@ class APIGateway:
     def add_lambda_integration(self):
         """Attach lambda found to API."""
         lambda_uri = self.generate_uris()['lambda_uri']
+        api_type = None
+        if 'api_type' in self.trigger_settings:
+            api_type = self.trigger_settings['api_type']
+            self.log.info("Found API Integration Type: %s", api_type)
+        else:
+            api_type = 'AWS'
         self.client.put_integration(
             restApiId=self.api_id,
             resourceId=self.resource_id,
             httpMethod=self.trigger_settings['method'],
             integrationHttpMethod='POST',
             uri=lambda_uri,
-            type='AWS')
+            type=api_type)
         self.add_integration_response()
         self.log.info("Successfully added Lambda intergration to API")
 
