@@ -27,6 +27,7 @@ from .sns_event import create_sns_event
 
 LOG = logging.getLogger(__name__)
 
+
 # pylint: disable=too-few-public-methods
 class LambdaEvent:
     """Manipulate Lambda events."""
