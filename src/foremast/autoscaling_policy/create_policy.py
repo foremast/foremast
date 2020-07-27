@@ -135,9 +135,9 @@ class AutoScalingPolicy:
                 self.delete_existing_scaling_policy(scaling_policy, server_group)
 
         if self.settings['asg']['scaling_policy']:
-                self.prepare_policy_template('scale_up', server_group)
-                if self.settings['asg']['scaling_policy'].get('scale_down', True):
-                    self.prepare_policy_template('scale_down', server_group)
+            self.prepare_policy_template('scale_up', server_group)
+            if self.settings['asg']['scaling_policy'].get('scale_down', True):
+                self.prepare_policy_template('scale_down', server_group)
         elif self.settings['asg']['custom_scaling_policies']:
             for scaling_policy in self.settings['asg']['custom_scaling_policies']:
                 self.prepare_policy_template('custom', server_group, scaling_policy)
