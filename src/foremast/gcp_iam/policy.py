@@ -58,6 +58,7 @@ def set_policy(credentials, project_id, policy):
         cache_discovery=False
     )
 
+
     policy = (
         service.projects()
         .setIamPolicy(resource=project_id, body={"policy": policy})
@@ -69,59 +70,36 @@ def set_policy(credentials, project_id, policy):
     return policy
 
 
-def modify_policy_remove_member(policy, roles, member):
+def modify_policy_remove_member(policy, member):
     """Removes a member from a role binding if the role is in the given roles.
     Returns true if that member was found and removed, false is the member was
     not found."""
-
-    was_removed = False
+    was_updated = False
 
     # Policy has no bindings to remove
     if "bindings" not in policy:
-        return policy
+        return was_updated
 
     for binding in policy["bindings"]:
-        if binding["role"] not in roles:
-            LOG.debug("Ignoring binding, role %s not supported", binding["role"])
-
-        if "members" not in binding:
-            LOG.debug("Ignoring binding, role %s has no members", binding["role"])
-
         # If member exists in the binding, remove the member
-        if member in binding["members"]:
-            LOG.debug("Removed %s from role %s with condition '%s'", member, binding["role"])
+        if "members" in binding and member in binding["members"]:
+            LOG.debug("Removed %s from role %s", member, binding["role"])
             binding["members"].remove(member)
-            was_removed = True
+            was_updated = True
 
-    policy["bindings"] = _remove_bindings_without_members(policy["bindings"], roles)
+    return was_updated
 
 
-def modify_policy_add_binding(policy, role, member, condition):
+def modify_policy_add_binding(policy, role, member):
     """Adds a new role binding to a policy."""
 
     binding = {
         "role": role,
-        "members": [member],
-        "condition": condition
+        "members": [member]
     }
     policy["bindings"].append(binding)
 
-    condition_name = None if condition is None or "title" not in condition else condition["title"]
-    LOG.info("Added role binding for %s from role %s with condition '%s'", member, role, condition_name)
+    LOG.info("Added role binding for %s from role %s", member, role)
 
     return policy
 
-
-def _remove_bindings_without_members(bindings: list, roles: list):
-    """Removes any bindings that have no members if the role is in the given roles"""
-    new_bindings = []
-    for binding in bindings:
-        if "members" in binding and binding["members"] or binding["role"] not in roles:
-            # this is a supported role, and has at least one member
-            # or it is not a supported role, and should not be modified by foremast
-            new_bindings.append(binding)
-        elif binding["role"] in roles:
-            # this is a supported role, but has no members
-            LOG.debug("Removed empty role binding for role %s", binding["role"])
-
-    return new_bindings

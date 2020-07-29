@@ -288,10 +288,10 @@ def prepare_infrastructure():
         raise ForemastError("pipeline.type is required")
 
     if pipeline_type in consts.GCP_TYPES:
-        LOG.info("Will create GCP Infrastructure for pipeline.type '%s'", pipeline_type)
+        LOG.info("Will create GCP Infrastructure for pipeline type '%s'", pipeline_type)
         prepare_infrastructure_gcp(runner)
     elif pipeline_type in consts.AWS_TYPES:
-        LOG.info("Will create AWS Infrastructure for pipeline.type '%s'", pipeline_type)
+        LOG.info("Will create AWS Infrastructure for pipeline type '%s'", pipeline_type)
         prepare_infrastructure_aws(runner, pipeline_type)
     else:
         error_message = ("pipeline.type of '{0}' is not supported. "
