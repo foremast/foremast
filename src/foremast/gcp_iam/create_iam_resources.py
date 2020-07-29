@@ -38,7 +38,7 @@ def create_iam_resources(env: GcpEnvironment, app_name: str, services: dict = No
             try:
                 LOG.info("Preparing to update IAM policy for project %s, attempt number %s", project_id, attempts)
                 policy = get_policy(credentials, project_id)
-                # Remove any references to this svc account from policy (ignoring roles foremast does not support)
+                # Remove any references to this svc account from policy
                 policy_was_updated = modify_policy_remove_member(policy, member)
 
                 # Update policy
