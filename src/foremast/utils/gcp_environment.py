@@ -116,4 +116,3 @@ class GcpEnvironment:
             env_config = GCP_ENVS[env_name]
             gcp_envs[env_name] = GcpEnvironment(name=env_name, **env_config)
         return gcp_envs
-

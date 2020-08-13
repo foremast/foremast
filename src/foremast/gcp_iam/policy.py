@@ -58,7 +58,6 @@ def set_policy(credentials, project_id, policy):
         cache_discovery=False
     )
 
-
     policy = (
         service.projects()
         .setIamPolicy(resource=project_id, body={"policy": policy})
@@ -102,4 +101,3 @@ def modify_policy_add_binding(policy, role, member):
     LOG.info("Added role binding for %s from role %s", member, role)
 
     return policy
-

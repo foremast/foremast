@@ -17,7 +17,6 @@
 
 import logging
 
-from google.oauth2 import service_account
 import googleapiclient.discovery
 
 LOG = logging.getLogger(__name__)
@@ -63,5 +62,3 @@ def list_service_accounts(credentials, project_id):
         name='projects/' + project_id).execute()
 
     return service_accounts
-
-

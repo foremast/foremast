@@ -199,4 +199,3 @@ class S3SharedBucketNotFound(ForemastError):
 
 class DataPipelineDefinitionError(ForemastError):
     """Error Creating Data Pipeline."""
-

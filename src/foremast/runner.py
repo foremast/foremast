@@ -295,7 +295,7 @@ def prepare_infrastructure():
         prepare_infrastructure_aws(runner, pipeline_type)
     else:
         error_message = ("pipeline.type of '{0}' is not supported. "
-                         "If this is a manual pipeline it is required you specify the " 
+                         "If this is a manual pipeline it is required you specify the "
                          "pipeline type in AWS_MANUAL_TYPES or GCP_MANUAL_TYPES"
                          ).format(pipeline_type)
         raise ForemastError(error_message)

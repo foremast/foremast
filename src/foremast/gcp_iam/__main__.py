@@ -19,9 +19,7 @@ Help: ``python -m src.foremast.gcp_iam -h``
 """
 import argparse
 import logging
-import os
 
-from .service_account import create_service_account
 from ..args import add_app, add_debug, add_env
 from ..consts import LOGGING_FORMAT
 
