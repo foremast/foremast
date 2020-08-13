@@ -82,7 +82,7 @@ def _get_gcp_roles_by_project(gcp_roles, env: GcpEnvironment):
     roles_by_project = dict()
 
     for role_definition in gcp_roles:
-        project = env.get_project(project_prefix=role_definition['project'])
+        project = env.get_project(project_prefix=role_definition['project_prefix'])
         roles_by_project[project['projectId']] = role_definition
 
     return roles_by_project
