@@ -18,9 +18,7 @@ def create_iam_resources(env: GcpEnvironment, app_name: str, services: dict = No
     member = "serviceAccount:" + service_account["email"]
 
     # Get the gcp_roles requested in pipeline.json with the full project id as the key
-    gcp_roles_by_project = dict()
-    if "gcp_roles" in services:
-        gcp_roles_by_project = _get_gcp_roles_by_project(services['gcp_roles'], env)
+    gcp_roles_by_project = _get_gcp_roles_by_project(services['gcp_roles'], env) if "gcp_roles" in services else dict()
 
     # For each project in this GCP environment, get the policy
     # remove any references to this svc account, then re-add based on pipeline.json
@@ -88,7 +86,3 @@ def _get_gcp_roles_by_project(gcp_roles, env: GcpEnvironment):
         roles_by_project[project['projectId']] = role_definition
 
     return roles_by_project
-
-
-
-
