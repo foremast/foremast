@@ -27,6 +27,11 @@ LOG = logging.getLogger(__name__)
 class GcpEnvironment:
 
     def __init__(self, name, **entries):
+        """Creates a new GcpEnvironment object
+        Args:
+            name: str, the name of the environment
+            entries: Dict of properties to be serialized into the class
+        """
         self.name = name
         self.organization = None
         self._all_projects_cache = []
@@ -66,19 +71,19 @@ class GcpEnvironment:
 
         return projects
 
-    def get_project(self, project_prefix):
+    def get_project(self, project_name):
         """Gets the project for the given project prefix in this environment.
         If duplicate calls to this method with the same arguments are made
         a cached response will be used to avoid duplicate calls to GCP APIs"""
 
         # Check cache for this project in this env to avoid duplicate API calls to GCP
-        if project_prefix in self._single_project_cache:
-            LOG.debug("Reusing GCP projects cache for environment {} and project {}".format(self.name, project_prefix))
-            return self._single_project_cache[project_prefix]
+        if project_name in self._single_project_cache:
+            LOG.debug("Reusing GCP projects cache for environment {} and project {}".format(self.name, project_name))
+            return self._single_project_cache[project_name]
 
         # No cached response found, check GCP APIs
         service = discovery.build('cloudresourcemanager', 'v1', credentials=self.get_credentials())
-        project_filter = self._get_project_api_filter(name=project_prefix)
+        project_filter = self._get_project_api_filter(name=project_name)
         request = service.projects().list(filter=project_filter)
         response = request.execute()
         projects = response.get('projects', [])
@@ -89,23 +94,23 @@ class GcpEnvironment:
             raise GoogleInfrastructureError(error_message)
 
         # If more than one project is found, Foremast cannot determine which project should be used
-        # raise and error with the projects so the user can adjust their labels or project_prefix
+        # raise and error with the projects so the user can adjust their labels or project_name
         if len(projects) > 1:
             error_message = "More than one project returned for filter {}. Projects returned:".format(project_filter)
             for project in projects:
                 error_message += " " + project['name']
             raise GoogleInfrastructureError(error_message)
 
-        # Only one project found
-        self._single_project_cache[project_prefix] = projects[0]
-        return projects[0]
+        project = projects[0]
+        self._single_project_cache[project_name] = project
+        return project
 
     def _get_project_api_filter(self, name=None):
         """Gets the project filter based on the name and env for use in Google IAM APIs"""
-        base_filter = "labels.cloud_env:{}".format(self.name)
+        base_filter = "labels.cloud_env:{} labels.foremast_enabled=true".format(self.name)
 
         if name is not None:
-            base_filter += " name:{}*".format(name)
+            base_filter += " name:{}".format(name)
 
         return base_filter
 

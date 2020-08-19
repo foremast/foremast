@@ -143,7 +143,7 @@ class ForemastRunner:
         services = None
         if "services" in self.configs["pipeline"]:
             services = self.configs["pipeline"]["services"]
-        gcp_iam.create_iam_resources(env=env, app_name=self.app, services=services)
+        gcp_iam.create_iam_resources(env=env, app_name=self.app, group_name=self.group, services=services)
 
     def create_archaius(self):
         """Create S3 bucket for Archaius."""
