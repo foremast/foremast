@@ -202,16 +202,6 @@ DOMAIN = validate_key_values(CONFIG, 'base', 'domain', default='example.com')
 ENVS = set(validate_key_values(CONFIG, 'base', 'envs', default='').split(','))
 VPC_NAME = validate_key_values(CONFIG, 'base', 'vpc_name', default='vpc')
 REGIONS = set(validate_key_values(CONFIG, 'base', 'regions', default='').split(','))
-AWS_MANUAL_TYPES = set(filter(None, set(validate_key_values(CONFIG, 'base', 'aws_manual_types', default='')
-                                        .split(','))))
-AWS_TYPES = set(validate_key_values(CONFIG, 'base', 'aws_types', default='ec2,lambda,s3,datapipeline,rolling')
-                .split(',')).union(AWS_MANUAL_TYPES)
-GCP_MANUAL_TYPES = set(filter(None, set(validate_key_values(CONFIG, 'base', 'gcp_manual_types', default='')
-                                        .split(','))))
-GCP_TYPES = set(validate_key_values(CONFIG, 'base', 'gcp_types', default='cloudfunction')
-                .split(',')).union(GCP_MANUAL_TYPES)
-ALLOWED_TYPES = AWS_TYPES.union(GCP_TYPES)
-MANUAL_TYPES = AWS_MANUAL_TYPES.union(GCP_MANUAL_TYPES)
 RUNWAY_BASE_PATH = validate_key_values(CONFIG, 'base', 'runway_base_path', default='runway')
 TEMPLATES_PATH = validate_key_values(CONFIG, 'base', 'templates_path')
 AMI_JSON_URL = validate_key_values(CONFIG, 'base', 'ami_json_url')
@@ -257,3 +247,42 @@ HEADERS = {
     'content-type': 'application/json',
     'user-agent': 'foremast',
 }
+
+# Define which pipeline types are permitted and which cloud they map to
+AWS_MANUAL_TYPES = set(filter(None, set(validate_key_values(CONFIG, 'base', 'aws_manual_types', default='manual')
+                                        .split(','))))
+AWS_TYPES = set(validate_key_values(CONFIG, 'base', 'aws_types', default='ec2,lambda,s3,datapipeline,rolling')
+                .split(',')).union(AWS_MANUAL_TYPES)
+GCP_MANUAL_TYPES = set(filter(None, set(validate_key_values(CONFIG, 'base', 'gcp_manual_types', default='')
+                                        .split(','))))
+GCP_TYPES = set(validate_key_values(CONFIG, 'base', 'gcp_types', default='cloudfunction')
+                .split(',')).union(GCP_MANUAL_TYPES)
+
+# Previous to Foremast 5.x, only AWS was supported and only MANUAL_TYPES and ALLOWED_TYPES existed
+# to support old aws-only configs from <5.x, check if the old config structure is used
+# and move the old config variables to the new names accordingly
+_legacy_manual_types = validate_key_values(CONFIG, 'base', 'manual_types', default=None)
+if _legacy_manual_types is not None:
+    LOG.warning("manual_types is deprecated, use aws_manual_types and gcp_manual_types instead")
+    AWS_MANUAL_TYPES = set(_legacy_manual_types.split(','))
+
+_legacy_allowed_types = validate_key_values(CONFIG, 'base', 'types', default=None)
+if _legacy_allowed_types is not None:
+    LOG.warning("types is deprecated, use gcp_types and aws_types instead")
+    AWS_TYPES = set(_legacy_allowed_types.split(','))
+
+# Allowed and manual pipelines types for all cloud providers
+ALLOWED_TYPES = AWS_TYPES.union(GCP_TYPES)
+MANUAL_TYPES = AWS_MANUAL_TYPES.union(GCP_MANUAL_TYPES)
+
+# Check if types have accidentally been defined for both clouds
+_duplicate_allowed_types = AWS_TYPES.intersection(GCP_TYPES)
+if len(_duplicate_allowed_types) > 0:
+    LOG.warning("The following pipeline types are defined as allowed types for multiple cloud providers: '{}' "
+                "this can cause unpredictable deployments"
+                .format(_duplicate_allowed_types))
+_duplicate_manual_types = AWS_MANUAL_TYPES.intersection(GCP_MANUAL_TYPES)
+if len(_duplicate_manual_types) > 0:
+    LOG.warning("The following pipeline types are defined as manual types for multiple cloud providers: '{}' "
+                "this can cause unpredictable deployments"
+                .format(_duplicate_allowed_types))
