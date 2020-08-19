@@ -285,4 +285,4 @@ _duplicate_manual_types = AWS_MANUAL_TYPES.intersection(GCP_MANUAL_TYPES)
 if len(_duplicate_manual_types) > 0:
     LOG.warning("The following pipeline types are defined as manual types for multiple cloud providers: '{}' "
                 "this can cause unpredictable deployments"
-                .format(_duplicate_allowed_types))
+                .format(_duplicate_manual_types))
