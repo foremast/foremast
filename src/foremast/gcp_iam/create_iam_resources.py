@@ -2,9 +2,9 @@ from googleapiclient.errors import HttpError
 
 from ..utils.gcp_environment import GcpEnvironment
 from . import create_service_account, get_policy, set_policy, modify_policy_remove_member, modify_policy_add_binding
+from tryagain import retries
 
 import logging
-import time
 
 LOG = logging.getLogger(__name__)
 
@@ -24,53 +24,44 @@ def create_iam_resources(env: GcpEnvironment, app_name: str, services: dict = No
     # remove any references to this svc account, then re-add based on pipeline.json
     # If changes were made locally, update the policy in GCP
     for project in env.get_all_projects():
-        # Policies in GCP are shared between users/service accounts
-        # Attempt to update this project policy, if GCP returns a
-        # a 409 conflict we must re-retrieve the policy, re-update it
-        # and attempt to save again to save it again
-        attempts = 0
-        max_attempts = 5
-        while attempts < max_attempts:
-            attempts = attempts + 1
-            project_id = project["projectId"]
-            try:
-                LOG.info("Preparing to update IAM policy for project %s, attempt number %s", project_id, attempts)
-                policy = get_policy(credentials, project_id)
-                # Remove any references to this svc account from policy
-                policy_was_updated = modify_policy_remove_member(policy, member)
-
-                # Update policy
-                if project_id in gcp_roles_by_project:
-                    policy_was_updated = True
-                    # Add all roles in pipeline.json for this project
-                    for role in gcp_roles_by_project[project_id]['roles']:
-                        modify_policy_add_binding(policy=policy, role=role, member=member)
-
-                # if the policy was edited, send to Google APIs
-                if policy_was_updated:
-                    LOG.info("IAM Policy for project {} will be updated because it was modified locally"
-                             .format(project_id))
-                    set_policy(credentials=credentials, project_id=project_id, policy=policy)
-                else:
-                    LOG.info("IAM Policy for project {} will not be updated because it was not modified locally"
-                             .format(project_id))
-            except HttpError as e:
-                # Conflict while updating
-                if 'status' in e.resp and e.resp['status'] == '409':
-                    if attempts < max_attempts:
-                        conflict_delay_seconds = attempts * 2
-                        LOG.warning("GCP returned 409 conflict, this policy was recently updated elsewhere."
-                                    + " Will wait %s seconds and try again", conflict_delay_seconds)
-                        time.sleep(conflict_delay_seconds)
-                    else:
-                        LOG.error("Maximum attempts reached while trying to update policy on project %s",
-                                  project_id)
-                        raise e
-                # Some other HttpException
-                else:
-                    raise e
+        _update_policy_for_project(project['projectId'], gcp_roles_by_project, member, credentials)
 
     LOG.info("Finished configuring GCP IAM")
+
+
+@retries(max_attempts=5, wait=lambda n: 2 ** n, exceptions=HttpError)
+def _update_policy_for_project(project_id, roles_by_project, member, credentials):
+    # Policies in GCP are shared between users/service accounts
+    # Attempt to update this project policy, if GCP returns a
+    # a 409 conflict we must re-retrieve the policy, re-update it
+    # and attempt to save again to save it again
+    try:
+        LOG.info("Preparing to update IAM policy for project %s", project_id)
+        policy = get_policy(credentials, project_id)
+        # Remove any references to this svc account from policy
+        policy_was_updated = modify_policy_remove_member(policy, member)
+
+        # Update policy
+        if project_id in roles_by_project:
+            policy_was_updated = True
+            # Add all roles in pipeline.json for this project
+            for role in roles_by_project[project_id]['roles']:
+                modify_policy_add_binding(policy=policy, role=role, member=member)
+
+        # if the policy was edited, send to Google APIs
+        if policy_was_updated:
+            LOG.info("IAM Policy for project {} will be updated because it was modified locally"
+                     .format(project_id))
+            set_policy(credentials=credentials, project_id=project_id, policy=policy)
+        else:
+            LOG.info("IAM Policy for project {} will not be updated because it was not modified locally"
+                     .format(project_id))
+    except HttpError as e:
+        # Conflict while updating
+        if 'status' in e.resp and e.resp['status'] == '409':
+            LOG.warning("GCP returned 409 conflict, this policy was recently updated elsewhere.  "
+                        "Will retry up to 5 times per project.")
+        raise e
 
 
 def _get_gcp_roles_by_project(gcp_roles, env: GcpEnvironment):
