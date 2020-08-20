@@ -52,7 +52,7 @@ class GcpEnvironment:
         than once a cached response will be returned to avoid duplicate calls to GCP APIs."""
 
         # Check cache for all projects in this env to avoid duplicate API calls to GCP
-        if len(self._all_projects_cache) > 0:
+        if self._all_projects_cache:
             LOG.debug("Reusing GCP projects cache for environment {}".format(self.name))
             return self._all_projects_cache
 
@@ -89,7 +89,7 @@ class GcpEnvironment:
         projects = response.get('projects', [])
 
         # No projects found
-        if len(projects) == 0:
+        if not projects:
             error_message = "No projects returned for filter {}".format(project_filter)
             raise GoogleInfrastructureError(error_message)
 
