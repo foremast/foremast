@@ -63,7 +63,7 @@ class GcpEnvironment:
         response = request.execute()
         projects = response.get('projects', [])
 
-        if len(projects) == 0:
+        if not projects:
             raise GoogleInfrastructureError("No projects returned for filter {}. ".format(project_filter)
                                             + "A Foremast GCP Environment needs at least one project.")
 
