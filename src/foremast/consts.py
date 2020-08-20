@@ -277,12 +277,12 @@ MANUAL_TYPES = AWS_MANUAL_TYPES.union(GCP_MANUAL_TYPES)
 
 # Check if types have accidentally been defined for both clouds
 _duplicate_allowed_types = AWS_TYPES.intersection(GCP_TYPES)
-if len(_duplicate_allowed_types) > 0:
+if _duplicate_allowed_types:
     LOG.warning("The following pipeline types are defined as allowed types for multiple cloud providers: '{}' "
                 "this can cause unpredictable deployments"
                 .format(_duplicate_allowed_types))
 _duplicate_manual_types = AWS_MANUAL_TYPES.intersection(GCP_MANUAL_TYPES)
-if len(_duplicate_manual_types) > 0:
+if _duplicate_manual_types:
     LOG.warning("The following pipeline types are defined as manual types for multiple cloud providers: '{}' "
                 "this can cause unpredictable deployments"
                 .format(_duplicate_manual_types))
