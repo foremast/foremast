@@ -10,6 +10,8 @@ Configuration Files
    pipeline_json/index
    application_json
    region_overrides
-   aws_creds
    ami_json
+   aws_creds
+   gcp_creds
+   gcp_environments
    advanced_usages/index

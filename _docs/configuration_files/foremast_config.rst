@@ -70,19 +70,62 @@ The base domain of your applications. Used for generating DNS
 ********
 
 Comma delimited list of environments/applications that will be managed with
-Foremast
+Foremast for **AWS**.  See section :ref:`gcp-section` for GCP Environments.
 
     | *Example*: ``dev,stage,prod``
     | *Required*: Yes
 
-``types``
-*********
+``aws_types``
+*************
 
-List of foremast managed Pipeline types to allow.
+.. warning::
+    `aws_types` replaced `types` beginning in Foremast 5.x when GCP support was added.
+    It is recommended to migrate from the deprecated `types` configuration option to the new `aws_types`.
+
+List of foremast managed Pipeline types to allow for AWS deployments
 
     | *Type*: str
-    | *Example*: ``ec2,lambda,manual``
-    | *Default*: ``ec2,lambda``
+    | *Example*: ``ec2,lambda``
+    | *Default*: ``ec2,lambda,s3,datapipeline,rolling``
+    | *Required*: No
+
+``gcp_types``
+******************
+
+List of foremast managed Pipeline types to allow for GCP deployments
+
+    | *Type*: str
+    | *Example*: ``cloudfunction``
+    | *Default*: ``cloudfunction``
+    | *Required*: No
+
+``aws_manual_types``
+******************
+
+.. warning::
+    `aws_manual_types` replaced `manual_types` beginning in Foremast 5.x when GCP support was added.
+    It is recommended to migrate from the deprecated `manual_types` configuration option to the new `aws_manual_types`.
+
+
+List of pipeline types that will trigger Foremast's manual pipeline template feature.  When
+Foremast Infrastructure features are used the pipeline types listed here will create AWS
+infrastructure.  See :ref:`advanced_manual_pipelines` for more details on this feature.
+
+    | *Type*: str
+    | *Example*: ``manual,custom_pipeline_name``
+    | *Default*: ``manual``
+    | *Required*: No
+
+``gcp_manual_types``
+******************
+
+List of pipeline types that will trigger Foremast's manual pipeline template feature.  When
+Foremast Infrastructure features are used the pipeline types listed here will create GCP
+infrastructure. See :ref:`advanced_manual_pipelines` for more details on this feature.
+
+    | *Type*: str
+    | *Example*: ``gke,custom_pipeline_name``
+    | *Default*: ````
     | *Required*: No
 
 ``regions``
@@ -372,9 +415,45 @@ The default task timeout value
 ********
 
 A json object keyed by environment name. Each value should be a json object
-keyed by task name.
+keyed by task name.  This section only applies to AWS environments.
 
     | *Default*: 120
     | *Required*: No
 
 .. _gogo-utils: https://github.com/gogoair/gogo-utils#formats
+
+.. _gcp-section:
+
+``[gcp]``
+~~~~~~~~~~~~~
+
+Section handling GCP infrastructure and authentication configuration options.
+
+``envs``
+********
+
+A json object keyed by environment name. Each value should be a json object that defines the
+GCP environment's structure.  The property `service_account_project` defines which project
+is used by Foremast when creating service accounts.  You should use different a `service_account_project` for each
+environment to ensure IAM permissions are not granted between environments.  See the page :ref:`gcp_creds` for more info on
+setting up GCP credentials for Foremast.
+
+    | *Default*: None
+    | *Required*: Yes
+
+Example structure:
+
+.. code-block:: json
+
+            {
+                'stage': {
+                    'organization': 'your-org.com',
+                    'service_account_project': 'project-id-for-creating-service-accounts-stage',
+                    'service_account_path': '/path/to/service/account/used/by/foremast-stage.json'
+                },
+                'prod': {
+                    'organization': 'your-org.com',
+                    'service_account_project': 'project-id-for-creating-service-accounts-prod',
+                    'service_account_path': '/path/to/service/account/used/by/foremast-prod.json'
+                },
+            }

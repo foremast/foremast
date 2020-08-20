@@ -207,3 +207,34 @@ Add AWS XRay access.
 
    | *Type*: boolean
    | *Default*: ``false``
+
+``gcp_roles``
+******
+
+Adds `GCP Roles
+<https://cloud.google.com/iam/docs/understanding-roles#predefined_roles>`_ to the given projects.
+
+Wildcards (*) are supported in the project_name field.  For example `project-one*` may match to `project-one-prod` or `project-one-stage`
+depending on what environment is being deployed to.
+
+   | *Type*: array of objects
+   | *Default*: None
+   | *Example*:
+
+      .. code-block:: json
+
+        "gcp_roles": [
+            {
+                "project_name": "project-one*",
+                "roles": [
+                    "roles/secretmanager.secretAccessor",
+                    "roles/pubsub.subscriber"
+                ]
+            },
+            {
+                "project_name": "project-two*",
+                "roles": [
+                    "roles/storage.objectViewer"
+                ]
+            }
+        ]
