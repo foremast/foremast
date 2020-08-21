@@ -38,6 +38,7 @@ from .app import SpinnakerApp
 from .args import add_debug
 from .exceptions import ForemastError
 from .utils.gcp_environment import GcpEnvironment
+from tabulate import tabulate
 
 LOG = logging.getLogger(__name__)
 
@@ -275,6 +276,14 @@ class ForemastRunner:
         os.remove(self.raw_path)
 
 
+def infra_entrypoint(args):
+    """Entry point for preparing the infrastructure in a specific env."""
+    if args.parsed.print_gcp_environments:
+        print_gcp_environments(table_format=args.parsed.print_table_format)
+    else:
+        prepare_infrastructure()
+
+
 def prepare_infrastructure():
     """Entry point for preparing the infrastructure in a specific env."""
     runner = ForemastRunner()
@@ -340,6 +349,25 @@ def prepare_infrastructure_aws(runner, pipeline_type):
 
     runner.slack_notify()
     runner.cleanup()
+
+
+def print_gcp_environments(table_format):
+    """Prints a table of visible Foremast GCP environments"""
+    table_header = ["Environment", "Project", "Permitted Groups"]
+    env_table = list()
+    all_envs = GcpEnvironment.get_environments_from_config()
+    for env_name in all_envs:
+        env = all_envs[env_name]
+        env_table.append([env.name, env.service_account_project, "N/A"])
+        all_projects = env.get_all_projects()
+        for project in all_projects:
+            if "foremast_groups" in project["labels"]:
+                groups = project["labels"]["foremast_groups"]
+            else:
+                groups = "N/A"
+            env_table.append([env.name, project["projectId"], groups])
+
+    print(tabulate(env_table, table_header, tablefmt=table_format))
 
 
 def prepare_app_pipeline():
