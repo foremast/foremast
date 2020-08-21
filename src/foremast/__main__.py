@@ -14,8 +14,15 @@ LOG = logging.getLogger(__name__)
 
 def add_infra(subparsers):
     """Infrastructure subcommands."""
-    infra_parser = subparsers.add_parser('infra', help=runner.prepare_infrastructure.__doc__)
-    infra_parser.set_defaults(func=runner.prepare_infrastructure)
+    infra_parser = subparsers.add_parser('infra', help=runner.infra_entrypoint.__doc__)
+    infra_parser.set_defaults(func=runner.infra_entrypoint)
+    # 'store_true' action defaults to false, true when flag is added:
+    infra_parser.add_argument('--print-gcp-environments', action='store_true', help="Prints a simple visual output of "
+                                                                                    "GCP Environments visible to "
+                                                                                    "Foremast")
+    infra_parser.add_argument('--print-table-format', default="fancy_grid",
+                              help="Format of output when using --print-gcp-environments.  Common options are grid, "
+                                   "fancy_grid, jira.  See tabulate package docs for full list of options.")
 
 
 def add_pipeline(subparsers):
