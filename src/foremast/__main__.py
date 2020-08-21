@@ -16,7 +16,7 @@ def add_infra(subparsers):
     """Infrastructure subcommands."""
     infra_parser = subparsers.add_parser('infra', help=runner.prepare_infrastructure.__doc__)
     infra_parser.set_defaults(func=runner.prepare_infrastructure)
-    infra_print_subparser = infra_parser.add_subparsers(title='Print GCP Environments')
+    infra_print_subparser = infra_parser.add_subparsers(title='Infra Subcommands')
     print_env_parser = infra_print_subparser.add_parser("print-environment", help=runner.print_gcp_environments.__doc__)
     print_env_parser.set_defaults(func=runner.print_gcp_environments)
     print_env_parser.add_argument('--print-table-format', default="fancy_grid", required=False,
