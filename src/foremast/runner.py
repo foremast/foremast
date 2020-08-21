@@ -276,16 +276,9 @@ class ForemastRunner:
         os.remove(self.raw_path)
 
 
-def infra_entrypoint(args):
-    """Entry point for preparing the infrastructure in a specific env."""
-    if args.parsed.print_gcp_environments:
-        print_gcp_environments(table_format=args.parsed.print_table_format)
-    else:
-        prepare_infrastructure()
-
-
 def prepare_infrastructure():
     """Entry point for preparing the infrastructure in a specific env."""
+
     runner = ForemastRunner()
     runner.write_configs()
 
@@ -351,8 +344,9 @@ def prepare_infrastructure_aws(runner, pipeline_type):
     runner.cleanup()
 
 
-def print_gcp_environments(table_format):
-    """Prints a table of visible Foremast GCP environments"""
+def print_gcp_environments(args):
+    """Prints a simple visual output of GCP Environments visible to Foremast"""
+
     table_header = ["Environment", "Project", "Permitted Groups"]
     env_table = list()
     all_envs = GcpEnvironment.get_environments_from_config()
@@ -366,8 +360,14 @@ def print_gcp_environments(table_format):
             else:
                 groups = "N/A"
             env_table.append([env.name, project["projectId"], groups])
+    output = tabulate(env_table, table_header, tablefmt=args.parsed.print_table_format)
+    if args.parsed.print_to_file:
+        file = open(args.parsed.print_to_file, "w")
+        file.write(output)
+        file.close()
+        LOG.info("Saved printed table to %s", args.parsed.print_to_file)
 
-    print(tabulate(env_table, table_header, tablefmt=table_format))
+    print(output)
 
 
 def prepare_app_pipeline():

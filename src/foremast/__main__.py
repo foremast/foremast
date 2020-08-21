@@ -14,15 +14,16 @@ LOG = logging.getLogger(__name__)
 
 def add_infra(subparsers):
     """Infrastructure subcommands."""
-    infra_parser = subparsers.add_parser('infra', help=runner.infra_entrypoint.__doc__)
-    infra_parser.set_defaults(func=runner.infra_entrypoint)
-    # 'store_true' action defaults to false, true when flag is added:
-    infra_parser.add_argument('--print-gcp-environments', action='store_true', help="Prints a simple visual output of "
-                                                                                    "GCP Environments visible to "
-                                                                                    "Foremast")
-    infra_parser.add_argument('--print-table-format', default="fancy_grid",
-                              help="Format of output when using --print-gcp-environments.  Common options are grid, "
-                                   "fancy_grid, jira.  See tabulate package docs for full list of options.")
+    infra_parser = subparsers.add_parser('infra', help=runner.prepare_infrastructure.__doc__)
+    infra_parser.set_defaults(func=runner.prepare_infrastructure)
+    infra_print_subparser = infra_parser.add_subparsers(title='Print GCP Environments')
+    print_env_parser = infra_print_subparser.add_parser("print-environment", help=runner.print_gcp_environments.__doc__)
+    print_env_parser.set_defaults(func=runner.print_gcp_environments)
+    print_env_parser.add_argument('--print-table-format', default="fancy_grid", required=False,
+                                  help="Format of output.  Common options are grid, fancy_grid, jira."
+                                       "See tabulate package docs for full list of options.")
+    print_env_parser.add_argument('--print-to-file', default=None, required=False,
+                                  help="File path to output the printed table to instead of displaying on the console")
 
 
 def add_pipeline(subparsers):
