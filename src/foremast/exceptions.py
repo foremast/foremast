@@ -199,3 +199,17 @@ class S3SharedBucketNotFound(ForemastError):
 
 class DataPipelineDefinitionError(ForemastError):
     """Error Creating Data Pipeline."""
+
+
+class CloudFunctionOperationIncompleteError(ForemastError):
+    """Error waiting on GCP Cloud Function operation to complete"""
+
+
+class CloudFunctionOperationFailedError(ForemastError):
+    """Cloud Function operation completed with errors"""
+
+    def __init__(self, operation_error: dict, message: str):
+        self.operation_error = operation_error
+        self.message = message
+        super().__init__(self.message)
+
