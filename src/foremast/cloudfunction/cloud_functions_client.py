@@ -242,7 +242,7 @@ class CloudFunctionsClient:
            Returns:
                dict: Response body for GCP create/patch function API calls
        """
-        return {
+        request_body = {
             # Automated options
             "name": self._generate_function_path(location_id),
             "serviceAccountEmail": self._service_account_email,
@@ -256,9 +256,30 @@ class CloudFunctionsClient:
             "availableMemoryMb": self._env_config['app'].get("cloudfunction_memory_mb"),
             "environmentVariables": self._env_config['app'].get("cloudfunction_environment"),
             "maxInstances": self._env_config['app'].get("cloudfunction_max_instances"),
-            "vpcConnector":  self._env_config['app'].get("cloudfunction_vpc_connector"),
+            "vpcConnector":  self._env_config['app'].get("cloudfunction_vpc_connector", {}).get(location_id),
             "vpcConnectorEgressSettings": None,
-            "ingressSettings": None,
-            "httpsTrigger": {},
-            "eventTrigger": None
+            "ingressSettings": None
         }
+
+        # GCP only supports either an HTTP trigger or an event trigger, both can not be used
+        # HTTP Trigger is the default and can work with no configuration
+        # if they did not give an event trigger, assume HTTP
+        event_trigger = self._env_config['app'].get("cloudfunction_event_trigger")
+        if event_trigger:
+            if "failure_policy" in event_trigger and event_trigger["failure_policy"].get("retry"):
+                # GCP API specifies this as an object, but it is more of a bool depending on if the obj is set or not
+                retry = {}
+            else:
+                retry = None
+            request_body["eventTrigger"] = {
+                "eventType": event_trigger["event_type"],
+                "resource": event_trigger["resource"],
+                "service": event_trigger.get("service"),
+                "failurePolicy": {
+                  "retry": retry
+                }
+            }
+        else:
+            request_body["httpsTrigger"] = {}
+
+        return request_body

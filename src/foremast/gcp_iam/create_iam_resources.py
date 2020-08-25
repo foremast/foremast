@@ -33,9 +33,6 @@ class GcpIamResourceClient:
         service_account_email = service_account["email"]
         member = "serviceAccount:" + service_account_email
 
-        # Update services block with any minimum default roles needed
-        self._apply_role_defaults()
-
         # Get the gcp_roles requested in pipeline.json with the full project id as the key
         gcp_roles_by_project = GcpIamResourceClient._get_gcp_roles_by_project(self._services['gcp_roles'],
                                                                               self._env, self._group_name)
@@ -115,23 +112,6 @@ class GcpIamResourceClient:
 
         # Default is the service account project defined for this env in Foremast config
         return self._env.service_account_project
-
-    def _apply_role_defaults(self):
-        """Appends any default/minimum roles to services block that may be required to deploy the given pipeline type"""
-
-        if "gcp_roles" not in self._services:
-            self._services["gcp_roles"] = list()
-
-        if self._pipeline_type == "cloudfunction":
-            LOG.info("Adding additional roles to cloud function service account")
-            self._services["gcp_roles"].append({
-                "project_name": self._configs["pipeline"]["cloudfunction"]["project_name"],
-                "roles": [
-                    "roles/iam.serviceAccountUser",
-                    "roles/cloudfunctions.admin",
-                    "roles/cloudfunctions.serviceAgent"
-                ]
-            })
 
     @staticmethod
     @retries(max_attempts=5, wait=lambda n: 2 ** n, exceptions=HttpError)
