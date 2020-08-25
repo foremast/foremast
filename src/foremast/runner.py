@@ -143,14 +143,6 @@ class ForemastRunner:
     def create_gcp_iam(self, env: GcpEnvironment):
         """Create GCP IAM resources."""
         utils.banner("Creating GCP IAM")
-        services = dict()
-        if "services" in self.configs["pipeline"]:
-            services = self.configs["pipeline"]["services"]
-
-        # ensure gcp_roles block exists
-        if "gcp_roles" not in services:
-            services["gcp_roles"] = list()
-
         gcp_iam_client = GcpIamResourceClient(env=env, app_name=self.app, group_name=self.group, configs=self.configs)
         gcp_iam_client.create_iam_resources()
 
