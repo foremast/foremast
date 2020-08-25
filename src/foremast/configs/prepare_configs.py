@@ -17,7 +17,8 @@
 import collections
 import logging
 
-from ..consts import ENVS, REGIONS, RUNWAY_BASE_PATH
+from .. import consts
+from ..exceptions import ForemastError
 from ..utils import DeepChainMap, FileLookup
 
 LOG = logging.getLogger(__name__)
@@ -37,8 +38,8 @@ def process_git_configs(git_short=''):
     LOG.info('Processing application.json files from GitLab "%s".', git_short)
     file_lookup = FileLookup(git_short=git_short)
     app_configs = process_configs(file_lookup,
-                                  RUNWAY_BASE_PATH + '/application-master-{env}.json',
-                                  RUNWAY_BASE_PATH + '/pipeline.json')
+                                  consts.RUNWAY_BASE_PATH + '/application-master-{env}.json',
+                                  consts.RUNWAY_BASE_PATH + '/pipeline.json')
     commit_obj = file_lookup.project.commits.get('master')
     config_commit = commit_obj.attributes['id']
     LOG.info('Commit ID used: %s', config_commit)
@@ -71,10 +72,24 @@ def process_configs(file_lookup, app_config_format, pipeline_config):
         pipeline_config (str): Name/path of the pipeline config
 
     Returns:
-        dict: Retreived application config
+        dict: Retrieved application config
     """
     app_configs = collections.defaultdict(dict)
-    for env in ENVS:
+    # Load pipeline config first, determine cloud provider
+    # Then load appropriate environment files
+    try:
+        app_configs['pipeline'] = file_lookup.json(filename=pipeline_config)
+    except FileNotFoundError:
+        LOG.warning('Unable to process pipeline.json. Using defaults.')
+        app_configs['pipeline'] = {'env': ['stage', 'prod']}
+
+    pipeline_type = app_configs['pipeline']['type']
+    cloud_provider = get_cloud_for_pipeline_type(pipeline_type)
+    environments = _get_env_names_for_cloud(cloud_provider)
+    LOG.info("Using cloud provider '%s' for pipeline type '%s', supported environments: '%s'",
+             cloud_provider, pipeline_type, environments)
+
+    for env in environments:
         file_json = app_config_format.format(env=env)
         try:
             env_config = file_lookup.json(filename=file_json)
@@ -82,12 +97,6 @@ def process_configs(file_lookup, app_config_format, pipeline_config):
         except FileNotFoundError:
             LOG.critical('Application configuration not available for %s.', env)
             continue
-
-    try:
-        app_configs['pipeline'] = file_lookup.json(filename=pipeline_config)
-    except FileNotFoundError:
-        LOG.warning('Unable to process pipeline.json. Using defaults.')
-        app_configs['pipeline'] = {'env': ['stage', 'prod']}
 
     LOG.debug('Application configs:\n%s', app_configs)
     return app_configs
@@ -104,7 +113,7 @@ def apply_region_configs(env_config):
         dict: Newly updated dictionary with region overrides applied.
     """
     new_config = env_config.copy()
-    for region in env_config.get('regions', REGIONS):
+    for region in env_config.get('regions', consts.REGIONS):
         if isinstance(env_config.get('regions'), dict):
             region_specific_config = env_config['regions'][region]
             new_config[region] = dict(DeepChainMap(region_specific_config, env_config))
@@ -112,3 +121,44 @@ def apply_region_configs(env_config):
             new_config[region] = env_config.copy()
     LOG.debug('Region Specific Config:\n%s', new_config)
     return new_config
+
+
+def get_cloud_for_pipeline_type(pipeline_type):
+    """Maps a pipeline type to the corresponding cloud provider
+
+        Args:
+            pipeline_type (str): The pipeline type (e.g. cloudfunction, lambda, ec2)
+
+        Return:
+            str: The corresponding cloud provider (e.g. aws, gcp)
+        """
+    if pipeline_type in consts.GCP_TYPES:
+        return "gcp"
+    elif pipeline_type in consts.AWS_TYPES:
+        return "aws"
+    else:
+        error_message = ("pipeline.type of '{0}' is not supported. "
+                         "If this is a manual pipeline it is required you specify the "
+                         "pipeline type in AWS_MANUAL_TYPES or GCP_MANUAL_TYPES"
+                         ).format(pipeline_type)
+        raise ForemastError(error_message)
+
+
+def _get_env_names_for_cloud(cloud_name):
+    """Returns the list of env names for the given cloud
+
+    Args:
+        cloud_name, Str: Name of cloud provider.  'aws' and 'gcp' are only supported options.
+
+    Return:
+        set: Environment names for the given cloud (e.g. stage, prod) and corresponding configs
+    """
+    if cloud_name == "aws":
+        return consts.ENVS
+    elif cloud_name == "gcp":
+        # GCP env config is an nested dictionary of env names with config as value
+        # only return the names as that is all that is needed, and the AWS config is names only
+        return set(consts.GCP_ENVS.keys())
+    else:
+        raise ValueError("Unknown cloud given while loading cloud environments. Only gcp and aws are acceptable.  "
+                         "Received '%s'", cloud_name)

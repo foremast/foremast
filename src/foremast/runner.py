@@ -33,9 +33,11 @@ import os
 import gogoutils
 
 from . import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
-               scheduled_actions, securitygroup, slacknotify, utils, gcp_iam)
+               scheduled_actions, securitygroup, slacknotify, utils)
+from .gcp_iam import GcpIamResourceClient
 from .app import SpinnakerApp
 from .args import add_debug
+from .cloudfunction.cloud_functions_client import CloudFunctionsClient
 from .exceptions import ForemastError
 from .utils.gcp_environment import GcpEnvironment
 from tabulate import tabulate
@@ -141,10 +143,16 @@ class ForemastRunner:
     def create_gcp_iam(self, env: GcpEnvironment):
         """Create GCP IAM resources."""
         utils.banner("Creating GCP IAM")
-        services = None
+        services = dict()
         if "services" in self.configs["pipeline"]:
             services = self.configs["pipeline"]["services"]
-        gcp_iam.create_iam_resources(env=env, app_name=self.app, group_name=self.group, services=services)
+
+        # ensure gcp_roles block exists
+        if "gcp_roles" not in services:
+            services["gcp_roles"] = list()
+
+        gcp_iam_client = GcpIamResourceClient(env=env, app_name=self.app, group_name=self.group, configs=self.configs)
+        gcp_iam_client.create_iam_resources()
 
     def create_archaius(self):
         """Create S3 bucket for Archaius."""
@@ -261,6 +269,14 @@ class ForemastRunner:
         if self.configs[self.env].get('datapipeline').get('activate_on_deploy'):
             dpobj.activate_pipeline()
 
+    def create_cloudfunction(self, env: GcpEnvironment):
+        """Creates a Cloud Function"""
+        utils.banner("Creating GCP Cloud Function")
+        cloud_function_client = CloudFunctionsClient(self.app, env, self.configs)
+        cloud_function_client.prepare_client()
+        cloud_function_client.deploy_function(self.artifact_path)
+        LOG.info("Finished deploying cloud function")
+
     def slack_notify(self):
         """Send out a slack notification."""
         utils.banner("Sending slack notification")
@@ -289,10 +305,12 @@ def prepare_infrastructure():
     except KeyError:
         raise ForemastError("pipeline.type is required")
 
-    if pipeline_type in consts.GCP_TYPES:
+    cloud_name = configs.get_cloud_for_pipeline_type(pipeline_type)
+
+    if cloud_name == "gcp":
         LOG.info("Will create GCP Infrastructure for pipeline.type '%s'", pipeline_type)
-        prepare_infrastructure_gcp(runner)
-    elif pipeline_type in consts.AWS_TYPES:
+        prepare_infrastructure_gcp(runner, pipeline_type)
+    elif cloud_name in "aws":
         LOG.info("Will create AWS Infrastructure for pipeline.type '%s'", pipeline_type)
         prepare_infrastructure_aws(runner, pipeline_type)
     else:
@@ -303,13 +321,17 @@ def prepare_infrastructure():
         raise ForemastError(error_message)
 
 
-def prepare_infrastructure_gcp(runner):
+def prepare_infrastructure_gcp(runner: ForemastRunner, pipeline_type: str):
     """Creates GCP infrastructure for a specific env."""
     all_gcp_envs = GcpEnvironment.get_environments_from_config()
     if runner.env not in all_gcp_envs:
         raise ForemastError("GCP environment %s not found in configuration", runner.env)
     env = all_gcp_envs[runner.env]
+    # Always create IAM, this ensure svc account and permissions is done
     runner.create_gcp_iam(env)
+    # If this is a pipeline type foremast deploys, handle that here
+    if pipeline_type.strip() == "cloudfunction":
+        runner.create_cloudfunction(env)
 
 
 def prepare_infrastructure_aws(runner, pipeline_type):
