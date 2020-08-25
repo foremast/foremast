@@ -254,6 +254,59 @@ Currently AWS API supports Active or PassThrough.
             "Mode": "Active"
         }
 
+``cloudfunction_timeout``
+**********************
+
+Timeout on Cloud Function invocation in seconds.  GCP currently defaults to 60 seconds if no value is give.
+
+    | *Type*: Integer
+    | *Default*: ``None``
+    | *Example*: ``60``
+
+``cloudfunction_memory_mb``
+**********************
+
+Memory in Mb specified as an integer (without Mb or mb after the value).  GCP currently defaults to 256Mb if no value is given.
+
+    | *Type*: Integer
+    | *Default*: ``None``
+    | *Example*: ``128``
+
+``cloudfunction_environment``
+**********************
+
+Environment variables that should be present when the Cloud Function is invoked.
+
+    | *Type*: Dictionary
+    | *Default*: ``None``
+    | *Example*: ``{ 'MY_ENV_VAR': 'My value!' }``
+
+``cloudfunction_max_instances``
+**********************
+
+Maximum number of instances of a function that can run in parallel.  GCP defaults to no limit if a value is not given.
+
+    | *Type*: Integer
+    | *Default*: ``None``
+    | *Example*: ``5``
+
+``cloudfunction_vpc_connector``
+**********************
+
+VPC Connector to use, which will allow private VPC network access to the Cloud Function.  Should be defined
+as key/value pairs where the key is the region and the value is the VPC connector.
+
+    | *Type*: Dictionary
+    | *Default*: ``None``
+    | *Example*:
+
+        .. code-block:: json
+
+             {
+                "us-central1":  "projects/your-host-project/locations/us-central1/connectors/yourconnector-us-central1",
+                "us-east1":     "projects/your-host-project/locations/us-east1/connectors/yourconnector-us-east1"
+             }
+
 
 ``asg`` Block
 ~~~~~~~~~~~~~
