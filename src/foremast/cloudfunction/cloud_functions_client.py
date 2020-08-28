@@ -19,7 +19,7 @@ import logging
 import requests
 from googleapiclient.errors import HttpError
 from googleapiclient import discovery
-from ..exceptions import CloudFunctionOperationFailedError, CloudFunctionOperationIncompleteError, ForemastError
+from ..exceptions import CloudFunctionOperationFailedError, CloudFunctionOperationIncompleteError
 from tryagain import retries
 from ..utils.gcp_environment import GcpEnvironment
 
@@ -242,7 +242,8 @@ class CloudFunctionsClient:
            Returns:
                dict: Response body for GCP create/patch function API calls
        """
-        vpc_connector_block = self._env_config['app'].get("cloudfunction_vpc", {})
+        app_config = self._env_config['app']
+        vpc_connector_block = app_config.get("cloudfunction_vpc", {})
 
         request_body = {
             # Automated options
@@ -254,20 +255,20 @@ class CloudFunctionsClient:
             "runtime": self._cf_config['runtime'],
             "labels": {},
             # Env specific options
-            "timeout": self._env_config['app'].get("cloudfunction_timeout"),
-            "availableMemoryMb": self._env_config['app'].get("cloudfunction_memory_mb"),
-            "environmentVariables": self._env_config['app'].get("cloudfunction_environment"),
-            "maxInstances": self._env_config['app'].get("cloudfunction_max_instances"),
+            "timeout": app_config.get("cloudfunction_timeout"),
+            "availableMemoryMb": app_config.get("cloudfunction_memory_mb"),
+            "environmentVariables": app_config.get("cloudfunction_environment"),
+            "maxInstances": app_config.get("cloudfunction_max_instances"),
             # Get the connector name for this region
             "vpcConnector":  vpc_connector_block.get("connector").get(location_id),
             "vpcConnectorEgressSettings": vpc_connector_block.get("egress_type"),
-            "ingressSettings": self._env_config['app'].get("cloudfunction_ingress_type")
+            "ingressSettings": app_config.get("cloudfunction_ingress_type")
         }
 
         # GCP only supports either an HTTP trigger or an event trigger, both can not be used
         # HTTP Trigger is the default and can work with no configuration
         # if they did not give an event trigger, assume HTTP
-        event_trigger = self._env_config['app'].get("cloudfunction_event_trigger")
+        event_trigger = app_config.get("cloudfunction_event_trigger")
         if event_trigger:
             if "failure_policy" in event_trigger and event_trigger["failure_policy"].get("retry"):
                 # GCP API specifies this as an object, but it is more of a bool depending on if the obj is set or not
@@ -276,13 +277,26 @@ class CloudFunctionsClient:
                 retry = None
             request_body["eventTrigger"] = {
                 "eventType": event_trigger["event_type"],
-                "resource": event_trigger["resource"],
+                "resource": self._get_full_resource_path(event_trigger["resource"]),
                 "service": event_trigger.get("service"),
                 "failurePolicy": {
-                  "retry": retry
+                    "retry": retry
                 }
             }
         else:
             request_body["httpsTrigger"] = {}
 
         return request_body
+
+    def _get_full_resource_path(self, partial_path):
+        """Translates a partial resource path `topics/my_topic` or `/topics/my_topic`
+        to the full path including project, like `/projects/my-project/topics/my_topic`.
+        Most GCP APIs expect the full path.  The deployment target project is used, as GCP
+        Functions can only be triggered by a resource in the same project.
+
+        Args:
+            partial_path (str): The partial resource path
+
+        GCP Docs: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#EventTrigger"""
+
+        return "projects/{}/{}".format(self._project_id, partial_path.lstrip('/'))

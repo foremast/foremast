@@ -212,4 +212,3 @@ class CloudFunctionOperationFailedError(ForemastError):
         self.operation_error = operation_error
         self.message = message
         super().__init__(self.message)
-

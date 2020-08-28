@@ -302,8 +302,8 @@ For information on this option see the `GCP Documentation on Ingress Settings <h
     | *Default*: ``None``
     | *Example*: ``ALLOW_INTERNAL_ONLY``
 
-``cloudfunction_vpc`` Block
-~~~~~~~~~~~~~
+``cloudfunction_vpc``
+**********************
 
 .. code-block:: json
 
@@ -315,8 +315,8 @@ For information on this option see the `GCP Documentation on Ingress Settings <h
       "egress_type": "PRIVATE_RANGES_ONLY"
     }
 
-``cloudfunction_vpc.connector``
-**********************
+``connector``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 VPC Connector to use, which will allow private VPC network access to the Cloud Function.  Should be defined
 as key/value pairs where the key is the region and the value is the VPC connector.
@@ -332,8 +332,8 @@ as key/value pairs where the key is the region and the value is the VPC connecto
                 "us-east1":     "projects/your-host-project/locations/us-east1/connectors/yourconnector-us-east1"
              }
 
-``cloudfunction_vpc.egress_type``
-**********************
+``egress_type``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Egress type to use.  Foremast does not have a default, however GCP Defaults to ``PRIVATE_RANGES_ONLY`` if none is given.
 Options are: ``VPC_CONNECTOR_EGRESS_SETTINGS_UNSPECIFIED``, ``PRIVATE_RANGES_ONLY``, ``ALL_TRAFFIC``.
@@ -343,6 +343,58 @@ For information on this option see the  `GCP Documentation on VPC Egress Setting
     | *Type*: String
     | *Default*: ``None``
     | *Example*: ``PRIVATE_RANGES_ONLY``
+
+``cloudfunction_event_trigger``
+**********************************
+
+Configures a trigger for a GCP Cloud Function.  If none is given, GCP will default to an HTTPS trigger.  Trigger
+types are immutable in GCP, so once a trigger type is used (https, pub/sub, GCS, etc) it cannot be changed.  It
+is possible to change the resource used in the trigger, but not the trigger type itself.
+
+
+    | *Example Pub/Sub trigger*:
+
+        .. code-block:: json
+
+           "cloudfunction_event_trigger": {
+              "event_type": "providers/cloud.pubsub/eventTypes/topic.publish",
+              "resource": "/topics/my_topic"
+            }
+
+    | *Example GCS Bucket trigger*:
+
+        .. code-block:: json
+
+           "cloudfunction_event_trigger": {
+              "resource": "buckets/my_bucket_name",
+              "event_type": "google.storage.object.archive"
+            }
+
+``event_type``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Event type to trigger the Cloud Function.  Event types and their formats can vary, the easiest way to determine
+your event type is to run the command `gcloud functions event-types list <https://cloud.google.com/sdk/gcloud/reference/functions/event-types/list>`_. and refer to the EVENT_TYPE column.
+
+    | *Type*: String
+    | *Default*: ``None``
+    | *Example Pub/Sub*: ``providers/cloud.pubsub/eventTypes/topic.publish``
+    | *Example Storage*: ``google.pubsub.topic.publish``
+    | *Example Firestore Storage*: ``providers/cloud.firestore/eventTypes/document.write``
+
+``resource``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The resource to trigger off of.  The resource type given must match the ``event_type`` specified.  For example, a resource
+path to a GCS Bucket with a Pub/Sub event trigger will be rejected.  GCP expects the project to be specified and the
+full path to the resource, however if omitted Foremast will add this automatically.
+
+    | *Type*: String
+    | *Default*: ``None``
+    | *Example Pub/Sub*: ``topics/my_topic``
+    | *Example Storage*: ``buckets/my_bucket``
+
+
 
 ``asg`` Block
 ~~~~~~~~~~~~~

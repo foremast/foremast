@@ -60,7 +60,7 @@ class GcpIamResourceClient:
             """
         service_accounts = GcpIamResourceClient.list_service_accounts(credentials=self._credentials,
                                                                       project_id=self._get_service_account_project())
-        
+
         # Check if the SA already exists
         for account in service_accounts['accounts']:
             if self._app_name == account['displayName']:
