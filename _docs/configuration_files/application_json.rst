@@ -290,7 +290,32 @@ Maximum number of instances of a function that can run in parallel.  GCP default
     | *Default*: ``None``
     | *Example*: ``5``
 
-``cloudfunction_vpc_connector``
+``cloudfunction_ingress_type``
+**********************
+
+Ingress type to use.  Foremast does not have a default, however GCP Defaults to ``ALLOW_ALL`` if none is given.
+Options are: ``INGRESS_SETTINGS_UNSPECIFIED``, ``ALLOW_ALL``, ``ALLOW_INTERNAL_ONLY``, ``ALLOW_INTERNAL_AND_GCLB``
+
+For information on this option see the `GCP Documentation on Ingress Settings <https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#ingresssettings>`_.
+
+    | *Type*: String
+    | *Default*: ``None``
+    | *Example*: ``ALLOW_INTERNAL_ONLY``
+
+``cloudfunction_vpc`` Block
+~~~~~~~~~~~~~
+
+.. code-block:: json
+
+   "cloudfunction_vpc": {
+      "connector": {
+        "us-central1": "projects/redbox-sharedvpc/locations/us-central1/connectors/stage-us-central1",
+        "us-east1": "projects/redbox-sharedvpc/locations/us-east1/connectors/stage-us-east1"
+      },
+      "egress_type": "PRIVATE_RANGES_ONLY"
+    }
+
+``cloudfunction_vpc.connector``
 **********************
 
 VPC Connector to use, which will allow private VPC network access to the Cloud Function.  Should be defined
@@ -307,6 +332,17 @@ as key/value pairs where the key is the region and the value is the VPC connecto
                 "us-east1":     "projects/your-host-project/locations/us-east1/connectors/yourconnector-us-east1"
              }
 
+``cloudfunction_vpc.egress_type``
+**********************
+
+Egress type to use.  Foremast does not have a default, however GCP Defaults to ``PRIVATE_RANGES_ONLY`` if none is given.
+Options are: ``VPC_CONNECTOR_EGRESS_SETTINGS_UNSPECIFIED``, ``PRIVATE_RANGES_ONLY``, ``ALL_TRAFFIC``.
+
+For information on this option see the  `GCP Documentation on VPC Egress Settings <https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#VpcConnectorEgressSettings>`_.
+
+    | *Type*: String
+    | *Default*: ``None``
+    | *Example*: ``PRIVATE_RANGES_ONLY``
 
 ``asg`` Block
 ~~~~~~~~~~~~~

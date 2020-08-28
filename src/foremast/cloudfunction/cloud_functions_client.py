@@ -242,6 +242,8 @@ class CloudFunctionsClient:
            Returns:
                dict: Response body for GCP create/patch function API calls
        """
+        vpc_connector_block = self._env_config['app'].get("cloudfunction_vpc", {})
+
         request_body = {
             # Automated options
             "name": self._generate_function_path(location_id),
@@ -256,9 +258,10 @@ class CloudFunctionsClient:
             "availableMemoryMb": self._env_config['app'].get("cloudfunction_memory_mb"),
             "environmentVariables": self._env_config['app'].get("cloudfunction_environment"),
             "maxInstances": self._env_config['app'].get("cloudfunction_max_instances"),
-            "vpcConnector":  self._env_config['app'].get("cloudfunction_vpc_connector", {}).get(location_id),
-            "vpcConnectorEgressSettings": None,
-            "ingressSettings": None
+            # Get the connector name for this region
+            "vpcConnector":  vpc_connector_block.get("connector").get(location_id),
+            "vpcConnectorEgressSettings": vpc_connector_block.get("egress_type"),
+            "ingressSettings": self._env_config['app'].get("cloudfunction_ingress_type")
         }
 
         # GCP only supports either an HTTP trigger or an event trigger, both can not be used
