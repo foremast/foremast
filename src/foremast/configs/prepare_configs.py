@@ -83,7 +83,10 @@ def process_configs(file_lookup, app_config_format, pipeline_config):
         LOG.warning('Unable to process pipeline.json. Using defaults.')
         app_configs['pipeline'] = {'env': ['stage', 'prod']}
 
-    pipeline_type = app_configs['pipeline']['type']
+    if 'type' in app_configs['pipeline']:
+        pipeline_type = app_configs['pipeline']['type']
+    else:
+        pipeline_type = 'ec2'
     cloud_provider = get_cloud_for_pipeline_type(pipeline_type)
     environments = _get_env_names_for_cloud(cloud_provider)
     LOG.info("Using cloud provider '%s' for pipeline type '%s', supported environments: '%s'",
