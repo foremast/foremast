@@ -260,7 +260,7 @@ class CloudFunctionsClient:
             "environmentVariables": app_config.get("cloudfunction_environment"),
             "maxInstances": app_config.get("cloudfunction_max_instances"),
             # Get the connector name for this region
-            "vpcConnector":  vpc_connector_block.get("connector").get(location_id),
+            "vpcConnector":  vpc_connector_block.get("connector", {}).get(location_id),
             "vpcConnectorEgressSettings": vpc_connector_block.get("egress_type"),
             "ingressSettings": app_config.get("cloudfunction_ingress_type")
         }

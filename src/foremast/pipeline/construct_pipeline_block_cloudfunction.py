@@ -78,26 +78,6 @@ def construct_pipeline_block_cloudfunction(env='',
         'owner_email':          pipeline_data['owner_email']
     })
 
-    # Cloud Function specifics, optional values use .get() to default to None
-    try:
-        data['app'].update({
-            'entry_point':          pipeline_data['cloudfunction']['entry_point'],
-            'gcp_project':          pipeline_data['cloudfunction']['gcp_project'],
-            'runtime':              pipeline_data['cloudfunction']['runtime'],
-            'vpc_connector':        pipeline_data['cloudfunction'].get('vpc_connector'),
-            'memory':               pipeline_data['cloudfunction'].get('memory'),
-            'ignore_file':          pipeline_data['cloudfunction'].get('ignore_file'),
-            'service_account':      pipeline_data['cloudfunction'].get('service_account'),
-            'max_instances':        pipeline_data['cloudfunction'].get('max_instances'),
-            'trigger_type':         pipeline_data['cloudfunction'].get('trigger_type'),
-            'trigger_topic':        pipeline_data['cloudfunction'].get('trigger_topic'),
-            'trigger_event':        pipeline_data['cloudfunction'].get('trigger_event'),
-            'trigger_resource':     pipeline_data['cloudfunction'].get('trigger_resource'),
-            'trigger_bucket':       pipeline_data['cloudfunction'].get('trigger_bucket')
-        })
-    except KeyError:
-        LOG.error("cloudfunction block or required value is missing from pipeline.json", exc_info=True)
-
     LOG.debug('Block data:\n%s', pformat(data))
 
     pipeline_json = get_template(template_file=template_name, data=data, formats=generated)
