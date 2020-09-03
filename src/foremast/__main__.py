@@ -115,7 +115,7 @@ def add_describe_environments(describe_subparser):
 
 
 def main(manual_args=None):
-    """Foremast, your ship's support."""
+    """Foremast, your ship's support. """
     parser = argparse.ArgumentParser(description=main.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.set_defaults(func=parser.print_help)
     add_debug(parser)
