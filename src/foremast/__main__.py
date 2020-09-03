@@ -46,6 +46,7 @@ def add_cloudfunctions(subparsers):
     deploy_parser = cf_subparsers.add_parser("deploy", help=runner.deploy_cloudfunction.__doc__)
     deploy_parser.set_defaults(func=runner.deploy_cloudfunction)
 
+
 def add_rebuild(subparsers):
     """Rebuild Pipeline subcommands."""
     rebuild_parser = subparsers.add_parser(
