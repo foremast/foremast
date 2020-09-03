@@ -309,8 +309,8 @@ For information on this option see the `GCP Documentation on Ingress Settings <h
 
    "cloudfunction_vpc": {
       "connector": {
-        "us-central1": "projects/redbox-sharedvpc/locations/us-central1/connectors/stage-us-central1",
-        "us-east1": "projects/redbox-sharedvpc/locations/us-east1/connectors/stage-us-east1"
+        "us-central1": "projects/your-vpc-project/locations/us-central1/connectors/stage-us-central1",
+        "us-east1": "projects/your-vpc-project/locations/us-east1/connectors/stage-us-east1"
       },
       "egress_type": "PRIVATE_RANGES_ONLY"
     }
