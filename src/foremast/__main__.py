@@ -16,14 +16,6 @@ def add_infra(subparsers):
     """Infrastructure subcommands."""
     infra_parser = subparsers.add_parser('infra', help=runner.prepare_infrastructure.__doc__)
     infra_parser.set_defaults(func=runner.prepare_infrastructure)
-    infra_print_subparser = infra_parser.add_subparsers(title='Infra Subcommands')
-    print_env_parser = infra_print_subparser.add_parser("print-environment", help=runner.print_gcp_environments.__doc__)
-    print_env_parser.set_defaults(func=runner.print_gcp_environments)
-    print_env_parser.add_argument('--print-table-format', default="fancy_grid", required=False,
-                                  help="Format of output.  Common options are grid, fancy_grid, jira."
-                                       "See tabulate package docs for full list of options.")
-    print_env_parser.add_argument('--print-to-file', default=None, required=False,
-                                  help="File path to output the printed table to instead of displaying on the console")
 
 
 def add_pipeline(subparsers):
@@ -92,6 +84,25 @@ def add_validate(subparsers):
     validate_gate_parser.set_defaults(func=validate.validate_gate)
 
 
+def add_describe(subparsers):
+    """Describe subcommands"""
+    describe_parser = subparsers.add_parser('describe', help="Shows details of specific Foremast "
+                                                             "resources/configurations")
+    desc_parser_subparsers = describe_parser.add_subparsers(title='Describe Commands', description='Available commands')
+    add_describe_environments(desc_parser_subparsers)
+
+
+def add_describe_environments(describe_subparser):
+    desc_env_parser = describe_subparser.add_parser("environments", help="Shows IAM details for a cloud provider")
+    desc_env_parser.set_defaults(func=runner.describe_environments)
+    desc_env_parser.add_argument('cloud_provider', choices=['aws', 'gcp'], help="Cloud provider to describe")
+    desc_env_parser.add_argument('--print-table-format', default="fancy_grid", required=False,
+                                 help="Format of output.  Common options are grid, fancy_grid, jira."
+                                 "See tabulate package docs for full list of options.")
+    desc_env_parser.add_argument('--print-to-file', default=None, required=False,
+                                 help="File path to output the printed table to instead of displaying on the console")
+
+
 def main(manual_args=None):
     """Foremast, your ship's support."""
     parser = argparse.ArgumentParser(description=main.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -114,6 +125,7 @@ def main(manual_args=None):
     add_autoscaling(subparsers)
     add_scheduled_actions(subparsers)
     add_validate(subparsers)
+    add_describe(subparsers)
 
     CliArgs = collections.namedtuple('CliArgs', ['parsed', 'extra'])
 
