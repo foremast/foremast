@@ -344,9 +344,30 @@ def prepare_infrastructure_aws(runner, pipeline_type):
     runner.cleanup()
 
 
-def print_gcp_environments(args):
-    """Prints a simple visual output of GCP Environments visible to Foremast"""
+def describe_environments(args):
+    """Prints a simple visual output of environments visible to Foremast"""
+    if args.parsed.cloud_provider == "gcp":
+        table = get_describe_gcp_environments()
+    elif args.parsed.cloud_provider == "aws":
+        table = get_describe_aws_environments()
+    else:
+        raise ForemastError("Cannot describe cloud '{}'".format(args.parsed.cloud_provider))
 
+    output = tabulate(table[1], table[0], tablefmt=args.parsed.print_table_format)
+    if args.parsed.print_to_file:
+        file = open(args.parsed.print_to_file, "w")
+        file.write(output)
+        file.close()
+        LOG.info("Saved printed table to %s", args.parsed.print_to_file)
+
+    print(output)
+
+
+def get_describe_gcp_environments():
+    """Prints a simple visual output of GCP Environments visible to Foremast
+    Returns:
+        tuple: first the table headers, second the table values
+    """
     table_header = ["Environment", "Project", "Permitted Groups"]
     env_table = list()
     all_envs = GcpEnvironment.get_environments_from_config()
@@ -360,14 +381,20 @@ def print_gcp_environments(args):
             else:
                 groups = "N/A"
             env_table.append([env.name, project["projectId"], groups])
-    output = tabulate(env_table, table_header, tablefmt=args.parsed.print_table_format)
-    if args.parsed.print_to_file:
-        file = open(args.parsed.print_to_file, "w")
-        file.write(output)
-        file.close()
-        LOG.info("Saved printed table to %s", args.parsed.print_to_file)
+    return table_header, env_table
 
-    print(output)
+
+def get_describe_aws_environments():
+    """Prints a simple visual output of AWS environments configured in Foremast
+    Returns:
+        tuple: first the table headers, second the table values
+    """
+    table_header = ["Environment"]
+    env_table = list()
+    for env in configs.ENVS:
+        env_table.append([env])
+
+    return table_header, env_table
 
 
 def prepare_app_pipeline():
