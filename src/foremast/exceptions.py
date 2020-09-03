@@ -201,11 +201,15 @@ class DataPipelineDefinitionError(ForemastError):
     """Error Creating Data Pipeline."""
 
 
-class CloudFunctionOperationIncompleteError(ForemastError):
+class CloudFunctionDeployError(ForemastError):
+    """Error while deploying a Cloud Function"""
+
+
+class CloudFunctionOperationIncompleteError(CloudFunctionDeployError):
     """Error waiting on GCP Cloud Function operation to complete"""
 
 
-class CloudFunctionOperationFailedError(ForemastError):
+class CloudFunctionOperationFailedError(CloudFunctionDeployError):
     """Cloud Function operation completed with errors"""
 
     def __init__(self, operation_error: dict, message: str):

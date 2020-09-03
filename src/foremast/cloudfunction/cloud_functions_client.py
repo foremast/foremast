@@ -19,7 +19,8 @@ import logging
 import requests
 from googleapiclient.errors import HttpError
 from googleapiclient import discovery
-from ..exceptions import CloudFunctionOperationFailedError, CloudFunctionOperationIncompleteError
+from ..exceptions import CloudFunctionDeployError, CloudFunctionOperationFailedError, \
+    CloudFunctionOperationIncompleteError
 from tryagain import retries
 from ..utils.gcp_environment import GcpEnvironment
 
@@ -73,12 +74,14 @@ class CloudFunctionsClient:
             self._service_account_email = "{}@{}.iam.gserviceaccount.com".format(self._name, self._project_id)
             LOG.info("Using dedicated service account '%s'", self._service_account_email)
 
-    def deploy_function(self, file_path):
+    def deploy_function(self, file_path, region):
         """Creates (or updates) and uploads a function's code in one step
 
         Args:
             file_path: str, required
                 Local file path to the function's zip file
+            region: str, required
+                The region to deploy to
 
         Returns:
             None
@@ -88,14 +91,17 @@ class CloudFunctionsClient:
             CloudFunctionOperationFailedError: Operation completed with error
             HttpError: Error communicating with the GCP APIs
         """
-        for location_id in self._regions:
-            upload_url = self._get_upload_url(location_id)
-            self._upload_zip(upload_url, file_path)
-            exists = self._check_function_exists(location_id)
-            if exists:
-                self._update_function(location_id, upload_url)
-            else:
-                self._create_function(location_id, upload_url)
+        if region not in self._regions:
+            raise CloudFunctionDeployError("Region '{}' is not in cloud function's configuration.  Options are: {}"
+                                           .format(region, self._regions))
+
+        upload_url = self._get_upload_url(region)
+        self._upload_zip(upload_url, file_path)
+        exists = self._check_function_exists(region)
+        if exists:
+            self._update_function(region, upload_url)
+        else:
+            self._create_function(region, upload_url)
 
     def _get_upload_url(self, location_id):
         """Gets a Signed URL that the function's zip file can be uploaded to
