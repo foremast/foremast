@@ -139,9 +139,10 @@ class ForemastRunner:
         utils.banner("Creating AWS IAM")
         iam.create_iam_resources(env=self.env, app=self.app)
 
-    def create_gcp_iam(self, env: GcpEnvironment):
+    def create_gcp_iam(self):
         """Create GCP IAM resources."""
         utils.banner("Creating GCP IAM")
+        env = self.get_current_gcp_env()
         gcp_iam_client = GcpIamResourceClient(env=env, app_name=self.app, group_name=self.group, configs=self.configs)
         gcp_iam_client.create_iam_resources()
 
@@ -260,9 +261,10 @@ class ForemastRunner:
         if self.configs[self.env].get('datapipeline').get('activate_on_deploy'):
             dpobj.activate_pipeline()
 
-    def create_cloudfunction(self, env: GcpEnvironment):
+    def deploy_cloudfunction(self):
         """Creates a Cloud Function"""
         utils.banner("Creating GCP Cloud Function")
+        env = self.get_current_gcp_env()
         cloud_function_client = CloudFunctionsClient(self.app, env, self.configs)
         cloud_function_client.prepare_client()
         cloud_function_client.deploy_function(self.artifact_path)
@@ -277,6 +279,18 @@ class ForemastRunner:
             notify.post_message()
         else:
             LOG.info("No slack message sent, not production environment")
+
+    def get_current_gcp_env(self):
+        """Gets the current GCP Environment
+        Returns:
+            GcpEnvironment, the current GCP environment
+        Raises:
+            ForemastError, when the current env name is not a known GCP Environment
+        """
+        all_gcp_envs = GcpEnvironment.get_environments_from_config()
+        if self.env not in all_gcp_envs:
+            raise ForemastError("GCP environment %s not found in configuration", self.env)
+        return all_gcp_envs[self.env]
 
     def cleanup(self):
         """Clean up generated files."""
@@ -299,7 +313,7 @@ def prepare_infrastructure():
 
     if cloud_name == "gcp":
         LOG.info("Will create GCP Infrastructure for pipeline.type '%s'", pipeline_type)
-        prepare_infrastructure_gcp(runner, pipeline_type)
+        prepare_infrastructure_gcp(runner)
     elif cloud_name in "aws":
         LOG.info("Will create AWS Infrastructure for pipeline.type '%s'", pipeline_type)
         prepare_infrastructure_aws(runner, pipeline_type)
@@ -311,17 +325,10 @@ def prepare_infrastructure():
         raise ForemastError(error_message)
 
 
-def prepare_infrastructure_gcp(runner: ForemastRunner, pipeline_type: str):
+def prepare_infrastructure_gcp(runner: ForemastRunner):
     """Creates GCP infrastructure for a specific env."""
-    all_gcp_envs = GcpEnvironment.get_environments_from_config()
-    if runner.env not in all_gcp_envs:
-        raise ForemastError("GCP environment %s not found in configuration", runner.env)
-    env = all_gcp_envs[runner.env]
     # Always create IAM, this ensure svc account and permissions is done
-    runner.create_gcp_iam(env)
-    # If this is a pipeline type foremast deploys, handle that here
-    if pipeline_type.strip() == "cloudfunction":
-        runner.create_cloudfunction(env)
+    runner.create_gcp_iam()
 
 
 def prepare_infrastructure_aws(runner, pipeline_type):
@@ -434,6 +441,13 @@ def rebuild_pipelines(*args):
                 runner.cleanup()
             except Exception:  # pylint: disable=broad-except
                 LOG.warning('Error updating pipeline for %s', app_name)
+
+
+def deploy_cloudfunction():
+    """Deploys a GCP Cloud Function"""
+    runner = ForemastRunner()
+    runner.write_configs()
+    runner.deploy_cloudfunction()
 
 
 def deploy_s3app():

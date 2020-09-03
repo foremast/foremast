@@ -36,6 +36,16 @@ def add_pipeline(subparsers):
     add_env(pipeline_onetime_parser)
 
 
+def add_cloudfunctions(subparsers):
+    """CloudFunctions subcommands."""
+    # Add subparser like `foremast cloudfunctions`
+    cloudfunctions_parser = subparsers.add_parser('cloudfunctions', help="Options for deploying GCP Cloud Functions")
+
+    # Add more subparsers, like foremast cloudfunctions deploy`
+    cf_subparsers = cloudfunctions_parser.add_subparsers(title='GCP Cloud Functions Subcommands')
+    deploy_parser = cf_subparsers.add_parser("deploy", help=runner.deploy_cloudfunction.__doc__)
+    deploy_parser.set_defaults(func=runner.deploy_cloudfunction)
+
 def add_rebuild(subparsers):
     """Rebuild Pipeline subcommands."""
     rebuild_parser = subparsers.add_parser(
@@ -103,6 +113,7 @@ def main(manual_args=None):
     add_infra(subparsers)
     add_pipeline(subparsers)
     add_rebuild(subparsers)
+    add_cloudfunctions(subparsers)
     add_autoscaling(subparsers)
     add_scheduled_actions(subparsers)
     add_validate(subparsers)
