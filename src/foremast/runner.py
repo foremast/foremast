@@ -268,7 +268,7 @@ class ForemastRunner:
         env = self.get_current_gcp_env()
         cloud_function_client = CloudFunctionsClient(self.app, env, self.configs)
         cloud_function_client.prepare_client()
-        cloud_function_client.deploy_function(self.artifact_path)
+        cloud_function_client.deploy_function(self.artifact_path, self.region)
         LOG.info("Finished deploying cloud function")
 
     def slack_notify(self):
