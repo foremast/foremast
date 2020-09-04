@@ -94,7 +94,12 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         if file_name.startswith("templates://"):
             if TEMPLATES_PATH is None:
                 raise Exception("Cannot use templates:// schema without TEMPLATES_PATH")
-            file_name = file_name.lstrip("templates://")
+            # Using lstrip or strip can sometimes remove additional chars
+            # We know the string starts with "templates://" already, so remove the exact
+            # number of chars to be safe
+            schema_length = len("templates://")
+            file_name = file_name[schema_length::]
+            self.log.debug("Updated pipeline template file path '%s'", file_name)
             pipeline_templates_path = TEMPLATES_PATH.rstrip("/") + "/pipeline"
             lookup = FileLookup(git_short=None, runway_dir=pipeline_templates_path)
         else:
