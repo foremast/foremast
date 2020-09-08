@@ -34,7 +34,7 @@ class GcpIamResourceClient:
         member = "serviceAccount:" + service_account_email
 
         # Get the gcp_roles requested in pipeline.json with the full project id as the key
-        gcp_roles_by_project = GcpIamResourceClient._get_gcp_roles_by_project(self._services['gcp_roles'],
+        gcp_roles_by_project = GcpIamResourceClient._get_gcp_roles_by_project(self._services.get('gcp_roles', list()),
                                                                               self._env, self._group_name)
 
         # For each project in this GCP environment, get the policy
