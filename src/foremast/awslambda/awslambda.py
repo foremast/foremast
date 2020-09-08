@@ -248,7 +248,7 @@ class LambdaFunction:
         LOG.info('Creating lambda function: %s', self.app_name)
 
         try:
-            self.lambda_client._create_function(
+            self.lambda_client.create_function(
                 Environment=self.lambda_environment,
                 FunctionName=self.app_name,
                 Runtime=self.runtime,
