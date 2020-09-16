@@ -62,11 +62,18 @@ class GcpIamResourceClient:
                                                                       project_id=self._get_service_account_project())
 
         # Check if the SA already exists
+        found_accounts = list()
         for account in service_accounts['accounts']:
             if self._app_name == account['displayName']:
                 return account
+            else:
+                found_accounts.append(account['displayName'])
+
+        # No account found, log the ones that do exist for debugging
+        LOG.debug("Did not find svc account %s, existing accounts are: %s", self._app_name, found_accounts)
         return None
 
+    @retries(max_attempts=5, wait=lambda n: 2 ** n, exceptions=HttpError)
     def _create_service_account(self):
         """Creates a service account.
         Returns:
@@ -89,19 +96,25 @@ class GcpIamResourceClient:
 
         service = googleapiclient.discovery.build(
             'iam', 'v1', credentials=self._credentials, cache_discovery=False)
+        try:
+            app_svc_account = service.projects().serviceAccounts().create(
+                name='projects/' + svc_project,
+                body={
+                    'accountId': self._app_name,
+                    'serviceAccount': {
+                        'displayName': self._app_name,
+                        'description': 'Managed by Foremast'
+                    }
+                }).execute()
 
-        app_svc_account = service.projects().serviceAccounts().create(
-            name='projects/' + svc_project,
-            body={
-                'accountId': self._app_name,
-                'serviceAccount': {
-                    'displayName': self._app_name,
-                    'description': 'Managed by Foremast'
-                }
-            }).execute()
-
-        LOG.info("Created GCP service account with email %s", app_svc_account['email'])
-        return app_svc_account
+            LOG.info("Created GCP service account with email %s", app_svc_account['email'])
+            return app_svc_account
+        except HttpError as e:
+            # Conflict while updating
+            if 'status' in e.resp and e.resp['status'] == '409':
+                LOG.warning("GCP returned 409 conflict, this service account may already exist. "
+                            "Will retry up to 5 times per project.")
+            raise e
 
     def _get_service_account_project(self):
         """Gets the projectId that should be used when creating the svc account"""
