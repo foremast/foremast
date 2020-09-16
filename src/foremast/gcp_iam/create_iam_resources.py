@@ -63,7 +63,7 @@ class GcpIamResourceClient:
 
         # Check if the SA already exists
         found_accounts = list()
-        for account in service_accounts['accounts']:
+        for account in service_accounts:
             if self._app_name == account['displayName']:
                 return account
             else:
@@ -216,6 +216,8 @@ class GcpIamResourceClient:
         Args:
             credentials: GCP API Credentials for a service account
             project_id (str): The project to target
+        Returns:
+            list: List of service accounts, empty list if none exist
         """
         service = googleapiclient.discovery.build(
             'iam', 'v1', credentials=credentials, cache_discovery=False)
@@ -223,4 +225,4 @@ class GcpIamResourceClient:
         service_accounts = service.projects().serviceAccounts().list(
             name='projects/' + project_id).execute()
 
-        return service_accounts
+        return service_accounts.get('accounts', list())
