@@ -50,7 +50,7 @@ class GcpIamResourceClient:
     def _get_service_account(self):
         """Gets a service account
             Returns:
-                dict, Created service account with the following keys:
+                dict, Service account with the following keys:
                     name
                     email
                     projectId
@@ -58,20 +58,18 @@ class GcpIamResourceClient:
                     displayName
                     description
             """
-        service_accounts = GcpIamResourceClient.list_service_accounts(credentials=self._credentials,
-                                                                      project_id=self._get_service_account_project())
-
-        # Check if the SA already exists
-        found_accounts = list()
-        for account in service_accounts:
-            if self._app_name == account['displayName']:
-                return account
-            else:
-                found_accounts.append(account['displayName'])
-
-        # No account found, log the ones that do exist for debugging
-        LOG.debug("Did not find svc account %s, existing accounts are: %s", self._app_name, found_accounts)
-        return None
+        svc_account_name = "projects/{project}/serviceAccounts/{name}@{project}.iam.gserviceaccount.com"\
+                           .format(project=self._get_service_account_project(), name=self._app_name)
+        service = googleapiclient.discovery.build(
+            'iam', 'v1', credentials=self._credentials, cache_discovery=False)
+        try:
+            response = service.projects().serviceAccounts().get(name=svc_account_name).execute()
+            return response
+        except HttpError as e:
+            if 'status' in e.resp and e.resp['status'] == '404':
+                LOG.warning("Did not find existing service account %s", svc_account_name)
+                return None
+            raise e
 
     @retries(max_attempts=5, wait=lambda n: 2 ** n, exceptions=HttpError)
     def _create_service_account(self):
