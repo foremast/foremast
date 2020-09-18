@@ -57,7 +57,7 @@ class GcpEnvironment:
             return self._all_projects_cache
 
         # No cached response found, check GCP APIs
-        service = discovery.build('cloudresourcemanager', 'v1', credentials=self.get_credentials())
+        service = discovery.build('cloudresourcemanager', 'v1', credentials=self.get_credentials(), cache_discovery=False)
         project_filter = self._get_project_api_filter()
         request = service.projects().list(filter=project_filter)
         response = request.execute()
