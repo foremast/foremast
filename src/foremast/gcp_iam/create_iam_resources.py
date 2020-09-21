@@ -1,13 +1,12 @@
 from googleapiclient.errors import HttpError
 
-from ..utils import get_template
+from ..utils import get_template_object
 from ..exceptions import ForemastError
 from ..utils.gcp_environment import GcpEnvironment
 from . import get_policy, set_policy, modify_policy_remove_member, modify_policy_add_binding
 from tryagain import retries
 import googleapiclient.discovery
 import json
-
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -134,27 +133,26 @@ class GcpIamResourceClient:
     def _update_policy_for_service_account(self, resource_name):
         """Updates the IAM policy attached to the given service account
         Args:
-            resource_name (str): The service account's full resource name (e.g. projects/my-project/serviceAccounts/myaccount@gke-iam.com)
+            resource_name (str): The service account's full resource name (e.g. projects/../serviceAccounts/..)
         Returns:
             None
         """
-        service_account_api = googleapiclient.discovery.build(
-            'iam', 'v1', credentials=self._credentials, cache_discovery=False).projects().serviceAccounts()
-        iam_policy = service_account_api.getIamPolicy(resource=resource_name).execute()
-        # gcp-service-account.json.j2
-        rendered_bindings = get_template('infrastructure/iam/gcp-service-account.json.j2', **self._get_jinja_args())
+        template = get_template_object('infrastructure/iam/gcp-service-account.json.j2')
+        rendered_template = template.render(**self._get_jinja_args())
         # If the rendered template is just whitespace, skip the step
-        if rendered_bindings.isspace():
+        if not rendered_template or rendered_template.isspace():
             LOG.debug("Skipping IAM Policy update for service account '%s' (this is not the same as updating IAM "
                       "bindings on projects)", resource_name)
             return
-        # Update svc account's IAM Policy
-        bindings = json.loads(rendered_bindings)
-        iam_policy["bindings"] = bindings
+        # Get/update svc account's IAM Policy
+        service_account_api = googleapiclient.discovery.build(
+            'iam', 'v1', credentials=self._credentials, cache_discovery=False).projects().serviceAccounts()
+        iam_policy = service_account_api.getIamPolicy(resource=resource_name).execute()
+        iam_policy["bindings"] = json.loads(rendered_template)
         body_payload = {
             "policy": iam_policy
         }
-        LOG.info("Updating svc account '%s' IAM policy bindings: '%s'", resource_name, rendered_bindings)
+        LOG.info("Updating svc account '%s' IAM policy bindings: '%s'", resource_name, rendered_template)
         service_account_api.setIamPolicy(resource=resource_name, body=body_payload).execute()
 
     def _get_jinja_args(self):
