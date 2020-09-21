@@ -101,3 +101,11 @@ Foremast Provider Tags
       :maxdepth: 2
 
       foremast_tags
+
+GCP Service Account IAM Policies
+*********************************
+
+    .. toctree::
+      :maxdepth: 2
+
+      gcp_svc_account_iam_policies
