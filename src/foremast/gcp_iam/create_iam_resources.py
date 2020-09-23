@@ -130,6 +130,7 @@ class GcpIamResourceClient:
         # Default is the service account project defined for this env in Foremast config
         return self._env.service_account_project
 
+    @retries(max_attempts=5, wait=lambda n: 2 ** n, exceptions=HttpError)
     def _update_policy_for_service_account(self, resource_name):
         """Updates the IAM policy attached to the given service account
         Args:
@@ -145,15 +146,22 @@ class GcpIamResourceClient:
                       "bindings on projects)", resource_name)
             return
         # Get/update svc account's IAM Policy
-        service_account_api = googleapiclient.discovery.build(
-            'iam', 'v1', credentials=self._credentials, cache_discovery=False).projects().serviceAccounts()
-        iam_policy = service_account_api.getIamPolicy(resource=resource_name).execute()
-        iam_policy["bindings"] = json.loads(rendered_template)
-        body_payload = {
-            "policy": iam_policy
-        }
-        LOG.info("Updating svc account '%s' IAM policy bindings: '%s'", resource_name, rendered_template)
-        service_account_api.setIamPolicy(resource=resource_name, body=body_payload).execute()
+        try:
+            service_account_api = googleapiclient.discovery.build(
+                'iam', 'v1', credentials=self._credentials, cache_discovery=False).projects().serviceAccounts()
+            iam_policy = service_account_api.getIamPolicy(resource=resource_name).execute()
+            iam_policy["bindings"] = json.loads(rendered_template)
+            body_payload = {
+                "policy": iam_policy
+            }
+            LOG.info("Updating svc account '%s' IAM policy bindings: '%s'", resource_name, rendered_template)
+            service_account_api.setIamPolicy(resource=resource_name, body=body_payload).execute()
+        except HttpError as e:
+            # Conflict while updating
+            if 'status' in e.resp and e.resp['status'] == '409':
+                LOG.warning("GCP returned 409 conflict, this service account policy was recently updated elsewhere.  "
+                            "Will retry up to 5 times per service account policy.")
+            raise e
 
     def _get_jinja_args(self):
         return {
