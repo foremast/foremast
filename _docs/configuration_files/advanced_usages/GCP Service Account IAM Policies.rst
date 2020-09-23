@@ -37,6 +37,14 @@ The following arguments are given to the Jinja template:
   Name of the app being deployed
 
       | *Type*: string
+      | *Example*: ``myappmygroup``, ``otherappothergroup``
+
+``repo``
+=================================================
+
+  Repo name of the app being deployed
+
+      | *Type*: string
       | *Example*: ``myapp``, ``otherapp``
 
 ``group``
