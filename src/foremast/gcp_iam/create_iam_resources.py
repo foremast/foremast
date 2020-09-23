@@ -14,13 +14,14 @@ LOG = logging.getLogger(__name__)
 
 class GcpIamResourceClient:
 
-    def __init__(self, env, app_name, group_name, configs):
+    def __init__(self, env, app_name, group_name, repo_name, configs):
         self._env = env
         self._credentials = env.get_credentials()
         self._configs = configs
         self._pipeline_type = configs["pipeline"]["type"]
         self._app_name = app_name
         self._group_name = group_name
+        self._repo_name = repo_name
         self._services = configs["pipeline"].get('services', dict())
 
     def create_iam_resources(self):
@@ -167,6 +168,7 @@ class GcpIamResourceClient:
         return {
             'app': self._app_name,
             'group': self._group_name,
+            'repo': self._repo_name,
             'pipeline_type': self._pipeline_type,
             'env': self._env.name
         }

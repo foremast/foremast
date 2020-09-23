@@ -144,7 +144,8 @@ class ForemastRunner:
         """Create GCP IAM resources."""
         utils.banner("Creating GCP IAM")
         env = self.get_current_gcp_env()
-        gcp_iam_client = GcpIamResourceClient(env=env, app_name=self.app, group_name=self.group, configs=self.configs)
+        gcp_iam_client = GcpIamResourceClient(env=env, app_name=self.app, group_name=self.group,
+                                              repo_name=self.repo, configs=self.configs)
         gcp_iam_client.create_iam_resources()
 
     def create_archaius(self):
