@@ -281,6 +281,44 @@ Environment variables that should be present when the Cloud Function is invoked.
     | *Default*: ``None``
     | *Example*: ``{ 'MY_ENV_VAR': 'My value!' }``
 
+``cloudfunction_allow_unauthenticated``
+**********************
+
+Creates an IAM Binding which will allow anonymous/unauthenticated users to invoke the function. This only applies to
+HTTP triggers, event triggers cannot be invoked by users directly.  This option mimics the ``gcloud functions deploy ... --allow-unauthenticated`` CLI option and
+adds an IAM binding for 'allUsers' with 'roles/cloudfunctions.invoker'.
+
+    | *Type*: Boolean
+    | *Default*: ``False``
+
+``cloudfunction_iam_bindings``
+**********************
+
+Updates the Cloud Function's IAM Policy, which can be used to control which users or service accounts can access the function.  It allows granular control
+on who has permissions to the function, and not which permissions the function itself has.  For allowing anonymous access to the function the
+``cloudfunction_allow_unauthenticated=True`` option is simpler.
+
+    | *Type*: Array
+    | *Default*: ``[]``
+    | *Example*:
+
+        .. code-block:: json
+
+            [
+              {
+                "members": [
+                    "user:jon.snow@GameOfThrones.com",
+                    "serviceAccount:my-service-acccount@my-project.iam.gserviceaccount.com",
+                ],
+                "role": "roles/cloudfunctions.invoker"
+              }
+            ]
+
+.. note::
+
+   The role `roles/cloudfunctions.invoker` does not allow invoking via ``gcloud functions call ...``, instead use a command like
+    ``curl $URL -H "Authorization: bearer $(gcloud auth print-identity-token)`` to test granular invocation permissions
+
 ``cloudfunction_max_instances``
 **********************
 
