@@ -98,10 +98,12 @@ class CloudFunctionsClient:
         upload_url = self._get_upload_url(region)
         self._upload_zip(upload_url, file_path)
         exists = self._check_function_exists(region)
+        # Deploy function, then update it's IAM Policy for access
         if exists:
             self._update_function(region, upload_url)
         else:
             self._create_function(region, upload_url)
+        self._update_function_iam_policy(region)
 
     def _get_upload_url(self, location_id):
         """Gets a Signed URL that the function's zip file can be uploaded to
@@ -183,6 +185,35 @@ class CloudFunctionsClient:
         self._wait_for_operation(response['name'])
         LOG.info("Successfully updated cloud function '%s' in region '%s' and project '%s'",
                  self._name, location_id, self._project_id)
+
+    def _update_function_iam_policy(self, region: str):
+        """Updates a function's individual IAM Policy which is used to control access to the cloud function
+        For example, limiting access to a certain service account or allowing unauthenticated access
+
+            Args:
+                region (str): Region the function is deployed to (e.g. us-east1)
+
+            Returns:
+                None
+        """
+        resource_name = self._generate_function_path(region)
+        bindings = []
+        # If they use the helper allow_unauthenticated add the binding for them
+        # Equivilent of gcloud functions deploy ... --allow-unauthenticated
+        allow_unauthenticated = self._env_config['app'].get("cloudfunction_allow_unauthenticated", False)
+        custom_bindings = self._env_config['app'].get("cloudfunction_iam_bindings", [])
+        if allow_unauthenticated:
+            bindings.append(CloudFunctionsClient._get_allow_unauthenticated_binding())
+        if custom_bindings:
+            bindings.extend(custom_bindings)
+        LOG.info("Updating Cloud Function IAM Policy for '%s' in region '%s' and project '%s': Bindings '%s'",
+                 self._name, region, self._project_id, bindings)
+        body_payload = {
+            "policy": {
+                "bindings": bindings
+            }
+        }
+        self._functions_client.setIamPolicy(resource=resource_name, body=body_payload).execute()
 
     def _check_function_exists(self, location_id):
         """Checks a GCP Cloud Function exists
@@ -306,3 +337,20 @@ class CloudFunctionsClient:
         GCP Docs: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#EventTrigger"""
 
         return "projects/{}/{}".format(self._project_id, partial_path.lstrip('/'))
+
+    @staticmethod
+    def _get_allow_unauthenticated_binding():
+        """
+        Gets an IAM Policy binding that will allow anonymous access to a Cloud Function
+        See: https://cloud.google.com/functions/docs/securing/managing-access-iam
+        Is equivilent of gcloud function deploy ... --allow-unauthenticated
+
+        Returns:
+            Dict, Single IAM Policy binding object: https://cloud.google.com/functions/docs/reference/rest/v1/Policy
+        """
+        return {
+            "members": [
+                "allUsers"
+            ],
+            "role": "roles/cloudfunctions.invoker"
+        }
