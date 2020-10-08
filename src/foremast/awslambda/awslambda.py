@@ -219,7 +219,7 @@ class LambdaFunction:
                     ProvisionedConcurrentExecutions=self.lambda_provisioned_throughput)
             else:
                 self.lambda_client.delete_provisioned_concurrency_config(
-                    FunctionName.self.app_name,
+                    FunctionName=self.app_name,
                     Qualifier=self.env)
 
         except boto3.exceptions.botocore.exceptions.ClientError as error:
@@ -289,7 +289,7 @@ class LambdaFunction:
                     FuctionName=self.app_name,
                     Qualifier=self.env,
                     ProvisionedConcurrentExecutions=self.lambda_provisioned_throughput)
-                
+
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
