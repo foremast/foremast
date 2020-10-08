@@ -201,6 +201,16 @@ The amount of memory to give a Lambda function
     | *Default*: ``"128"``
     | *Units*: Megabytes
 
+``lambda_provisioned_throughput``
+***********************
+
+This will allow provisioned throughput of a  lambda function. This specifically will ensure the function is warmed for a provisioned amount to eliminate any function cold starts (not to be confused with VPC cold starts)
+
+More info on provisioned throughput can be found here: https://aws.amazon.com/blogs/aws/new-provisioned-concurrency-for-lambda-functions/
+
+    | *Type*: int
+    | *Default*: ``null``
+    
 ``lambda_role``
 ***************
 

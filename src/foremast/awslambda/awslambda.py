@@ -64,6 +64,7 @@ class LambdaFunction:
         self.lambda_dlq = app['lambda_dlq']
         self.lambda_filesystems = app['lambda_filesystems']
         self.lambda_tracing = app['lambda_tracing']
+        self.lambda_provisioned_throughput = app['lambda_provisioned_throughput']
         self.memory = app['lambda_memory']
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
         self.timeout = app['lambda_timeout']
@@ -211,6 +212,16 @@ class LambdaFunction:
                     DestinationConfig=self.lambda_destinations
                 )
 
+            if self.lambda_provisioned_throughput:
+                self.lambda_client.put_provisioned_concurrency_config(
+                    FuctionName=self.app_name,
+                    Qualifier=self.env,
+                    ProvisionedConcurrentExecutions=self.lambda_provisioned_throughput)
+            else:
+                self.lambda_client.delete_provisioned_concurrency_config(
+                    FunctionName.self.app_name,
+                    Qualifier=self.env)
+
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
@@ -266,6 +277,19 @@ class LambdaFunction:
                 DeadLetterConfig=self.lambda_dlq,
                 TracingConfig=self.lambda_tracing,
                 FileSystemConfigs=self.lambda_filesystems)
+
+            if self.lambda_destinations:
+                self.lambda_client.put_function_event_invoke_config(
+                    FunctionName=self.app_name,
+                    DestinationConfig=self.lambda_destinations
+                )
+
+            if self.lambda_provisioned_throughput:
+                self.lambda_client.put_provisioned_concurrency_config(
+                    FuctionName=self.app_name,
+                    Qualifier=self.env,
+                    ProvisionedConcurrentExecutions=self.lambda_provisioned_throughput)
+                
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
