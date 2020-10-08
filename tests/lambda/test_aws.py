@@ -23,6 +23,7 @@ TEST_PROPERTIES = {
         'lambda_destinations': None,
         'lambda_subnet_count': None,
         'lambda_filesystems': None,
+        'lambda_provisioned_throughput': None,
     }
 }
 GENERATED_IAM = {
