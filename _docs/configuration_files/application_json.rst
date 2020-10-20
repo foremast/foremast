@@ -269,9 +269,9 @@ Currently AWS API supports Active or PassThrough.
 
 Timeout on Cloud Function invocation in seconds.  GCP currently defaults to 60 seconds if no value is give.
 
-    | *Type*: Integer
+    | *Type*: String
     | *Default*: ``None``
-    | *Example*: ``60``
+    | *Example*: ``"60"``
 
 ``cloudfunction_memory_mb``
 **********************
