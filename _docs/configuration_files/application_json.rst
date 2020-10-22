@@ -36,6 +36,17 @@ Describes the application.
     | *Type*: string
     | *Default*: ``null``
 
+``approval_timeout``
+*******************
+
+Enable the ability to override Spinnaker's default Stage Timeout (typically 72-hours) with a custom timeout specified in milliseconds.
+This is helpful to maintain cleaner pipelines, and fail pipelines not ready for the next environment.
+For example, ``2 hours`` is represented as ``7200000``.
+
+    | *Type*: int
+    | *Format*: ms
+    | *Default*: ``null``
+
 .. _archaius_enabled:
 
 ``archaius_enabled``
