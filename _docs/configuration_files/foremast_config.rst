@@ -75,6 +75,49 @@ Foremast for **AWS**.  See section :ref:`gcp-section` for GCP Environments.
     | *Example*: ``dev,stage,prod``
     | *Required*: Yes
 
+``env_configs`` Keys
+********************
+
+    Nested dictionary of environment names along with environment features
+
+        | *Type*: Object
+        | *Default*: ``None``
+        | *Example Configuration*:
+
+.. code-block:: json
+
+            {
+                'env_configs': {
+                    "build": {
+                        "enable_approval_skip": True
+                    },
+                    "data": {
+                        "enable_approval_skip": False
+                    },
+                    "media": {
+                        "enable_approval_skip": False
+                    },
+                    "stage": {
+                        "enable_approval_skip": True
+                    },
+                    "prod": {
+                        "enable_approval_skip": False
+                    },
+                    "prodp": {
+                        "enable_approval_skip": False
+                    }
+                }
+            }
+
+    ``enable_approval_skip``
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+        Determines if approval skips are allowed in this environment. Allows admins to ultimately enforce 
+        deployment approvals in templates
+
+        | *Type*: boolean
+        | *Default*: ``False``
+
 ``aws_types``
 *************
 
@@ -90,7 +133,7 @@ List of foremast managed Pipeline types to allow for AWS deployments
     | *Required*: No
 
 ``gcp_types``
-******************
+*************
 
 List of foremast managed Pipeline types to allow for GCP deployments
 

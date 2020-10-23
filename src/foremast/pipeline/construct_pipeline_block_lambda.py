@@ -19,8 +19,8 @@ import json
 import logging
 from pprint import pformat
 
-from ..consts import DEFAULT_EC2_SECURITYGROUPS
-from ..utils import generate_encoded_user_data, get_template, remove_duplicate_sg
+from ..consts import DEFAULT_EC2_SECURITYGROUPS, ENV_CONFIGS
+from ..utils import generate_encoded_user_data, get_template, remove_duplicate_sg, verify_approval_skip
 
 LOG = logging.getLogger(__name__)
 
@@ -78,8 +78,11 @@ def construct_pipeline_block_lambda(env='',
 
     data = copy.deepcopy(settings)
 
+    approval_skip = verify_approval_skip(data, env, ENV_CONFIGS)
+
     data['app'].update({
         'appname': gen_app_name,
+        'approval_skip': approval_skip,
         'repo_name': generated.repo,
         'group_name': generated.project,
         'environment': env,
