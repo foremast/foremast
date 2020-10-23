@@ -20,8 +20,8 @@ import json
 import logging
 from pprint import pformat
 
-from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS, EC2_PIPELINE_TYPES
-from ..utils import generate_encoded_user_data, get_template, remove_duplicate_sg
+from ..consts import ASG_WHITELIST, DEFAULT_EC2_SECURITYGROUPS, EC2_PIPELINE_TYPES, ENV_CONFIGS
+from ..utils import generate_encoded_user_data, get_template, remove_duplicate_sg, verify_approval_skip
 
 LOG = logging.getLogger(__name__)
 
@@ -147,8 +147,11 @@ def construct_pipeline_block(env='',
     else:
         data = copy.deepcopy(settings)
 
+    approval_skip = verify_approval_skip(data, env, ENV_CONFIGS)
+
     data['app'].update({
         'appname': generated.app_name(),
+        'approval_skip': approval_skip,
         'repo_name': generated.repo,
         'group_name': generated.project,
         'environment': env,

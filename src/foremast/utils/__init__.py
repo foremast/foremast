@@ -21,6 +21,7 @@ from .pipelines import *
 from .deep_chain_map import DeepChainMap
 from .elb import *
 from .encoding import *
+from .foremast_configs import *
 from .generate_filename import *
 from .dns import *
 from .credentials import *

@@ -36,6 +36,14 @@ Describes the application.
     | *Type*: string
     | *Default*: ``null``
 
+``approval_skip``
+*****************
+
+Enable the ability to skip approval stage for a given environment. Must be enabled in foremast configs per environment to allow overrides.
+
+    | *Type*: boolean
+    | *Default*: ``false``
+
 ``approval_timeout``
 *******************
 
