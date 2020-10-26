@@ -336,6 +336,11 @@ class CloudFunctionsClient:
 
         GCP Docs: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#EventTrigger"""
 
+        if partial_path.startswith("projects"):
+            raise CloudFunctionDeployError("Path '{}' contains a hardcoded project identifier. ".format(partial_path) +
+                                           "Foremast adds this automatically based on the target deployment project. " +
+                                           "Path should start at the event type (e.g. databases, bucket, etc).")
+
         return "projects/{}/{}".format(self._project_id, partial_path.lstrip('/'))
 
     @staticmethod
