@@ -1,0 +1,27 @@
+[
+{#- v1: data.app.slack and data.app.email are legacy options, supported only for backwards compatibility #}
+{%- if data.app.slack or data.app.email %}
+    {
+      "level": "pipeline",
+      "when": [
+        "pipeline.failed"
+      ],
+      "type": "slack",
+      "address": "{{ data.app.slack }}"
+    },
+    {
+      "level": "pipeline",
+      "when": [
+        "pipeline.failed"
+      ],
+      "type": "email",
+      "address": "{{ data.app.email }}"
+    }
+{%- elif data.app.pipeline.pipeline_notifications %}
+{#- v2 pipeline.pipeline_notification configuration block: #}
+    {%- for notification in data.app.pipeline.pipeline_notifications %}
+    {{ notification | tojson }}
+    {% if not loop.last %},{% endif %}
+    {%- endfor %}
+{%- endif %}
+]

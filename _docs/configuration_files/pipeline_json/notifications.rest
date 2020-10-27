@@ -1,6 +1,8 @@
 ``notifications`` Block
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+.. warning:: ``notifications`` is deprecated, see ``"pipeline_notifications"`` instead
+
 Where to send pipeline failure notifications
 
 ``email``
