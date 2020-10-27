@@ -56,6 +56,7 @@ Link to the applications documentation. This is not used directly in the pipelin
     | *Default*: ``null``
 
 .. include:: notifications.rest
+.. include:: pipeline_notifications.rest
 
 ``promote_restrict``
 ~~~~~~~~~~~~~~~~~~~~
