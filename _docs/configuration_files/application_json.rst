@@ -439,7 +439,7 @@ is possible to change the resource used in the trigger, but not the trigger type
 
            "cloudfunction_event_trigger": {
               "resource": "buckets/my_bucket_name",
-              "event_type": "google.storage.object.archive"
+              "event_type": "google.storage.object.archive",
               "failure_policy": {
                 "retry": false
               }
