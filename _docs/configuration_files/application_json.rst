@@ -427,7 +427,10 @@ is possible to change the resource used in the trigger, but not the trigger type
 
            "cloudfunction_event_trigger": {
               "event_type": "providers/cloud.pubsub/eventTypes/topic.publish",
-              "resource": "/topics/my_topic"
+              "resource": "/topics/my_topic",
+              "failure_policy": {
+                "retry": true
+              }
             }
 
     | *Example GCS Bucket trigger*:
@@ -437,6 +440,9 @@ is possible to change the resource used in the trigger, but not the trigger type
            "cloudfunction_event_trigger": {
               "resource": "buckets/my_bucket_name",
               "event_type": "google.storage.object.archive"
+              "failure_policy": {
+                "retry": false
+              }
             }
 
 ``event_type``
