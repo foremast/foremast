@@ -264,10 +264,10 @@ class GcpIamResourceClient:
             return True
 
         # foremast_groups defined and not empty
-        foremast_groups_csv = project['labels']['foremast_groups']
+        foremast_groups = project['labels']['foremast_groups'].split('__')  # split on two underscores
         LOG.debug("Project '%s' only supports foremast deployments from groups: '%s'", project['projectId'],
-                  foremast_groups_csv)
-        for permitted_group in foremast_groups_csv.split(','):
+                  foremast_groups)
+        for permitted_group in foremast_groups:
             if group_name == permitted_group.strip():
                 return True
 

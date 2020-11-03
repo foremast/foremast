@@ -51,12 +51,12 @@ The name of the environment this project belongs to.
 ``foremast_groups``
 ********************
 
-A comma separated list of groups that can request permissions to this project.
+A `__` (double underscore) separated list of groups that can request permissions to this project.
 (See :ref:`gcp_environments_permissions` for details)
 
     | *Default*: None
     | *Required*: No
-    | *Values*: Comma separated list of Gitlab or GitHub groups
+    | *Values*: Double underscore separated list of Gitlab or GitHub groups
 
 
 How to Label a Project in GCP
@@ -74,13 +74,13 @@ Foremast will not grant permissions between projects with different `cloud_env` 
 grant permissions between projects within the same environment (and does by default).
 
 To ensure certain apps deployed via Foremast cannot request permissions in certain projects, you can use the
-`foremast_groups` label and pass in a comma separated list of groups permitted to access the project.
+`foremast_groups` label and pass in a double underscore separated list of groups permitted to access the project.
 
 For example, assume you have two groups in Gitlab or Github: purchasing and customersupport.  Each team also has
 their own GCP Projects: purchasing-prod and customersupport-prod.  If there is no valid use-case for customersupport
 applications to request permissions to the purchasing-prod project, the label `foremast_groups=purchasing` can be added.
 This ensures only applications in the group purchasing can request permissions on this GCP project.  To support
-multiple groups, simply add a comma and the group name: `foremast_groups=purchasing,anothergroup,anothergroup2`.
+multiple groups, simply add a double underscore and the additional group names: `foremast_groups=purchasing__anothergroup__anothergroup2`.
 If a customersupport application requests permissions to purchasing-prod, Foremast will raise an exception before any
 permissions/IAM modifications are made.
 
