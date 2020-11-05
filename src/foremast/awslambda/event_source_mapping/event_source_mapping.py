@@ -19,6 +19,7 @@ import logging
 
 import boto3
 
+from datetime import datetime
 from ...exceptions import DynamoDBTableNotFound
 from ...utils import get_dynamodb_stream_arn, get_lambda_alias_arn
 
@@ -52,7 +53,9 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
             'service_name': 'Kinesis Stream',
             'batch_size': 100,
             'batch_window': 0,
+            'parallelization_factor': 1,
             'starting_position': 'TRIM_HORIZON',
+            'starting_position_timestamp': 0,
             'split_on_error': False,
             'max_retry': 10000,
             'destination_config': {},
@@ -85,8 +88,7 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
     LOG.debug('Found event sources: {0}'.format(event_sources))
 
     for each_source in event_sources['EventSourceMappings']:
-        if each_source['EventSourceArn'] == event_source_arn and (
-                event_source == 'dynamodb-stream' or event_source == 'kinesis-stream'):
+        if each_source['EventSourceArn'] == event_source_arn and event_source == 'dynamodb-stream':
             event_uuid = each_source['UUID']
             lambda_client.update_event_source_mapping(
                 UUID=event_uuid,
@@ -103,6 +105,27 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
                 get('destination_config', event_defaults[event_source]['destination_config']),
                 MaximumRecordAgeInSeconds=rules.
                 get('max_record_age', event_defaults[event_source]['max_record_age']))
+            LOG.debug('{0} event trigger updated'.format(event_defaults[event_source]['service_name']))
+            break
+        elif each_source['EventSourceArn'] == event_source_arn and event_source == 'kinesis-stream':
+            event_uuid = each_source['UUID']
+            lambda_client.update_event_source_mapping(
+                UUID=event_uuid,
+                FunctionName=lambda_alias_arn,
+                BatchSize=rules.
+                get('batch_size', event_defaults[event_source]['batch_size']),
+                BisectBatchOnFunctionError=rules.
+                get('split_on_error', event_defaults[event_source]['split_on_error']),
+                DestinationConfig=rules.
+                get('destination_config', event_defaults[event_source]['destination_config']),
+                MaximumBatchingWindowInSeconds=rules.
+                get('batch_window', event_defaults[event_source]['batch_window']),
+                MaximumRetryAttempts=rules.
+                get('max_retry', event_defaults[event_source]['max_retry']),
+                MaximumRecordAgeInSeconds=rules.
+                get('max_record_age', event_defaults[event_source]['max_record_age']),
+                ParallelizationFactor=rules.
+                get('parallelization_factor', event_defaults[event_source]['parallelization_factor']))
             LOG.debug('{0} event trigger updated'.format(event_defaults[event_source]['service_name']))
             break
         else:
@@ -129,6 +152,10 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
                 get('batch_window', event_defaults[event_source]['batch_window']),
                 StartingPosition=rules.
                 get('starting_position', event_defaults[event_source]['starting_position']),
+                StartingPositionTimestamp=datetime.utcfromtimestamp(
+                    rules.
+                    get('starting_position_timestamp', event_defaults[event_source]['starting_position_timestamp'])
+                ),
                 BisectBatchOnFunctionError=rules.
                 get('split_on_error', event_defaults[event_source]['split_on_error']),
                 MaximumRetryAttempts=rules.
@@ -136,7 +163,9 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
                 DestinationConfig=rules.
                 get('destination_config', event_defaults[event_source]['destination_config']),
                 MaximumRecordAgeInSeconds=rules.
-                get('max_record_age', event_defaults[event_source]['max_record_age']))
+                get('max_record_age', event_defaults[event_source]['max_record_age']),
+                ParallelizationFactor=rules.
+                get('parallelization_factor', event_defaults[event_source]['parallelization_factor']))
         LOG.debug('{0} event trigger created'.format(event_defaults[event_source]['service_name']))
 
     LOG.info('Created {} event trigger on {} for {}'.format(event_defaults[event_source]['service_name'],

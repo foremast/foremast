@@ -64,13 +64,15 @@ This example would go in the :ref:`application_json` configuration file.
          "stream_arn": "arn:aws:kinesis:us-east-1:111111111111:stream/kinesistest-stream",
          "batch_size": 100,
          "batch_window": 0,
+         "parallelization_factor": 1,
          "starting_position": "TRIM_HORIZON",
-         "max_retry": 3000,
+         "starting_position_timestamp": 1604617998,
          "split_on_error": true,
-         "destination_config":{
-         "OnFailure": {
-            "Destination":"arn:aws:sqs:us-east-1:111111111111:sqstest-queue"
-            }
+         "max_retry": 3000,
+         "destination_config": {
+           "OnFailure": {
+             "Destination": "arn:aws:sqs:us-east-1:111111111111:sqstest-queue"
+           }
          }
        },
        {
@@ -335,6 +337,15 @@ A lambda event that triggers off a Cloudwatch log action.
         | *Default*: ``0``
         | *Max*: ``300``
 
+``parallelization_factor``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    For Kinesis Streams, the number of batches to process from each shard concurrently.
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``1``
+
 ``starting_position``
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -346,7 +357,17 @@ A lambda event that triggers off a Cloudwatch log action.
         | *Options*:
 
             -  ``TRIM_HORIZON``
+            -  ``AT_TIMESTAMP`` - KINESIS STREAMS ONLY
             -  ``LATEST``
+
+``starting_position_timestamp``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    The UTC timestamp (represented in `Epoch Time <https://www.epochconverter.com>`_) from which to start reading..
+
+        | *Type*: int
+        | *Required*: False
+        | *Default*: ``None``
 
 ``max_retry``
 ^^^^^^^^^^^^^^^^^^^^^
