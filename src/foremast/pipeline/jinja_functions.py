@@ -16,7 +16,7 @@
 """Functions and variables that can be exposed to Jinja2 templates"""
 
 from ..utils.kayenta import get_canary_id
-from ..utils.pipelines import get_pipeline_id
+from ..utils.pipelines import get_pipeline_id, generate_predictable_pipeline_id
 
 
 def get_jinja_functions():
@@ -25,6 +25,7 @@ def get_jinja_functions():
     functions[get_canary_id.__name__] = get_canary_id
     functions[get_pipeline_id.__name__] = get_pipeline_id
     functions[raise_exception.__name__] = raise_exception
+    functions[generate_predictable_pipeline_id.__name__] = generate_predictable_pipeline_id
 
     return functions
 
