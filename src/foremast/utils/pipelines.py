@@ -15,10 +15,15 @@
 #   limitations under the License.
 """Check Pipeline name to match format."""
 import logging
+import uuid
 
 from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
+
+# Random UUID namespace for use when generating pipeline Ids locally
+# This should never change!
+_foremast_uuid_namespace = uuid.UUID("098f0a30-180e-4aa4-b9bd-72d63fda3c18")
 
 
 def check_managed_pipeline(name='', app_name=''):
@@ -80,19 +85,20 @@ def get_all_pipelines(app=''):
     return pipelines
 
 
-def get_pipeline_id(app='', name=''):
+def get_pipeline_id(app='', name='', default=None):
     """Get the ID for Pipeline _name_.
 
     Args:
         app (str): Name of Spinnaker Application to search.
         name (str): Name of Pipeline to get ID for.
+        default (str): Default value to return if no pipeline is found.  Default is None.
 
     Returns:
         str: ID of specified Pipeline.
         None: Pipeline or Spinnaker Appliation not found.
 
     """
-    return_id = None
+    return_id = default
 
     pipelines = get_all_pipelines(app=app)
 
@@ -113,3 +119,20 @@ def normalize_pipeline_name(name=''):
     for bad in '\\/?%#':
         normalized_name = normalized_name.replace(bad, '_')
     return normalized_name
+
+
+def generate_predictable_pipeline_id(application_name, pipeline_name):
+    """Create a predictable pipeline ID (GUID) using an application name and pipeline name.
+    It will always produce the same GUID when given the same arguments
+     Args:
+        application_name (str): Name of Spinnaker Application
+        pipeline_name (str): Name of the pipeline
+
+    Returns:
+        UUID: GUID/UUID generated using the seed arguments
+    """
+    seed = application_name + pipeline_name
+    pipeline_uuid = uuid.uuid5(_foremast_uuid_namespace, seed)
+    LOG.debug("Generating pipeline id '%s' using namespace '%s' and seed '%s'",
+              pipeline_name, _foremast_uuid_namespace, seed)
+    return pipeline_uuid
