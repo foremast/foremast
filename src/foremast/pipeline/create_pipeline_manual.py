@@ -97,7 +97,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             # Using lstrip or strip can sometimes remove additional chars
             # We know the string starts with "templates://" already, so remove the exact
             # number of chars to be safe
-            schema_length = len("templatees://")
+            schema_length = len("templates://")
             file_name = file_name[schema_length::]
             self.log.debug("Updated pipeline template file path '%s'", file_name)
             pipeline_templates_path = TEMPLATES_PATH.rstrip("/") + "/pipeline"
