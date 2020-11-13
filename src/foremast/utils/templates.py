@@ -29,6 +29,25 @@ HERE = pathlib.Path(__file__).parent.absolute()
 LOCAL_TEMPLATES = HERE.joinpath('../templates/').resolve()
 
 
+def get_jinja_environment():
+    """Gets the Foremast Jinja environment used for rendering templates
+    Returns:
+        jinja2.Environment
+    """
+    jinja_template_paths_obj = []
+
+    if TEMPLATES_PATH:
+        external_templates = pathlib.Path(TEMPLATES_PATH).expanduser().resolve()
+        assert os.path.isdir(external_templates), 'External template path "{0}" not found'.format(external_templates)
+        jinja_template_paths_obj.append(external_templates)
+
+    jinja_template_paths_obj.append(LOCAL_TEMPLATES)
+    jinja_template_paths = [str(path) for path in jinja_template_paths_obj]
+
+    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_template_paths))
+    return jinjaenv
+
+
 def get_template_object(template_file=''):
     """Retrieve template.
 
@@ -44,17 +63,7 @@ def get_template_object(template_file=''):
             is not available.
 
     """
-    jinja_template_paths_obj = []
-
-    if TEMPLATES_PATH:
-        external_templates = pathlib.Path(TEMPLATES_PATH).expanduser().resolve()
-        assert os.path.isdir(external_templates), 'External template path "{0}" not found'.format(external_templates)
-        jinja_template_paths_obj.append(external_templates)
-
-    jinja_template_paths_obj.append(LOCAL_TEMPLATES)
-    jinja_template_paths = [str(path) for path in jinja_template_paths_obj]
-
-    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_template_paths))
+    jinjaenv = get_jinja_environment()
 
     try:
         template = jinjaenv.get_template(template_file)

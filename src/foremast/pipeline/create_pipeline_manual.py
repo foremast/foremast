@@ -19,7 +19,7 @@ import jinja2
 
 
 from ..consts import TEMPLATES_PATH
-from ..utils import get_pipeline_id, normalize_pipeline_name
+from ..utils import get_pipeline_id, normalize_pipeline_name, get_jinja_environment
 from ..utils.lookups import FileLookup
 from .create_pipeline import SpinnakerPipeline
 from .jinja_functions import get_jinja_functions, get_jinja_variables
@@ -97,7 +97,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
             # Using lstrip or strip can sometimes remove additional chars
             # We know the string starts with "templates://" already, so remove the exact
             # number of chars to be safe
-            schema_length = len("templates://")
+            schema_length = len("templatees://")
             file_name = file_name[schema_length::]
             self.log.debug("Updated pipeline template file path '%s'", file_name)
             pipeline_templates_path = TEMPLATES_PATH.rstrip("/") + "/pipeline"
@@ -118,18 +118,15 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         Returns:
             str: pipeline json after Jinja is rendered"""
 
-        try:
-            if TEMPLATES_PATH:
-                loader = jinja2.FileSystemLoader(TEMPLATES_PATH)
-            else:
-                loader = jinja2.BaseLoader()
+        jinja_env = get_jinja_environment()
 
-            jinja_template = jinja2.Environment(loader=loader).from_string(json_string)
+        try:
+            jinja_template = jinja_env.from_string(json_string)
             # Get any pipeline args defined in pipeline.json, default to empty dict if none defined
             pipeline_args = dict()
         except jinja2.TemplateNotFound:
             # Log paths searched for debugging, then re-raise
-            message = 'Jinja2 TemplateNotFound exception in paths {paths}'.format(paths=loader.searchpath)
+            message = 'Jinja2 TemplateNotFound exception in paths {paths}'.format(paths=jinja_env.loader.searchpath)
             self.log.error(message)
             raise
 

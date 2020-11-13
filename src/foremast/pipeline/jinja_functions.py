@@ -32,10 +32,32 @@ def get_jinja_functions():
 def get_jinja_variables(pipeline):
     """Gets a dictionary of variables from a SpinnakerPipeline that can be exposed to Jinja templates"""
     variables = dict()
+    # Deprecated variables: Use the app block instead
     variables["trigger_job"] = pipeline.trigger_job
     variables["group_name"] = pipeline.group_name
     variables["app_name"] = pipeline.app_name
     variables["repo_name"] = pipeline.repo_name
+    # Deprecated end
+
+    email = pipeline.settings['pipeline']['notifications']['email']
+    slack = pipeline.settings['pipeline']['notifications']['slack']
+    deploy_type = pipeline.settings['pipeline']['type']
+
+    # Replaces top level variables above which are deprecated
+    # app block matches non-manual pipeline types like ec2, lambda, etc for consistency
+    variables["data"] = {
+        'app': {
+            'appname': pipeline.app_name,
+            'group_name': pipeline.group_name,
+            'repo_name': pipeline.repo_name,
+            'deploy_type': deploy_type,
+            'environment': 'packaging',
+            'triggerjob': pipeline.trigger_job,
+            'email': email,
+            'slack': slack,
+            'pipeline': pipeline.settings['pipeline']
+        }
+    }
 
     return variables
 
