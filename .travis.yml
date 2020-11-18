@@ -32,9 +32,6 @@ deploy:
   distributions: bdist_wheel
   on:
     condition: $TOXENV = lint
-  edge:
-    source: 'native-api/dpl'
-    branch: 'pip_fix_upgrade_deps'
     
 - provider: pypi
   username: foremast-deployer
@@ -44,9 +41,6 @@ deploy:
   on:
     condition: $TOXENV = lint
     tags: true
-  edge:
-    source: 'native-api/dpl'
-    branch: 'pip_fix_upgrade_deps'
     
 notifications:
   webhooks:
