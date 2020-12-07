@@ -86,7 +86,7 @@ Add Firehose access to streams listed.
    | *Default*: ``[]``
 
 ``glue``
-******************
+********
 
 Add Glue GetTable and GetDatabase access.
 
@@ -113,6 +113,14 @@ Add KMS Decrypt access to KMS keys listed.
 **********
 
 Add Lambda access.
+
+   | *Type*: boolean
+   | *Default*: ``false``
+
+``mediaconvert``
+****************
+
+Add MediaConvert Full access.
 
    | *Type*: boolean
    | *Default*: ``false``
