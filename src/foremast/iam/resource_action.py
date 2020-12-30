@@ -20,6 +20,7 @@ from boto3.exceptions import botocore
 
 LOG = logging.getLogger(__name__)
 
+
 def resource_action(client, action='', log_format='item: %(key)s', raise_errors=False, **kwargs):
     """Call _action_ using boto3 _client_ with _kwargs_.
 
