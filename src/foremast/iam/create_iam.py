@@ -71,6 +71,7 @@ def create_iam_resources(env='dev', app='', **_):
             client,
             action='put_role_policy',
             log_format='Added IAM Policy: %(PolicyName)s',
+            raise_errors=True,
             RoleName=details.role,
             PolicyName=details.policy,
             PolicyDocument=iam_policy)
