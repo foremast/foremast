@@ -143,29 +143,49 @@ def create_event_source_mapping_trigger(app_name, env, region, event_source, rul
                 FunctionName=lambda_alias_arn,
                 BatchSize=rules.get('batch_size', event_defaults[event_source]['batch_size']))
         else:
-            lambda_client.create_event_source_mapping(
-                EventSourceArn=event_source_arn,
-                FunctionName=lambda_alias_arn,
-                BatchSize=rules.
-                get('batch_size', event_defaults[event_source]['batch_size']),
-                MaximumBatchingWindowInSeconds=rules.
-                get('batch_window', event_defaults[event_source]['batch_window']),
-                StartingPosition=rules.
-                get('starting_position', event_defaults[event_source]['starting_position']),
-                StartingPositionTimestamp=datetime.utcfromtimestamp(
-                    rules.
-                    get('starting_position_timestamp', event_defaults[event_source]['starting_position_timestamp'])
-                ),
-                BisectBatchOnFunctionError=rules.
-                get('split_on_error', event_defaults[event_source]['split_on_error']),
-                MaximumRetryAttempts=rules.
-                get('max_retry', event_defaults[event_source]['max_retry']),
-                DestinationConfig=rules.
-                get('destination_config', event_defaults[event_source]['destination_config']),
-                MaximumRecordAgeInSeconds=rules.
-                get('max_record_age', event_defaults[event_source]['max_record_age']),
-                ParallelizationFactor=rules.
-                get('parallelization_factor', event_defaults[event_source]['parallelization_factor']))
+            starting_position = rules.get('starting_position', event_defaults[event_source]['starting_position'])
+            if starting_position == 'AT_TIMESTAMP':
+                lambda_client.create_event_source_mapping(
+                    EventSourceArn=event_source_arn,
+                    FunctionName=lambda_alias_arn,
+                    BatchSize=rules.
+                    get('batch_size', event_defaults[event_source]['batch_size']),
+                    MaximumBatchingWindowInSeconds=rules.
+                    get('batch_window', event_defaults[event_source]['batch_window']),
+                    StartingPosition=starting_position,
+                    StartingPositionTimestamp=datetime.utcfromtimestamp(
+                        rules.
+                        get('starting_position_timestamp', event_defaults[event_source]['starting_position_timestamp'])
+                    ),
+                    BisectBatchOnFunctionError=rules.
+                    get('split_on_error', event_defaults[event_source]['split_on_error']),
+                    MaximumRetryAttempts=rules.
+                    get('max_retry', event_defaults[event_source]['max_retry']),
+                    DestinationConfig=rules.
+                    get('destination_config', event_defaults[event_source]['destination_config']),
+                    MaximumRecordAgeInSeconds=rules.
+                    get('max_record_age', event_defaults[event_source]['max_record_age']),
+                    ParallelizationFactor=rules.
+                    get('parallelization_factor', event_defaults[event_source]['parallelization_factor']))
+            else:
+                lambda_client.create_event_source_mapping(
+                    EventSourceArn=event_source_arn,
+                    FunctionName=lambda_alias_arn,
+                    BatchSize=rules.
+                    get('batch_size', event_defaults[event_source]['batch_size']),
+                    MaximumBatchingWindowInSeconds=rules.
+                    get('batch_window', event_defaults[event_source]['batch_window']),
+                    StartingPosition=starting_position,
+                    BisectBatchOnFunctionError=rules.
+                    get('split_on_error', event_defaults[event_source]['split_on_error']),
+                    MaximumRetryAttempts=rules.
+                    get('max_retry', event_defaults[event_source]['max_retry']),
+                    DestinationConfig=rules.
+                    get('destination_config', event_defaults[event_source]['destination_config']),
+                    MaximumRecordAgeInSeconds=rules.
+                    get('max_record_age', event_defaults[event_source]['max_record_age']),
+                    ParallelizationFactor=rules.
+                    get('parallelization_factor', event_defaults[event_source]['parallelization_factor']))
         LOG.debug('{0} event trigger created'.format(event_defaults[event_source]['service_name']))
 
     LOG.info('Created {} event trigger on {} for {}'.format(event_defaults[event_source]['service_name'],
