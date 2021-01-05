@@ -26,7 +26,7 @@ from ...utils import get_dynamodb_stream_arn, get_lambda_alias_arn
 LOG = logging.getLogger(__name__)
 
 
-def create_event_source_mapping_trigger(app_name, env, region, event_source, rules):
+def create_event_source_mapping_trigger(app_name, env, region, event_source, rules): # noqa: MC0001
     """Create event source mapping trigger from rules for AWS Lambda.
 
     Args:
