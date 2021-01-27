@@ -35,6 +35,11 @@
           "suspendedProcesses": [],
           "securityGroups": {{ data.app.instance_security_groups }},
           "tags": {
+            {% if data.app.custom_tags %}
+                {% for tag_key, tag_value in data.app.custom_tags.items() -%}
+                  "{{ tag_key }}": "{{ tag_value }}",
+                {% endfor -%}
+            {% endif %}
             "app_group": "{{ data.app.group_name }}",
             "app_name": "{{ data.app.appname }}",
             "owner_email": "{{ data.app.owner_email }}"

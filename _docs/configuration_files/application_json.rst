@@ -66,6 +66,25 @@ a specified archaius S3 bucket.
     | *Type*: boolean
     | *Default*: ``false``
 
+``custom_tags``
+***************
+
+Custom Tags to be used during deployment stages on resources such as ELBs and EC2s.
+
+``custom_tags`` *Example*
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: json
+
+   {
+       "app": {
+            "custom_tags": {
+                "example_key": "example_value",
+                "app_name": "application_name"
+            }
+       }
+   }
+
 .. _eureka_enabled:
 
 ``eureka_enabled``
