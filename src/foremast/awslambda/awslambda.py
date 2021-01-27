@@ -58,6 +58,7 @@ class LambdaFunction:
 
         self.settings = get_properties(prop_path, env=self.env, region=self.region)
         app = self.settings['app']
+        self.custom_tags = app['custom_tags']
         self.lambda_environment = app['lambda_environment']
         self.lambda_layers = app['lambda_layers']
         self.lambda_destinations = app['lambda_destinations']
@@ -258,6 +259,9 @@ class LambdaFunction:
 
         LOG.info('Creating lambda function: %s', self.app_name)
 
+        default_tags = {'app_group': self.group, 'app_name': self.app_name}
+        lambda_tags = {**default_tags, **self.custom_tags}
+
         try:
             self.lambda_client.create_function(
                 Environment=self.lambda_environment,
@@ -271,8 +275,7 @@ class LambdaFunction:
                 MemorySize=int(self.memory),
                 Publish=False,
                 VpcConfig=vpc_config,
-                Tags={'app_group': self.group,
-                      'app_name': self.app_name},
+                Tags=lambda_tags,
                 Layers=self.lambda_layers,
                 DeadLetterConfig=self.lambda_dlq,
                 TracingConfig=self.lambda_tracing,
