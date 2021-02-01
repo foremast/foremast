@@ -33,7 +33,7 @@ import os
 import gogoutils
 
 from . import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
-               scheduled_actions, securitygroup, slacknotify, utils)
+               scheduled_actions, securitygroup, slacknotify, stepfunction, utils)
 from .gcp_iam import GcpIamResourceClient
 from .app import SpinnakerApp
 from .args import add_debug
@@ -123,6 +123,8 @@ class ForemastRunner:
                 spinnakerpipeline = pipeline.SpinnakerPipelineS3(**kwargs)
             elif pipeline_type == 'datapipeline':
                 spinnakerpipeline = pipeline.SpinnakerPipelineDataPipeline(**kwargs)
+            elif pipeline_type == 'stepfunction':
+                spinnakerpipeline = pipeline.SpinnakerPipelineStepFunction(**kwargs)
             elif pipeline_type in consts.MANUAL_TYPES:
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             elif pipeline_type == 'cloudfunction':
@@ -262,6 +264,12 @@ class ForemastRunner:
         dpobj.set_pipeline_definition()
         if self.configs[self.env].get('datapipeline').get('activate_on_deploy'):
             dpobj.activate_pipeline()
+
+    def create_stepfunction(self):
+        """Creates AWS Step Function"""
+        utils.banner("Creating AWS Step Function")
+        sfnobj = stepfunction.AWSStepFunction(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
+        sfnobj.create_stepfunction()
 
     def deploy_cloudfunction(self):
         """Creates a Cloud Function"""
