@@ -32,7 +32,7 @@ import os
 
 import gogoutils
 
-from . import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
+from . import (autoscaling_policy, awsglue,awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
                scheduled_actions, securitygroup, slacknotify, utils)
 from .gcp_iam import GcpIamResourceClient
 from .app import SpinnakerApp
@@ -127,6 +127,8 @@ class ForemastRunner:
                 spinnakerpipeline = pipeline.SpinnakerPipelineManual(**kwargs)
             elif pipeline_type == 'cloudfunction':
                 spinnakerpipeline = pipeline.SpinnakerPipelineCloudFunction(**kwargs)
+            elif pipeline_type == 'gluepipeline':
+                spinnakerpipeline = pipeline.SpinnakerPipelineGluePipeline(**kwargs)
             else:
                 # Handles all other pipelines
                 spinnakerpipeline = pipeline.SpinnakerPipeline(**kwargs)
@@ -262,6 +264,13 @@ class ForemastRunner:
         dpobj.set_pipeline_definition()
         if self.configs[self.env].get('datapipeline').get('activate_on_deploy'):
             dpobj.activate_pipeline()
+
+    def create_gluepipeline(self):
+        """Creates data pipeline and adds definition"""
+        utils.banner("Creating Glue Pipeline")
+        dpobj = awsglue.GlueJob(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
+        dpobj.create_glue_job()
+        dpobj.set_pipeline_definition()
 
     def deploy_cloudfunction(self):
         """Creates a Cloud Function"""

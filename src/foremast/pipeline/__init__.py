@@ -21,3 +21,4 @@ from .create_pipeline_manual import SpinnakerPipelineManual
 from .create_pipeline_onetime import SpinnakerPipelineOnetime
 from .create_pipeline_s3 import SpinnakerPipelineS3
 from .create_pipeline_cloudfunction import SpinnakerPipelineCloudFunction
+from .create_pipeline_gluepipeline import SpinnakerPipelineGluePipeline
