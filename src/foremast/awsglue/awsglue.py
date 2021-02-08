@@ -4,7 +4,6 @@ import logging
 import boto3
 from tryagain import retries
 
-from ..exceptions import RequiredKeyNotFound
 from ..utils import get_details, get_properties, get_role_arn
 
 LOG = logging.getLogger(__name__)
@@ -75,14 +74,13 @@ class AWSGlueJob:
             #           'app_name': self.app_name}
             # )
 
-        except boto3.exceptions.botocore.exceptions.ClientError as error:
+        except boto3.exceptions.botocore.exceptions.ClientError:
             raise
 
         LOG.info("Successfully updated Glue configuration.")
 
     @retries(max_attempts=3, wait=1, exceptions=(SystemExit))
     def create_job(self):
-        
         LOG.info('Creating glue job: %s', self.app_name)
 
         try:
@@ -93,10 +91,9 @@ class AWSGlueJob:
                 MaxRetries=int(self.timeout),
                 Timeout=int(self.timeout),
                 Tags={'app_group': self.group,
-                      'app_name': self.app_name}
-                )
+                      'app_name': self.app_name})
 
-        except boto3.exceptions.botocore.exceptions.ClientError as error:
+        except boto3.exceptions.botocore.exceptions.ClientError:
             raise
 
         LOG.info("Successfully created Glue Job")

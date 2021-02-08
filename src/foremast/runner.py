@@ -32,7 +32,7 @@ import os
 
 import gogoutils
 
-from . import (autoscaling_policy, awsglue,awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
+from . import (autoscaling_policy, awsglue, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
                scheduled_actions, securitygroup, slacknotify, utils)
 from .gcp_iam import GcpIamResourceClient
 from .app import SpinnakerApp
