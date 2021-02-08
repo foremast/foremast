@@ -10,6 +10,10 @@
         "instance_profile": "{{ profile }}",
         "instance_type": "t2.micro",
         "lambda_concurrency_limit": null,
+        "glue_timeout": "60",
+        "glue_retries": "1",
+        "glue_command": {},
+        "glue_connections": null,
         "lambda_destinations": {},
         "lambda_dlq": {},
         "lambda_environment": {},
@@ -25,10 +29,10 @@
         "cloudfunction_memory_mb": "128",
         "cloudfunction_max_instances": "0",
         "cloudfunction_vpc_connector": null,
-        "glue_timeout" = "0",
-        "glue_retries" = "0",
-        "glue_command" = [],
-        "glue_connections" = []
+        "glue_timeout": "0",
+        "glue_retries": "0",
+        "glue_command": [],
+        "glue_connections": []
     },
     "asg": {
         "hc_type": "ELB",

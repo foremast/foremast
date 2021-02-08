@@ -268,7 +268,7 @@ class ForemastRunner:
     def create_gluepipeline(self):
         """Creates data pipeline and adds definition"""
         utils.banner("Creating Glue Pipeline")
-        dpobj = awsglue.GlueJob(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
+        dpobj = awsglue.AWSGlueJob(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
         dpobj.create_glue_job()
         dpobj.set_pipeline_definition()
 
