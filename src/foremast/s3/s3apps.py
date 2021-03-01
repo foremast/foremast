@@ -188,7 +188,8 @@ class S3Apps:
             _response = self.s3client.put_bucket_encryption(Bucket=self.bucket,
                                                             ServerSideEncryptionConfiguration=encryption_config)
         else:
-            _response = self.s3client.delete_bucket_encryption(Bucket=self.bucket)
+            if bucket_has_encryption:
+                _response = self.s3client.delete_bucket_encryption(Bucket=self.bucket)
         LOG.debug('Response setting up S3 encryption: %s', _response)
         LOG.info('S3 encryption configuration updated')
 
