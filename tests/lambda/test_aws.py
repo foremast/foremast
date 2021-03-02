@@ -14,8 +14,9 @@ TEST_PROPERTIES = {
         },
     },
     'app': {
+        'custom_tags': {},
         'lambda_memory': 0,
-        'lambda_timeout': 0,
+        'lambda_timeout': 0,        
         'lambda_environment': None,
         'lambda_layers': None,
         'lambda_dlq': None,
