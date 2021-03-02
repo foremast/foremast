@@ -246,9 +246,12 @@ class S3Apps:
 
     def _put_bucket_tagging(self):
         """Add bucket tags to bucket."""
-        all_tags = self.s3props['tagging']['tags']
-        all_tags.update({'app_group': self.group, 'app_name': self.app_name})
-        tag_set = generate_s3_tags.generated_tag_data(all_tags)
+        app_block_tags = self.properties['app']['custom_tags']
+        s3_block_tags = self.s3props['tagging']['tags']
+        default_tags = {'app_group': self.group, 'app_name': self.app_name}
+
+        s3_tags = {**default_tags, **s3_block_tags, **app_block_tags}
+        tag_set = generate_s3_tags.generated_tag_data(s3_tags)
 
         tagging_config = {'TagSet': tag_set}
 
