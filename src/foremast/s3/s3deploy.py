@@ -128,12 +128,14 @@ class S3Deployment:
         Args:
             promote_stage (string): Stage that is being promoted
         """
+        deploy_strategy = self.properties["deploy_strategy"]
+
         if promote_stage.lower() == 'alpha':
-            self._sync_to_path(self.s3_canary_path)
+            self._sync_to_path(deploy_strategy, self.s3_canary_path)
         elif promote_stage.lower() == 'canary':
-            self._sync_to_path(self.s3_latest_path)
+            self._sync_to_path(deploy_strategy, self.s3_latest_path)
         else:
-            self._sync_to_path(self.s3_latest_path)
+            self._sync_to_path(deploy_strategy, self.s3_latest_path)
 
     def _get_upload_cmd(self, deploy_strategy):
         """Generate the S3 CLI upload command
