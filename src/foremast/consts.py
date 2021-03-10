@@ -252,7 +252,7 @@ HEADERS = {
 # Define which pipeline types are permitted and which cloud they map to
 AWS_MANUAL_TYPES = set(filter(None, set(validate_key_values(CONFIG, 'base', 'aws_manual_types', default='manual')
                                         .split(','))))
-AWS_TYPES = set(validate_key_values(CONFIG, 'base', 'aws_types', default='ec2,lambda,s3,datapipeline,rolling')
+AWS_TYPES = set(validate_key_values(CONFIG, 'base', 'aws_types', default='ec2,lambda,s3,datapipeline,stepfunction,rolling')
                 .split(',')).union(AWS_MANUAL_TYPES)
 GCP_MANUAL_TYPES = set(filter(None, set(validate_key_values(CONFIG, 'base', 'gcp_manual_types', default='')
                                         .split(','))))

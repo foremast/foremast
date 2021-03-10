@@ -11,7 +11,7 @@
   "parallel": true,
   "notifications": {% include "pipeline/pipeline_notifications.json.j2" %},
   "stages": [
-    {% if data.app.deploy_type not in ["lambda", "s3", "datapipeline", "cloudfunction"] %}
+    {% if data.app.deploy_type not in ["lambda", "s3", "datapipeline", "stepfunction", "cloudfunction"] %}
       {% include "pipeline/stage-bake.json.j2" %}
     {% endif %}
    ]
