@@ -183,6 +183,9 @@ class LambdaFunction:
         """
         LOG.info('Updating configuration for lambda function: %s', self.app_name)
 
+        default_tags = {'app_group': self.group, 'app_name': self.app_name}
+        lambda_tags = {**default_tags, **self.custom_tags}
+
         try:
             self.lambda_client.update_function_configuration(
                 Environment=self.lambda_environment,
@@ -233,7 +236,7 @@ class LambdaFunction:
         LOG.info('Updating Lambda function tags')
 
         lambda_arn = get_lambda_arn(self.app_name, self.env, self.region)
-        self.lambda_client.tag_resource(Resource=lambda_arn, Tags={'app_group': self.group, 'app_name': self.app_name})
+        self.lambda_client.tag_resource(Resource=lambda_arn, Tags=lambda_tags)
 
         LOG.info("Successfully updated Lambda configuration.")
 

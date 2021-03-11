@@ -201,6 +201,10 @@ class DataPipelineDefinitionError(ForemastError):
     """Error Creating Data Pipeline."""
 
 
+class StepFunctionDefinitionError(ForemastError):
+    """Error Creating Step Function."""
+
+
 class CloudFunctionDeployError(ForemastError):
     """Error while deploying a Cloud Function"""
 

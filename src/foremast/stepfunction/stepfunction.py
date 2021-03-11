@@ -17,11 +17,12 @@
 
 import logging
 
+import json
 import boto3
 from awscli.customizations.datapipeline import translator
 
-from ..exceptions import DataPipelineDefinitionError
-from ..utils import get_details, get_properties
+from ..exceptions import StepFunctionDefinitionError
+from ..utils import get_details, get_properties, get_role_arn
 
 LOG = logging.getLogger(__name__)
 
@@ -43,12 +44,16 @@ class AWSStepFunction:
         self.region = region
         self.properties = get_properties(prop_path, env=self.env, region=self.region)
         self.stepfunction_data = self.properties['stepfunction']
+        self.custom_tags = self.properties['app']['custom_tags']
         generated = get_details(app=self.app_name)
         self.group = generated.data['project']
 
         session = boto3.Session(profile_name=self.env, region_name=self.region)
         self.client = session.client('stepfunctions')
-        self.pipeline_id = None
+
+        self.state_machine_arn = None
+        self.role = generated.iam()['role']
+        self.role_arn = get_role_arn(self.role, self.env, self.region)
 
     def create_stepfunction(self):
         """Creates the Step Function if it does not already exist
@@ -57,60 +62,81 @@ class AWSStepFunction:
                 dict: the response of the Boto3 command
         """
 
-        response = self.client.create_state_machine(
-            name=self.stepfunction_data.get('name', self.app_name),
-            definition='string',
-            roleArn='string')
-        self.pipeline_id = response.get('pipelineId')
+        stepfunction_tags = [
+            {'key': 'app_group', 'value': self.group},
+            {'key': 'app_name', 'value': self.app_name}
+        ]
 
-        LOG.debug(response)
-        LOG.info("Successfully configured Data Pipeline - %s", self.app_name)
+        for each_tag in self.custom_tags:
+            stepfunction_tags.append({'key': each_tag, 'value': self.custom_tags[each_tag]})
+
+        self.role_arn = get_role_arn(self.role, self.env, self.region)
+
+        if not self.find_stepfunction_arn():
+            response = self.client.create_state_machine(
+                name=self.stepfunction_data.get('name', self.app_name),
+                definition=json.dumps(self.stepfunction_data['json_definition']),
+                roleArn=self.role_arn,
+                type=self.stepfunction_data['statemachine_type'],
+                loggingConfiguration=self.stepfunction_data['logging_configuration'],
+                tags=stepfunction_tags,
+                tracingConfiguration=self.stepfunction_data['tracing'])
+            LOG.debug(response)
+
+            self.state_machine_arn = response.get('stateMachineArn')
+
+            LOG.info("Successfully configured Step Function - %s", self.app_name)
+        else:
+            response = self.update_stepfunction_definition()
+
         return response
 
-    def set_stepfunction_definition(self):
-        """Translates the json definition and puts it on created pipeline
+    def update_stepfunction_definition(self):
+        """Translates the json definition and puts it on created Step Function
 
         Returns:
                 dict: the response of the Boto3 command
         """
 
-        if not self.pipeline_id:
-            self.get_pipeline_id()
+        stepfunction_tags = [
+            {'key': 'app_group', 'value': self.group},
+            {'key': 'app_name', 'value': self.app_name}
+        ]
 
-        json_def = self.datapipeline_data['json_definition']
-        try:
-            pipelineobjects = translator.definition_to_api_objects(json_def)
-            parameterobjects = translator.definition_to_api_parameters(json_def)
-            parametervalues = translator.definition_to_parameter_values(json_def)
-        except translator.PipelineDefinitionError as error:
-            LOG.warning(error)
-            raise DataPipelineDefinitionError
+        for each_tag in self.custom_tags:
+            stepfunction_tags.append({'key': each_tag, 'value': self.custom_tags[each_tag]})
 
-        response = self.client.put_pipeline_definition(
-            pipelineId=self.pipeline_id,
-            pipelineObjects=pipelineobjects,
-            parameterObjects=parameterobjects,
-            parameterValues=parametervalues)
+
+        if not self.state_machine_arn:
+            self.find_stepfunction_arn()
+
+        response = self.client.update_state_machine(
+            stateMachineArn=self.state_machine_arn,
+            definition=json.dumps(self.stepfunction_data['json_definition']),
+            roleArn=self.role_arn,
+            loggingConfiguration=self.stepfunction_data['logging_configuration'],
+            tracingConfiguration=self.stepfunction_data['tracing'])
         LOG.debug(response)
-        LOG.info("Successfully applied pipeline definition")
+        LOG.info("Successfully updated Step Function State Machine definition")
+
+        LOG.info('Updating Step Function tags')
+
+        self.client.tag_resource(resourceArn=self.state_machine_arn, tags=stepfunction_tags)
+
         return response
 
-    def get_pipeline_id(self):
-        """Finds the pipeline ID for configured pipeline"""
+    def find_stepfunction_arn(self):
+        """Finds the Step Function for configured pipeline"""
 
-        all_pipelines = []
-        paginiator = self.client.get_paginator('list_pipelines')
+        all_statemachines = []
+        paginiator = self.client.get_paginator('list_state_machines')
         for page in paginiator.paginate():
-            all_pipelines.extend(page['pipelineIdList'])
+            all_statemachines.extend(page['stateMachines'])
 
-        for pipeline in all_pipelines:
-            if pipeline['name'] == self.datapipeline_data.get('name', self.app_name):
-                self.pipeline_id = pipeline['id']
-                LOG.info("Pipeline ID Found")
-                return
-        LOG.info("Pipeline ID Not Found for %s", self.app_name)
-
-    def activate_pipeline(self):
-        """Activates a deployed pipeline, useful for OnDemand pipelines"""
-        self.client.activate_pipeline(pipelineId=self.pipeline_id)
-        LOG.info("Activated Pipeline %s", self.pipeline_id)
+        for statemachine in all_statemachines:
+            if statemachine['name'] == self.stepfunction_data.get('name', self.app_name):
+                self.state_machine_arn = statemachine['stateMachineArn']
+                LOG.info("Step Function State Machine Found")
+                return True
+        LOG.info("Step Function State Machine Not Found for %s", self.app_name)
+        return False

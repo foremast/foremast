@@ -349,7 +349,7 @@ def prepare_infrastructure_aws(runner, pipeline_type):
 
     runner.create_app()
 
-    if pipeline_type not in ['s3', 'datapipeline']:
+    if pipeline_type not in ['s3', 'datapipeline', 'stepfunction']:
         runner.create_aws_iam()
         # TODO: Refactor Archaius to be fully featured
         if archaius:
@@ -365,6 +365,9 @@ def prepare_infrastructure_aws(runner, pipeline_type):
         runner.create_s3app()
     elif pipeline_type == 'datapipeline':
         runner.create_datapipeline()
+    elif pipeline_type == 'stepfunction':
+        runner.create_aws_iam()
+        runner.create_stepfunction()
     else:
         LOG.info("No Eureka, running ELB and DNS setup")
         runner.create_elb()
