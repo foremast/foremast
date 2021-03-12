@@ -136,7 +136,7 @@ Add SSM ParameterStore PutParameter and GetParametersByPath access based on app 
 ``rds-db``
 **********
 
-Add RDS-DB Connect access to RDS Serverless DB Resources. Expects Secrets Manager credentials for DB to connect.  
+Add RDS-DB Connect access to RDS DB Resources. Expects Secrets Manager credentials for DB to connect.  
 (http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html)
 
    | *Type*: array
