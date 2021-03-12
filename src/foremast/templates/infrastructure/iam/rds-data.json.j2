@@ -1,0 +1,12 @@
+        {
+            "Sid": "RDSData",
+            "Action": [
+                "rds-data:BatchExecuteStatement", 
+                "rds-data:ExecuteStatement",  
+                "rds-data:RollbackTransaction",  
+                "rds-data:CommitTransaction",
+                "rds-data:BeginTransaction"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        }
