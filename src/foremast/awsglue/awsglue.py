@@ -61,18 +61,11 @@ class AWSGlueJob:
         try:
             self.glue_client.update_job(
                 JobName=self.app_name,
-                JobUpdate={}
-            )
-
-            #     JobName=self.app_name,
-            #     JobUpdate={
-            #     Role=self.role_arn,
-            #     Command=self.command,
-            #     MaxRetries=int(self.timeout),
-            #     Timeout=int(self.timeout),
-            #     Tags={'app_group': self.group,
-            #           'app_name': self.app_name}
-            # )
+                JobUpdate={
+                    'Role': self.role_arn,
+                    'Command': self.glue_command,
+                    'MaxRetries': int(self.glue_retries),
+                    'Timeout': int(self.glue_timeout)})
 
         except boto3.exceptions.botocore.exceptions.ClientError:
             raise
@@ -87,9 +80,9 @@ class AWSGlueJob:
             self.glue_client.create_job(
                 Name=self.app_name,
                 Role=self.role_arn,
-                Command=self.command,
-                MaxRetries=int(self.timeout),
-                Timeout=int(self.timeout),
+                Command=self.glue_command,
+                MaxRetries=int(self.glue_retries),
+                Timeout=int(self.glue_timeout),
                 Tags={'app_group': self.group,
                       'app_name': self.app_name})
 
