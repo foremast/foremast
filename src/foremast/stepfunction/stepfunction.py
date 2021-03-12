@@ -19,9 +19,7 @@ import logging
 
 import json
 import boto3
-from awscli.customizations.datapipeline import translator
 
-from ..exceptions import StepFunctionDefinitionError
 from ..utils import get_details, get_properties, get_role_arn
 
 LOG = logging.getLogger(__name__)
@@ -109,7 +107,6 @@ class AWSStepFunction:
 
         if not self.state_machine_arn:
             self.find_stepfunction_arn()
-
         response = self.client.update_state_machine(
             stateMachineArn=self.state_machine_arn,
             definition=json.dumps(self.stepfunction_data['json_definition']),
