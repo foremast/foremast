@@ -104,9 +104,9 @@ class AWSStepFunction:
         for each_tag in self.custom_tags:
             stepfunction_tags.append({'key': each_tag, 'value': self.custom_tags[each_tag]})
 
-
         if not self.state_machine_arn:
             self.find_stepfunction_arn()
+
         response = self.client.update_state_machine(
             stateMachineArn=self.state_machine_arn,
             definition=json.dumps(self.stepfunction_data['json_definition']),
