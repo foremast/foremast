@@ -244,7 +244,7 @@ Add AWS XRay access.
    | *Default*: ``false``
 
 ``gcp_roles``
-******
+*************
 
 Adds `GCP Roles
 <https://cloud.google.com/iam/docs/understanding-roles#predefined_roles>`_ to the given projects.

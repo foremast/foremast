@@ -34,6 +34,7 @@ Specifies what type of pipeline to use for the application.
         - ``"ec2"`` - Sets up an AWS EC2 pipeline and infrastructure
         - ``"datapipeline"`` - Sets up an AWS Data Pipeline infrastructure
         - ``"lambda"`` - Sets up an AWS Lambda pipeline and infrastructure
+        - ``"stepfunction"`` - Sets up an AWS Step Function pipeline and infrastructure
         - ``"cloudfunction"`` - Sets up a GCP Cloud Function pipeline, infrastructure and deploys code
         - ``"s3"`` - Sets up an AWS S3 pipeline and infrastructure
         - ``"rolling"`` - Sets up a "rolling" style pipeline. Requires custom templates.
