@@ -97,7 +97,7 @@ https://aws.amazon.com/ec2/instance-types/ for details
     | *Default*: ``"t2.micro"``
 
 ``lambda_concurrency_limit``
-**********************
+****************************
 
 Each region in your AWS account has a Lambda concurrency limit. The concurrency limit determines how many function invocations can run simultaneously in one region. The limit applies to all functions in the same region and is set to 1000 by default.
 
@@ -106,7 +106,7 @@ If you exceed a concurrency limit, Lambda starts throttling the offending functi
 More info on limits can be found here: https://docs.aws.amazon.com/lambda/latest/dg/limits.html
 
 ``lambda_destinations``
-*****************
+***********************
 
 This feature provides the ability to control what happens when a function is successful or fails e.g. if a specific function fails you may want to invoke another lambda function to perform some error management. In the past you would have to add this bespoke functionality into your code. 
 
@@ -922,5 +922,7 @@ details
 .. include:: datapipeline.rest
 
 .. include:: s3.rest
+
+.. include:: stepfunction.rest
 
 .. include:: qe.rest
