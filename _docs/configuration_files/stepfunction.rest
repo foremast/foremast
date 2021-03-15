@@ -54,7 +54,7 @@ Description of the Data Pipeline.
           "includeExecutionData": true|false,
           "destinations": [{
                 "cloudWatchLogsLogGroup": {
-                    "logGroupArn": "arn::example:string"
+                    "logGroupArn": "arn:aws:logs:region:account-id:log-group:log_group_name"
                 }
           }]
         }
