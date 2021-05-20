@@ -32,7 +32,7 @@ def get_subnets(
         target='ec2',
         purpose='internal',
         env='',
-        region='', ):
+        region='', ): #noqa
     """Get all availability zones for a given target.
 
     Args:
