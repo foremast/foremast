@@ -1,12 +1,16 @@
 Spinnaker Foremast
 ==================
 
-.. image:: https://travis-ci.org/foremast/foremast.svg?branch=master
-    :target: https://travis-ci.org/foremast/foremast
 
-.. image:: https://badges.gitter.im/gogoair/foremast.svg
-   :alt: Join the chat at https://gitter.im/gogoair/foremast
-   :target: https://gitter.im/gogoair/foremast?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+.. image:: https://github.com/foremast/foremast/actions/workflows/githubactions-tox.yml/badge.svg
+    :target: https://github.com/foremast/foremast/actions/workflows/githubactions-tox.yml
+
+.. image:: https://github.com/foremast/foremast/actions/workflows/codeql-analysis.yml/badge.svg
+    :target: https://github.com/foremast/foremast/actions/workflows/codeql-analysis.yml
+
+.. image:: https://badges.gitter.im/foremast/foremast.svg
+   :alt: Join the chat at https://gitter.im/foremast/foremast
+   :target: https://gitter.im/foremast/foremast?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 .. image:: https://badge.fury.io/py/foremast.svg
     :target: https://badge.fury.io/py/foremast
@@ -37,8 +41,7 @@ Foremast Features
 -----------------
 
 - Dynamically generate Spinnaker pipelines based on JSON configs
-- Customizable pipelines through external Jinja2 Templates, see `Foremast
-  templates`_ for examples
+- Customizable pipelines through external Jinja2 Templates, see `Foremast templates`_ for examples
 - Dynamically generate AWS infrastructure based on pipeline configs
 - Set up resources not defined in Spinnaker, such as S3 buckets and IAM roles
 - Support for AWS Lambda pipelines
