@@ -2,8 +2,11 @@ Spinnaker Foremast
 ==================
 
 
-.. image:: https://travis-ci.org/foremast/foremast.svg?branch=master
-    :target: https://travis-ci.org/foremast/foremast
+.. image:: https://github.com/foremast/foremast/actions/workflows/githubactions-tox.yml/badge.svg
+    :target: https://github.com/foremast/foremast/actions/workflows/githubactions-tox.yml
+
+.. image:: https://github.com/foremast/foremast/actions/workflows/codeql-analysis.yml/badge.svg
+    :target: https://github.com/foremast/foremast/actions/workflows/codeql-analysis.yml
 
 .. image:: https://badges.gitter.im/foremast/foremast.svg
    :alt: Join the chat at https://gitter.im/foremast/foremast
