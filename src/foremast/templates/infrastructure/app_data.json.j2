@@ -1,23 +1,53 @@
 {
 "job": [
-    {%for account in appinfo.accounts %}
     {
         "type":"createApplication",
-        "account":"{{ account.name }}",
         "application":{
-            "cloudProviders":"aws",
+            "cloudProviders":"{{ appinfo.provider }}",
             "name": "{{ appinfo.app }}",
             "email": "{{ appinfo.email }}",
             "repoType": "github",
             "repoProjectKey": "{{ appinfo.project }}",
             "repoSlug": "{{ appinfo.repo }}",
-            "platformHealthOnlyShowOverride": true
+            "platformHealthOnlyShowOverride": true,
+            "permissions": {
+                "READ": {{ pipeline_config.permissions.read_roles | tojson }},
+                "WRITE": {{ pipeline_config.permissions.write_roles | tojson }}
+            },
+            "chaosMonkey": {
+                "enabled": {{ pipeline_config.chaos_monkey.enabled | tojson }},
+                "meanTimeBetweenKillsInWorkDays": {{ pipeline_config.chaos_monkey.mean_time }},
+                "minTimeBetweenKillsInWorkDays": {{ pipeline_config.chaos_monkey.minimum_time }},
+                "grouping": "cluster",
+                "regionsAreIndependent": true,
+                "exceptions": [{% for exception in pipeline_config.chaos_monkey.exceptions %}
+                    {"account": {{ exception | tojson }}, "region": "*", "stack": "*" }
+                    {% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            },
+            "instanceLinks": [{
+                "title": "Links",
+                "links": [{% for key, value in pipeline_config.instance_links.items() %}
+                    {"title": "{{ key }}", "path": "{{ value }}" }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            }],
+            "trafficGuards": [{% for account_name in pipeline_config.traffic_guards.accounts %}
+                {
+                    "account": {{ account_name | tojson }},
+                    "detail": "*",
+                    "location": "*",
+                    "region": "*",
+                    "stack": "*"
+                }
+                {% if not loop.last %},{% endif %}
+                {% endfor %}
+            ]
         },
-        "user":"foremast"
-    }{% if not loop.last %},{% endif %}
-    {% endfor %}
+        "user": "foremast"
+    }
   ],
-"application": "{{ appinfo.app }}",
-"description": "Created application {{ appinfo.app }}"
+  "application": "{{ appinfo.app }}",
+  "description": "Created application {{ appinfo.app }}"
 }
-

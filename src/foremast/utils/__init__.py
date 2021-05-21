@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,15 +13,15 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-"""Package for foremast supporting utilities"""
+"""Package for foremast supporting utilities."""
 from .apps import *
+from .asg import *
 from .banners import *
 from .pipelines import *
 from .deep_chain_map import DeepChainMap
 from .elb import *
-from .gate import *
 from .encoding import *
+from .foremast_configs import *
 from .generate_filename import *
 from .dns import *
 from .credentials import *
@@ -38,4 +38,5 @@ from .get_cloudwatch_event_rule import get_cloudwatch_event_rule
 from .awslambda import *
 from .get_sns_subscriptions import get_sns_subscriptions
 from .get_sns_topic_arn import get_sns_topic_arn
+from .dynamodb_stream import get_dynamodb_stream_arn
 from .roles import *

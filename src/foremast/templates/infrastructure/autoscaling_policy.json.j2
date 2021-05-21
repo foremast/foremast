@@ -1,6 +1,6 @@
 {
    "application":"{{ app }}",
-   "description":"Upsert scaling policy",
+   "description":"Upsert scaling policy {{ operation }}",
    "job":[
       {
          "name":"{{ app }}-{{ scaling_policy.metric }}-{{ operation }}",
@@ -30,12 +30,16 @@
             "insufficientDataActionArns":[]
          },
          "step":{
-            "estimatedInstanceWarmup":600,
+            "estimatedInstanceWarmup": {{ scaling_policy.instance_warmup | default(600) }},
             "metricAggregationType":"{{ scaling_policy.statistic | default("Average") }}",
             "stepAdjustments":[
                {
                   "scalingAdjustment":{{ scalingAdjustment }},
+                  {% if operation == "decrease" %}
+                  "metricIntervalUpperBound":0
+                  {% else %}
                   "metricIntervalLowerBound":0
+                  {% endif %}
                }
             ]
          },

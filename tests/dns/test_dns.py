@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,21 +14,21 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from unittest.mock import MagicMock, patch
+
 from foremast import dns
-from unittest.mock import patch, MagicMock
 
 
 @patch('foremast.dns.create_dns.update_dns_zone_record')
 @patch('foremast.dns.create_dns.get_dns_zone_ids')
 @patch('foremast.dns.create_dns.find_elb')
 @patch('foremast.dns.create_dns.get_properties')
+@patch('foremast.dns.create_dns.DOMAIN', 'example.com')
 @patch('foremast.dns.create_dns.get_details')
 def test_dns_creation(mock_get_details, mock_properties, mock_find_elb, mock_dns_zones, mock_update_dns):
     # mocked data
-    hosted_zones = [ 500, 501 ]
-    dns_elb = {
-        'elb': 'myapp.dev1.example.com'
-    }
+    hosted_zones = [500, 501]
+    dns_elb = {'elb': 'myapp.dev1.example.com'}
 
     # mock results
     mock_get_details.return_value.app_name.return_value = 'myapp'

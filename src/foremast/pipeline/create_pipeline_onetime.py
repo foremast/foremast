@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Create onetime Pipelines for Spinnaker.
 
 These are circumventions for redployments to a specific Environment in a Region.
@@ -34,16 +33,13 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
         onetime (str): Environment to build onetime pipeline for.
     """
 
-    def __init__(self,
-                 app='',
-                 trigger_job='',
-                 prop_path='',
-                 base='',
-                 onetime=''):
-        super().__init__(app=app,
-                         trigger_job=trigger_job,
-                         prop_path=prop_path,
-                         base=base)
+    def __init__(self, app='', trigger_job='', prop_path='', base='', onetime='', runway_dir=''):
+        super().__init__(
+            app=app,
+            trigger_job=trigger_job,
+            prop_path=prop_path,
+            base=base,
+            runway_dir=runway_dir, )
         self.environments = [onetime]
 
     def post_pipeline(self, pipeline):
@@ -60,9 +56,15 @@ class SpinnakerPipelineOnetime(SpinnakerPipeline):
         pipeline_json = json.loads(pipeline_str)
 
         # Note pipeline name is manual
-        name = '{0} (onetime-{1})'.format(pipeline_json['name'],
-                                          self.environments[0])
+        name = '{0} (onetime-{1})'.format(pipeline_json['name'], self.environments[0])
         pipeline_json['name'] = name
+
+        # Inject pipeline Id so that it does not override existing pipelines
+        pipeline_id = super().compare_with_existing(onetime=True)
+        if pipeline_id:
+            pipeline_json['id'] = pipeline_id
+        else:
+            del pipeline_json['id']
 
         # disable trigger as not to accidently kick off multiple deployments
         for trigger in pipeline_json['triggers']:

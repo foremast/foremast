@@ -1,0 +1,15 @@
+        {
+            "Sid": "KinesisFirehoseReadWrite",
+            "Action": [
+                "kinesis:*"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+            {%- for stream in items %}
+                "arn:aws:kinesis:{{ region }}:{{ account_number }}:stream/{{ stream }}"
+                {%- if not loop.last -%}
+                ,
+                {%- endif -%}
+            {% endfor %}
+            ]
+        }

@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """ChainMap modification to handle nested dict objects."""
 import collections
 
 
+# pylint: disable=too-many-ancestors
 class DeepChainMap(collections.ChainMap):
     """Deep lookups for collections.ChainMap objects.
 
@@ -48,11 +48,10 @@ class DeepChainMap(collections.ChainMap):
         for mapping in self.maps:
             try:
                 value = mapping[key]
+                map_value = value
                 if isinstance(value, dict):
-                    return dict(DeepChainMap(*list(mapping.get(key, {})
-                                                   for mapping in self.maps)))
-                else:
-                    return value
+                    map_value = dict(DeepChainMap(*list(mapping.get(key, {}) for mapping in self.maps)))
+                return map_value
             except KeyError:
                 pass
         return self.__missing__(key)

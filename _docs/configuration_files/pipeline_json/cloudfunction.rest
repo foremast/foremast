@@ -1,0 +1,38 @@
+.. cloudfunction_block:
+
+``cloudfunction`` Block
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Holds settings related to GCP Cloud Function deployments
+
+``project_name``
+*******************
+
+The project name.  Wildcards are supported to ensure the correct project is used in each GCP Environment.
+
+For example ``my-project*`` may match to ``my-project-prod`` and ``my-project-stage`` depending on the
+environment being deployed to.
+
+    | *Type*: string
+    | *Default*: ``None``
+    | *Required*: ``Yes``
+
+``entry_point``
+*******************
+
+The entry point of your code.  Typically this is a function or method name.
+
+    | *Type*: string
+    | *Default*: ``None``
+    | *Required*: ``Yes``
+    | *Example*: ``my_function``
+
+``runtime``
+*******************
+
+The runtime your function is using.  `See the GCP docs for a full list of options <https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--runtime>`_.
+
+    | *Type*: string
+    | *Default*: ``None``
+    | *Required*: ``Yes``
+    | *Example*: ``python37``

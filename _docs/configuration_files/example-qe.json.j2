@@ -1,0 +1,58 @@
+    {
+      "requisiteStageRefIds":[""],
+      "refId": "master",
+      "type": "jenkins",
+      "name": "{{ data.app.environment|upper }}: Quality Tests",
+      "waitForCompletion": {{ data.qe.wait_for_completion|default(true)|tojson }},
+      "markUnstableAsSuccessful": {{ data.qe.ignore_unstable_results|default(false)|tojson }},
+      "master": "{{ data.qe.jenkins_master or 'jenkinsci' }}",
+      {% if data.qe.stage_timeout %}
+        "stageTimeoutMs": {{ data.qe.stage_timeout }},
+      {% endif %}
+      {% if data.qe %}
+        "job": "{{ data.qe.test_job }}",
+        {% if data.qe.stage_failure_action %}
+          {% if data.qe.stage_failure_action == "fail_pipeline" %}
+            "completeOtherBranchesThenFail": false,
+            "continuePipeline": false,
+            "failPipeline": true,
+          {% elif data.qe.stage_failure_action == "fail_branch" %}
+            "completeOtherBranchesThenFail": false,
+            "continuePipeline": false,
+            "failPipeline": false,
+          {% elif data.qe.stage_failure_action == "fail_branch_continue_pipeline" %}
+            "completeOtherBranchesThenFail": true,
+            "continuePipeline": false,
+            "failPipeline": false,
+          {% elif data.qe.stage_failure_action == "ignore_failures" %}
+            "completeOtherBranchesThenFail": false,
+            "continuePipeline": true,
+            "failPipeline": false,
+          {% endif %}
+        {% else %}
+          "completeOtherBranchesThenFail": false,
+          "continuePipeline": false,
+          "failPipeline": true,
+        {% endif %}
+        "parameters": {
+          {% if data.qe.test_params %}
+            {% for param_name, param_value in data.qe.test_params.items() %}
+              "{{ param_name }}": "{{ param_value }}"{%- if not loop.last -%},{%- endif -%}
+            {% endfor %}
+          {% endif %}
+          {% if data.qe.test_json %}
+            {% if data.qe.test_params %},{% endif %}
+            "test_json": "{{ data.qe }}"
+          {% endif %}           
+        }
+      {% else %}
+        "completeOtherBranchesThenFail": false,
+        "continuePipeline": false,
+        "failPipeline": true,
+        "job": "spinnaker-qe-{{ data.app.environment }}",
+        "parameters": {
+          "QE_LEVEL": "{{ data.qe.test_type or 'load' }}",
+          "SPINNAKER_APP_NAME": "{{ data.app.appname }}"
+        }
+      {% endif %}
+    }

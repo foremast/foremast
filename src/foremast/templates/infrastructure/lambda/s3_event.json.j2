@@ -1,16 +1,30 @@
 {
     "LambdaFunctionConfigurations": [
+        {% for trigger in triggers %}
         {
             "LambdaFunctionArn": "{{ lambda_arn }}",
-            {% if filters -%}
+            {% if trigger.prefix or trigger.suffix -%}
             "Filter": {
                 "Key": {
-                    "FilterRules": {{ filters }}
-
+                    "FilterRules": [
+                        {% if trigger.prefix -%}
+                        {
+                            "Name": "prefix",
+                            "Value": "{{ trigger.prefix }}"
+                        }{% if trigger.suffix -%},{% endif -%}
+                        {% endif -%}
+                        {% if trigger.suffix -%}
+                        {
+                            "Name": "suffix",
+                            "Value": "{{ trigger.suffix }}"
+                        }
+                        {% endif -%}
+                    ]
                 }
             },
             {% endif -%}
-            "Events": {{ events }}
-        }
+            "Events": {{ trigger.events | tojson }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
     ]
 }

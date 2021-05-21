@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -61,13 +61,15 @@ def test_iam_role_policy(resource_action, get_template, get_properties, get_deta
 
     assert create_iam_resources()
 
-    get_template.assert_called_with(EC2_TEMPLATE_NAME)
-    calls = [mock.call(
-        mock.ANY,
-        action='create_role',
-        log_format=mock.ANY,
-        RoleName=mock.ANY,
-        AssumeRolePolicyDocument=get_template.return_value)]
+    get_template.assert_called_with(EC2_TEMPLATE_NAME, formats=get_details())
+    calls = [
+        mock.call(
+            mock.ANY,
+            action='create_role',
+            log_format=mock.ANY,
+            RoleName=mock.ANY,
+            AssumeRolePolicyDocument=get_template.return_value)
+    ]
     resource_action.assert_has_calls(calls)
 
 

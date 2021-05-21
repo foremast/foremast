@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,18 +13,39 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Clean removed Pipelines."""
 import logging
 
-import murl
 import requests
 
-from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
-from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import check_managed_pipeline, get_all_pipelines
+from ..consts import RUNWAY_BASE_PATH
+from ..exceptions import SpinnakerPipelineCreationFailed, SpinnakerPipelineDeletionFailed
+from ..utils import check_managed_pipeline, get_all_pipelines, normalize_pipeline_name
+from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
+
+
+def delete_pipeline(app='', pipeline_name=''):
+    """Delete _pipeline_name_ from _app_."""
+    safe_pipeline_name = normalize_pipeline_name(name=pipeline_name)
+
+    LOG.warning('Deleting Pipeline: %s', safe_pipeline_name)
+
+    uri = '/pipelines/{app}/{pipeline}'.format(app=app, pipeline=safe_pipeline_name)
+
+    response = gate_request(method='DELETE', uri=uri)
+
+    if not response.ok:
+        LOG.debug('Delete response code: %d', response.status_code)
+        if response.status_code == requests.status_codes.codes['method_not_allowed']:
+            raise SpinnakerPipelineDeletionFailed('Failed to delete "{0}" from "{1}", '
+                                                  'possibly invalid Pipeline name.'.format(safe_pipeline_name, app))
+        LOG.debug('Pipeline missing, no delete required.')
+
+    LOG.debug('Deleted "%s" Pipeline response:\n%s', safe_pipeline_name, response.text)
+
+    return response.text
 
 
 def clean_pipelines(app='', settings=None):
@@ -45,7 +66,6 @@ def clean_pipelines(app='', settings=None):
         SpinnakerPipelineCreationFailed: Missing application.json file from
         `create-configs`.
     """
-    url = murl.Url(API_URL)
     pipelines = get_all_pipelines(app=app)
     envs = settings['pipeline']['env']
 
@@ -56,8 +76,8 @@ def clean_pipelines(app='', settings=None):
         try:
             regions.update(settings[env]['regions'])
         except KeyError:
-            raise SpinnakerPipelineCreationFailed(
-                'Missing "runway/application-master-{0}.json".'.format(env))
+            error_msg = 'Missing "{}/application-master-{}.json".'.format(RUNWAY_BASE_PATH, env)
+            raise SpinnakerPipelineCreationFailed(error_msg)
     LOG.debug('Regions defined: %s', regions)
 
     for pipeline in pipelines:
@@ -72,15 +92,6 @@ def clean_pipelines(app='', settings=None):
         LOG.debug('Check "%s" in defined Regions.', region)
 
         if region not in regions:
-            LOG.warning('Deleting Pipeline: %s', pipeline_name)
-
-            url.path = 'pipelines/{app}/{pipeline}'.format(
-                app=app, pipeline=pipeline_name)
-            response = requests.delete(url.url,
-                                       verify=GATE_CA_BUNDLE,
-                                       cert=GATE_CLIENT_CERT)
-
-            LOG.debug('Deleted "%s" Pipeline response:\n%s', pipeline_name,
-                      response.text)
+            delete_pipeline(app=app, pipeline_name=pipeline_name)
 
     return True

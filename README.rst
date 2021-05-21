@@ -1,16 +1,12 @@
 Spinnaker Foremast
 ==================
 
-.. image:: https://badges.gitter.im/foremast/foremast.svg
-   :alt: Join the chat at https://gitter.im/foremast/foremast
-   :target: https://gitter.im/foremast/foremast?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
 .. image:: https://travis-ci.org/foremast/foremast.svg?branch=master
     :target: https://travis-ci.org/foremast/foremast
 
-.. image:: https://badges.gitter.im/gogoair/foremast.svg
-   :alt: Join the chat at https://gitter.im/gogoair/foremast
-   :target: https://gitter.im/gogoair/foremast?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+.. image:: https://badges.gitter.im/foremast/foremast.svg
+   :alt: Join the chat at https://gitter.im/foremast/foremast
+   :target: https://gitter.im/foremast/foremast?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 .. image:: https://badge.fury.io/py/foremast.svg
     :target: https://badge.fury.io/py/foremast

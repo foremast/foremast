@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Write output files for configurations."""
 import json
 import logging
@@ -21,8 +20,8 @@ from pprint import pformat
 
 import gogoutils
 
-from ..utils import DeepChainMap, get_template
 from ..consts import APP_FORMATS
+from ..utils import DeepChainMap, get_template
 
 LOG = logging.getLogger(__name__)
 
@@ -43,17 +42,14 @@ def convert_ini(config_dict):
             try:
                 for app_property, value in sorted(app_properties.items()):
                     variable = '{env}_{resource}_{app_property}'.format(
-                        env=env,
-                        resource=resource,
-                        app_property=app_property).upper()
+                        env=env, resource=resource, app_property=app_property).upper()
 
                     if isinstance(value, (dict, DeepChainMap)):
                         safe_value = "'{0}'".format(json.dumps(dict(value)))
                     else:
                         safe_value = json.dumps(value)
 
-                    line = "{variable}={value}".format(variable=variable,
-                                                       value=safe_value)
+                    line = "{variable}={value}".format(variable=variable, value=safe_value)
 
                     LOG.debug('INI line: %s', line)
                     config_lines.append(line)
@@ -83,24 +79,28 @@ def write_variables(app_configs=None, out_file='', git_short=''):
     Returns:
         dict: Configuration equivalent to the JSON output.
     """
-    generated = gogoutils.Generator(*gogoutils.Parser(git_short).parse_url(),
-                                    formats=APP_FORMATS)
+    generated = gogoutils.Generator(*gogoutils.Parser(git_short).parse_url(), formats=APP_FORMATS)
 
     json_configs = {}
     for env, configs in app_configs.items():
-        if env is not 'pipeline':
+        if env != 'pipeline':
             instance_profile = generated.iam()['profile']
             rendered_configs = json.loads(
-                get_template('configs/configs.json.j2',
-                             env=env,
-                             app=generated.app_name(),
-                             profile=instance_profile))
+                get_template(
+                    'configs/configs.json.j2',
+                    env=env,
+                    app=generated.app_name(),
+                    profile=instance_profile,
+                    formats=generated))
             json_configs[env] = dict(DeepChainMap(configs, rendered_configs))
+            region_list = configs.get('regions', rendered_configs['regions'])
+            json_configs[env]['regions'] = region_list  # removes regions defined in templates but not configs.
+            for region in region_list:
+                region_config = json_configs[env][region]
+                json_configs[env][region] = dict(DeepChainMap(region_config, rendered_configs))
         else:
-            default_pipeline_json = json.loads(get_template(
-                'configs/pipeline.json.j2'))
-            json_configs['pipeline'] = dict(DeepChainMap(
-                configs, default_pipeline_json))
+            default_pipeline_json = json.loads(get_template('configs/pipeline.json.j2', formats=generated))
+            json_configs['pipeline'] = dict(DeepChainMap(configs, default_pipeline_json))
 
     LOG.debug('Compiled configs:\n%s', pformat(json_configs))
 
@@ -112,8 +112,7 @@ def write_variables(app_configs=None, out_file='', git_short=''):
 
     with open(out_file + '.exports', 'wt') as export_vars:
         LOG.info('Writing sourceable variables to %s.', export_vars.name)
-        export_vars.write('\n'.join('export {0}'.format(line)
-                                    for line in config_lines))
+        export_vars.write('\n'.join('export {0}'.format(line) for line in config_lines))
 
     with open(out_file + '.json', 'wt') as json_handle:
         LOG.info('Writing JSON to %s.', json_handle.name)

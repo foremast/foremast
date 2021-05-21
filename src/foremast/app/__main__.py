@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """CLI entry point for creating a Spinnaker application.
 
 Help: ``python -m src.foremast.app -h``
@@ -23,9 +22,10 @@ import logging
 
 import gogoutils
 
-from ..args import add_app, add_debug
-from ..consts import LOGGING_FORMAT, APP_FORMATS
-from .create_app import SpinnakerApp
+from ..args import add_app, add_debug, add_properties, add_provider
+from ..consts import APP_FORMATS, LOGGING_FORMAT
+from ..app import SpinnakerApp
+from ..utils import get_properties
 
 
 def main():
@@ -34,16 +34,14 @@ def main():
     parser = argparse.ArgumentParser()
     add_debug(parser)
     add_app(parser)
-    parser.add_argument('--email',
-                        help='Email address to associate with application',
-                        default='PS-DevOpsTooling@example.com')
-    parser.add_argument('--project',
-                        help='Git project to associate with application',
-                        default='None')
-    parser.add_argument('--repo',
-                        help='Git repo to associate with application',
-                        default='None')
+    add_properties(parser)
+    add_provider(parser)
+    parser.add_argument(
+        '--email', help='Email address to associate with application', default='PS-DevOpsTooling@example.com')
+    parser.add_argument('--project', help='Git project to associate with application', default='None')
+    parser.add_argument('--repo', help='Git repo to associate with application', default='None')
     parser.add_argument('--git', help='Git URI', default=None)
+
     args = parser.parse_args()
 
     logging.basicConfig(format=LOGGING_FORMAT)
@@ -58,11 +56,16 @@ def main():
         project = args.project
         repo = args.repo
 
-    spinnakerapps = SpinnakerApp(app=args.app,
-                                 email=args.email,
-                                 project=project,
-                                 repo=repo)
-    spinnakerapps.create_app()
+    app_properties = get_properties(args.properties, 'pipeline')
+    spinnakerapp = SpinnakerApp(
+        provider=args.provider,
+        app=args.app,
+        email=args.email,
+        project=project,
+        repo=repo,
+        pipeline_config=app_properties
+    )
+    spinnakerapp.create()
 
 
 if __name__ == '__main__':

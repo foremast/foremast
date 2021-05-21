@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,26 +13,25 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Construct a block section of Stages in a Spinnaker Pipeline."""
 import copy
 import json
 import logging
 from pprint import pformat
 
-from ..consts import DEFAULT_EC2_SECURITYGROUPS
-from ..utils import generate_encoded_user_data, get_template
+from ..consts import DEFAULT_EC2_SECURITYGROUPS, ENV_CONFIGS
+from ..utils import generate_encoded_user_data, get_template, remove_duplicate_sg, verify_approval_skip
 
 LOG = logging.getLogger(__name__)
 
 
 def construct_pipeline_block_lambda(env='',
-                             generated=None,
-                             previous_env=None,
-                             region='us-east-1',
-                             region_subnets=None,
-                             settings=None,
-                             pipeline_data=None):
+                                    generated=None,
+                                    previous_env=None,
+                                    region='us-east-1',
+                                    region_subnets=None,
+                                    settings=None,
+                                    pipeline_data=None):
     """Create the Pipeline JSON from template.
 
     This handles the common repeatable patterns in a pipeline, such as
@@ -50,6 +49,7 @@ def construct_pipeline_block_lambda(env='',
 
     Returns:
         dict: Pipeline JSON template rendered with configurations.
+
     """
     LOG.info('%s block for [%s].', env, region)
 
@@ -61,22 +61,28 @@ def construct_pipeline_block_lambda(env='',
     LOG.debug('%s info:\n%s', env, pformat(settings))
 
     gen_app_name = generated.app_name()
-    user_data = generate_encoded_user_data(env=env,
-                                           region=region,
-                                           app_name=gen_app_name,
-                                           group_name=generated.project)
+    user_data = generate_encoded_user_data(
+        env=env,
+        region=region,
+        generated=generated,
+        group_name=generated.project,
+    )
 
     # Use different variable to keep template simple
-    instance_security_groups = list(DEFAULT_EC2_SECURITYGROUPS)
+    instance_security_groups = sorted(DEFAULT_EC2_SECURITYGROUPS[env])
     instance_security_groups.append(gen_app_name)
     instance_security_groups.extend(settings['security_group']['instance_extras'])
+    instance_security_groups = remove_duplicate_sg(instance_security_groups)
 
-    LOG.info('Instance security groups to attach: {0}'.format(instance_security_groups))
+    LOG.info('Instance security groups to attach: %s', instance_security_groups)
 
     data = copy.deepcopy(settings)
 
+    approval_skip = verify_approval_skip(data, env, ENV_CONFIGS)
+
     data['app'].update({
         'appname': gen_app_name,
+        'approval_skip': approval_skip,
         'repo_name': generated.repo,
         'group_name': generated.project,
         'environment': env,
@@ -92,5 +98,5 @@ def construct_pipeline_block_lambda(env='',
 
     LOG.debug('Block data:\n%s', pformat(data))
 
-    pipeline_json = get_template(template_file=template_name, data=data)
+    pipeline_json = get_template(template_file=template_name, data=data, formats=generated)
     return pipeline_json

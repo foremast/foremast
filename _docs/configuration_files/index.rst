@@ -9,5 +9,9 @@ Configuration Files
    foremast_config
    pipeline_json/index
    application_json
-   aws_creds
+   region_overrides
    ami_json
+   aws_creds
+   gcp_creds
+   gcp_environments
+   advanced_usages/index

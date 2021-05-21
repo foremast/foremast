@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,27 +13,22 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Get available Subnets for specific Targets."""
 import logging
 from collections import defaultdict
 from pprint import pformat
 
-import requests
 from tryagain import retries
 
-from ..consts import API_URL, GATE_CLIENT_CERT, GATE_CA_BUNDLE
 from ..exceptions import SpinnakerSubnetError, SpinnakerTimeout
+from ..utils.gate import gate_request
 
 LOG = logging.getLogger(__name__)
 
 
 # TODO: split up into get_az, and get_subnet_id
-@retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)
-def get_subnets(target='ec2',
-                purpose='internal',
-                env='',
-                region='', ):
+@retries(max_attempts=6, wait=2.0, exceptions=SpinnakerTimeout)  # noqa
+def get_subnets(target='ec2', purpose='internal', env='', region=''): # noqa
     """Get all availability zones for a given target.
 
     Args:
@@ -50,30 +45,26 @@ def get_subnets(target='ec2',
     account_az_dict = defaultdict(defaultdict)
     subnet_id_dict = defaultdict(defaultdict)
 
-    subnet_url = '{0}/subnets/aws'.format(API_URL)
-    subnet_response = requests.get(subnet_url,
-                                   verify=GATE_CA_BUNDLE,
-                                   cert=GATE_CLIENT_CERT)
+    uri = '/subnets/aws'
+    subnet_response = gate_request(uri=uri)
 
     if not subnet_response.ok:
         raise SpinnakerTimeout(subnet_response.text)
 
     subnet_list = subnet_response.json()
-
     for subnet in subnet_list:
-        LOG.debug('Subnet: %(account)s\t%(region)s\t%(target)s\t%(vpcId)s\t'
-                  '%(availabilityZone)s', subnet)
+        LOG.debug('Subnet Response: %s', subnet)
 
-        if subnet['target'] == target:
-            az = subnet['availabilityZone']
+        if subnet.get('target', '') == target:
+            availability_zone = subnet['availabilityZone']
             account = subnet['account']
             subnet_region = subnet['region']
             subnet_id = subnet['id']
             try:
-                if az not in account_az_dict[account][subnet_region]:
-                    account_az_dict[account][subnet_region].append(az)
+                if availability_zone not in account_az_dict[account][subnet_region]:
+                    account_az_dict[account][subnet_region].append(availability_zone)
             except KeyError:
-                account_az_dict[account][subnet_region] = [az]
+                account_az_dict[account][subnet_region] = [availability_zone]
             # get list of all subnet IDs with correct purpose
             if subnet['purpose'] == purpose:
                 try:
@@ -81,8 +72,7 @@ def get_subnets(target='ec2',
                 except KeyError:
                     subnet_id_dict[account][subnet_region] = [subnet_id]
 
-            LOG.debug('%s regions: %s', account,
-                      list(account_az_dict[account].keys()))
+            LOG.debug('%s regions: %s', account, list(account_az_dict[account].keys()))
 
     if all([env, region]):
         try:

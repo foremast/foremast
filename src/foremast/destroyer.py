@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Complete Application destroyer script."""
 import argparse
 import logging
@@ -32,7 +31,7 @@ from .securitygroup.destroy_sg.destroy_sg import destroy_sg
 LOG = logging.getLogger(__name__)
 
 
-def main():
+def main():  # noqa
     """Attempt to fully destroy AWS Resources for a Spinnaker Application."""
     logging.basicConfig(format=LOGGING_FORMAT)
 

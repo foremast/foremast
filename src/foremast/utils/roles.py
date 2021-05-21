@@ -1,3 +1,4 @@
+"""IAM Role functions."""
 import logging
 
 import boto3
@@ -6,7 +7,8 @@ LOG = logging.getLogger(__name__)
 
 
 def get_role_arn(role_name, env, region):
-    """Gets role ARN given role name
+    """Get role ARN given role name.
+
     Args:
         role_name (str): Role name to lookup
         env (str): Environment in which to lookup
@@ -14,9 +16,12 @@ def get_role_arn(role_name, env, region):
 
     Returns:
         ARN if role found
+
     """
     session = boto3.Session(profile_name=env, region_name=region)
     iam_client = session.client('iam')
+
+    LOG.debug('Searching for %s.', role_name)
 
     role = iam_client.get_role(RoleName=role_name)
     role_arn = role['Role']['Arn']

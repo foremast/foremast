@@ -1,0 +1,15 @@
+
+    {
+      "requisiteStageRefIds":[""],
+      "refId": "master",
+      "type": "manualJudgment",
+      "name": "Pre-Promote Checkpoint {{ data.app.environment }}",
+      "notifications": [],
+      "judgmentInputs": [],
+      "failPipeline": false,
+      {% if data.app.approval_timeout %}
+        "stageTimeoutMs": {{ data.app.approval_timeout }},
+      {% endif %}
+      "instructions": "I confirm that I'm ready for this S3 content to be promoted to <strong>{{ data.app.environment }} LATEST</strong>.",
+      "comments": "application: ${ trigger.properties.APP_NAME }"
+    }

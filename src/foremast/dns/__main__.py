@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """CLI entry point for creating DNS record.
 
 Help: ``python -m src.foremast.dns -h``
@@ -21,7 +20,7 @@ Help: ``python -m src.foremast.dns -h``
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_env, add_region, add_properties
+from ..args import add_app, add_debug, add_env, add_properties, add_region
 from ..consts import LOGGING_FORMAT
 from .create_dns import SpinnakerDns
 
@@ -37,20 +36,15 @@ def main():
     add_env(parser)
     add_region(parser)
     add_properties(parser)
-    parser.add_argument("--elb-subnet",
-                        help="Subnetnet type, e.g. external, internal",
-                        required=True)
+    parser.add_argument("--elb-subnet", help="Subnetnet type, e.g. external, internal", required=True)
     args = parser.parse_args()
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     log.debug('Parsed arguments: %s', args)
 
-    spinnakerapps = SpinnakerDns(app=args.app,
-                                 env=args.env,
-                                 region=args.region,
-                                 prop_path=args.properties,
-                                 elb_subnet=args.elb_subnet)
+    spinnakerapps = SpinnakerDns(
+        app=args.app, env=args.env, region=args.region, prop_path=args.properties, elb_subnet=args.elb_subnet)
     spinnakerapps.create_elb_dns()
 
 

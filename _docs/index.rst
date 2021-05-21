@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. _home:
+
 Welcome to foremast's documentation!
 ====================================
 
@@ -19,9 +21,12 @@ Contents
    advance_usages
    infra_assumptions
    lambda/index
+   s3/index
+   halyard/index
    CONTRIBUTING
    RELEASING
-   modules
+   foremast/modules
+   CHANGELOG
 
 .. include:: ../README.rst
 

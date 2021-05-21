@@ -1,3 +1,20 @@
+#   Foremast - Pipeline Tooling
+#
+#   Copyright 2018 Gogo, LLC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+"""Create cloudwatch events"""
+
 import json
 import logging
 
@@ -10,20 +27,31 @@ LOG = logging.getLogger(__name__)
 
 
 def create_cloudwatch_event(app_name, env, region, rules):
-    """Creates cloudwatch event for lambda from rules"""
+    """Create cloudwatch event for lambda from rules.
 
+    Args:
+        app_name (str): name of the lambda function
+        env (str): Environment/Account for lambda function
+        region (str): AWS region of the lambda function
+        rules (dict): Trigger rules from the settings
+    """
     session = boto3.Session(profile_name=env, region_name=region)
     cloudwatch_client = session.client('events')
 
     rule_name = rules.get('rule_name')
+    rule_type = rules.get('rule_type', 'schedule')
     schedule = rules.get('schedule')
+    event_pattern = rules.get('event_pattern')
     rule_description = rules.get('rule_description')
     json_input = rules.get('json_input', {})
 
+    if rule_type == 'schedule' and schedule is None:
+        LOG.critical('A CloudWatch Schedule is required and no schedule pattern is defined!')
+        raise InvalidEventConfiguration('A CloudWatch Schedule is required and no schedule is defined!')
 
-    if schedule is None:
-        LOG.critical('Schedule is required and no schedule is defined!')
-        raise InvalidEventConfiguration('Schedule is required and no schedule is defined!')
+    if rule_type == 'event_pattern' and event_pattern is None:
+        LOG.critical('A CloudWatch Event Pattern is required and no event pattern is defined!')
+        raise InvalidEventConfiguration('A CloudWatch Event Pattern is required and no event pattern is defined!')
 
     if rule_name is None:
         LOG.critical('Rule name is required and no rule_name is defined!')
@@ -35,35 +63,48 @@ def create_cloudwatch_event(app_name, env, region, rules):
     if rule_description is None:
         rule_description = "{} - {}".format(app_name, rule_name)
 
-    #Add lambda permissions
-    account_id = get_env_credential(env=env)['accountId']
-    principal = "events.amazonaws.com"
-    statement_id = '{}_cloudwatch_{}'.format(app_name, rule_name)
-    source_arn = 'arn:aws:events:{}:{}:rule/{}'.format(region, account_id, rule_name)
-    add_lambda_permissions(function=app_name,
-                           statement_id=statement_id,
-                           action='lambda:InvokeFunction',
-                           principal=principal,
-                           source_arn=source_arn,
-                           env=env,
-                           region=region)
-
-    # Create Cloudwatch rule
-    cloudwatch_client.put_rule(Name=rule_name,
-                               ScheduleExpression=schedule,
-                               State='ENABLED',
-                               Description=rule_description)
-
     lambda_arn = get_lambda_arn(app=app_name, account=env, region=region)
 
-    targets = []
-    # TODO: read this one from file event-config-*.json
-    json_payload = '{}'.format(json.dumps(json_input))
+    # Add lambda permissions
+    account_id = get_env_credential(env=env)['accountId']
+    principal = "events.amazonaws.com"
+    statement_id = 'cloudwatch_{}'.format(rule_name)
+    source_arn = 'arn:aws:events:{}:{}:rule/{}'.format(region, account_id, rule_name)
+    add_lambda_permissions(
+        function=lambda_arn,
+        statement_id=statement_id,
+        action='lambda:InvokeFunction',
+        principal=principal,
+        source_arn=source_arn,
+        env=env,
+        region=region)
 
-    target = {"Id": app_name, "Arn": lambda_arn, "Input": json_payload}
+    # Create CloudWatch rule
+    if rule_type == 'schedule':
+        cloudwatch_client.put_rule(
+            Name=rule_name,
+            ScheduleExpression=schedule,
+            State='ENABLED',
+            Description=rule_description)
+        LOG.info('Created CloudWatch Rule "%s" with %s: %s', rule_name, rule_type, schedule)
+    elif rule_type == 'event_pattern':
+        cloudwatch_client.put_rule(
+            Name=rule_name,
+            EventPattern=json.dumps(event_pattern),
+            State='ENABLED',
+            Description=rule_description)
+        LOG.info('Created CloudWatch Rule "%s" with %s: %s', rule_name, rule_type, event_pattern)
 
-    targets.append(target)
+    targets = [{
+        "Id": app_name,
+        "Arn": lambda_arn,
+    }]
 
-    cloudwatch_client.put_targets(Rule=rule_name, Targets=targets)
+    if json_input:
+        json_payload = '{}'.format(json.dumps(json_input))
+        for each_target in targets:
+            each_target['Input'] = json_payload
 
-    LOG.info("Created Cloudwatch event with schedule: %s", schedule)
+    put_targets_response = cloudwatch_client.put_targets(Rule=rule_name, Targets=targets)
+    LOG.debug('CloudWatch PutTargets Response: %s', put_targets_response)
+    LOG.info('Configured CloudWatch Rule Target: %s', lambda_arn)

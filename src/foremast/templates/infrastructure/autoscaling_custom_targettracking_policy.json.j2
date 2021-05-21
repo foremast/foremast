@@ -1,0 +1,32 @@
+{
+    "application": "{{ app }}",
+    "description": "Upsert scaling policy {{ server_group }}",
+    "job": [
+        {
+            "type": "upsertScalingPolicy",
+            "cloudProvider": "aws",
+            "credentials": "{{ env }}",
+            "region": "{{ region }}",
+            "serverGroupName": "{{ server_group }}",
+            "adjustmentType": null,
+            "estimatedInstanceWarmup": {{ scaling_policy.instance_warmup | default(300) }},
+            "targetTrackingConfiguration": {
+                "targetValue": {{ scaling_policy.target_value }},
+                {% if scaling_policy.scaling_metric.metric_type == 'predefined' %}
+                "predefinedMetricSpecification": {
+                    "predefinedMetricType": "{{ scaling_policy.scaling_metric.metric_name }}"
+                },
+                {% elif scaling_policy.scaling_metric.metric_type == 'custom' %}
+                "customizedMetricSpecification": {
+                    "metricName": "{{ scaling_policy.scaling_metric.metric_name }}",
+                    "namespace": "{{ scaling_policy.scaling_metric.namespace }}",
+                    "dimensions": {{ scaling_policy.scaling_metric.dimensions|tojson|safe }},
+                    "statistic": "{{ scaling_policy.scaling_metric.statistic }}"
+                },
+                {% endif %}
+                "disableScaleIn": {{ scaling_policy.disable_scale_in | default(false)|tojson }}
+            },
+            "user": "foremast"
+        }
+    ]
+}

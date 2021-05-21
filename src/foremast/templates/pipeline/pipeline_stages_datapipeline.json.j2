@@ -1,0 +1,8 @@
+[
+    {% if data.app.previous_env %}
+      {% if not data.app.approval_skip %}
+        {% include "pipeline/stage-judgement-nonprod.json.j2" %},
+      {% endif %}
+    {% endif %}
+    {% include "pipeline/stage-infrastructure-setup-datapipeline.json.j2" %}
+]

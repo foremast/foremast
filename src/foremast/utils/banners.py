@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Prints a banner.
 
 Example:
@@ -29,7 +28,6 @@ LOG.setLevel(logging.INFO)
 
 
 def banner(text, border='=', width=80):
-
     """Center _text_ in a banner _width_ wide with _border_ characters.
 
     Args:

@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """CLI entry point for sending Slack notifications.
 
 Help: ``python -m src.foremast.slacknotify -h``
@@ -46,9 +45,7 @@ def main():
         log.info('No slack message sent, not a production environment')
     else:
         log.info("Sending slack message, production environment")
-        slacknotify = SlackNotification(app=args.app,
-                                        env=args.env,
-                                        prop_path=args.properties)
+        slacknotify = SlackNotification(app=args.app, env=args.env, prop_path=args.properties)
         slacknotify.post_message()
 
 

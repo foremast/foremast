@@ -1,0 +1,34 @@
+{
+   "application": "{{ app }}",
+   "description": "Upsert scaling policy {{ server_group }}",
+   "job": [
+      {
+         "serverGroupName": "{{ server_group }}",
+         "credentials": "{{ env }}",
+         "region": "{{ region }}",
+         "provider": "aws",
+         "adjustmentType": "ChangeInCapacity",
+         "alarm":{
+            "region": "{{ region }}",
+            "actionsEnabled": true,
+            "comparisonOperator": "{{ scaling_policy.scaling_metric.comparison_operator }}",
+            "dimensions": {{ scaling_policy.scaling_metric.dimensions|tojson|safe }},
+            "evaluationPeriods": {{ scaling_policy.scaling_metric.evaluation_periods }},
+            "period": {{ scaling_policy.scaling_metric.evaluation_period }},
+            "threshold": {{ scaling_policy.scaling_metric.threshold }},
+            "namespace": "{{ scaling_policy.scaling_metric.namespace }}",
+            "metricName": "{{ scaling_policy.scaling_metric.metric_name }}",
+            "statistic": "{{ scaling_policy.scaling_metric.statistic }}",
+            "alarmActionArns":[],
+            "insufficientDataActionArns":[]
+         },
+         "step": {
+            "estimatedInstanceWarmup": {{ scaling_policy.instance_warmup | default(300) }},
+            "metricAggregationType": "{{ scaling_policy.scaling_metric.statistic }}",
+            "stepAdjustments": {{ scaling_policy.scaling_metric.steps|tojson|safe }}
+         },
+         "type": "upsertScalingPolicy",
+         "user": "foremast"
+      }
+   ]
+}

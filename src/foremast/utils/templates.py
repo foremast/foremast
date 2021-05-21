@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,16 +13,67 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Render Jinja2 template."""
 import logging
 import os
+import pathlib
 
 import jinja2
 
 from ..consts import TEMPLATES_PATH
+from ..exceptions import ForemastTemplateNotFound
 
 LOG = logging.getLogger(__name__)
+
+HERE = pathlib.Path(__file__).parent.absolute()
+LOCAL_TEMPLATES = HERE.joinpath('../templates/').resolve()
+
+
+def get_jinja_environment():
+    """Gets the Foremast Jinja environment used for rendering templates
+    Returns:
+        jinja2.Environment
+    """
+    jinja_template_paths_obj = []
+
+    if TEMPLATES_PATH:
+        external_templates = pathlib.Path(TEMPLATES_PATH).expanduser().resolve()
+        assert os.path.isdir(external_templates), 'External template path "{0}" not found'.format(external_templates)
+        jinja_template_paths_obj.append(external_templates)
+
+    jinja_template_paths_obj.append(LOCAL_TEMPLATES)
+    jinja_template_paths = [str(path) for path in jinja_template_paths_obj]
+
+    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_template_paths))
+    return jinjaenv
+
+
+def get_template_object(template_file=''):
+    """Retrieve template.
+
+    Args:
+        template_file (str): Name of template file.
+
+    Returns:
+        jinja2.Template: Template ready to render.
+
+    Raises:
+        AssertionError: Configured path for templates does not exist.
+        :obj:`foremast.exceptions.ForemastTemplateNotFound`: Requested template
+            is not available.
+
+    """
+    jinjaenv = get_jinja_environment()
+
+    try:
+        template = jinjaenv.get_template(template_file)
+    except jinja2.TemplateNotFound:
+        message = 'Unable to find template "{template_file}" in paths {paths}'.format(
+            template_file=template_file, paths=jinjaenv.loader.searchpath)
+        LOG.error(message)
+        raise ForemastTemplateNotFound(message)
+
+    return template
 
 
 def get_template(template_file='', **kwargs):
@@ -34,25 +85,15 @@ def get_template(template_file='', **kwargs):
 
     Returns:
         String of rendered JSON template.
+
     """
+    template = get_template_object(template_file)
 
-    here = os.path.dirname(os.path.realpath(__file__))
-    local_templates = '{0}/../templates/'.format(here)
-    jinja_lst = []
-
-    if TEMPLATES_PATH:
-        external_templates = os.path.expanduser(TEMPLATES_PATH)
-        assert os.path.isdir(external_templates), 'Template path {0} not found'.format(
-            external_templates)
-        jinja_lst.append(external_templates)
-    jinja_lst.append(local_templates)
-
-    jinjaenv = jinja2.Environment(loader=jinja2.FileSystemLoader(jinja_lst))
-    template = jinjaenv.get_template(template_file)
     LOG.info('Rendering template %s', template.filename)
     for key, value in kwargs.items():
         LOG.debug('%s => %s', key, value)
-    rendered_json = template.render(**kwargs)
 
+    rendered_json = template.render(**kwargs)
     LOG.debug('Rendered JSON:\n%s', rendered_json)
+
     return rendered_json

@@ -1,4 +1,5 @@
         {
+            "Sid": "DynamoDBReadWrite",
             "Action": [
                 "dynamodb:*"
             ],
@@ -7,6 +8,24 @@
             {%- for table in items %}
                 "arn:aws:dynamodb:{{ region }}:{{ account_number }}:table/{{ table }}",
                 "arn:aws:dynamodb:{{ region }}:{{ account_number }}:table/{{ table }}/index/*"
+                {%- if not loop.last -%}
+                ,
+                {%- endif -%}
+            {% endfor %}
+            ]
+        },
+        {
+            "Sid": "DynamoDBStreamRead",
+            "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:ListStreams"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+            {%- for table in items %}
+                "arn:aws:dynamodb:{{ region }}:{{ account_number }}:table/{{ table }}/stream/*"
                 {%- if not loop.last -%}
                 ,
                 {%- endif -%}

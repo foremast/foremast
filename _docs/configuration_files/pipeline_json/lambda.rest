@@ -1,7 +1,7 @@
 .. _lambda_block:
 
 ``lambda`` Block
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 Holds settings related to lambda deployments
 
@@ -10,32 +10,43 @@ Holds settings related to lambda deployments
 
 Lambda function description
 
+    | *Type*: string
     | *Default*: ``"default description"``
-
-``runtime``
-***********
-
-The runtime environment for the Lambda function
-
-    | *Default*: ``"java8"``
-    | *Options*:
-
-        - ``"java8"``
-        - ``"nodejs"``
-        - ``"nodejs4.3"``
-        - ``"python2.7"``
 
 ``handler``
 ***********
 
 The function that Lambda calls to beign execution
 
+    | *Type*: string
     | *Default*: ``"main"``
+
+``runtime``
+***********
+
+The runtime environment for the Lambda function
+Since value is passed directly to the lambda API new runtimes are automatically supported as they are released
+
+    | *Type*: string
+    | *Default*: ``"java8"``
+    | *Options*:
+
+        - ``"java8"``
+        - ``"nodejs"``
+        - ``"nodejs4.3"``
+        - ``"nodejs6.10"``
+        - ``"nodejs8.10"``
+        - ``"python2.7"``
+        - ``"python3.6"``
+        - ``"dotnetcore1.0"``
+        - ``"dotnetcore2.0"``
+        - ``"nodejs4.3-edge"``
+        - ``"go1.x"``
 
 ``vpc_enabled``
 ***************
 
 Wether or not the Lambda function should use a VPC
 
-    | *Type*: Boolean
+    | *Type*: boolean
     | *Default*: ``false``

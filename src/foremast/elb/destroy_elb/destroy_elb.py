@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,10 +13,9 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Destroy any ELB Resources."""
 
-from ...utils import check_task, post_task, get_template, get_vpc_id
+from ...utils import get_template, get_vpc_id, wait_for_task
 
 
 def destroy_elb(app='', env='dev', region='us-east-1', **_):
@@ -37,7 +36,6 @@ def destroy_elb(app='', env='dev', region='us-east-1', **_):
         region=region,
         vpc=get_vpc_id(account=env, region=region))
 
-    task_id = post_task(task_json)
-    check_task(task_id)
+    wait_for_task(task_json)
 
     return True

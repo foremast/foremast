@@ -1,0 +1,17 @@
+        {
+            "Effect":"Allow",
+            "Action":[
+                "sdb:BatchDeleteAttributes",
+                "sdb:GetAttributes",
+                "sdb:PutAttributes",
+                "sdb:Select"
+            ],
+            "Resource": [
+                {% for domain in items -%}
+                  "arn:aws:sdb:*:{{ account_number }}:domain/{{ domain }}"
+                    {%- if not loop.last -%}
+                    ,
+                    {%- endif -%}
+                {% endfor -%}
+            ]
+        }

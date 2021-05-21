@@ -1,0 +1,15 @@
+        {
+            "Sid": "KMSDecrypt",
+            "Action": [
+                "kms:Decrypt"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+            {%- for key_id in items %}
+                "arn:aws:kms:{{ region }}:{{ account_number }}:key/{{ key_id }}"
+                {%- if not loop.last -%}
+                ,
+                {%- endif -%}
+            {% endfor %}
+            ]
+        }

@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,51 +14,72 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """Foremast and Spinnaker related custom exceptions."""
+import logging
+import pprint
+
+from .consts import GOOD_STATUSES, SKIP_STATUSES
+
+LOG = logging.getLogger(__name__)
 
 
 class ForemastError(Exception):
     """Foremast related error."""
-    pass
+
+
+class ForemastTemplateNotFound(Exception):
+    """Foremast Template was not found."""
+
+
+class ForemastConfigurationFileError(ForemastError):
+    """Foremast configuration file misconfigured."""
+
+
+class GitLabApiError(ForemastError):
+    """GitLab API did not return a good status."""
+
+
+class GoogleIAPTokenError(ForemastError):
+    """Google IAP Token Request did not return a good status."""
+
+
+class GoogleIAPError(ForemastError):
+    """Google IAP did not return a good status."""
+
+
+class GoogleInfrastructureError(ForemastError):
+    """Error while executing Google Cloud Platform Infrastructure steps"""
 
 
 class SpinnakerError(ForemastError):
     """Spinnaker related error."""
-    pass
 
 
 class SpinnakerAppNotFound(SpinnakerError):
     """Spinnaker app not found error."""
-    pass
 
 
 class SpinnakerApplicationListError(SpinnakerError):
     """Spinnaker application list error."""
-    pass
 
 
 class SpinnakerDnsCreationFailed(SpinnakerError):
     """Spinnaker DNS creation error."""
-    pass
 
 
 class SpinnakerElbNotFound(SpinnakerError):
     """Spinnaker Elb not found."""
-    pass
 
 
 class SpinnakerTimeout(SpinnakerError):
     """Spinnaker Timeout error."""
-    pass
 
 
 class SpinnakerVPCNotFound(SpinnakerError):
     """Spinnaker did not find a VPC."""
-    pass
 
 
 class SpinnakerVPCIDNotFound(SpinnakerError):
     """Spinnaker did not find the VPC ID."""
-    pass
 
 
 class SpinnakerTaskError(SpinnakerError):
@@ -66,7 +87,15 @@ class SpinnakerTaskError(SpinnakerError):
 
     def __init__(self, task_state):
         errors = []
+
+        skip_statuses = GOOD_STATUSES.union(SKIP_STATUSES)
+
         for stage in task_state['execution']['stages']:
+            LOG.debug('Stage:\n%s', pprint.pformat(stage))
+
+            if stage.get('status') in skip_statuses:
+                continue
+
             context = stage['context']
 
             try:
@@ -78,19 +107,42 @@ class SpinnakerTaskError(SpinnakerError):
         super().__init__(*errors)
 
 
+class SpinnakerTaskInconclusiveError(SpinnakerTaskError):
+    """Spinnaker Task state failed to reach terminal state in allowed time."""
+
+    def __init__(self, message):
+        mock_failure_stage = {
+            'context': {
+                'exception': {
+                    'details': {
+                        'errors': [message],
+                    },
+                },
+            },
+        }
+        spinnaker_task_state = {
+            'execution': {
+                'stages': [mock_failure_stage],
+            },
+        }
+
+        super().__init__(spinnaker_task_state)
+
+
 class SpinnakerPipelineCreationFailed(SpinnakerError):
     """Could not create Spinnaker Pipeline."""
-    pass
+
+
+class SpinnakerPipelineDeletionFailed(SpinnakerError):
+    """Could not delete Spinnaker Pipeline."""
 
 
 class SpinnakerSecurityGroupCreationFailed(SpinnakerError):
     """Could not create Security Group."""
-    pass
 
 
 class SpinnakerSecurityGroupError(SpinnakerError):
     """Could not create Security Group."""
-    pass
 
 
 class SpinnakerSubnetError(SpinnakerError):
@@ -103,22 +155,68 @@ class SpinnakerSubnetError(SpinnakerError):
 
 class InvalidEventConfiguration(ForemastError):
     """Invalid AWS Lambda event configuration."""
-    pass
+
+
+class DynamoDBTableNotFound(ForemastError):
+    """DynamoDB Table was not found."""
+
+
+class DynamoDBStreamNotFound(ForemastError):
+    """DynamoDB Table Streams was not found."""
 
 
 class SNSTopicNotFound(ForemastError):
     """SNS Topic was not found."""
-    pass
 
 
 class SNSSubscriptionDoesNotExist(ForemastError):
     """SNS Subscriptions does not exist."""
-    pass
 
 
 class LambdaFunctionDoesNotExist(ForemastError):
     """Lambda function was not found."""
 
+
+class LambdaAliasDoesNotExist(ForemastError):
+    """Lambda function was not found."""
+
+
 class RequiredKeyNotFound(ForemastError):
-    """Required key in json config not found"""
-    pass
+    """Required key in json config not found."""
+
+
+class PrimaryDNSRecordNotFound(ForemastError):
+    """Required Primary DNS record does not exist."""
+
+
+class S3ArtifactNotFound(ForemastError):
+    """Could not find Artifact to upload to S3."""
+
+
+class S3SharedBucketNotFound(ForemastError):
+    """Shared S3 Bucket does not exist."""
+
+
+class DataPipelineDefinitionError(ForemastError):
+    """Error Creating Data Pipeline."""
+
+
+class StepFunctionDefinitionError(ForemastError):
+    """Error Creating Step Function."""
+
+
+class CloudFunctionDeployError(ForemastError):
+    """Error while deploying a Cloud Function"""
+
+
+class CloudFunctionOperationIncompleteError(CloudFunctionDeployError):
+    """Error waiting on GCP Cloud Function operation to complete"""
+
+
+class CloudFunctionOperationFailedError(CloudFunctionDeployError):
+    """Cloud Function operation completed with errors"""
+
+    def __init__(self, operation_error: dict, message: str):
+        self.operation_error = operation_error
+        self.message = message
+        super().__init__(self.message)

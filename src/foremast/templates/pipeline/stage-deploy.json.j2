@@ -1,7 +1,7 @@
 
     {
-      "requisiteStageRefIds": ["5"],
-      "refId": "6",
+      "requisiteStageRefIds": [""],
+      "refId": "master",
       "type": "deploy",
       "name": "Deploy {{ data.app.environment }}",
       "clusters": [
@@ -9,6 +9,7 @@
           "base64UserData": "{{ data.app.encoded_user_data }}",
           "application": "{{ data.app.appname }}",
           "strategy": "{{ data.deploy_strategy }}",
+          "maxRemainingAsgs": 2,
           "scaleDown": true,
           "capacity": {
             "min": {{ data.asg.min_inst }},
@@ -19,7 +20,7 @@
           "targetHealthyDeployPercentage": 100,
           "cooldown": 10,
           "healthCheckType": "{{ data.asg.hc_type }}",
-          "healthCheckGracePeriod": "180",
+          "healthCheckGracePeriod": "{{ data.asg.hc_grace_period }}",
           {% if data.asg.has_provider_healthcheck -%}
           "interestingHealthProviderNames": {{ data.asg.provider_healthcheck }},
           {%- endif %}
@@ -30,10 +31,15 @@
             "Default"
           ],
           "availabilityZones": {{ data.app.az_dict }},
-          "keyPair": "{{ data.app.environment }}_{{ data.app.region }}_default",
+          "keyPair": "{{ data.asg.ssh_keypair }}",
           "suspendedProcesses": [],
           "securityGroups": {{ data.app.instance_security_groups }},
           "tags": {
+            {% if data.app.custom_tags %}
+                {% for tag_key, tag_value in data.app.custom_tags.items() -%}
+                  "{{ tag_key }}": "{{ tag_value }}",
+                {% endfor -%}
+            {% endif %}
             "app_group": "{{ data.app.group_name }}",
             "app_name": "{{ data.app.appname }}",
             "owner_email": "{{ data.app.owner_email }}"
@@ -43,7 +49,7 @@
           "loadBalancers": {{ data.app.elb }},
           "instanceType": "{{ data.app.instance_type }}",
           "useSourceCapacity": false,
-          "associatePublicIpAddress": null,
+          "associatePublicIpAddress": {{ data.asg.enable_public_ips }},
           "provider": "aws",
           "cloudProvider": "aws",
           "account": "{{ data.app.environment }}"

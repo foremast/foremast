@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,24 +13,46 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Ensure AMI names can be translated."""
-import base64
 import json
 from unittest import mock
 
+import pytest
 from foremast.utils import ami_lookup
 
 
-@mock.patch('foremast.utils.lookups.GITLAB_TOKEN')
-@mock.patch('foremast.utils.lookups.gitlab.Gitlab')
-def test_ami_lookup(gitlab, token):
+@mock.patch('foremast.utils.lookups.GITLAB_TOKEN', new=True)
+@mock.patch('foremast.utils.lookups._get_ami_file')
+def test_ami_lookup(ami_file):
     """AMI lookup should contact GitLab for JSON table and resolve."""
     sample_dict = {
         'base_fedora': 'ami-xxxx',
-        'tomcat8': 'ami-xxxx',
+        'tomcat8': 'ami-yyyy',
     }
     sample_json = json.dumps(sample_dict)
-    gitlab.return_value.getfile.return_value = {'content': base64.b64encode(sample_json.encode())}
-    assert ami_lookup(name='base_fedora').startswith('ami-xxxx')
-    assert ami_lookup(region='us-west-2').startswith('ami-xxxx')
+    ami_file.return_value = sample_json
+    with pytest.warns(UserWarning):
+        assert ami_lookup(name='base_fedora') == 'ami-xxxx'
+        assert ami_lookup(region='us-west-2') == 'ami-yyyy'
+
+
+@mock.patch('foremast.utils.lookups.AMI_JSON_URL', new=True)
+@mock.patch('foremast.utils.lookups._get_ami_dict')
+def test_dict_lookup(ami_file_dict):
+    """AMI lookup using json url."""
+    sample_dict = {
+        'us-east-1': {
+            'base_fedora': 'ami-xxxx',
+        },
+        'us-west-2': {
+            'tomcat8': 'ami-yyyy',
+        }
+    }
+    ami_file_dict.return_value = sample_dict
+    assert ami_lookup(region='us-east-1', name='base_fedora') == 'ami-xxxx'
+    assert ami_lookup(region='us-west-2', name='tomcat8') == 'ami-yyyy'
+
+
+def test_no_external_lookup():
+    """AMI lookup not using json or gitlab."""
+    assert ami_lookup(region='us-east-1', name='no_external') == 'no_external'

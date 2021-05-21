@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,19 +13,13 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Create Pipelines for Spinnaker."""
 import collections
 import json
-import logging
-import os
 from pprint import pformat
 
-import requests
-
-from ..consts import API_URL
-from ..exceptions import SpinnakerPipelineCreationFailed
-from ..utils import get_details, get_properties, get_subnets, get_template
+from ..consts import DEFAULT_RUN_AS_USER
+from ..utils import get_subnets, get_template
 from .clean_pipelines import clean_pipelines
 from .construct_pipeline_block_lambda import construct_pipeline_block_lambda
 from .create_pipeline import SpinnakerPipeline
@@ -61,28 +55,29 @@ class SpinnakerPipelineLambda(SpinnakerPipeline):
         email = self.settings['pipeline']['notifications']['email']
         slack = self.settings['pipeline']['notifications']['slack']
         deploy_type = self.settings['pipeline']['type']
-        provider = 'aws'
         pipeline_id = self.compare_with_existing(region=region)
 
         data = {
             'app': {
                 'appname': self.app_name,
+                'group_name': self.group_name,
+                'repo_name': self.repo_name,
                 'base': base,
                 'deploy_type': deploy_type,
                 'environment': 'packaging',
                 'region': region,
                 'triggerjob': self.trigger_job,
+                'run_as_user': DEFAULT_RUN_AS_USER,
                 'email': email,
                 'slack': slack,
+                'pipeline': self.settings['pipeline']
             },
             'id': pipeline_id
         }
 
         self.log.debug('Wrapper app data:\n%s', pformat(data))
 
-        wrapper = get_template(
-            template_file='pipeline/pipeline_wrapper.json.j2',
-            data=data)
+        wrapper = get_template(template_file='pipeline/pipeline_wrapper.json.j2', data=data, formats=self.generated)
 
         return json.loads(wrapper)
 
@@ -103,8 +98,7 @@ class SpinnakerPipelineLambda(SpinnakerPipeline):
         for env in pipeline_envs:
             for region in self.settings[env]['regions']:
                 regions_envs[region].append(env)
-        self.log.info('Environments and Regions for Pipelines:\n%s',
-                      json.dumps(regions_envs, indent=4))
+        self.log.info('Environments and Regions for Pipelines:\n%s', json.dumps(regions_envs, indent=4))
 
         subnets = get_subnets()
 
@@ -128,7 +122,7 @@ class SpinnakerPipelineLambda(SpinnakerPipeline):
                     previous_env=previous_env,
                     region=region,
                     region_subnets=region_subnets,
-                    settings=self.settings[env],
+                    settings=self.settings[env][region],
                     pipeline_data=self.settings['pipeline'])
                 pipelines[region]['stages'].extend(json.loads(block))
 

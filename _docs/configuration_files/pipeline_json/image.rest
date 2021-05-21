@@ -3,11 +3,21 @@
 
 Holds settings for the baked image
 
+``bake_instance_type``
+**********************
+
+    Defines the instance type for Rosco (bake step) to use. This could help with issues
+    of large and complex bakes.
+    Refer to: https://aws.amazon.com/ec2/instance-types/ 
+
+        | *Type*: string
+        | *Default*: ``"t2.small"``
+
 ``root_volume_size``
 ********************
 
-Defines the root volume size of the resulting AMI in GB
+    Defines the root volume size of the resulting AMI in GB
 
-    | *Type*: int
-    | *Units*: Gigabyte
-    | *Default*: `6`
+        | *Type*: number
+        | *Units*: Gigabyte
+        | *Default*: `6`

@@ -1,0 +1,123 @@
+``pipeline_notifications`` Array
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. info:: ``pipeline_notifications`` replaces ``notifications`, which is now deprecated.
+
+Where to send pipeline notifications.  Notifications can be sent on several events including pipelines starting, completing and failing.
+Any supported notification option in Spinnaker can be defined, including Slack, Microsoft Teams, Bearychat, PubSub, Google Chat and Email.
+
+``pipeline_notifications``
+**************************
+
+Array of notification definitions
+
+    | *Type*: array
+    | *Default*: ``[]``
+
+    | *Example Microsoft Teams*:
+
+    .. code-block:: json
+        [
+            {
+              "level": "pipeline",
+              "type": "microsoftteams",
+              "address": "https://outlook.office.com/webhook/my-webhook",
+              "when": [
+                "pipeline.starting",
+                "pipeline.complete",
+                "pipeline.failed"
+              ]
+            }
+        ]
+
+    | *Example Slack:*
+
+    .. code-block:: json
+        [
+            {
+              "level": "pipeline",
+              "type": "slack",
+              "when": [
+                "pipeline.starting",
+                "pipeline.complete",
+                "pipeline.failed"
+              ],
+              "address": "https://hooks.slack.com/services/my-webhook"
+            }
+        ]
+
+    | *Example Email*:
+
+    .. code-block:: json
+
+        [
+            {
+              "level": "pipeline",
+              "type": "email",
+              "address": "jane.doe@who.com",
+              "cc": "jon.doe@optional.com",
+              "when": [
+                "pipeline.failed",
+                "pipeline.complete",
+                "pipeline.starting"
+              ]
+            }
+        ]
+
+    | *Example Google Cloud Pub/Sub*:
+
+    .. code-block:: json
+
+        [
+            {
+              "level": "pipeline",
+              "type": "pubsub",
+              "publisherName": "my-publisher",
+              "when": [
+                 "pipeline.starting",
+                 "pipeline.complete",
+                 "pipeline.failed"
+              ]
+            }
+        ]
+
+    | *Example Google Chat:*
+
+    .. code-block:: json
+
+        [
+            {
+              "level": "pipeline",
+              "type": "googlechat",
+              "address": "https://chat.google.com/v1/spaces/my-google-chat-space",
+              "when": [
+                "pipeline.starting",
+                "pipeline.complete",
+                "pipeline.failed"
+              ]
+            }
+        ]
+
+    | *Example custom messages:*
+
+    Some notification types support custom messages, which can be defined using the ``messages`` field:
+
+    .. code-block:: json
+
+        [
+            {
+                /* First define your notification, e.g. slack or teams */
+                /* ... */
+                "message": {
+                  "pipeline.complete": {
+                    "text": "A pipeline finished, wow!"
+                  },
+                  "pipeline.failed": {
+                    "text": "A pipeline has failed :("
+                  },
+                  "pipeline.starting": {
+                    "text": "A pipeline started!"
+                  }
+                }
+            }
+        ]

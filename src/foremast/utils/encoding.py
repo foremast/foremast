@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,24 +13,28 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Generate base64 encoded User Data."""
 import base64
 
 from .templates import get_template
 
 
-def generate_encoded_user_data(env='dev',
-                               region='us-east-1',
-                               app_name='',
-                               group_name=''):
+def generate_encoded_user_data(
+        env='dev',
+        region='us-east-1',
+        generated=None,
+        group_name='',
+        pipeline_type='',
+        canary=False,
+):
     r"""Generate base64 encoded User Data.
 
     Args:
         env (str): Deployment environment, e.g. dev, stage.
         region (str): AWS Region, e.g. us-east-1.
-        app_name (str): Application name, e.g. coreforrest.
+        generated (gogoutils.Generator): Generated naming formats.
         group_name (str): Application group nane, e.g. core.
+        pipeline_type (str): Type of Foremast Pipeline to configure.
 
     Returns:
         str: base64 encoded User Data script.
@@ -46,18 +50,25 @@ def generate_encoded_user_data(env='dev',
             export EC2_REGION=us-east-1
             export CLOUD_DOMAIN=dev.example.com
             printenv | grep 'CLOUD\|EC2' | awk '$0="export "$0'>> /etc/gogo/cloud_env
+
     """
     # We need to handle the case of prodp and prods for different URL generation
     if env in ["prod", "prodp", "prods"]:
         env_c, env_p, env_s = "prod", "prodp", "prods"
     else:
         env_c, env_p, env_s = env, env, env
-    user_data = get_template(template_file='infrastructure/user_data.sh.j2',
-                             env=env,
-                             env_c=env_c,
-                             env_p=env_p,
-                             env_s=env_s,
-                             region=region,
-                             app_name=app_name,
-                             group_name=group_name, )
+
+    user_data = get_template(
+        template_file='infrastructure/user_data.sh.j2',
+        env=env,
+        env_c=env_c,
+        env_p=env_p,
+        env_s=env_s,
+        region=region,
+        app_name=generated.app_name(),
+        group_name=group_name,
+        pipeline_type=pipeline_type,
+        canary=canary,
+        formats=generated,
+    )
     return base64.b64encode(user_data.encode()).decode()

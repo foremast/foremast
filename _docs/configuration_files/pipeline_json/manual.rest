@@ -1,0 +1,9 @@
+.. _pipeline_files:
+
+``pipeline_files``
+~~~~~~~~~~~~~~~~~~
+
+List of JSON files to use for ``manual`` :ref:`pipeline_type`.
+
+    | *Type*: array
+    | *Default*: ``[]``

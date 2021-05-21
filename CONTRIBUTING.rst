@@ -85,8 +85,6 @@ Run any unit tests available in ``./tests/``.
     pip install -U -r requirements-dev.txt
 
     tox
-    # OR
-    ./runtests.py
 
 Code Submission
 ---------------

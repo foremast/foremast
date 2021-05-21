@@ -1,0 +1,81 @@
+``qe`` Block
+~~~~~~~~~~~~
+
+Top level key for Quality Test settings; used by Quality Testing Stages typically post and pre 
+deployment. This specific feature is left up for custom Jinja Templates as most have
+specific testing flows. All keys in the QE block are passed and can be interpreted by
+custom Jinja2 Stages. While we are providing a base example below, every user of foremast might
+need to tweak the logic to add/remove what they need in their respective organization!
+
+To facilitate this concept, this section highlights some common keys and ideas that 
+can be implemented to achieve testing Post Deploy stages (using custom paramaters 
+per environment).
+
+Refer to our full example templates here:
+https://github.com/foremast/foremast-template-examples
+
+``failure_action``
+******************
+
+Define how Spinnaker should handle a quality stage failure.
+#. `fail_pipeline` - default behaviour
+#. `fail_branch` - only fail that branch of the pipeline
+#. `fail_branch_continue_pipeline` - fail the branch but continue the pipeline; then fail the pipeline
+#. `ignore_failures` - ignores issues
+
+    | *Type*: string
+    | *Default*: ``"fail_pipeline"``
+    | *Values*:
+
+        - ``"fail_pipeline"``
+        - ``"fail_branch"``
+        - ``"fail_branch_continue_pipeline"``
+        - ``"ignore_failures"``
+
+``ignore_unstable_results``
+***************************
+
+If set to true, ignore and treat unstable results from Jenkins stage as success.
+
+    | *Type*: boolean
+
+``jenkins_master``
+******************
+
+Name of Jenkins Master configured in Spinnaker to run your Jobs against
+
+    | *Type*: string
+
+``test_job``
+************
+
+Name of Jenkins Job to Run. This defaults to the application name.
+
+    | *Type*: string
+
+``test_params``
+***************
+
+Dictionary of Jenkins Job Parameters K/V pairs to pass down to jobs.
+
+    | *Type*: dict
+
+``stage_timeout``
+*****************
+
+Timeout quality tests step after a specified amount of time in milliseconds
+
+    | *Type*: int
+    | *Format*: ms
+
+``wait_for_completion``
+***********************
+
+If set to true, wait until the Jenkins stage is complete to proceed.
+
+    | *Type*: boolean
+
+Example Quality Stage JSON Configuration
+----------------------------------------
+
+.. literalinclude:: example-qe.json.j2

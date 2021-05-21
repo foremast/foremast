@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Archaius functions for deployment."""
 import logging
 
@@ -44,16 +43,13 @@ def init_properties(env='dev', app='unnecessary', **_):
     generated = get_details(app=app, env=env)
     archaius = generated.archaius()
 
-    archaius_file = ('{path}/application.properties').format(
-        path=archaius['path'])
+    archaius_file = ('{path}/application.properties').format(path=archaius['path'])
 
     try:
         s3client.Object(archaius['bucket'], archaius_file).get()
-        LOG.info('Found: %(bucket)s/%(file)s', {'bucket': archaius['bucket'],
-                                                'file': archaius_file})
+        LOG.info('Found: %(bucket)s/%(file)s', {'bucket': archaius['bucket'], 'file': archaius_file})
         return True
     except boto3.exceptions.botocore.client.ClientError:
         s3client.Object(archaius['bucket'], archaius_file).put()
-        LOG.info('Created: %(bucket)s/%(file)s', {'bucket': archaius['bucket'],
-                                                  'file': archaius_file})
+        LOG.info('Created: %(bucket)s/%(file)s', {'bucket': archaius['bucket'], 'file': archaius_file})
         return False

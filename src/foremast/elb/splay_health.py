@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Cut Health Target up into pieces."""
 import collections
 import logging
@@ -30,8 +29,7 @@ def splay_health(health_target):
         HealthCheck: A **collections.namedtuple** class with *path*, *port*,
         *proto*, and *target* attributes.
     """
-    HealthCheck = collections.namedtuple('HealthCheck', ['path', 'port',
-                                                         'proto', 'target'])
+    HealthCheck = collections.namedtuple('HealthCheck', ['path', 'port', 'proto', 'target'])
 
     proto, health_port_path = health_target.split(':')
     port, *health_path = health_port_path.split('/')

@@ -119,4 +119,4 @@ Now from within the root directory, run ``foremast-pipeline``.
 
     $ GIT_REPO=hello PROJECT=world RUNWAY_DIR=runway/ foremast-pipeline
 
-This will create an application in Spinnaker named ``helloword`` along with a simple pipeline.
+This will create an application in Spinnaker named ``helloworld`` along with a simple pipeline.

@@ -1,0 +1,19 @@
+{
+    "requisiteStageRefIds": [""],
+    "refId": "master",
+    "type": "jenkins",
+    "comments": "Upload Cloud Function .zip file to [{{ data.app.environment }}]",
+    "name": "Deploy Cloud Function [{{ data.app.environment }}]",
+    "failPipeline": true,
+    "master": "JenkinsCI",
+    "job": "cloudfunction-deploy",
+    "parameters": {
+        "PROJECT": "{{ data.app.group_name }}",
+        "GIT_REPO": "{{ data.app.repo_name }}",
+        "ENV": "{{ data.app.environment }}",
+        "REGION": "{{ data.app.region }}",
+        "OWNER_EMAIL": "{{ data.app.owner_email }}",
+        "ARTIFACT_URL": "${trigger.properties.ARTIFACT_URL}",
+        "APP_NAME": "{{ data.app.appname }}"
+    }
+  }

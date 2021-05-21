@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """CLI entry point for ELB creation.
 
 Help: ``python -m src.foremast.elb -h``
@@ -32,8 +31,7 @@ def main():
     """Entry point for ELB creation"""
     logging.basicConfig(format=LOGGING_FORMAT)
 
-    parser = argparse.ArgumentParser(
-        description='Example with non-optional arguments')
+    parser = argparse.ArgumentParser(description='Example with non-optional arguments')
 
     add_debug(parser)
     add_app(parser)
@@ -45,8 +43,7 @@ def main():
 
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
-    elb = SpinnakerELB(app=args.app, env=args.env, region=args.region,
-                       prop_path=args.properties)
+    elb = SpinnakerELB(app=args.app, env=args.env, region=args.region, prop_path=args.properties)
     elb.create_elb()
 
 

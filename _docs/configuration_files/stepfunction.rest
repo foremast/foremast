@@ -1,0 +1,60 @@
+``stepfunction`` Block
+~~~~~~~~~~~~~~~~~~~~~~
+
+Top level key for AWS Step Function settings. Only necessary for Step Function
+deployments.
+
+``statemachine_type``
+*********************
+
+Determines whether a Standard or Express state machine is created. 
+You cannot update the type of a state machine once it has been created.
+
+    | *Type*: string
+    | *Default*: ``"STANDARD"``
+    | *Options*:
+
+        - ``"STANDARD"``
+        - ``"EXPRESS"``
+
+``json_definition``
+*******************
+
+The exported JSON definition of the AWS Step Function State Machine. You could craft this
+using the GUI or by using the AWS Toolkit in various IDEs.
+
+    | *Type*: object
+    | *Default*: ``{}``
+
+``tracing``
+***********
+
+Determine whether AWS X-Ray tracing is enabled.
+
+    | *Type*: object
+    | *Default*: ``{"enabled": false}``
+    | *Options*:
+
+        - ``{"enabled": false}``
+        - ``{"enabled": true}``
+
+``logging_configuration``
+*************************
+
+Description of the Data Pipeline.
+
+    | *Type*: object
+    | *Default*: ``{}``
+    | *Example*:
+
+      .. code-block:: json
+
+        {
+          "level": "ALL"|"ERROR"|"FATAL"|"OFF",
+          "includeExecutionData": true|false,
+          "destinations": [{
+                "cloudWatchLogsLogGroup": {
+                    "logGroupArn": "arn:aws:logs:region:account-id:log-group:log_group_name"
+                }
+          }]
+        }

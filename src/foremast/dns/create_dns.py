@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Module to create dynamically generated DNS record in route53"""
 import logging
-from pprint import pformat
 
 from ..consts import DOMAIN
-from ..utils import (find_elb, get_details, get_properties, get_dns_zone_ids,
-                     update_dns_zone_record)
+from ..utils import (find_elb, find_elb_dns_zone_id, get_details, get_dns_zone_ids, get_properties,
+                     update_dns_zone_record, update_failover_dns_record)
 
 
 class SpinnakerDns:
@@ -35,6 +33,7 @@ class SpinnakerDns:
 
     Returns:
         str: FQDN of application
+
     """
 
     def __init__(self, app=None, env=None, region=None, elb_subnet=None, prop_path=None):
@@ -44,24 +43,30 @@ class SpinnakerDns:
         self.env = env
         self.region = region
         self.elb_subnet = elb_subnet
+        self.app = app
 
-        self.generated = get_details(app, env=self.env)
+        self.generated = get_details(app, env=self.env, region=self.region)
         self.app_name = self.generated.app_name()
 
-        self.properties = get_properties(properties_file=prop_path, env=self.env)
+        self.properties = get_properties(properties_file=prop_path, env=self.env, region=self.region)
+        self.dns_ttl = self.properties['dns']['ttl']
         self.header = {'content-type': 'application/json'}
 
-    def create_elb_dns(self):
+    def create_elb_dns(self, regionspecific=False):
         """Create dns entries in route53.
 
+        Args:
+            regionspecific (bool): The DNS entry should have region on it
         Returns:
-            Auto-generated DNS name for the Elastic Load Balancer.
+            str: Auto-generated DNS name for the Elastic Load Balancer.
+
         """
-        dns_elb = self.generated.dns()['elb']
-        dns_elb_aws = find_elb(name=self.app_name,
-                               env=self.env,
-                               region=self.region)
-        dns_ttl = self.properties['dns']['ttl']
+        if regionspecific:
+            dns_elb = self.generated.dns()['elb_region']
+        else:
+            dns_elb = self.generated.dns()['elb']
+
+        dns_elb_aws = find_elb(name=self.app_name, env=self.env, region=self.region)
 
         zone_ids = get_dns_zone_ids(env=self.env, facing=self.elb_subnet)
 
@@ -70,16 +75,47 @@ class SpinnakerDns:
         dns_kwargs = {
             'dns_name': dns_elb,
             'dns_name_aws': dns_elb_aws,
-            'dns_ttl': dns_ttl,
+            'dns_ttl': self.dns_ttl,
         }
 
-        # TODO: Verify zone_id matches the domain we are updating There are
-        # cases where more than 2 zones are in the account and we need to
-        # account for that.
         for zone_id in zone_ids:
             self.log.debug('zone_id: %s', zone_id)
-
-            response = update_dns_zone_record(self.env, zone_id, **dns_kwargs)
-            self.log.debug('Dns upsert response: %s', pformat(response))
+            update_dns_zone_record(self.env, zone_id, **dns_kwargs)
 
         return dns_elb
+
+    def create_failover_dns(self, primary_region='us-east-1'):
+        """Create dns entries in route53 for multiregion failover setups.
+
+        Args:
+            primary_region (str): primary AWS region for failover
+        Returns:
+            Auto-generated DNS name.
+        """
+        dns_record = self.generated.dns()['global']
+        zone_ids = get_dns_zone_ids(env=self.env, facing=self.elb_subnet)
+
+        elb_dns_aws = find_elb(name=self.app_name, env=self.env, region=self.region)
+        elb_dns_zone_id = find_elb_dns_zone_id(name=self.app_name, env=self.env, region=self.region)
+
+        if primary_region in elb_dns_aws:
+            failover_state = 'PRIMARY'
+        else:
+            failover_state = 'SECONDARY'
+        self.log.info("%s set as %s record", elb_dns_aws, failover_state)
+
+        self.log.info('Updating Application Failover URL: %s', dns_record)
+
+        dns_kwargs = {
+            'dns_name': dns_record,
+            'elb_dns_zone_id': elb_dns_zone_id,
+            'elb_aws_dns': elb_dns_aws,
+            'dns_ttl': self.dns_ttl,
+            'failover_state': failover_state,
+        }
+
+        for zone_id in zone_ids:
+            self.log.debug('zone_id: %s', zone_id)
+            update_failover_dns_record(self.env, zone_id, **dns_kwargs)
+
+        return dns_record

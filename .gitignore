@@ -1,6 +1,8 @@
 *.exports
 *.json
 *.properties
+_docs/foremast/
+CHANGELOG.rst
 
 # Created by https://www.gitignore.io/api/python,linux,vim,osx
 
@@ -148,3 +150,4 @@ Network Trash Folder
 Temporary Items
 .apdisk
 _build
+config.py

@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -42,13 +42,15 @@ def create_iam_resources(env='dev', app='', **_):
     app_properties = get_properties(env='pipeline')
 
     generated = get_details(env=env, app=app)
-    app_details = collections.namedtuple('AppDetails', ['group', 'policy', 'profile', 'role', 'user'])
-    details = app_details(**generated.iam())
+    generated_iam = generated.iam()
+    app_details = collections.namedtuple('AppDetails', generated_iam.keys())
+    details = app_details(**generated_iam)
 
     LOG.debug('Application details: %s', details)
 
     deployment_type = app_properties['type']
-    role_trust_template = get_template('infrastructure/iam/trust/{0}_role.json.j2'.format(deployment_type))
+    role_trust_template = get_template(
+        'infrastructure/iam/trust/{0}_role.json.j2'.format(deployment_type), formats=generated)
 
     resource_action(
         client,
@@ -69,6 +71,7 @@ def create_iam_resources(env='dev', app='', **_):
             client,
             action='put_role_policy',
             log_format='Added IAM Policy: %(PolicyName)s',
+            raise_errors=True,
             RoleName=details.role,
             PolicyName=details.policy,
             PolicyDocument=iam_policy)

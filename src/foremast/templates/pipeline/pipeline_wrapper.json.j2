@@ -1,36 +1,18 @@
 {
   "name": "{{ data.app.appname }} [{{ data.app.region }}]",
+  {% if data.id %}
   "id": "{{ data.id }}",
+  {% endif %}
   "application": "{{ data.app.appname }}",
   "triggers": [
     {% include "pipeline/trigger-jenkins.json.j2" %}
   ],
   "limitConcurrent": false,
   "parallel": true,
-  "notifications": [
-    {
-      "level": "pipeline",
-      "when": [
-        "pipeline.failed"
-      ],
-      "type": "slack",
-      "address": "{{ data.app.slack }}"
-    },
-    {
-      "level": "pipeline",
-      "when": [
-        "pipeline.failed"
-      ],
-      "type": "email",
-      "address": "{{ data.app.email }}"
-    }
-  ],
+  "notifications": {% include "pipeline/pipeline_notifications.json.j2" %},
   "stages": [
-    {% if data.app.deploy_type == "lambda" %}
-      {# coming soon {% include "pipeline/stage-tagger-lambda.json.j2" %}, #}
-    {% else %}
+    {% if data.app.deploy_type not in ["lambda", "s3", "datapipeline", "stepfunction", "cloudfunction"] %}
       {% include "pipeline/stage-bake.json.j2" %}
     {% endif %}
-
    ]
 }

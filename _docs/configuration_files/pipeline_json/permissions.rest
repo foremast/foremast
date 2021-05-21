@@ -1,0 +1,23 @@
+.. _permissions:
+
+``permissions`` Block
+~~~~~~~~~~~~~~~~~~~~~
+
+Key that configures permissions for an application (leverages Fiat Roles/Groups)
+For more info, visit: https://www.spinnaker.io/setup/security/authorization/
+
+``read_roles``
+**************
+
+Roles that should have read permission to this application in Spinnaker
+
+    | *Type*: array
+    | *Default*: ``[]``
+
+``write_roles``
+***************
+
+Roles that should have write permission to this application in Spinnaker
+
+    | *Type*: array
+    | *Default*: ``[]``

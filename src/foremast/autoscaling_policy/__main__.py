@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Deletes existing scaling policy on application and then creates
 new Autoscaling Policy based on provided configurations
 
@@ -22,7 +21,7 @@ Help: ```python -m src.foremast.autoscaling_policy -h```
 import argparse
 import logging
 
-from ..args import add_app, add_debug, add_region, add_properties, add_env
+from ..args import add_app, add_debug, add_env, add_properties, add_region
 from ..consts import LOGGING_FORMAT
 from .create_policy import AutoScalingPolicy
 
@@ -44,10 +43,7 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    asgpolicy = AutoScalingPolicy(app=args.app,
-                                  prop_path=args.properties,
-                                  env=args.env,
-                                  region=args.region)
+    asgpolicy = AutoScalingPolicy(app=args.app, prop_path=args.properties, env=args.env, region=args.region)
 
     asgpolicy.create_policy()
 

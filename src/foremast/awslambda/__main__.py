@@ -1,3 +1,18 @@
+#   Foremast - Pipeline Tooling
+#
+#   Copyright 2018 Gogo, LLC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
 """CLI entry point for aws events creation.
 
 Help: ``python -m src.foremast.awslambdaevent -h``
@@ -7,8 +22,8 @@ import logging
 
 from ..args import add_app, add_debug, add_env, add_properties, add_region
 from ..consts import LOGGING_FORMAT
-from .awslambdaevent import LambdaEvent
 from .awslambda import LambdaFunction
+from .awslambdaevent import LambdaEvent
 
 
 def main():
@@ -28,18 +43,13 @@ def main():
 
     log.debug('Parsed arguments: %s', args)
 
-    lambda_function = LambdaFunction(app=args.app,
-                                     env=args.env,
-                                     region=args.region,
-                                     prop_path=args.properties)
+    lambda_function = LambdaFunction(app=args.app, env=args.env, region=args.region, prop_path=args.properties)
 
     lambda_function.create_lambda_function()
 
-    lambda_event = LambdaEvent(app=args.app,
-                               env=args.env,
-                               region=args.region,
-                               prop_path=args.properties)
+    lambda_event = LambdaEvent(app=args.app, env=args.env, region=args.region, prop_path=args.properties)
     lambda_event.create_lambda_events()
+
 
 if __name__ == "__main__":
     main()

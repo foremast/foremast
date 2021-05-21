@@ -1,18 +1,22 @@
 ``notifications`` Block
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+.. warning:: ``notifications`` is deprecated, see ``"pipeline_notifications"`` instead
+
 Where to send pipeline failure notifications
 
 ``email``
-**********
+*********
 
 Email address to send pipeline failures (email must be configured in Spinnaker Echo)
 
+    | *Type*: string
     | *Default*: ``null``
 
 ``slack``
-**********
+*********
 
 Slack channel to send pipeline failures (Slack must be configured in Spinnaker Echo)
 
+    | *Type*: string
     | *Default*: ``null``

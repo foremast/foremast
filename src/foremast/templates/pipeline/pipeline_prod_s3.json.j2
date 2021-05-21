@@ -1,0 +1,13 @@
+[
+    {% if not data.app.approval_skip %}
+        {% include "pipeline/stage-judgement-nonprod.json.j2" %},
+    {% endif %}
+    {% include "pipeline/stage-infrastructure-setup-s3.json.j2" %},
+    {% if data.deploy_strategy == "canary" or data.deploy_strategy == "redblack" %}
+      {% include "pipeline/stage-deploy-s3.json.j2" %},
+      {% include "pipeline/stage-judgement-promote-s3-prod.json.j2" %},
+      {% include "pipeline/stage-promote-s3.json.j2" %}
+    {% else %}
+      {% include "pipeline/stage-deploy-s3.json.j2" %}
+    {% endif %}
+]

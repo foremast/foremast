@@ -1,3 +1,4 @@
+; foremast.cfg
 [base]
 domain = example.com
 envs = dev,stage,prod
@@ -6,6 +7,9 @@ ami_json_url = http://s3.bucketname.com/ami_lookup.json
 git_url = https://git.example.com
 gate_api_url = http://gate-api.example.com:8084
 templates_path = ../../foremast-templates
+default_run_as_user = trigger_runner
+default_securitygroup_rules = { "bastion" : [ { "start_port": "22", "end_port": "22", "protocol": "tcp" } ],
+                                "serviceapp" : [ { "start_port": "8080", "end_port": "8080", "protocol": "tcp" } ] }
 
 [credentials]
 gitlab_token = 123token23423343
@@ -18,3 +22,7 @@ asg_whitelist = application1,application2
 app = {project}{repo}
 dns_elb = lb-{project}{repo}.{env}.{domain}
 s3_bucket = secret-{env}-{project}
+
+[task_timeouts]
+default = 120
+envs = { "dev" : { "deleteScalingPolicy": 240} }

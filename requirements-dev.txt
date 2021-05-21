@@ -1,8 +1,7 @@
--r requirements.txt
+-r _docs/requirements-docs.txt
 
 pytest-cov
 pytest-pep8
-sphinx
-sphinx_rtd_theme
-sphinxcontrib-napoleon
 tox
+requests-mock
+tox-gh-actions

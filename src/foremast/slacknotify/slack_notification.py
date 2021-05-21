@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Notify Slack channel."""
 import time
 
@@ -48,18 +47,17 @@ class SlackNotification:
 
         Primarily for production deployments.
         """
-        message = get_template(
-            template_file='slack/pipeline-prepare-ran.j2',
-            info=self.info)
+        message = get_template(template_file='slack/pipeline-prepare-ran.j2', info=self.info)
         channel = '#deployments-prod'
-        post_slack_message(message, channel)
+        post_slack_message(message=message, channel=channel, username='pipeline-bot', icon_emoji=':gear:')
 
     def notify_slack_channel(self):
         """Post message to a defined Slack channel."""
-        message = get_template(
-            template_file='slack/pipeline-prepare-ran.j2',
-            info=self.info)
+        message = get_template(template_file='slack/pipeline-prepare-ran.j2', info=self.info)
 
         if self.settings['pipeline']['notifications']['slack']:
             post_slack_message(
-                message, self.settings['pipeline']['notifications']['slack'])
+                message=message,
+                channel=self.settings['pipeline']['notifications']['slack'],
+                username='pipeline-bot',
+                icon_emoji=':gear:')

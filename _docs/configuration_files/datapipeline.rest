@@ -1,0 +1,38 @@
+``datapipeline`` Block
+~~~~~~~~~~~~~~~~~~~~~~
+
+Top level key for AWS Data Pipeline settings. Only necessary for Data Pipeline
+deployments.
+
+``name``
+********
+
+Name of the Data Pipeline. This defaults to the application name.
+
+    | *Type*: string
+    | *Default*: ``$appname``
+
+``description``
+***************
+
+Description of the Data Pipeline.
+
+    | *Type*: string
+    | *Default*: ``""``
+
+``activate_on_deploy``
+**********************
+
+Activates a Data Pipeline after deployment. Useful for OnDemand pipelines
+
+    | *Type*: boolean
+    | *Default*: ``false``
+
+``json_definition``
+*******************
+
+The exported JSON definition of the AWS Data Pipeline. You can get this by
+clicking "Export" in the AWS Console when creating the Data Pipeline.
+
+    | *Type*: object
+    | *Default*: ``{}``

@@ -1,12 +1,28 @@
+#   Foremast - Pipeline Tooling
+#
+#   Copyright 2018 Gogo, LLC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+"""Handle API Gateway events"""
+
 import logging
-import uuid
 
 import boto3
 import botocore
 from tryagain import retries
 
-from foremast.exceptions import InvalidEventConfiguration
-from foremast.utils import (get_details, get_env_credential, get_dns_zone_ids, update_dns_zone_record, get_properties, add_lambda_permissions)
+from ...utils import (add_lambda_permissions, get_details, get_env_credential, get_lambda_alias_arn,
+                      get_lambda_arn, get_properties)
 
 LOG = logging.getLogger(__name__)
 
@@ -30,15 +46,15 @@ class APIGateway:
         self.env = env
         self.account_id = get_env_credential(env=self.env)['accountId']
         self.region = region
-        self.properties = get_properties(properties_file=prop_path, env=self.env)
+        self.properties = get_properties(properties_file=prop_path, env=self.env, region=self.region)
 
         session = boto3.Session(profile_name=env, region_name=region)
         self.client = session.client('apigateway')
         self.lambda_client = session.client('lambda')
         self.api_version = self.lambda_client.meta.service_model.api_version
 
-        self.api_id  = self.find_api_id()
-        self.resource_id = self.find_resource_id()
+        self.api_id = self.find_api_id()
+        self.resource_id, self.parent_id = self.find_resource_ids()
 
     def find_api_id(self):
         """Given API name, find API ID."""
@@ -55,7 +71,7 @@ class APIGateway:
 
         return api_id
 
-    def find_resource_id(self):
+    def find_resource_ids(self):
         """Given a resource path and API Id, find resource Id."""
         all_resources = self.client.get_resources(restApiId=self.api_id)
         parent_id = None
@@ -66,44 +82,80 @@ class APIGateway:
             if resource['path'] == self.trigger_settings['resource']:
                 resource_id = resource['id']
                 self.log.info("Found Resource ID for: %s", resource['path'])
-                self.attach_method(resource_id)
-                break
-        else:
-            resource_id = self.create_resource(parent_id=parent_id)
-            self.attach_method(resource_id)
-
-        return resource_id
+        return resource_id, parent_id
 
     def add_lambda_integration(self):
         """Attach lambda found to API."""
         lambda_uri = self.generate_uris()['lambda_uri']
-        self.client.put_integration(restApiId=self.api_id,
-                                    resourceId=self.resource_id,
-                                    httpMethod=self.trigger_settings['method'],
-                                    integrationHttpMethod='POST',
-                                    uri=lambda_uri,
-                                    type='AWS')
+        api_type = None
+        if 'api_type' in self.trigger_settings:
+            api_type = self.trigger_settings['api_type']
+            self.log.info("Found API Integration Type: %s", api_type)
+        else:
+            api_type = 'AWS'
+        self.client.put_integration(
+            restApiId=self.api_id,
+            resourceId=self.resource_id,
+            httpMethod=self.trigger_settings['method'],
+            integrationHttpMethod='POST',
+            uri=lambda_uri,
+            type=api_type)
         self.add_integration_response()
         self.log.info("Successfully added Lambda intergration to API")
 
     def add_integration_response(self):
         """Add an intergation response to the API for the lambda integration."""
-        self.client.put_integration_response(restApiId=self.api_id,
-                                             resourceId=self.resource_id,
-                                             httpMethod=self.trigger_settings['method'],
-                                             statusCode='200',
-                                             responseTemplates={'application/json': ''})
+        self.client.put_integration_response(
+            restApiId=self.api_id,
+            resourceId=self.resource_id,
+            httpMethod=self.trigger_settings['method'],
+            statusCode='200',
+            responseTemplates={'application/json': ''})
 
     def add_permission(self):
         """Add permission to Lambda for the API Trigger."""
         statement_id = '{}_api_{}'.format(self.app_name, self.trigger_settings['api_name'])
         principal = 'apigateway.amazonaws.com'
-        add_lambda_permissions(function=self.app_name,
-                               statement_id=statement_id,
-                               action='lambda:InvokeFunction',
-                               principal=principal,
-                               env=self.env,
-                               region=self.region)
+        lambda_alias_arn = get_lambda_alias_arn(self.app_name, self.env, self.region)
+        lambda_unqualified_arn = get_lambda_arn(self.app_name, self.env, self.region)
+        resource_name = self.trigger_settings.get('resource', '')
+        resource_name = resource_name.replace('/', '')
+        method_api_source_arn = 'arn:aws:execute-api:{}:{}:{}/{}/{}/{}'.format(
+            self.region, self.account_id, self.api_id, self.env, self.trigger_settings['method'], resource_name)
+        global_api_source_arn = 'arn:aws:execute-api:{}:{}:{}/*/*/{}'.format(self.region, self.account_id, self.api_id,
+                                                                             resource_name)
+        add_lambda_permissions(
+            function=lambda_alias_arn,
+            statement_id=statement_id + self.trigger_settings['method'],
+            action='lambda:InvokeFunction',
+            principal=principal,
+            env=self.env,
+            region=self.region,
+            source_arn=method_api_source_arn)
+        add_lambda_permissions(
+            function=lambda_alias_arn,
+            statement_id=statement_id,
+            action='lambda:InvokeFunction',
+            principal=principal,
+            env=self.env,
+            region=self.region,
+            source_arn=global_api_source_arn)
+        add_lambda_permissions(
+            function=lambda_unqualified_arn,
+            statement_id=statement_id + self.trigger_settings['method'],
+            action='lambda:InvokeFunction',
+            principal=principal,
+            env=self.env,
+            region=self.region,
+            source_arn=method_api_source_arn)
+        add_lambda_permissions(
+            function=lambda_unqualified_arn,
+            statement_id=statement_id,
+            action='lambda:InvokeFunction',
+            principal=principal,
+            env=self.env,
+            region=self.region,
+            source_arn=global_api_source_arn)
 
     @retries(max_attempts=5, wait=2, exceptions=(botocore.exceptions.ClientError))
     def create_api_deployment(self):
@@ -126,14 +178,11 @@ class APIGateway:
                 self.log.info("Key %s already exists", self.app_name)
                 break
         else:
-            self.client.create_api_key(name=self.app_name,
-                                       enabled=True,
-                                       stageKeys=[
-                                           {
-                                               'restApiId': self.api_id,
-                                               'stageName': self.env
-                                           }
-                                       ])
+            self.client.create_api_key(
+                name=self.app_name, enabled=True, stageKeys=[{
+                    'restApiId': self.api_id,
+                    'stageName': self.env
+                }])
             self.log.info("Successfully created API Key %s. Look in the AWS console for the key", self.app_name)
 
     def _format_base_path(self, api_name):
@@ -195,34 +244,41 @@ class APIGateway:
             parent_id (str): The resource ID of the parent resource in API Gateway
         """
         resource_name = self.trigger_settings.get('resource', '')
-        resource_name.replace("/", "")
-        created_resource = self.client.create_resource(restApiId=self.api_id,
-                                                       parentId=parent_id,
-                                                       pathPart=resource_name)
-        resource_id = created_resource['id']
-        self.log.info("Successfully created resource")
-        return resource_id
+        resource_name = resource_name.replace('/', '')
+        if not self.resource_id:
+            created_resource = self.client.create_resource(
+                restApiId=self.api_id, parentId=parent_id, pathPart=resource_name)
+            self.resource_id = created_resource['id']
+            self.log.info("Successfully created resource")
+        else:
+            self.log.info("Resource already exists. To update resource please delete existing resource: %s",
+                          resource_name)
 
     def attach_method(self, resource_id):
         """Attach the defined method."""
         try:
-            method_r = self.client.put_method(restApiId=self.api_id,
-                                   resourceId=resource_id,
-                                   httpMethod=self.trigger_settings['method'],
-                                   authorizationType="NONE",
-                                   apiKeyRequired=False, )
-            resp_r = self.client.put_method_response(restApiId=self.api_id,
-                                            resourceId=resource_id,
-                                            httpMethod=self.trigger_settings['method'],
-                                            statusCode='200')
+            _response = self.client.put_method(
+                restApiId=self.api_id,
+                resourceId=resource_id,
+                httpMethod=self.trigger_settings['method'],
+                authorizationType="NONE",
+                apiKeyRequired=False, )
+            self.log.debug('Response for resource (%s) push authorization: %s', resource_id, _response)
+            _response = self.client.put_method_response(
+                restApiId=self.api_id,
+                resourceId=resource_id,
+                httpMethod=self.trigger_settings['method'],
+                statusCode='200')
+            self.log.debug('Response for resource (%s) no authorization: %s', resource_id, _response)
 
             self.log.info("Successfully attached method: %s", self.trigger_settings['method'])
         except botocore.exceptions.ClientError:
             self.log.info("Method %s already exists", self.trigger_settings['method'])
 
-
     def setup_lambda_api(self):
         """A wrapper for all the steps needed to setup the integration."""
+        self.create_resource(self.parent_id)
+        self.attach_method(self.resource_id)
         self.add_lambda_integration()
         self.add_permission()
         self.create_api_deployment()

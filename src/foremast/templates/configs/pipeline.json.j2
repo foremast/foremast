@@ -2,15 +2,17 @@
     "type": "ec2",
     "owner_email": "",
     "documentation": "",
-    "type": "ec2",
     "notifications": {
         "email": "",
         "slack": ""
     },
+    "pipeline_notifications": [],
     "promote_restrict": "none",
     "base": "tomcat8",
     "env": ["stage", "prod"],
+    "primary_region": "us-east-1",
     "image": {
+        "bake_instance_type": "t2.small",
         "root_volume_size": 6,
         "builder": "ebs"
     },
@@ -19,5 +21,25 @@
         "runtime": "java8",
         "handler": "main",
         "vpc_enabled": false
+    },
+    "pipeline_files": [],
+    "chaos_monkey": {
+        "enabled": false,
+        "mean_time": 5,
+        "minimum_time": 3,
+        "exceptions": []
+    },
+    "instance_links": {},
+    "permissions": {
+      "read_roles": [],
+      "write_roles": []
+    },
+    "traffic_guards": {
+      "accounts": []
+    },
+    "cloudfunction": {
+        "project_name": "my-project*",
+        "entry_point": "hello_get",
+        "runtime": "python37"
     }
 }

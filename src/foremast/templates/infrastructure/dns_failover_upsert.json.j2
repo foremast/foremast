@@ -1,0 +1,19 @@
+{
+    "Comment": "Automatic Update",
+    "Changes": [
+        {
+            "Action": "UPSERT",
+            "ResourceRecordSet": {
+                "Name": "{{ dns_name }}",
+                "Type": "A",
+                "SetIdentifier": "{{ dns_name}}-{{ failover_state }}",
+                "Failover": "{{ failover_state }}",
+                "AliasTarget": {
+                    "HostedZoneId": "{{ elb_dns_zone_id }}",
+                    "DNSName": "dualstack.{{ elb_aws_dns }}",
+                    "EvaluateTargetHealth": true
+                }
+            }
+        }
+    ]
+}

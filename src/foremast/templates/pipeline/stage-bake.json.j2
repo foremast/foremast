@@ -1,7 +1,7 @@
 
     {
       "requisiteStageRefIds": [],
-      "refId": "1",
+      "refId": "master",
       "type": "bake",
       "name": "Bake [{{ data.app.region }}]",
       "cloudProviderType": "aws",
@@ -9,7 +9,8 @@
         "app_group": "${ trigger.properties.GROUP_NAME }",
         "app_name": "${ trigger.properties.APP_NAME }",
         "appversion": "${ trigger.properties.APP_VERSION }",
-        "root_volume_size": "{{ data.app.root_volume_size }}"
+        "root_volume_size": "{{ data.app.root_volume_size }}",
+        "aws_instance_type": "{{ data.app.bake_instance_type }}"
       },
       "regions": ["{{ data.app.region }}"],
       "user": "foremast",

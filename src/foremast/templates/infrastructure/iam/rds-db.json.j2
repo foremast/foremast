@@ -1,0 +1,13 @@
+        {
+            "Sid": "RDSDBConnectAccess",
+            "Effect": "Allow",
+            "Action": [
+                "rds-db:connect"
+            ],
+            "Resource": [
+            {%- for db_resource_id in items %}
+                "arn:aws:rds-db:{{ region }}:{{ account_number }}:dbuser:{{ db_resource_id }}/{{ app }}"
+                {{ "," if not loop.last }}
+            {% endfor %} 
+            ]
+        }

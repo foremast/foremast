@@ -1,6 +1,6 @@
 #   Foremast - Pipeline Tooling
 #
-#   Copyright 2016 Gogo, LLC
+#   Copyright 2018 Gogo, LLC
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,5 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 """Tools for creating infrastructure and Spinnaker Applications."""
-from . import (app, configs, dns, elb, iam, pipeline, s3, securitygroup, utils,
-               consts, destroyer, exceptions, runner)
+from . import app, configs, consts, destroyer, dns, elb, exceptions, iam, pipeline, runner, s3, securitygroup, utils
