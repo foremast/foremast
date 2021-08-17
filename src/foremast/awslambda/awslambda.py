@@ -70,6 +70,7 @@ class LambdaFunction:
         self.role = app.get('lambda_role') or generated.iam()['lambda_role']
         self.timeout = app['lambda_timeout']
         self.concurrency_limit = app.get('lambda_concurrency_limit')
+        self.subnet_purpose = app['lambda_subnet_purpose']
         self.subnet_count = app['lambda_subnet_count']
 
         self.role_arn = get_role_arn(self.role, self.env, self.region)
@@ -114,7 +115,7 @@ class LambdaFunction:
     def _vpc_config(self):
         """Get VPC config."""
         if self.vpc_enabled:
-            subnets = get_subnets(env=self.env, region=self.region, purpose='internal')['subnet_ids'][self.region]
+            subnets = get_subnets(env=self.env, region=self.region, purpose=self.subnet_purpose)['subnet_ids'][self.region]
             if self.subnet_count:
                 subnets = subnets[:self.subnet_count]
                 LOG.info('Subnet Count of %s specified. Limiting to subnets: %s', self.subnet_count, subnets)
