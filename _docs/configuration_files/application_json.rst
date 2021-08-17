@@ -240,7 +240,7 @@ The amount of memory to give a Lambda function
     | *Units*: Megabytes
 
 ``lambda_provisioned_throughput``
-***********************
+*********************************
 
 This will allow provisioned throughput of a  lambda function. This specifically will ensure the function is warmed for a provisioned amount to eliminate any function cold starts (not to be confused with VPC cold starts)
 
@@ -270,6 +270,18 @@ More info on limits can be found here: https://docs.aws.amazon.com/lambda/latest
 
     | *Type*: int
     | *Default*: ``<<MAX SUBNET COUNT>>``
+
+``lambda_subnet_purpose``
+*************************
+
+Determines if the instances should be public (external) or non-public (internal).
+
+    | *Type*: string
+    | *Default*: ``"internal"``
+    | *Options*
+
+       - ``"internal"``
+       - ``"external"``
 
 ``lambda_timeout``
 ******************
