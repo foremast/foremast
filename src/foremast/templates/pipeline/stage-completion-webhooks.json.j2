@@ -1,0 +1,16 @@
+
+    {% for hook in data.completion_webhooks %}
+    {
+        "refId": "branch",
+        "type": "webhook",
+        "url": "{{ hook.url }}",
+        "name": "{{ data.app.environment | upper }}: {{ hook.name }}",
+        "customHeaders": {% if hook.custom_headers %}{{ hook.custom_headers | tojson }}{% else %}{}{% endif %},
+        "method": "{{ hook.method | upper }}",
+        "payload": {{ hook.payload | tojson }},
+        "statusUrlResolution": "getMethod"
+    }
+    {%- if not loop.last -%}
+    ,
+    {%- endif -%}
+    {% endfor %}
