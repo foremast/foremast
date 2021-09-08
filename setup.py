@@ -18,14 +18,17 @@
 
 import setuptools
 
-with open('requirements.txt', 'rt') as reqs_file:
+with open('requirements.txt', 'rt', encoding="ascii") as reqs_file:
     REQUIREMENTS = reqs_file.readlines()
+
+with open('README.rst', encoding="ascii") as readme_file:
+    readme_content = readme_file.read()
 
 if __name__ == "__main__":
     setuptools.setup(
         name='foremast',
         description='Tools for creating infrastructure and Spinnaker Pipelines.',
-        long_description=open('README.rst').read(),
+        long_description=readme_content,
         long_description_content_type='text/x-rst',
         author='Foremast',
         author_email='joelvasallo+foremast@gmail.com',

@@ -11,4 +11,7 @@
     {% else %}
     {% include "pipeline/stage-deploy.json.j2" %}
     {% endif %}
+    {% if 'completion_webhooks' in data and data.completion_webhooks %}
+      ,{% include "pipeline/stage-completion-webhooks.json.j2" %}
+    {% endif %}
 ]

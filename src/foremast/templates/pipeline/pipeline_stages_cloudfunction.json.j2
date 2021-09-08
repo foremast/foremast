@@ -6,4 +6,7 @@
     {% endif %}
     {% include "pipeline/stage-infrastructure-setup.json.j2" %},
     {% include "pipeline/stage-deploy-cloudfunction.json.j2" %}
+    {% if 'completion_webhooks' in data and data.completion_webhooks %}
+      ,{% include "pipeline/stage-completion-webhooks.json.j2" %}
+    {% endif %}
 ]

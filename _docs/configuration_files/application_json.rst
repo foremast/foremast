@@ -945,3 +945,39 @@ details
 .. include:: stepfunction.rest
 
 .. include:: qe.rest
+
+
+``completion_webhooks`` *Example*
+****************************
+
+Completion Webhooks are Spinnaker Webhook Stages that are appended to the pipeline stages
+for this environment.
+
+.. code-block:: json
+
+   {
+       "completion_webhooks": [
+          {
+            "url": "https://webhook.com/webhook1",
+            "custom_headers": {
+              "my-header": "hello"
+            },
+            "method": "POST",
+            "name": "Webhook 1",
+            "payload": {
+              "webhook": "one"
+            }
+          },
+          {
+            "url": "https://webhook.com/webhook2",
+            "custom_headers": {
+              "my-header": "hello again"
+            },
+            "method": "POST",
+            "name": "Webhook 2",
+            "payload": {
+              "webhook": "two"
+            }
+          }
+       ]
+   }
