@@ -23,6 +23,7 @@ TEST_PROPERTIES = {
         'lambda_tracing': None,
         'lambda_destinations': None,
         'lambda_subnet_count': None,
+        'lambda_subnet_purpose': 'internal',
         'lambda_filesystems': None,
         'lambda_provisioned_throughput': None,
     }
