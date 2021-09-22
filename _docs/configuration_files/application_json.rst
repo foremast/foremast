@@ -274,7 +274,7 @@ More info on limits can be found here: https://docs.aws.amazon.com/lambda/latest
 ``lambda_subnet_purpose``
 *************************
 
-Determines if the instances should be public (external) or non-public (internal).
+Determines if the AWS Lambda should be public (external) or non-public (internal).
 
     | *Type*: string
     | *Default*: ``"internal"``
