@@ -116,7 +116,7 @@ class LambdaFunction:
         """Get VPC config."""
         if self.vpc_enabled:
             subnets_data = get_subnets(env=self.env, region=self.region, purpose=self.subnet_purpose)
-            subnets = subnet_data['subnet_ids'][self.region]
+            subnets = subnets_data['subnet_ids'][self.region]
             if self.subnet_count:
                 subnets = subnets[:self.subnet_count]
                 LOG.info('Subnet Count of %s specified. Limiting to subnets: %s', self.subnet_count, subnets)
