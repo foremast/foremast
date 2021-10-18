@@ -551,4 +551,3 @@ def debug_flag():
 
     package, *_ = __package__.split('.')
     logging.getLogger(package).setLevel(args.debug)
-
