@@ -21,8 +21,10 @@ import zipfile
 import boto3
 from tryagain import retries
 
+from ..consts import LAMBDA_DEFAULT_CRI_URI_TEMPLATE
 from ..exceptions import RequiredKeyNotFound
-from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets
+from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets, \
+                    get_env_credential
 
 LOG = logging.getLogger(__name__)
 
@@ -55,6 +57,7 @@ class LambdaFunction:
         self.description = self.pipeline['app_description']
         self.handler = self.pipeline['handler']
         self.vpc_enabled = self.pipeline['vpc_enabled']
+        self.package_type = self.pipeline["package_type"]
 
         self.settings = get_properties(prop_path, env=self.env, region=self.region)
         app = self.settings['app']
@@ -192,9 +195,10 @@ class LambdaFunction:
             self.lambda_client.update_function_configuration(
                 Environment=self.lambda_environment,
                 FunctionName=self.app_name,
-                Runtime=self.runtime,
+                PackageType=self.package_type.capitalize(),
+                Runtime=self._get_runtime(),
                 Role=self.role_arn,
-                Handler=self.handler,
+                Handler=self._get_handler(),
                 Description=self.description,
                 Timeout=int(self.timeout),
                 MemorySize=int(self.memory),
@@ -254,37 +258,14 @@ class LambdaFunction:
             vpc_config (dict): Dictionary of SubnetIds and SecurityGroupsIds for using
                                a VPC in lambda
         """
-        zip_file = 'lambda-holder.zip'
-        with zipfile.ZipFile(zip_file, mode='w') as zipped:
-            zipped.writestr('index.py', 'print "Hello world"')
-
-        contents = ''
-        with open('lambda-holder.zip', 'rb') as openfile:
-            contents = openfile.read()
-
         LOG.info('Creating lambda function: %s', self.app_name)
 
         default_tags = {'app_group': self.group, 'app_name': self.app_name}
         lambda_tags = {**default_tags, **self.custom_tags}
 
         try:
-            self.lambda_client.create_function(
-                Environment=self.lambda_environment,
-                FunctionName=self.app_name,
-                Runtime=self.runtime,
-                Role=self.role_arn,
-                Handler=self.handler,
-                Code={'ZipFile': contents},
-                Description=self.description,
-                Timeout=int(self.timeout),
-                MemorySize=int(self.memory),
-                Publish=False,
-                VpcConfig=vpc_config,
-                Tags=lambda_tags,
-                Layers=self.lambda_layers,
-                DeadLetterConfig=self.lambda_dlq,
-                TracingConfig=self.lambda_tracing,
-                FileSystemConfigs=self.lambda_filesystems)
+            lambda_args = self._get_lambda_args(vpc_config, lambda_tags)
+            self.lambda_client.create_function(**lambda_args)
 
             if self.lambda_destinations:
                 self.lambda_client.put_function_event_invoke_config(
@@ -321,3 +302,53 @@ class LambdaFunction:
             self.update_alias()
         else:
             self.create_alias()
+
+    def _get_lambda_args(self, vpc_config, lambda_tags):
+        # Default args that apply to all package types
+        lambda_args = {
+            "Environment": self.lambda_environment,
+            "FunctionName": self.app_name,
+            "Role": self.role_arn,
+            "PackageType": self.package_type.capitalize(),
+            "Description":  self.description,
+            "Timeout": int(self.timeout),
+            "MemorySize": int(self.memory),
+            "Publish": False,
+            "VpcConfig": vpc_config,
+            "Tags": lambda_tags,
+            "Layers": self.lambda_layers,
+            "DeadLetterConfig": self.lambda_dlq,
+            "TracingConfig": self.lambda_tracing,
+            "FileSystemConfigs": self.lambda_filesystems,
+            "Code": self._get_default_lambda_code(),
+        }
+
+        # Args for zip packages only
+        if self.package_type.lower() == "zip":
+            lambda_args["Runtime"] = self.runtime,
+            lambda_args["Handler"] = self.handler
+
+        return lambda_args
+
+    def _get_default_lambda_code(self, image_uri_override=None):
+        # Need to provide a non-empty zip of source code, which will later be updated
+        # create dummy zip to avoid errors:
+        if self.package_type.lower() == "zip":
+            zip_file = 'lambda-holder.zip'
+            with zipfile.ZipFile(zip_file, mode='w') as zipped:
+                zipped.writestr('index.py', 'print "Hello world"')
+
+            with open('lambda-holder.zip', 'rb') as openfile:
+                contents = openfile.read()
+                return {'ZipFile': contents}
+
+        elif self.package_type.lower() == "image":
+            return {'ImageUri': self._get_default_ecr_uri()}
+        else:
+            raise Exception("Invalid Lambda package_type: " + self.package_type)
+
+    def _get_default_ecr_uri(self):
+        aws_creds = get_env_credential(self.env)
+        if 'accountId' not in aws_creds:
+            raise Exception("Unable to determine accountId for default Lambda ImageUri")
+        return LAMBDA_DEFAULT_CRI_URI_TEMPLATE.format(region=self.region, account=aws_creds['accountId'])
