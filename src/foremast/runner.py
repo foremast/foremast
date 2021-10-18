@@ -306,6 +306,15 @@ class ForemastRunner:
         """Clean up generated files."""
         os.remove(self.raw_path)
 
+    def check_env_defined(self):
+        """Checks if the current environment is defined in the pipeline files.
+        Raises a ForemastError if it is missing."""
+        if not self.env:
+            raise ForemastError("Environment not set")
+        if self.env not in self.configs:
+            raise ForemastError("Environment '{}' not found in pipeline configs.".format(self.env)
+                                + "Check pipeline.json and application-master-{}.json".format(self.env))
+
 
 def prepare_infrastructure():
     """Entry point for preparing the infrastructure in a specific env."""
@@ -344,6 +353,7 @@ def prepare_infrastructure_gcp(runner: ForemastRunner):
 
 def prepare_infrastructure_aws(runner, pipeline_type):
     """Creates AWS infrastructure for a specific env."""
+    runner.check_env_defined()
     archaius = runner.configs[runner.env]['app']['archaius_enabled']
     eureka = runner.configs[runner.env]['app']['eureka_enabled']
 
@@ -541,3 +551,4 @@ def debug_flag():
 
     package, *_ = __package__.split('.')
     logging.getLogger(package).setLevel(args.debug)
+
