@@ -26,8 +26,8 @@ def resource_action(client, action='', log_format='item: %(key)s', raise_errors=
 
     This is meant for _action_ methods that will create or implicitly prove a
     given Resource exists. This method will fail silently and log errors by default,
-    use the raise_errors flag to change this functionality.  AccessDenied errors will
-    always cause a raised error. EntityAlreadyExists will never raise an error.
+    use the raise_errors flag to change this functionality.  AccessDenied and ExpiredToken
+    errors will always cause a raised error. EntityAlreadyExists will never raise an error.
 
     Args:
         client (botocore.client.IAM): boto3 client object.
@@ -43,14 +43,14 @@ def resource_action(client, action='', log_format='item: %(key)s', raise_errors=
         dict: boto3 response.
     """
     result = None
-
+    always_raise_error_codes = ["AccessDenied", "ExpiredToken"]
     try:
         result = getattr(client, action)(**kwargs)
         LOG.info(log_format, kwargs)
     except botocore.exceptions.ClientError as error:
         error_code = error.response['Error']['Code']
 
-        if raise_errors or error_code in "AccessDenied":
+        if raise_errors or error_code in always_raise_error_codes:
             LOG.fatal(error)
             raise
         elif error_code == 'EntityAlreadyExists':
