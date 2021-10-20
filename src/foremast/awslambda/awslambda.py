@@ -21,7 +21,6 @@ import zipfile
 import boto3
 from tryagain import retries
 
-from ..consts import LAMBDA_DEFAULT_CRI_URI_TEMPLATE
 from ..exceptions import RequiredKeyNotFound
 from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets, \
                     get_env_credential
@@ -32,7 +31,7 @@ LOG = logging.getLogger(__name__)
 class LambdaFunction:
     """Manipulate Lambda function."""
 
-    def __init__(self, app, env, region, prop_path):
+    def __init__(self, app, env, region, prop_path, artifact_path):
         """Lambda function object.
 
         Args:
@@ -47,6 +46,7 @@ class LambdaFunction:
         self.properties = get_properties(prop_path)
         generated = get_details(app=self.app_name)
         self.group = generated.data['project']
+        self.artifact_path = artifact_path
 
         try:
             self.pipeline = self.properties['pipeline']['lambda']
@@ -151,7 +151,7 @@ class LambdaFunction:
         return sg_ids
 
     @retries(max_attempts=3, wait=1, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
-    def create_alias(self):
+    def _create_alias(self):
         """Create lambda alias with env name and points it to $LATEST."""
         LOG.info('Creating alias %s', self.env)
 
@@ -166,8 +166,8 @@ class LambdaFunction:
             LOG.info("Alias creation failed. Retrying...")
             raise
 
-    @retries(max_attempts=3, wait=1, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
-    def update_alias(self):
+    @retries(max_attempts=3, wait=1, exceptions=boto3.exceptions.botocore.exceptions.ClientError)
+    def _update_alias(self):
         """Update lambda alias to point to $LATEST."""
         LOG.info('Updating alias %s to point to $LATEST', self.env)
 
@@ -178,8 +178,8 @@ class LambdaFunction:
             LOG.info("Alias update failed. Retrying...")
             raise
 
-    @retries(max_attempts=3, wait=1, exceptions=(SystemExit))
-    def update_function_configuration(self, vpc_config):
+    @retries(max_attempts=3, wait=1, exceptions=SystemExit)
+    def _update_function_configuration(self, vpc_config):
         """Update existing Lambda function configuration.
 
         Args:
@@ -192,21 +192,8 @@ class LambdaFunction:
         lambda_tags = {**default_tags, **self.custom_tags}
 
         try:
-            self.lambda_client.update_function_configuration(
-                Environment=self.lambda_environment,
-                FunctionName=self.app_name,
-                PackageType=self.package_type.capitalize(),
-                Runtime=self._get_runtime(),
-                Role=self.role_arn,
-                Handler=self._get_handler(),
-                Description=self.description,
-                Timeout=int(self.timeout),
-                MemorySize=int(self.memory),
-                VpcConfig=vpc_config,
-                Layers=self.lambda_layers,
-                DeadLetterConfig=self.lambda_dlq,
-                TracingConfig=self.lambda_tracing,
-                FileSystemConfigs=self.lambda_filesystems)
+            lambda_args = self._get_lambda_args("update", vpc_config, lambda_tags)
+            self.lambda_client.update_function_configuration(**lambda_args)
 
             if self.concurrency_limit:
                 self.lambda_client.put_function_concurrency(
@@ -246,8 +233,8 @@ class LambdaFunction:
 
         LOG.info("Successfully updated Lambda configuration.")
 
-    @retries(max_attempts=3, wait=1, exceptions=(SystemExit))
-    def create_function(self, vpc_config):
+    @retries(max_attempts=3, wait=1, exceptions=SystemExit)
+    def _create_function(self, vpc_config):
         """Create lambda function, configures lambda parameters.
 
         We need to upload non-zero zip when creating function. Uploading
@@ -264,7 +251,7 @@ class LambdaFunction:
         lambda_tags = {**default_tags, **self.custom_tags}
 
         try:
-            lambda_args = self._get_lambda_args(vpc_config, lambda_tags)
+            lambda_args = self._get_lambda_args("create", vpc_config, lambda_tags)
             self.lambda_client.create_function(**lambda_args)
 
             if self.lambda_destinations:
@@ -289,39 +276,46 @@ class LambdaFunction:
 
         LOG.info("Successfully created Lambda function and alias")
 
-    def create_lambda_function(self):
+    def deploy_lambda_function(self):
         """Create or update Lambda function."""
         vpc_config = self._vpc_config()
 
         if self._check_lambda():
-            self.update_function_configuration(vpc_config)
+            self._update_function_configuration(vpc_config)
         else:
-            self.create_function(vpc_config)
+            self._create_function(vpc_config)
 
         if self._check_lambda_alias():
-            self.update_alias()
+            self._update_alias()
         else:
-            self.create_alias()
+            self._create_alias()
 
-    def _get_lambda_args(self, vpc_config, lambda_tags):
+    def _get_lambda_args(self, action, vpc_config, lambda_tags):
+        """Gets lambda args as a dictionary, depending on properties such as package_type.
+        Args:
+            action (str): Action taken place, either create or update.  This adjust the
+                          outputted dictionary and it's keys
+        """
         # Default args that apply to all package types
         lambda_args = {
             "Environment": self.lambda_environment,
             "FunctionName": self.app_name,
             "Role": self.role_arn,
-            "PackageType": self.package_type.capitalize(),
             "Description":  self.description,
             "Timeout": int(self.timeout),
             "MemorySize": int(self.memory),
-            "Publish": False,
             "VpcConfig": vpc_config,
-            "Tags": lambda_tags,
             "Layers": self.lambda_layers,
             "DeadLetterConfig": self.lambda_dlq,
             "TracingConfig": self.lambda_tracing,
             "FileSystemConfigs": self.lambda_filesystems,
-            "Code": self._get_default_lambda_code(),
         }
+
+        if action == "create":
+            lambda_args["Publish"] = False
+            lambda_args["PackageType"] = self.package_type.capitalize()
+            lambda_args["Tags"] = lambda_tags
+            lambda_args["Code"] = self._get_default_lambda_code()
 
         # Args for zip packages only
         if self.package_type.lower() == "zip":
@@ -330,7 +324,7 @@ class LambdaFunction:
 
         return lambda_args
 
-    def _get_default_lambda_code(self, image_uri_override=None):
+    def _get_default_lambda_code(self):
         # Need to provide a non-empty zip of source code, which will later be updated
         # create dummy zip to avoid errors:
         if self.package_type.lower() == "zip":
@@ -343,12 +337,6 @@ class LambdaFunction:
                 return {'ZipFile': contents}
 
         elif self.package_type.lower() == "image":
-            return {'ImageUri': self._get_default_ecr_uri()}
+            return {'ImageUri': self.artifact_path}
         else:
             raise Exception("Invalid Lambda package_type: " + self.package_type)
-
-    def _get_default_ecr_uri(self):
-        aws_creds = get_env_credential(self.env)
-        if 'accountId' not in aws_creds:
-            raise Exception("Unable to determine accountId for default Lambda ImageUri")
-        return LAMBDA_DEFAULT_CRI_URI_TEMPLATE.format(region=self.region, account=aws_creds['accountId'])

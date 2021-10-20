@@ -240,9 +240,8 @@ APP_FORMATS = extract_formats(CONFIG)
 GATE_CLIENT_CERT = expandvars(expanduser(validate_key_values(CONFIG, 'base', 'gate_client_cert', default='')))
 GATE_CA_BUNDLE = expandvars(expanduser(validate_key_values(CONFIG, 'base', 'gate_ca_bundle', default='')))
 LINKS = _convert_string_to_native(validate_key_values(CONFIG, 'links', 'default', default='{}'))
-LAMBDA_DEFAULT_CRI_URI_TEMPLATE = validate_key_values(CONFIG, 'lambda', 'default_ecr_uri_template',
-                                                      default='{account}.dkr.ecr.{region}.amazonaws.com/' +
-                                                              'foremast/default-lambda:latest')
+
+LAMBDA_STANDALONE_MODE = validate_key_values(CONFIG, 'lambda', 'standalone_mode', default=False)
 
 GCP_ENVS = validate_key_values(CONFIG, 'gcp', 'envs', default={})
 
