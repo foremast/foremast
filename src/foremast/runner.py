@@ -204,11 +204,22 @@ class ForemastRunner:
         sgobj.create_security_group()
 
     def create_awslambda(self):
-        """Create security groups as defined in the configs."""
+        """Create lambda, this function is used as apart of Foremast infra command."""
         utils.banner("Creating Lambda Function")
         awslambdaobj = awslambda.LambdaFunction(
-            app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
-        awslambdaobj.create_lambda_function()
+            app=self.app, env=self.env, region=self.region, prop_path=self.json_path, artifact_path=None)
+        awslambdaobj.deploy_lambda_function()
+
+        utils.banner("Creating Lambda Event")
+        lambdaeventobj = awslambda.LambdaEvent(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
+        lambdaeventobj.create_lambda_events()
+
+    def deploy_awslambda(self):
+        """Deploys an AWS Lambda, this function is used as apart of the Foremast lambdas deploy command."""
+        utils.banner("Deploying Lambda Function")
+        lambda_function = awslambda.LambdaFunction(
+            app=self.app, env=self.env, region=self.region, prop_path=self.json_path, artifact_path=self.artifact_path)
+        lambda_function.deploy_lambda_function()
 
         utils.banner("Creating Lambda Event")
         lambdaeventobj = awslambda.LambdaEvent(app=self.app, env=self.env, region=self.region, prop_path=self.json_path)
@@ -369,8 +380,11 @@ def prepare_infrastructure_aws(runner, pipeline_type):
     if eureka:
         LOG.info("Eureka Enabled, skipping ELB and DNS setup")
     elif pipeline_type == "lambda":
-        LOG.info("Lambda Enabled, skipping ELB and DNS setup")
-        runner.create_awslambda()
+        if consts.LAMBDA_STANDALONE_MODE:
+            LOG.warning("Skipping Lambda creation due to LAMBDA_STANDALONE_MODE feature flag")
+        else:
+            LOG.info("Lambda Enabled, skipping ELB and DNS setup")
+            runner.create_awslambda()
     elif pipeline_type == "s3":
         runner.create_s3app()
     elif pipeline_type == 'datapipeline':
@@ -518,6 +532,13 @@ def rebuild_pipelines(*args):
                 runner.cleanup()
             except Exception:  # pylint: disable=broad-except
                 LOG.warning('Error updating pipeline for %s', app_name)
+
+
+def deploy_awslambda():
+    """Deploys an AWS Lambda"""
+    runner = ForemastRunner()
+    runner.write_configs()
+    runner.deploy_awslambda()
 
 
 def deploy_cloudfunction():

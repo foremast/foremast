@@ -47,6 +47,17 @@ def add_cloudfunctions(subparsers):
     deploy_parser.set_defaults(func=runner.deploy_cloudfunction)
 
 
+def add_lambdas(subparsers):
+    """AWS Lambdas subcommands."""
+    # Add subparser like `foremast lambdas`
+    lambdas_parser = subparsers.add_parser('lambdas', help="Options for deploying AWS Lambdas")
+
+    # Add more subparsers, like foremast lambdas deploy`
+    lambda_subparsers = lambdas_parser.add_subparsers(title='AWS Lambdas Subcommands')
+    deploy_parser = lambda_subparsers.add_parser("deploy", help=runner.deploy_awslambda.__doc__)
+    deploy_parser.set_defaults(func=runner.deploy_awslambda)
+
+
 def add_rebuild(subparsers):
     """Rebuild Pipeline subcommands."""
     rebuild_parser = subparsers.add_parser(
@@ -134,6 +145,7 @@ def main(manual_args=None):
     add_pipeline(subparsers)
     add_rebuild(subparsers)
     add_cloudfunctions(subparsers)
+    add_lambdas(subparsers)
     add_autoscaling(subparsers)
     add_scheduled_actions(subparsers)
     add_validate(subparsers)
