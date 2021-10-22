@@ -17,13 +17,14 @@
 
 import logging
 import zipfile
+from os.path import exists
 
 import boto3
 from tryagain import retries
 
+from ..consts import LAMBDA_STANDALONE_MODE
 from ..exceptions import RequiredKeyNotFound
-from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets, \
-                    get_env_credential
+from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets
 
 LOG = logging.getLogger(__name__)
 
@@ -88,13 +89,11 @@ class LambdaFunction:
             True if function does exist
             False if function does not exist
         """
-        exists = False
         try:
             self.lambda_client.get_function(FunctionName=self.app_name)
-            exists = True
+            return True
         except boto3.exceptions.botocore.exceptions.ClientError:
-            pass
-        return exists
+            return False
 
     def _check_lambda_alias(self):
         """Check if lambda alias exists.
@@ -150,7 +149,7 @@ class LambdaFunction:
             sg_ids.append(sg_id)
         return sg_ids
 
-    @retries(max_attempts=3, wait=1, exceptions=(boto3.exceptions.botocore.exceptions.ClientError))
+    @retries(max_attempts=3, wait=1, exceptions=boto3.exceptions.botocore.exceptions.ClientError)
     def _create_alias(self):
         """Create lambda alias with env name and points it to $LATEST."""
         LOG.info('Creating alias %s', self.env)
@@ -319,24 +318,37 @@ class LambdaFunction:
 
         # Args for zip packages only
         if self.package_type.lower() == "zip":
-            lambda_args["Runtime"] = self.runtime,
+            lambda_args["Runtime"] = self.runtime
             lambda_args["Handler"] = self.handler
 
         return lambda_args
 
     def _get_default_lambda_code(self):
-        # Need to provide a non-empty zip of source code, which will later be updated
-        # create dummy zip to avoid errors:
         if self.package_type.lower() == "zip":
-            zip_file = 'lambda-holder.zip'
-            with zipfile.ZipFile(zip_file, mode='w') as zipped:
-                zipped.writestr('index.py', 'print "Hello world"')
-
-            with open('lambda-holder.zip', 'rb') as openfile:
-                contents = openfile.read()
-                return {'ZipFile': contents}
-
+            return self._get_default_lambda_code_zip()
         elif self.package_type.lower() == "image":
             return {'ImageUri': self.artifact_path}
         else:
             raise Exception("Invalid Lambda package_type: " + self.package_type)
+
+    def _get_default_lambda_code_zip(self):
+        if LAMBDA_STANDALONE_MODE:
+            if self.artifact_path and exists(self.artifact_path):
+                with open(self.artifact_path, 'rb') as openfile:
+                    contents = openfile.read()
+                    return {'ZipFile': contents}
+            raise Exception("Artifact file '{}' not found.  Note: You must download and pass in a local address"
+                            .format(self.artifact_path))
+        else:
+            return {'ZipFile': self._create_dummy_zip_package()}
+
+    def _create_dummy_zip_package(self):
+        """When lambda's are created during foremast infra step, we must create a dummy zip as a placeholder
+        until the real code is added in next Spinnaker step.  This does not apply if using feature flag
+        LAMBDA_STANDALONE_MODE=True."""
+        LOG.info("Creating dummy zip package and overriding artifact path")
+        self.artifact_path = 'lambda-holder.zip'
+        with zipfile.ZipFile(self.artifact_path, mode='w') as zipped:
+            zipped.writestr('index.py', 'print "Hello world"')
+        with open('lambda-holder.zip', 'rb') as openfile:
+            return openfile.read()
