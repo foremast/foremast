@@ -10,7 +10,7 @@ TEST_PROPERTIES = {
             'app_description': None,
             'handler': None,
             'runtime': None,
-            'vpc_enabled': None,
+            'vpc_enabled': None
         },
     },
     'app': {

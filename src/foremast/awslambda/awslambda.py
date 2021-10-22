@@ -40,6 +40,7 @@ class LambdaFunction:
             env (str): Environment/Account
             region (str): AWS Region
             prop_path (str): Path of environment property file
+            artifact_path (str): Path or URI for code artifact
         """
         self.app_name = app
         self.env = env
@@ -58,7 +59,7 @@ class LambdaFunction:
         self.description = self.pipeline['app_description']
         self.handler = self.pipeline['handler']
         self.vpc_enabled = self.pipeline['vpc_enabled']
-        self.package_type = self.pipeline["package_type"]
+        self.package_type = "zip" if 'package_type' not in self.pipeline else self.pipeline['package_type']
 
         self.settings = get_properties(prop_path, env=self.env, region=self.region)
         app = self.settings['app']
