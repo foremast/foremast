@@ -45,7 +45,7 @@ def test_role_arn(mock_get_role_arn, mock_get_properties, mock_get_details, mock
     mock_get_details.return_value.iam.return_value = generated
     mock_get_properties.return_value = properties
 
-    LambdaFunction(app='test_app', env='test_env', region='us-east-1', prop_path='other')
+    LambdaFunction(app='test_app', env='test_env', region='us-east-1', prop_path='other', artifact_path=None)
     mock_get_role_arn.assert_called_with(generated['lambda_role'], mock.ANY, mock.ANY)
 
 
@@ -62,7 +62,7 @@ def test_role_arn_none(mock_get_role_arn, mock_get_properties, mock_get_details,
     mock_get_details.return_value.iam.return_value = generated
     mock_get_properties.return_value = properties
 
-    LambdaFunction(app='test_app', env='test_env', region='us-east-1', prop_path='other')
+    LambdaFunction(app='test_app', env='test_env', region='us-east-1', prop_path='other', artifact_path=None)
     mock_get_role_arn.assert_called_with(GENERATED_IAM['lambda_role'], mock.ANY, mock.ANY)
 
 
@@ -80,5 +80,5 @@ def test_role_arn_custom(mock_get_role_arn, mock_get_properties, mock_get_detail
     mock_get_details.return_value.iam.return_value = generated
     mock_get_properties.return_value = properties
 
-    LambdaFunction(app='test_app', env='test_env', region='us-east-1', prop_path='other')
+    LambdaFunction(app='test_app', env='test_env', region='us-east-1', prop_path='other', artifact_path=None)
     mock_get_role_arn.assert_called_with(custom_role, mock.ANY, mock.ANY)

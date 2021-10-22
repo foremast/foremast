@@ -311,7 +311,7 @@ class LambdaFunction:
         }
 
         if action == "create":
-            lambda_args["Publish"] = False
+            lambda_args["Publish"] = True if LAMBDA_STANDALONE_MODE else False
             lambda_args["PackageType"] = self.package_type.capitalize()
             lambda_args["Tags"] = lambda_tags
             lambda_args["Code"] = self._get_default_lambda_code()
