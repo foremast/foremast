@@ -20,7 +20,7 @@ Help: ``python -m src.foremast.app -h``
 import argparse
 import logging
 
-import gogoutils
+import foremastutils
 
 from ..args import add_app, add_debug, add_properties, add_provider
 from ..consts import APP_FORMATS, LOGGING_FORMAT
@@ -48,8 +48,8 @@ def main():
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
     if args.git and args.git != 'None':
-        parsed = gogoutils.Parser(args.git).parse_url()
-        generated = gogoutils.Generator(*parsed, formats=APP_FORMATS)
+        parsed = foremastutils.Parser(args.git).parse_url()
+        generated = foremastutils.Generator(*parsed, formats=APP_FORMATS)
         project = generated.project
         repo = generated.repo
     else:

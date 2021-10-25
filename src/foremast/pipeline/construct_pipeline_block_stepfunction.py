@@ -37,7 +37,7 @@ def construct_stepfunction(env='',
 
     Args:
         env (str): Deploy environment name, e.g. dev, stage, prod.
-        generated (gogoutils.Generator): Application name generator.
+        generated (foremastutils.Generator): Application name generator.
         previous_env (str): The previous deploy environment to use as
             Trigger.
         region (str): AWS Region to deploy to.

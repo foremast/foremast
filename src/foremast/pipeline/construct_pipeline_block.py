@@ -115,7 +115,7 @@ def construct_pipeline_block(env='',
 
     Args:
         env (str): Deploy environment name, e.g. dev, stage, prod.
-        generated (gogoutils.Generator): Gogo Application name generator.
+        generated (foremastutils.Generator): Foremast Application name generator.
         kwargs (dict): Extra variables to pass to Pipeline Templates.
         previous_env (str): The previous deploy environment to use as
             Trigger.
@@ -181,7 +181,7 @@ def ec2_pipeline_setup(
     """Handles ec2 pipeline data setup
 
     Args:
-        generated (gogoutils.Generator): Generated naming formats.
+        generated (foremastutils.Generator): Generated naming formats.
         project (str): Group name of application
         settings (dict): Environment settings from configurations.
         env (str): Deploy environment name, e.g. dev, stage, prod.
@@ -239,7 +239,7 @@ def ec2_pipeline_setup(
     grace_period = hc_grace_period + app_grace_period
 
     # TODO: Migrate the naming logic to an external library to make it easier
-    #       to update in the future. Gogo-Utils looks like a good candidate
+    #       to update in the future. foremast-utils looks like a good candidate
     ssh_keypair = data['asg'].get('ssh_keypair', None)
     if not ssh_keypair:
         ssh_keypair = '{0}_{1}_default'.format(env, region)

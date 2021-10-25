@@ -32,7 +32,7 @@ def generate_encoded_user_data(
     Args:
         env (str): Deployment environment, e.g. dev, stage.
         region (str): AWS Region, e.g. us-east-1.
-        generated (gogoutils.Generator): Generated naming formats.
+        generated (foremastutils.Generator): Generated naming formats.
         group_name (str): Application group nane, e.g. core.
         pipeline_type (str): Type of Foremast Pipeline to configure.
 
@@ -49,7 +49,7 @@ def generate_encoded_user_data(
             export CLOUD_STACK=forrest
             export EC2_REGION=us-east-1
             export CLOUD_DOMAIN=dev.example.com
-            printenv | grep 'CLOUD\|EC2' | awk '$0="export "$0'>> /etc/gogo/cloud_env
+            printenv | grep 'CLOUD\|EC2' | awk '$0="export "$0'>> /etc/foremast/cloud_env
 
     """
     # We need to handle the case of prodp and prods for different URL generation

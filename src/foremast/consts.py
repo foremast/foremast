@@ -78,7 +78,7 @@ def validate_key_values(config_handle, section, key, default=None):
 def extract_formats(config_handle):
     """Get application formats.
 
-    See :class:`gogoutils.Formats` for available options.
+    See :class:`foremastutils.Formats` for available options.
 
     Args:
         config_handle (configparser.ConfigParser): Instance of configurations.
