@@ -51,7 +51,7 @@ Both methods will generate the same outcome. An application created in Spinnaker
 Method 1
 ********
 
-This is our recommended method and how we internally at Gogo run Foremast. You need to first set the environment variables from above.
+This is the recommended method on how to run Foremast. You need to first set the environment variables from above.
 
 With the environment variables defined, you can simply run the command ``foremast-pipeline`` from the command line. This will create the Application in Spinnaker as well as generate a base pipeline.
 
@@ -70,4 +70,4 @@ Next Steps
 ----------
 Take a look at the :doc:`infra_assumptions` docs for details on the necessary Jenkins jobs.
 
-This is only the tip of what Foremast can do. It also has functionality for creating scaling policies, setting up AWS infrastructure (elbs, security groups, iam policies, s3 buckets), sending slack notifications, and destroying old infrastructure. Take a look at our internal workflow docs for more detail on how Foremast is used at Gogo.
+Since Foremast is based on Jinja templates, it can be extended to do anything you need. For example, you can add functionality for creating scaling policies, setting up AWS infrastructure (elbs, security groups, iam policies, s3 buckets), sending slack notifications, and destroying old infrastructure. Take a look at our internal workflow docs for more detail on how Foremast is used at various organizations!

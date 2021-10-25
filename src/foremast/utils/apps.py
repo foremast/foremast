@@ -16,7 +16,7 @@
 """Application related utilities."""
 import logging
 
-import gogoutils
+import foremastutils
 
 from ..consts import APP_FORMATS
 from ..exceptions import SpinnakerAppNotFound
@@ -67,7 +67,7 @@ def get_details(app='groupproject', env='dev', region='us-east-1'):
     LOG.debug('App details: %s', app_details)
     group = app_details['attributes'].get('repoProjectKey')
     project = app_details['attributes'].get('repoSlug')
-    generated = gogoutils.Generator(group, project, env=env, region=region, formats=APP_FORMATS)
+    generated = foremastutils.Generator(group, project, env=env, region=region, formats=APP_FORMATS)
 
     LOG.debug('Application details: %s', generated)
     return generated

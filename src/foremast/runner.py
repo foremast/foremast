@@ -30,7 +30,7 @@ import argparse
 import logging
 import os
 
-import gogoutils
+import foremastutils
 
 from . import (autoscaling_policy, awslambda, configs, consts, datapipeline, dns, elb, iam, pipeline, s3,
                scheduled_actions, securitygroup, slacknotify, stepfunction, utils)
@@ -65,8 +65,8 @@ class ForemastRunner:
         self.provider = os.getenv("PROVIDER", "aws")
 
         self.git_project = "{}/{}".format(self.group, self.repo)
-        parsed = gogoutils.Parser(self.git_project)
-        generated = gogoutils.Generator(*parsed.parse_url(), formats=consts.APP_FORMATS)
+        parsed = foremastutils.Parser(self.git_project)
+        generated = foremastutils.Generator(*parsed.parse_url(), formats=consts.APP_FORMATS)
 
         self.app = generated.app_name()
         self.trigger_job = generated.jenkins()['name']

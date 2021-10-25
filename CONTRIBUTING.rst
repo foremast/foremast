@@ -146,5 +146,5 @@ Try to keep history as linear as possible using a `rebase` merge strategy.
 
 #. Delete merged Branch
 
-.. _Issue: https://github.com/gogoit/foremast/issues
-.. _Pull Request: https://github.com/gogoit/foremast/pulls
+.. _Issue: https://github.com/foremast/foremast/issues
+.. _Pull Request: https://github.com/foremast/foremast/pulls

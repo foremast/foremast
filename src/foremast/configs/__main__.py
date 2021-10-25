@@ -20,7 +20,7 @@ Help: ``python -m src.foremast.configs -h``
 import argparse
 import logging
 
-import gogoutils
+import foremastutils
 
 from ..args import add_debug
 from ..consts import APP_FORMATS, LOGGING_FORMAT
@@ -45,7 +45,7 @@ def main():
     LOG.setLevel(args.debug)
     logging.getLogger(__package__.split('.')[0]).setLevel(args.debug)
 
-    generated = gogoutils.Generator(*gogoutils.Parser(args.git_short).parse_url(), formats=APP_FORMATS)
+    generated = foremastutils.Generator(*foremastutils.Parser(args.git_short).parse_url(), formats=APP_FORMATS)
     git_short = generated.gitlab()['main']
 
     if args.runway_dir:

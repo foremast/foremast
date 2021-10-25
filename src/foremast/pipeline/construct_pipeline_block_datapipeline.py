@@ -37,7 +37,7 @@ def construct_datapipeline(env='',
 
     Args:
         env (str): Deploy environment name, e.g. dev, stage, prod.
-        generated (gogoutils.Generator): Gogo Application name generator.
+        generated (foremastutils.Generator): Foremast Application name generator.
         previous_env (str): The previous deploy environment to use as
             Trigger.
         region (str): AWS Region to deploy to.

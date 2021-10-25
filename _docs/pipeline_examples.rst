@@ -14,9 +14,9 @@ transition.
 Default Pipeline Flow
 ---------------------
 
-The below flow can repeat for as many environments as defined in the configs. At
-Gogo, most applications go through these stages 3 times as we deploy to dev,
-stage, and production.
+The below flow can repeat for as many environments as defined in the configs. 
+In general, most applications repeat a common set of stages 2-3 times. Typically,
+the same way to deploy to dev (if used), stage, and production.
 
 1. Configuration
 
@@ -77,11 +77,11 @@ templates.
 Example Workflow
 -----------------
 
-At Gogo we have a detailed workflow for using Foremast internally. Feel free to
-copy our workflow or use it as inspiration for your own. You can view all of our
+Most Foremast users have a detailed workflow for using Foremast internally. Feel free to
+copy this example workflow or use it as inspiration for your own. You can view all of our
 internal templates on the `foremast-templates repo`_.
 
-.. image:: _static/gogo-pipeline.png
+.. image:: _static/foremast-pipeline.png
 
 #. The :ref:`application_json` and :ref:`pipeline_json` are bundled directly
    with the application code

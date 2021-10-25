@@ -389,7 +389,7 @@ Section handling the naming convention of applications, elb, iam, s3 buckets and
 other services.
 
 The most common sections are shown. The complete list of sections and defaults
-are defined by the underlying library gogo-utils_.
+are defined by the underlying library foremast-utils_.
 
 Any of the possible variables below can be used as the value.
 
@@ -463,7 +463,7 @@ keyed by task name.  This section only applies to AWS environments.
     | *Default*: 120
     | *Required*: No
 
-.. _gogo-utils: https://github.com/gogoair/gogo-utils#formats
+.. _foremast-utils: https://github.com/foremast/foremast-utils#formats
 
 .. _gcp-section:
 
