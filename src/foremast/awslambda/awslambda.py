@@ -179,6 +179,15 @@ class LambdaFunction:
             raise
 
     @retries(max_attempts=3, wait=1, exceptions=SystemExit)
+    def _update_function_code(self):
+        code_args = self._get_default_lambda_code()
+        self.lambda_client.update_function_code(
+            FunctionName=self.app_name,
+            **code_args
+        )
+        LOG.info("Successfully updated Lambda code.")
+
+    @retries(max_attempts=3, wait=1, exceptions=SystemExit)
     def _update_function_configuration(self, vpc_config):
         """Update existing Lambda function configuration.
 
@@ -282,6 +291,8 @@ class LambdaFunction:
 
         if self._check_lambda():
             self._update_function_configuration(vpc_config)
+            if LAMBDA_STANDALONE_MODE:
+                self._update_function_code()
         else:
             self._create_function(vpc_config)
 
@@ -324,7 +335,7 @@ class LambdaFunction:
 
         return lambda_args
 
-    def _get_default_lambda_code(self):
+    def _get_default_lambda_code(self) -> dict:
         if self.package_type.lower() == "zip":
             return self._get_default_lambda_code_zip()
         elif self.package_type.lower() == "image":
@@ -332,7 +343,7 @@ class LambdaFunction:
         else:
             raise Exception("Invalid Lambda package_type: " + self.package_type)
 
-    def _get_default_lambda_code_zip(self):
+    def _get_default_lambda_code_zip(self) -> dict:
         if LAMBDA_STANDALONE_MODE:
             if self.artifact_path and exists(self.artifact_path):
                 with open(self.artifact_path, 'rb') as openfile:
@@ -343,7 +354,7 @@ class LambdaFunction:
         else:
             return {'ZipFile': self._create_dummy_zip_package()}
 
-    def _create_dummy_zip_package(self):
+    def _create_dummy_zip_package(self) -> bytes:
         """When lambda's are created during foremast infra step, we must create a dummy zip as a placeholder
         until the real code is added in next Spinnaker step.  This does not apply if using feature flag
         LAMBDA_STANDALONE_MODE=True."""
