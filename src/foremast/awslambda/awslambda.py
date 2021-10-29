@@ -20,14 +20,15 @@ import zipfile
 from os.path import exists
 
 import boto3
+from botocore.exceptions import ClientError
 from tryagain import retries
 
 from ..consts import LAMBDA_STANDALONE_MODE
 from ..exceptions import RequiredKeyNotFound
-from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets
+from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, get_security_group_id, get_subnets, \
+    exponential_backoff
 
 LOG = logging.getLogger(__name__)
-
 
 class LambdaFunction:
     """Manipulate Lambda function."""
@@ -150,7 +151,7 @@ class LambdaFunction:
             sg_ids.append(sg_id)
         return sg_ids
 
-    @retries(max_attempts=3, wait=1, exceptions=boto3.exceptions.botocore.exceptions.ClientError)
+    @retries(max_attempts=3, wait=exponential_backoff, exceptions=ClientError)
     def _create_alias(self):
         """Create lambda alias with env name and points it to $LATEST."""
         LOG.info('Creating alias %s', self.env)
@@ -166,7 +167,7 @@ class LambdaFunction:
             LOG.info("Alias creation failed. Retrying...")
             raise
 
-    @retries(max_attempts=3, wait=1, exceptions=boto3.exceptions.botocore.exceptions.ClientError)
+    @retries(max_attempts=3, wait=exponential_backoff, exceptions=ClientError)
     def _update_alias(self):
         """Update lambda alias to point to $LATEST."""
         LOG.info('Updating alias %s to point to $LATEST', self.env)
@@ -178,7 +179,7 @@ class LambdaFunction:
             LOG.info("Alias update failed. Retrying...")
             raise
 
-    @retries(max_attempts=3, wait=1, exceptions=SystemExit)
+    @retries(max_attempts=5, wait=lambda n: exponential_backoff(n, 4), exceptions=ClientError)
     def _update_function_code(self):
         code_args = self._get_default_lambda_code()
         self.lambda_client.update_function_code(
@@ -187,7 +188,7 @@ class LambdaFunction:
         )
         LOG.info("Successfully updated Lambda code.")
 
-    @retries(max_attempts=3, wait=1, exceptions=SystemExit)
+    @retries(max_attempts=5, wait=lambda n: exponential_backoff(n, 4), exceptions=ClientError)
     def _update_function_configuration(self, vpc_config):
         """Update existing Lambda function configuration.
 
@@ -203,30 +204,9 @@ class LambdaFunction:
         try:
             lambda_args = self._get_lambda_args("update", vpc_config, lambda_tags)
             self.lambda_client.update_function_configuration(**lambda_args)
-
-            if self.concurrency_limit:
-                self.lambda_client.put_function_concurrency(
-                    FunctionName=self.app_name,
-                    ReservedConcurrentExecutions=self.concurrency_limit
-                )
-            else:
-                self.lambda_client.delete_function_concurrency(FunctionName=self.app_name)
-
-            if self.lambda_destinations:
-                self.lambda_client.put_function_event_invoke_config(
-                    FunctionName=self.app_name,
-                    DestinationConfig=self.lambda_destinations
-                )
-
-            if self.lambda_provisioned_throughput:
-                self.lambda_client.put_provisioned_concurrency_config(
-                    FuctionName=self.app_name,
-                    Qualifier=self.env,
-                    ProvisionedConcurrentExecutions=self.lambda_provisioned_throughput)
-            else:
-                self.lambda_client.delete_provisioned_concurrency_config(
-                    FunctionName=self.app_name,
-                    Qualifier=self.env)
+            self._put_concurrent_limits(delete_old_config=True)
+            self._put_destinations()
+            self._put_provisioned_throughput(delete_old_config=True)
 
         except boto3.exceptions.botocore.exceptions.ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
@@ -234,6 +214,8 @@ class LambdaFunction:
                 LOG.debug(message)
                 raise SystemExit(message)
 
+            LOG.warning("Client error {} during {}.  Retrying with backoff."
+                        .format(error.response['Error']['Code'], error.operation_name))
             raise
         LOG.info('Updating Lambda function tags')
 
@@ -242,7 +224,64 @@ class LambdaFunction:
 
         LOG.info("Successfully updated Lambda configuration.")
 
-    @retries(max_attempts=3, wait=1, exceptions=SystemExit)
+    @retries(max_attempts=3, wait=exponential_backoff, exceptions=ClientError)
+    def _put_provisioned_throughput(self, delete_old_config):
+        """Update existing Lambda function provisioned throughput config
+
+            Args:
+                delete_old_config (bool): delete existing config if no provisioned
+                throughput set in pipeline files
+            """
+        try:
+            if self.lambda_provisioned_throughput:
+                self.lambda_client.put_provisioned_concurrency_config(
+                    FuctionName=self.app_name,
+                    Qualifier=self.env,
+                    ProvisionedConcurrentExecutions=self.lambda_provisioned_throughput)
+            elif delete_old_config:
+                self.lambda_client.delete_provisioned_concurrency_config(
+                    FunctionName=self.app_name,
+                    Qualifier=self.env)
+        except ClientError as error:
+            LOG.warning("Client error {} during {}.  Retrying with backoff."
+                        .format(error.response['Error']['Code'], error.operation_name))
+            raise
+
+    @retries(max_attempts=3, wait=exponential_backoff, exceptions=ClientError)
+    def _put_destinations(self):
+        try:
+            if self.lambda_destinations:
+                self.lambda_client.put_function_event_invoke_config(
+                    FunctionName=self.app_name,
+                    DestinationConfig=self.lambda_destinations
+                )
+        except ClientError as error:
+            LOG.warning("Client error {} during {}.  Retrying with backoff."
+                        .format(error.response['Error']['Code'], error.operation_name))
+            raise
+
+    @retries(max_attempts=3, wait=exponential_backoff, exceptions=ClientError)
+    def _put_concurrent_limits(self, delete_old_config):
+        """Update existing Lambda function concurrency
+
+        Args:
+            delete_old_config (bool): delete existing config if no concurrency
+            limit set in pipeline files
+        """
+        try:
+            if self.concurrency_limit:
+                self.lambda_client.put_function_concurrency(
+                    FunctionName=self.app_name,
+                    ReservedConcurrentExecutions=self.concurrency_limit
+                )
+            elif delete_old_config:
+                self.lambda_client.delete_function_concurrency(FunctionName=self.app_name)
+        except ClientError as error:
+            LOG.warning("Client error {} during {}.  Retrying with backoff."
+                        .format(error.response['Error']['Code'], error.operation_name))
+            raise
+
+    @retries(max_attempts=3, wait=exponential_backoff, exceptions=SystemExit)
     def _create_function(self, vpc_config):
         """Create lambda function, configures lambda parameters.
 
@@ -263,19 +302,10 @@ class LambdaFunction:
             lambda_args = self._get_lambda_args("create", vpc_config, lambda_tags)
             self.lambda_client.create_function(**lambda_args)
 
-            if self.lambda_destinations:
-                self.lambda_client.put_function_event_invoke_config(
-                    FunctionName=self.app_name,
-                    DestinationConfig=self.lambda_destinations
-                )
+            self._put_destinations()
+            self._put_provisioned_throughput()
 
-            if self.lambda_provisioned_throughput:
-                self.lambda_client.put_provisioned_concurrency_config(
-                    FuctionName=self.app_name,
-                    Qualifier=self.env,
-                    ProvisionedConcurrentExecutions=self.lambda_provisioned_throughput)
-
-        except boto3.exceptions.botocore.exceptions.ClientError as error:
+        except ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
                 message = '{0} is missing "ec2:CreateNetworkInterface"'.format(self.role_arn)
                 LOG.critical(message)
