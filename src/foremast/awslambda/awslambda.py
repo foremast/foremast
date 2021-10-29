@@ -30,6 +30,7 @@ from ..utils import get_details, get_lambda_arn, get_properties, get_role_arn, g
 
 LOG = logging.getLogger(__name__)
 
+
 class LambdaFunction:
     """Manipulate Lambda function."""
 
