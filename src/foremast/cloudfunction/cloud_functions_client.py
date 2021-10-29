@@ -22,6 +22,8 @@ from googleapiclient import discovery
 from ..exceptions import CloudFunctionDeployError, CloudFunctionOperationFailedError, \
     CloudFunctionOperationIncompleteError
 from tryagain import retries
+
+from ..utils import exponential_backoff
 from ..utils.gcp_environment import GcpEnvironment
 
 LOG = logging.getLogger(__name__)
@@ -237,7 +239,7 @@ class CloudFunctionsClient:
             raise e
 
     # Retry with back off, wait time is attempt_count * 2 (1 second, 2 seconds, 4 seconds, etc.)
-    @retries(max_attempts=10, wait=lambda n: 2 ** n, exceptions=CloudFunctionOperationIncompleteError)
+    @retries(max_attempts=10, wait=exponential_backoff, exceptions=CloudFunctionOperationIncompleteError)
     def _wait_for_operation(self, operation_name):
         """Waits for the given operation to complete with an exponential back off.  The back off is
         the number of attempts multiplied by two (in seconds).  Maximum 10 attempts total, for a total of
