@@ -72,7 +72,7 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
 
             # Create all pipelines
             for pipeline_dict in pipelines:
-                pipeline_dict.setdefault('application', self.app_name)
+                pipeline_dict.setdefault('application', self.app)
                 pipeline_dict.setdefault('name',
                                          normalize_pipeline_name(name=file_name.lstrip("templates://")))
                 pipeline_dict.setdefault('id', get_pipeline_id(app=pipeline_dict['application'],
@@ -137,6 +137,8 @@ class SpinnakerPipelineManual(SpinnakerPipeline):
         # If any args set in the pipeline file add them to the pipeline_args.variables
         if pipeline_vars is not None:
             pipeline_args["template_variables"] = pipeline_vars
+
+        self.log.debug(pipeline_args)
 
         # Render the template
         return jinja_template.render(pipeline_args)

@@ -36,6 +36,7 @@ def get_jinja_variables(pipeline):
     # Deprecated variables: Use the app block instead
     variables["trigger_job"] = pipeline.trigger_job
     variables["group_name"] = pipeline.group_name
+    variables["app"] = pipeline.app
     variables["app_name"] = pipeline.app_name
     variables["repo_name"] = pipeline.repo_name
     # Deprecated end
@@ -48,6 +49,8 @@ def get_jinja_variables(pipeline):
     # app block matches non-manual pipeline types like ec2, lambda, etc for consistency
     variables["data"] = {
         'app': {
+            'app': pipeline.app,
+            'app_name': pipeline.app_name,
             'appname': pipeline.app_name,
             'group_name': pipeline.group_name,
             'repo_name': pipeline.repo_name,

@@ -50,6 +50,7 @@ class SpinnakerPipeline:
 
         self.base = base
         self.trigger_job = trigger_job
+        self.app = app
         self.generated = get_details(app=app)
         self.app_name = self.generated.app_name()
         self.group_name = self.generated.project
@@ -119,7 +120,9 @@ class SpinnakerPipeline:
         data = {
             'app': {
                 'ami_id': ami_id,
+                'app': self.app,
                 'appname': self.app_name,
+                'app_name': self.app_name,
                 'group_name': self.group_name,
                 'repo_name': self.repo_name,
                 'base': base,
