@@ -205,6 +205,12 @@ class LambdaFunction:
         try:
             lambda_args = self._get_lambda_args("update", vpc_config, lambda_tags)
             self.lambda_client.update_function_configuration(**lambda_args)
+
+            if self._check_lambda_alias():
+                self._update_alias()
+            else:
+                self._create_alias()
+
             self._put_concurrent_limits(delete_old_config=True)
             self._put_destinations()
             self._put_provisioned_throughput(delete_old_config=True)
@@ -303,8 +309,14 @@ class LambdaFunction:
             lambda_args = self._get_lambda_args("create", vpc_config, lambda_tags)
             self.lambda_client.create_function(**lambda_args)
 
+            if self._check_lambda_alias():
+                self._update_alias()
+            else:
+                self._create_alias()
+            
+            self._put_concurrent_limits(delete_old_config=False)
             self._put_destinations()
-            self._put_provisioned_throughput()
+            self._put_provisioned_throughput(delete_old_config=False)
 
         except ClientError as error:
             if 'CreateNetworkInterface' in error.response['Error']['Message']:
@@ -326,11 +338,6 @@ class LambdaFunction:
                 self._update_function_code()
         else:
             self._create_function(vpc_config)
-
-        if self._check_lambda_alias():
-            self._update_alias()
-        else:
-            self._create_alias()
 
     def _get_lambda_args(self, action, vpc_config, lambda_tags):
         """Gets lambda args as a dictionary, depending on properties such as package_type.
