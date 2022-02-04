@@ -34,26 +34,32 @@ def create_sns_event(app_name, env, region, rules):
         region (str): AWS region of the lambda function
         rules (str): Trigger rules from the settings
     """
-    session = boto3.Session(profile_name=env, region_name=region)
-    sns_client = session.client('sns')
+    try:
+        session = boto3.Session(profile_name=env, region_name=region)
+        sns_client = session.client('sns')
 
-    topic_name = rules.get('topic')
-    lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
-    topic_arn = get_sns_topic_arn(topic_name=topic_name, account=env, region=region)
-    protocol = 'lambda'
+        topic_name = rules.get('topic')
+        lambda_alias_arn = get_lambda_alias_arn(app=app_name, account=env, region=region)
+        topic_arn = get_sns_topic_arn(topic_name=topic_name, account=env, region=region)
+        protocol = 'lambda'
 
-    statement_id = '{}_sns_{}'.format(app_name, topic_name)
-    principal = 'sns.amazonaws.com'
-    add_lambda_permissions(
-        function=lambda_alias_arn,
-        statement_id=statement_id,
-        action='lambda:InvokeFunction',
-        principal=principal,
-        source_arn=topic_arn,
-        env=env,
-        region=region)
+        statement_id = '{}_sns_{}'.format(app_name, topic_name)
+        principal = 'sns.amazonaws.com'
+        add_lambda_permissions(
+            function=lambda_alias_arn,
+            statement_id=statement_id,
+            action='lambda:InvokeFunction',
+            principal=principal,
+            source_arn=topic_arn,
+            env=env,
+            region=region)
 
-    sns_client.subscribe(TopicArn=topic_arn, Protocol=protocol, Endpoint=lambda_alias_arn)
-    LOG.debug("SNS Lambda event created")
+        sns_client.subscribe(TopicArn=topic_arn, Protocol=protocol, Endpoint=lambda_alias_arn)
+        LOG.debug("SNS Lambda event created")
 
-    LOG.info("Created SNS event subscription on topic %s", topic_name)
+        LOG.info("Created SNS event subscription on topic %s", topic_name)
+    except ClientError as error:
+        LOG.debug('create_sns_event error: %s', error)
+        LOG.info("create_sns_event failed. Retrying...")
+        raise
+
