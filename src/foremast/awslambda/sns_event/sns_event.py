@@ -18,12 +18,13 @@
 import logging
 
 import boto3
-
-from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_sns_topic_arn
+from botocore.exceptions import ClientError
+from ...utils import add_lambda_permissions, get_lambda_alias_arn, get_sns_topic_arn, retries, exponential_backoff
 
 LOG = logging.getLogger(__name__)
 
 
+@retries(max_attempts=3, wait=exponential_backoff, exceptions=ClientError)
 def create_sns_event(app_name, env, region, rules):
     """Create SNS lambda event from rules.
 

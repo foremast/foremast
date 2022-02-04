@@ -19,13 +19,15 @@ import json
 import logging
 
 import boto3
-
+from botocore.exceptions import ClientError
+from tryagain import retries
 from ...exceptions import InvalidEventConfiguration
-from ...utils import add_lambda_permissions, get_env_credential, get_lambda_arn
+from ...utils import add_lambda_permissions, get_env_credential, get_lambda_arn, exponential_backoff
 
 LOG = logging.getLogger(__name__)
 
 
+@retries(max_attempts=3, wait=exponential_backoff, exceptions=ClientError)
 def create_cloudwatch_event(app_name, env, region, rules):
     """Create cloudwatch event for lambda from rules.
 

@@ -20,12 +20,17 @@ import logging
 import boto3
 
 from datetime import datetime
+
+from botocore.exceptions import ClientError
+from tryagain import retries
+
 from ...exceptions import DynamoDBTableNotFound
-from ...utils import get_dynamodb_stream_arn, get_lambda_alias_arn
+from ...utils import get_dynamodb_stream_arn, get_lambda_alias_arn, exponential_backoff
 
 LOG = logging.getLogger(__name__)
 
 
+@retries(max_attempts=3, wait=exponential_backoff, exceptions=ClientError)
 def create_event_source_mapping_trigger(app_name, env, region, event_source, rules): # noqa: MC0001
     """Create event source mapping trigger from rules for AWS Lambda.
 
