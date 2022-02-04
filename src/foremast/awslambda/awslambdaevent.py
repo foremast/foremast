@@ -16,11 +16,7 @@
 """Create Lambda event triggers."""
 
 import logging
-
-from botocore.exceptions import ClientError
-from tryagain import retries
-
-from ..utils import get_properties, remove_all_lambda_permissions, exponential_backoff
+from ..utils import get_properties, remove_all_lambda_permissions
 from .api_gateway_event import APIGateway
 from .cloudwatch_event import create_cloudwatch_event
 from .cloudwatch_log_event import create_cloudwatch_log_event
