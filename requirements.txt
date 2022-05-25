@@ -9,7 +9,7 @@ requests
 slacker
 tryagain
 requests_toolbelt==0.9.1
-PyJWT==1.7.1
+PyJWT==2.4.0
 cryptography>=3.3.2
 google-cloud-secret-manager==0.2.0
 google-api-python-client==1.7.11
